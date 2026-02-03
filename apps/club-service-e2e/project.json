@@ -1,0 +1,29 @@
+{
+  "name": "club-service-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/club-service-e2e/src",
+  "targets": {
+    "e2e": {
+      "executor": "@nx/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/club-service-e2e/cypress.config.ts",
+        "testingType": "e2e",
+        "devServerTarget": "club-service:serve"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "club-service:serve:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/club-service-e2e/**/*.{js,ts}"]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["club-service"]
+}
