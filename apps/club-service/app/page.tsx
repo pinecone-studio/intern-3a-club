@@ -1,10 +1,3 @@
-import styles from './page.module.css';
-
 export default async function Index() {
-  /*
-   * Replace the elements below with your own.
-   *
-   * Note: The corresponding styles are in the ./index.css file.
-   */
-  return <div className="bg-red-600">Hellow</div>;
+  return <div className="bg-red-600">Hello</div>;
 }
