@@ -1,3 +1,3 @@
-export default async function Index() {
-  return <div className="bg-red-500">hello</div>;
+export default function TestComponent() {
+  return <div onClick={() => console.log('hi')}>Hello</div>;
 }
