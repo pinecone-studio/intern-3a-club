@@ -6,6 +6,7 @@ import { gql } from '@apollo/client';
 export type Club = {
   id: string;
   name: string;
+  description: string;
   minMember: number;
   maxMember: number;
   status: string;
@@ -48,7 +49,7 @@ const GET_LOCATIONS = gql`
   }
 `;
 
-export default function HomePage() {
+export default function ClubWebHomePage() {
   // const { data, loading, error } = useQuery<GetClubsData>(GET_CLUBS);
   const { data, loading, error } = useQuery<GetLocationsData>(GET_LOCATIONS);
 
@@ -63,7 +64,6 @@ export default function HomePage() {
           <div>{location.name}</div>
           <div>{location.description}</div>
           <div className="w-100 h-100">{location.photo}</div>
-          <div></div>
         </div>
       ))}
       {/* <div>Clubs</div>
