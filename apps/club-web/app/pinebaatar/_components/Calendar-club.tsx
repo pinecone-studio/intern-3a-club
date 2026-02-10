@@ -19,7 +19,7 @@ interface LogisticsSectionProps {
 export const LogisticsSection = (props: LogisticsSectionProps) => {
   const { formData, setFormData, selectedDates, setSelectedDates, currentMonth } = props;
 
-  // Логик: Давтамж тооцоолох
+
   const calculateRecurrence = useCallback((baseDates: Date[], mode: string, monthDate: Date) => {
     if (mode === 'none') return baseDates;
     const year = monthDate.getFullYear(), month = monthDate.getMonth();

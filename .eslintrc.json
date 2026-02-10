@@ -16,13 +16,13 @@
       "files": [
         "**/_components/**/*.{ts,tsx,js,jsx}",
         "**/_features/**/*.{ts,tsx,js,jsx}"
-      ], // for components and features
+      ],
       "rules": {
         "import/no-default-export": "error"
       }
     },
     {
-      "files": ["*.jsx", "*.tsx"], // for JSX component
+      "files": ["*.jsx", "*.tsx"],
       "excludedFiles": [
         "*.spec.ts",
         "*.spec.tsx",
@@ -36,7 +36,7 @@
       }
     },
     {
-      "files": ["*.jsx", "*.tsx"], // for JSX component
+      "files": ["*.jsx", "*.tsx"], 
       "excludedFiles": [
         "*.spec.ts",
         "*.spec.tsx",

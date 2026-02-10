@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { cn } from "lib/utils" // cn-ийг энд ашиглах тул импортлоно
+import { cn } from "./utils" // cn-ийг энд ашиглах тул импортлоно
 import { motion } from "framer-motion"
 import { ClubForm } from "./Club-Form"
 import { HeaderSection } from "./Create-Club-Header";

@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ClubCardProps } from "@/lib/type";
 import { motion } from "framer-motion";
-import { cn } from "lib/utils";
+import { cn } from "./utils";
 
 import { BookOpen, Clock, DoorOpen, CheckCircle2, AlertCircle } from "lucide-react";
 

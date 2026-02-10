@@ -1,12 +1,14 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ClubCardProps } from "@/lib/type";
+
+import { Avatar, AvatarFallback, AvatarImage } from "apps/club-web/components/ui/avatar";
+import { ClubCardProps } from "apps/club-web/lib/type";
+
 import { motion } from "framer-motion";
 import { cn } from "lib/utils";
 
 import { BookOpen, Clock, DoorOpen, CheckCircle2, AlertCircle } from "lucide-react";
 
 export const ClubCard = ({ club, isSelected, onClick }: ClubCardProps) => {
-  // ЗАСВАР: Boolean() эсвэл харьцуулах оператор ашиглан "0" дэлгэцэнд гарахаас сэргийлэв
+
 const isBanned = !!club.bannedUntil && club.bannedUntil > Date.now();
 
   return (
@@ -26,7 +28,7 @@ const isBanned = !!club.bannedUntil && club.bannedUntil > Date.now();
                 : "border-white/10 bg-transparent hover:border-primary/40 hover:bg-white/10"
         )}
       >
-        {/* Active Pill - isBanned-ийг Boolean болгосон тул энд "0" гарахгүй */}
+
         {(isSelected || club.isEnrolled || isBanned) && (
           <motion.div 
             layoutId="active-pill"
@@ -50,7 +52,7 @@ const isBanned = !!club.bannedUntil && club.bannedUntil > Date.now();
               {club.name}
             </h3>
             
-            {/* Текстэн мэдээллүүд */}
+
             {isBanned ? (
               <span className="flex items-center gap-1 text-[10px] font-bold text-red-500">
                 <AlertCircle className="h-3 w-3" /> Түр хязгаарлагдсан

@@ -3,7 +3,7 @@
 import React from 'react'
 import { DoorOpen, Clock, Timer, UserPlus2, RotateCcw } from 'lucide-react'
 
-import { cn } from 'lib/utils';
+import { cn } from "./utils";
 import { SelectField } from './Calendar-Select-Field';
 
 interface LogisticsFormProps {
