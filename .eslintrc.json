@@ -20,8 +20,6 @@
     "**/*.d.ts",
     "**/cypress/**/*"
   ],
-  "ignorePatterns": ["!**/*", ".next/**/*"],
-
   "plugins": [
     "@nx",
     "eslint-plugin-unicorn",
@@ -36,13 +34,13 @@
       "files": [
         "**/_components/**/*.{ts,tsx,js,jsx}",
         "**/_features/**/*.{ts,tsx,js,jsx}"
-      ], // for components and features
+      ],
       "rules": {
         "import/no-default-export": "error"
       }
     },
     {
-      "files": ["*.jsx", "*.tsx"], // for JSX component
+      "files": ["*.jsx", "*.tsx"],
       "excludedFiles": [
         "*.spec.ts",
         "*.spec.tsx",
@@ -56,36 +54,30 @@
       }
     },
     {
-      "files": ["*.jsx", "*.tsx"], // for JSX component
+      "files": ["*.jsx", "*.tsx"],
       "excludedFiles": [
         "*.spec.ts",
         "*.spec.tsx",
         "*.spec.js",
         "*.spec.jsx",
         "*.cy.ts",
-        "*.cy.tsx",
-        ""
+        "*.cy.tsx"
       ],
       "rules": {
         "@nx/workspace/jsx-no-inline-types": "error"
       }
     },
     {
-      "files": ["*.tsx", ".ts", "*.js"], // for process.env
+      "files": ["*.tsx", "*.ts", "*.js"],
       "rules": {
         "@nx/workspace/environment-key-naming-convention": "error"
       }
     },
     {
-      "files": ["*.jsx", "*.tsx"], // for JSX component
+      "files": ["*.jsx", "*.tsx"],
       "rules": {
         "unicorn/prefer-module": "off",
-        "unicorn/filename-case": [
-          "error",
-          {
-            "case": "pascalCase"
-          }
-        ],
+        "unicorn/filename-case": ["error", { "case": "pascalCase" }],
         "react/function-component-definition": [
           "error",
           {
@@ -109,49 +101,29 @@
         "**/app/**/global-error.tsx",
         "**/app/**/not-found.tsx",
         "mdx-components.tsx"
-      ], // for other js files & nextjs pages
+      ],
       "rules": {
         "unicorn/prefer-module": "off",
-        "unicorn/filename-case": [
-          "error",
-          {
-            "case": "kebabCase"
-          }
-        ]
+        "unicorn/filename-case": ["error", { "case": "kebabCase" }]
       }
     },
     {
-      "files": ["use[A-Z]*.js", "use[A-Z]*.ts"], // for React hooks
+      "files": ["use[A-Z]*.js", "use[A-Z]*.ts"],
       "rules": {
         "unicorn/prefer-module": "off",
-        "unicorn/filename-case": [
-          "error",
-          {
-            "case": "camelCase"
-          }
-        ]
+        "unicorn/filename-case": ["error", { "case": "camelCase" }]
       }
     },
     {
       "files": ["*.native.tsx"],
       "rules": {
-        "unicorn/filename-case": [
-          "off",
-          {
-            "case": "pascalCase"
-          }
-        ]
+        "unicorn/filename-case": ["off", { "case": "pascalCase" }]
       }
     },
     {
       "files": ["*.cy.ts", "*.cy.tsx", "*.spec.ts", "*.spec.tsx"],
       "rules": {
-        "unicorn/filename-case": [
-          "off",
-          {
-            "case": "kebabCase"
-          }
-        ]
+        "unicorn/filename-case": ["off", { "case": "kebabCase" }]
       }
     },
     {
@@ -279,12 +251,7 @@
             ]
           }
         ],
-        "camelcase": [
-          "error",
-          {
-            "properties": "always"
-          }
-        ]
+        "camelcase": ["error", { "properties": "always" }]
       }
     },
     {
@@ -302,7 +269,6 @@
     {
       "files": ["*.ts", "*.tsx"],
       "extends": ["plugin:@nx/typescript"],
-      "plugins": ["spellcheck"],
       "rules": {
         "no-unused-vars": [
           "error",
@@ -326,13 +292,11 @@
         "max-lines": ["error", { "max": 160 }],
         "max-nested-callbacks": ["error", 3],
         "max-depth": ["error", 4],
-        // https://blog.nrwl.io/mastering-the-project-boundaries-in-nx-f095852f5bf4
         "@nx/enforce-module-boundaries": [
           "error",
           {
             "allow": [],
             "depConstraints": [
-              // type rules
               {
                 "sourceTag": "type:app",
                 "onlyDependOnLibsWithTags": [
@@ -363,7 +327,6 @@
                 "sourceTag": "type:util",
                 "onlyDependOnLibsWithTags": ["type:util"]
               },
-              // plugin rules
               {
                 "sourceTag": "plugin:next",
                 "onlyDependOnLibsWithTags": [
@@ -393,40 +356,17 @@
                 "sourceTag": "plugin:nest",
                 "onlyDependOnLibsWithTags": ["plugin:nest", "plugin:js"]
               },
-              // scope rules
               {
                 "sourceTag": "scope:shared",
                 "onlyDependOnLibsWithTags": ["scope:shared"]
-              },
-              // app specific rules
-              {
-                "sourceTag": "scope:int-lms-web",
-                "onlyDependOnLibsWithTags": [
-                  "scope:int-lms-web",
-                  "scope:int-lms-api",
-                  "scope:shared"
-                ]
-              },
-              {
-                "sourceTag": "scope:int-lms-api",
-                "onlyDependOnLibsWithTags": [
-                  "scope:int-lms-api",
-                  "scope:shared"
-                ]
-              },
-              {
-                "sourceTag": "scope:int-alumnus-portfolio",
-                "onlyDependOnLibsWithTags": [
-                  "scope:int-alumnus-portfolio",
-                  "scope:int-lms-api",
-                  "scope:shared"
-                ]
-              },
-              {
-                "sourceTag": "scope:int-student-detail-microservice",
-                "onlyDependOnLibsWithTags": ["scope:shared"]
               }
             ]
+          }
+        ],
+        "camelcase": [
+          "error",
+          {
+            "properties": "always"
           }
         ]
       }
@@ -443,11 +383,11 @@
           "error",
           {
             "allowedServices": [
-              "academic-pinebaatars-web",
-              "academic-pinebaatars-recruiter-web",
-              "academic-enrollment-enrollment-web",
-              "universal-dash",
-              "operational-assets-management-dash"
+              "pinecone-club",
+              "referu-hr-fe",
+              "referu-employee-fe",
+              "unifind",
+              "skill-hub"
             ],
             "exemptPatterns": [
               "**/cypress/**",
@@ -455,6 +395,32 @@
               "**/*.spec.*",
               "**/node_modules/**"
             ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "**/app/**/page.tsx",
+        "**/app/**/layout.tsx",
+        "**/app/**/template.tsx",
+        "**/app/**/loading.tsx",
+        "**/app/**/error.tsx",
+        "**/app/**/global-error.tsx",
+        "**/app/**/not-found.tsx",
+        "**/app/**/route.ts",
+        "**/app/**/route.js",
+        "**/pages/**/*.tsx",
+        "**/pages/**/*.jsx"
+      ],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "vars": "all",
+            "args": "none",
+            "argsIgnorePattern": "^_",
+            "ignoreRestSiblings": true
           }
         ]
       }
