@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+npx nx run scripts-scripts:pre-push
