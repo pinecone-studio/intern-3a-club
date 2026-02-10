@@ -1,8 +1,131 @@
 {
   "root": true,
-  "ignorePatterns": ["**/*"],
-  "plugins": ["@nx"],
+  "ignorePatterns": [
+    "!**/*",
+    ".next/**/*",
+    "node_modules",
+    "dist",
+    ".cache",
+    "**/components/ui/**/*",
+    "*.config.js",
+    "*.config.ts",
+    "*.config.cjs",
+    "*.config.mjs",
+    "next.config.js",
+    "postcss.config.js",
+    "tailwind.config.js",
+    "jest.config.ts",
+    "cypress.config.js",
+    "rollup.config.cjs",
+    "**/*.d.ts",
+    "**/cypress/**/*"
+  ],
+  "plugins": [
+    "@nx",
+    "eslint-plugin-unicorn",
+    "no-secrets",
+    "promise",
+    "@typescript-eslint",
+    "import"
+  ],
+  "parser": "@typescript-eslint/parser",
   "overrides": [
+    {
+      "files": [
+        "**/_components/**/*.{ts,tsx,js,jsx}",
+        "**/_features/**/*.{ts,tsx,js,jsx}"
+      ],
+      "rules": {
+        "import/no-default-export": "error"
+      }
+    },
+    {
+      "files": ["*.jsx", "*.tsx"],
+      "excludedFiles": [
+        "*.spec.ts",
+        "*.spec.tsx",
+        "*.spec.js",
+        "*.spec.jsx",
+        "*.cy.ts",
+        "*.cy.tsx"
+      ],
+      "rules": {
+        "@nx/workspace/jsx-no-inline-function": "error"
+      }
+    },
+    {
+      "files": ["*.jsx", "*.tsx"],
+      "excludedFiles": [
+        "*.spec.ts",
+        "*.spec.tsx",
+        "*.spec.js",
+        "*.spec.jsx",
+        "*.cy.ts",
+        "*.cy.tsx"
+      ],
+      "rules": {
+        "@nx/workspace/jsx-no-inline-types": "error"
+      }
+    },
+    {
+      "files": ["*.tsx", "*.ts", "*.js"],
+      "rules": {
+        "@nx/workspace/environment-key-naming-convention": "error"
+      }
+    },
+    {
+      "files": ["*.jsx", "*.tsx"],
+      "rules": {
+        "unicorn/prefer-module": "off",
+        "unicorn/filename-case": ["error", { "case": "pascalCase" }],
+        "react/function-component-definition": [
+          "error",
+          {
+            "namedComponents": "arrow-function",
+            "unnamedComponents": "arrow-function"
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "*.js",
+        "*.ts",
+        "**/pages/**/*.tsx",
+        "**/pages/**/*.jsx",
+        "**/app/**/page.tsx",
+        "**/app/**/layout.tsx",
+        "**/app/**/template.tsx",
+        "**/app/**/loading.tsx",
+        "**/app/**/error.tsx",
+        "**/app/**/global-error.tsx",
+        "**/app/**/not-found.tsx",
+        "mdx-components.tsx"
+      ],
+      "rules": {
+        "unicorn/prefer-module": "off",
+        "unicorn/filename-case": ["error", { "case": "kebabCase" }]
+      }
+    },
+    {
+      "files": ["use[A-Z]*.js", "use[A-Z]*.ts"],
+      "rules": {
+        "unicorn/prefer-module": "off",
+        "unicorn/filename-case": ["error", { "case": "camelCase" }]
+      }
+    },
+    {
+      "files": ["*.native.tsx"],
+      "rules": {
+        "unicorn/filename-case": ["off", { "case": "pascalCase" }]
+      }
+    },
+    {
+      "files": ["*.cy.ts", "*.cy.tsx", "*.spec.ts", "*.spec.tsx"],
+      "rules": {
+        "unicorn/filename-case": ["off", { "case": "kebabCase" }]
+      }
+    },
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
@@ -12,9 +135,118 @@
             "enforceBuildableLibDependency": true,
             "allow": [],
             "depConstraints": [
+              { "sourceTag": "*", "onlyDependOnLibsWithTags": ["*"] }
+            ]
+          }
+        ],
+        "camelcase": ["error", { "properties": "always" }]
+      }
+    },
+    {
+      "files": ["*.tsx"],
+      "rules": {
+        "complexity": ["error", { "max": 3 }]
+      }
+    },
+    {
+      "files": ["*.ts"],
+      "rules": {
+        "complexity": ["error", { "max": 3 }]
+      }
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "extends": ["plugin:@nx/typescript"],
+      "rules": {
+        "no-unused-vars": [
+          "error",
+          {
+            "vars": "all",
+            "args": "after-used",
+            "argsIgnorePattern": "^_",
+            "ignoreRestSiblings": true
+          }
+        ],
+        "no-magic-numbers": [
+          "off",
+          {
+            "ignore": [],
+            "ignoreArrayIndexes": true,
+            "enforceConst": true,
+            "detectObjects": false
+          }
+        ],
+        "no-secrets/no-secrets": "error",
+        "max-lines": ["error", { "max": 160 }],
+        "max-nested-callbacks": ["error", 3],
+        "max-depth": ["error", 4],
+        "@nx/enforce-module-boundaries": [
+          "error",
+          {
+            "allow": [],
+            "depConstraints": [
               {
-                "sourceTag": "*",
-                "onlyDependOnLibsWithTags": ["*"]
+                "sourceTag": "type:app",
+                "onlyDependOnLibsWithTags": [
+                  "type:feature",
+                  "type:data-access",
+                  "type:util",
+                  "type:ui"
+                ]
+              },
+              {
+                "sourceTag": "type:feature",
+                "onlyDependOnLibsWithTags": [
+                  "type:feature",
+                  "type:data-access",
+                  "type:util",
+                  "type:ui"
+                ]
+              },
+              {
+                "sourceTag": "type:data-access",
+                "onlyDependOnLibsWithTags": ["type:data-access", "type:util"]
+              },
+              {
+                "sourceTag": "type:ui",
+                "onlyDependOnLibsWithTags": ["type:ui", "type:util"]
+              },
+              {
+                "sourceTag": "type:util",
+                "onlyDependOnLibsWithTags": ["type:util"]
+              },
+              {
+                "sourceTag": "plugin:next",
+                "onlyDependOnLibsWithTags": [
+                  "plugin:next",
+                  "plugin:react",
+                  "plugin:node",
+                  "plugin:js"
+                ]
+              },
+              {
+                "sourceTag": "plugin:expo",
+                "onlyDependOnLibsWithTags": [
+                  "plugin:expo",
+                  "plugin:react",
+                  "plugin:js"
+                ]
+              },
+              {
+                "sourceTag": "plugin:react",
+                "onlyDependOnLibsWithTags": ["plugin:react", "plugin:js"]
+              },
+              {
+                "sourceTag": "plugin:express",
+                "onlyDependOnLibsWithTags": ["plugin:express", "plugin:js"]
+              },
+              {
+                "sourceTag": "plugin:nest",
+                "onlyDependOnLibsWithTags": ["plugin:nest", "plugin:js"]
+              },
+              {
+                "sourceTag": "scope:shared",
+                "onlyDependOnLibsWithTags": ["scope:shared"]
               }
             ]
           }
@@ -22,9 +254,58 @@
       }
     },
     {
-      "files": ["*.ts", "*.tsx"],
-      "extends": ["plugin:@nx/typescript"],
-      "rules": {}
+      "files": [
+        "**/app/**/page.tsx",
+        "**/pages/**/*.tsx",
+        "**/api/**/*.ts",
+        "**/api/**/*.js"
+      ],
+      "rules": {
+        "@nx/workspace/no-dynamic-routes": [
+          "error",
+          {
+            "allowedServices": [
+              "pinecone-club",
+              "referu-hr-fe",
+              "referu-employee-fe",
+              "unifind",
+              "skill-hub"
+            ],
+            "exemptPatterns": [
+              "**/cypress/**",
+              "**/*.test.*",
+              "**/*.spec.*",
+              "**/node_modules/**"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "**/app/**/page.tsx",
+        "**/app/**/layout.tsx",
+        "**/app/**/template.tsx",
+        "**/app/**/loading.tsx",
+        "**/app/**/error.tsx",
+        "**/app/**/global-error.tsx",
+        "**/app/**/not-found.tsx",
+        "**/app/**/route.ts",
+        "**/app/**/route.js",
+        "**/pages/**/*.tsx",
+        "**/pages/**/*.jsx"
+      ],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "vars": "all",
+            "args": "none",
+            "argsIgnorePattern": "^_",
+            "ignoreRestSiblings": true
+          }
+        ]
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
@@ -33,9 +314,15 @@
     },
     {
       "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
-      "env": {
-        "jest": true
-      },
+      "env": { "jest": true },
+      "rules": {
+        "max-lines": "off",
+        "complexity": "off"
+      }
+    },
+    {
+      "files": "*.json",
+      "parser": "jsonc-eslint-parser",
       "rules": {}
     }
   ]

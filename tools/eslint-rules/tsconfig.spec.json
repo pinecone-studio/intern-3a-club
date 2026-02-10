@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "types": ["jest", "node"]
+  },
+  "include": [
+    "jest.config.ts",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.d.ts",
+    "rules/jsx-no-inline-function/jsx-no-inline-function.ts",
+    "rules/environment-key-naming-convention/environment-key-naming-convention.spec.ts"
+  ]
+}
