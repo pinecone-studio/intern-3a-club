@@ -9,19 +9,18 @@ export interface CalendarSelectFieldProps {
   label: string;
   icon: ReactNode;
   value: string | number;
-  onChange: (value: string) => void;
+  onChange: (_value: string) => void; // _ нэмсэн
   options: (string | SelectOption)[];
 }
 
 export interface ClubFormProps {
   formData: FormDataType;
-  setFormData: (data: FormDataType) => void;
+  setFormData: (_data: FormDataType) => void; // _ нэмсэн
   handleSubmit: () => void;
-  // ЗАСВАР: selectedDate (нэг) биш selectedDates (массив) болгох
   selectedDates: Date[];
-  setSelectedDates: (dates: Date[]) => void;
+  setSelectedDates: (_dates: Date[]) => void; // _ нэмсэн
   currentMonth: Date;
-  handleMonthChange: (offset: number) => void;
+  handleMonthChange: (_offset: number) => void; // _ нэмсэн
   renderCalendarDays: () => React.ReactNode;
 }
 
@@ -39,10 +38,29 @@ export type FormDataType = {
 
 export interface LogisticsSectionProps {
   formData: FormDataType;
-  setFormData: (data: FormDataType) => void;
+  setFormData: (_data: FormDataType) => void; // _ нэмсэн
   selectedDates: Date[];
-  setSelectedDates: (dates: Date[]) => void;
+  setSelectedDates: (_dates: Date[]) => void; // _ нэмсэн
   currentMonth: Date;
-  handleMonthChange: (offset: number) => void;
+  handleMonthChange: (_offset: number) => void; // _ нэмсэн
   renderCalendarDays: () => React.ReactNode;
+}
+export interface CalendarDayProps {
+  day: number;
+
+  date: Date;
+
+  isPast: boolean;
+
+  isSelected: boolean;
+
+  isToday: boolean;
+
+  onToggle: (_d: Date) => void;
+}
+
+export interface RecurrenceConfig {
+  weekDays: number[];
+  dayNumbers: number[];
+  anchorTime: number;
 }
