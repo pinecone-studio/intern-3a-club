@@ -8,14 +8,12 @@
   },
   "include": [
     "jest.config.ts",
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts",
-    "src/**/*.test.tsx",
-    "src/**/*.spec.tsx",
-    "src/**/*.test.js",
-    "src/**/*.spec.js",
-    "src/**/*.test.jsx",
-    "src/**/*.spec.jsx",
-    "src/**/*.d.ts"
+    "src/**/*.spec.*",
+    "src/**/*.test.*",
+    "__test__/**/*.spec.*",
+    "__test__/**/*.test.*",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "**/*.d.ts"
   ]
 }

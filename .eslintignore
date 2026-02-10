@@ -1,1 +1,67 @@
-node_modules
+# Ignore build artifacts
+build/
+dist/
+out/
+temp/
+tmp/
+.next/
+
+# Ignore coverage reports
+coverage/
+coverage-report/
+**/cypress/results/
+
+# Ignore logs and temporary files
+*.log
+*.swp
+*.tmp
+*.temp
+
+# Ignore dependencies and node_modules
+node_modules/
+
+# Ignore specific files or directories
+config/
+deploy/
+public/
+tools/scripts/
+vendor/
+
+# Ignore files based on extension
+*.bak
+*.cache
+*.dat
+*.db
+*.exe
+*.gz
+*.iso
+*.jar
+*.json.backup
+*.log.*
+*.min.*
+*.old.*
+*.orig.*
+*.stories.*
+*.Stories.*
+*.pyc
+*.rbc
+*.sass-cache
+*.sqlite
+*.svgz
+*.tar
+*.tgz
+*.txt.*
+*.vim
+*.vscode
+*.zip
+**/generated.ts
+**/generated/index.ts
+**/esis.d.ts
+
+# cypress
+
+**/.cy
+**/.nyc_output
+**/coverage
+
+

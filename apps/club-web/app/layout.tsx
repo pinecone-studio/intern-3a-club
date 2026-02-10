@@ -4,11 +4,11 @@ import './global.css';
 import { ApolloProvider } from '@apollo/client/react';
 import { apolloClient } from '../lib/apolloClient';
 
-export default function RootLayout({
+const RootLayout = ({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}): React.ReactNode => {
   return (
     <html lang="en">
       <body>
@@ -16,4 +16,6 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;
