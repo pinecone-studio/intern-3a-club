@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { DoorOpen, Clock, Timer, UserPlus2, RotateCcw } from 'lucide-react';
 
 import { cn } from 'lib/utils';
@@ -9,8 +9,9 @@ import { FormDataType } from './types';
 
 interface LogisticsFormProps {
   formData: FormDataType;
-  setFormData: (data: FormDataType) => void;
-  onRepeatChange: (val: string) => void;
+
+  setFormData: (_data: FormDataType) => void;
+  onRepeatChange: (_val: string) => void;
 }
 
 export const LogisticsForm = ({
@@ -18,16 +19,34 @@ export const LogisticsForm = ({
   setFormData,
   onRepeatChange,
 }: LogisticsFormProps) => {
+  const handleRepeatChange = (val: string) => {
+    setFormData({ ...formData, repeat: val });
+    onRepeatChange(val);
+  };
+
+  const handleRoomChange = (v: string) => {
+    setFormData({ ...formData, room: v });
+  };
+
+  const handleTimeChange = (v: string) => {
+    setFormData({ ...formData, time: v });
+  };
+
+  const handleDurationChange = (v: string) => {
+    setFormData({ ...formData, duration: v });
+  };
+
+  const handleMaxStudentsChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, maxStudents: e.target.value });
+  };
+
   return (
     <div className="flex flex-col justify-center space-y-6 lg:border-l border-white/5 lg:pl-10">
       <CalendarSelectField
         label="Давтамж"
         icon={<RotateCcw size={12} />}
         value={formData.repeat}
-        onChange={(val: string) => {
-          setFormData({ ...formData, repeat: val });
-          onRepeatChange(val);
-        }}
+        onChange={handleRepeatChange}
         options={[
           { l: 'Зөвхөн сонгосон өдрүүдэд', v: 'none' },
           { l: 'Долоо хоног бүр', v: 'weekly' },
@@ -41,14 +60,14 @@ export const LogisticsForm = ({
           label="Орох Анги"
           icon={<DoorOpen size={12} />}
           value={formData.room}
-          onChange={(v: string) => setFormData({ ...formData, room: v })}
+          onChange={handleRoomChange}
           options={['301', '302', '303']}
         />
         <CalendarSelectField
           label="Эхлэх цаг"
           icon={<Clock size={12} />}
           value={formData.time}
-          onChange={(v: string) => setFormData({ ...formData, time: v })}
+          onChange={handleTimeChange}
           options={['13:00', '14:00', '15:00', '16:00']}
         />
       </div>
@@ -57,7 +76,7 @@ export const LogisticsForm = ({
         label="Үргэлжлэх"
         icon={<Timer size={12} />}
         value={formData.duration}
-        onChange={(v: string) => setFormData({ ...formData, duration: v })}
+        onChange={handleDurationChange}
         options={[
           { l: '1:00 цаг', v: '1:00' },
           { l: '1:30 цаг', v: '1:30' },
@@ -77,9 +96,7 @@ export const LogisticsForm = ({
         <input
           type="number"
           value={formData.maxStudents}
-          onChange={(e) =>
-            setFormData({ ...formData, maxStudents: e.target.value })
-          }
+          onChange={handleMaxStudentsChange}
           className={cn(
             'w-full bg-white/5 border rounded-xl px-4 py-3 text-sm text-white focus:border-primary/50 outline-none transition-all font-mono',
             Number(formData.maxStudents) > 20

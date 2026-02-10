@@ -5,18 +5,25 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CalendarHeaderProps {
   currentMonth: Date;
-  onMonthChange: (offset: number) => void;
+  onMonthChange: (_offset: number) => void;
 }
 
 export const CalendarHeader = ({
   currentMonth,
   onMonthChange,
 }: CalendarHeaderProps) => {
+  const handlePrevMonth = () => {
+    onMonthChange(-1);
+  };
+
+  const handleNextMonth = () => {
+    onMonthChange(1);
+  };
   return (
     <div className="flex items-center justify-between px-2">
       <button
         type="button"
-        onClick={() => onMonthChange(-1)}
+        onClick={handlePrevMonth}
         className="p-2 rounded-lg bg-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all"
       >
         <ChevronLeft size={20} />
@@ -31,7 +38,7 @@ export const CalendarHeader = ({
 
       <button
         type="button"
-        onClick={() => onMonthChange(1)}
+        onClick={handleNextMonth}
         className="p-2 rounded-lg bg-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all"
       >
         <ChevronRight size={20} />

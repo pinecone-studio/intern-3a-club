@@ -5,7 +5,8 @@ import { CalendarDays, RotateCcw as ResetIcon } from 'lucide-react';
 import { CalendarHeader } from './CalendarHeader';
 import { SelectedDatesList } from './SelectedDatesList';
 import { LogisticsForm } from './LogisticsForm';
-import { FormDataType, LogisticsSectionProps } from './types';
+import { LogisticsSectionProps } from './types';
+import { generateDates } from './RecurrentUtils';
 
 export const LogisticsSection = (props: LogisticsSectionProps) => {
   const {
@@ -16,62 +17,56 @@ export const LogisticsSection = (props: LogisticsSectionProps) => {
     currentMonth,
   } = props;
 
-  // Логик: Давтамж тооцоолох
   const calculateRecurrence = useCallback(
     (baseDates: Date[], mode: string, monthDate: Date) => {
       if (mode === 'none') return baseDates;
-      const year = monthDate.getFullYear(),
-        month = monthDate.getMonth();
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
       const sourceDates = baseDates.length > 0 ? baseDates : [new Date(today)];
-      const weekDays = Array.from(new Set(sourceDates.map((d) => d.getDay())));
-      const dayNumbers = Array.from(
-        new Set(sourceDates.map((d) => d.getDate()))
-      );
       const anchorDate = [...sourceDates].sort(
         (a, b) => a.getTime() - b.getTime()
       )[0];
 
-      const newDates: Date[] = [];
-      const tempDate = new Date(year, month, 1);
-
-      while (tempDate.getMonth() === month) {
-        if (tempDate >= today) {
-          if (mode === 'weekly' && weekDays.includes(tempDate.getDay()))
-            newDates.push(new Date(tempDate));
-          else if (
-            mode === 'biweekly' &&
-            weekDays.includes(tempDate.getDay())
-          ) {
-            const diff = Math.ceil(
-              Math.abs(tempDate.getTime() - anchorDate.getTime()) / 86400000
-            );
-            if (diff % 14 === 0) newDates.push(new Date(tempDate));
-          } else if (
-            mode === 'monthly' &&
-            dayNumbers.includes(tempDate.getDate())
-          )
-            newDates.push(new Date(tempDate));
+      return generateDates(
+        monthDate.getFullYear(),
+        monthDate.getMonth(),
+        today,
+        mode,
+        {
+          weekDays: Array.from(new Set(sourceDates.map((d) => d.getDay()))),
+          dayNumbers: Array.from(new Set(sourceDates.map((d) => d.getDate()))),
+          anchorTime: anchorDate.getTime(),
         }
-        tempDate.setDate(tempDate.getDate() + 1);
-      }
-      return newDates;
+      );
     },
     []
   );
 
   useEffect(() => {
     if (formData.repeat !== 'none' && selectedDates.length === 0) {
-      const updated = calculateRecurrence(
-        selectedDates,
-        formData.repeat,
-        currentMonth
+      setSelectedDates(
+        calculateRecurrence(selectedDates, formData.repeat, currentMonth)
       );
-      setSelectedDates(updated);
     }
-  }, [formData.repeat, currentMonth, calculateRecurrence, setSelectedDates]);
+  }, [
+    formData.repeat,
+    currentMonth,
+    calculateRecurrence,
+    setSelectedDates,
+    selectedDates,
+  ]);
+
+  const handleReset = () => {
+    setSelectedDates([]);
+    setFormData({ ...formData, repeat: 'none' });
+  };
+
+  const handleRemoveDate = (d: Date) =>
+    setSelectedDates(selectedDates.filter((x) => x !== d));
+
+  const handleRepeatChange = (val: string) =>
+    setSelectedDates(calculateRecurrence(selectedDates, val, currentMonth));
 
   return (
     <div className="p-8 rounded-[2.5rem] bg-black/30 border border-white/5 space-y-8">
@@ -80,15 +75,12 @@ export const LogisticsSection = (props: LogisticsSectionProps) => {
           <CalendarDays size={16} /> Хуваарь ба Логистик
         </h4>
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-bold text-emerald-400 italic uppercase">
+          <span className="text-[10px] font-bold text-emerald-400 italic">
             {selectedDates.length} өдөр сонгосон
           </span>
           <button
-            onClick={() => {
-              setSelectedDates([]);
-              setFormData({ ...formData, repeat: 'none' });
-            }}
-            className="p-1.5 rounded-lg bg-white/5 text-white/40 hover:text-red-400 transition-all"
+            onClick={handleReset}
+            className="p-1.5 rounded-lg bg-white/5 text-white/40 hover:text-red-400"
           >
             <ResetIcon size={14} />
           </button>
@@ -114,20 +106,13 @@ export const LogisticsSection = (props: LogisticsSectionProps) => {
           </div>
           <SelectedDatesList
             dates={selectedDates}
-            onRemove={(d) =>
-              setSelectedDates(selectedDates.filter((x) => x !== d))
-            }
+            onRemove={handleRemoveDate}
           />
         </div>
-
         <LogisticsForm
           formData={formData}
           setFormData={setFormData}
-          onRepeatChange={(val: string) =>
-            setSelectedDates(
-              calculateRecurrence(selectedDates, val, currentMonth)
-            )
-          }
+          onRepeatChange={handleRepeatChange}
         />
       </div>
     </div>

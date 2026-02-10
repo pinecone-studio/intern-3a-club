@@ -1,9 +1,7 @@
 'use client';
 
-import React from 'react';
-// import { motion, AnimatePresence } from 'framer-motion'
+import React, { ChangeEvent } from 'react';
 import { Globe2, UserCheck, MoveDownIcon } from 'lucide-react';
-// import { Button } from "@/components/ui/button"
 import { LogisticsSection } from './LogisticsSection';
 import { ClubFormProps } from './types';
 
@@ -11,44 +9,54 @@ export const ClubForm = ({
   formData,
   setFormData,
   handleSubmit,
-  selectedDates, // ЗАСВАР
-  setSelectedDates, // ЗАСВАР
+  selectedDates,
+  setSelectedDates,
   currentMonth,
   handleMonthChange,
   renderCalendarDays,
 }: ClubFormProps) => {
+  // 1. Бүх төрлийн оролтыг (input, select, textarea) зохицуулах нэгдсэн функц
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
   return (
     <div className="lg:col-span-7 space-y-8">
       <div className="rounded-[3rem] border border-white/10 bg-white/5 p-10 backdrop-blur-3xl relative overflow-hidden group shadow-2xl">
         <div className="relative z-10 space-y-10">
-          {/* Basic Info Section */}
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Клубын нэр */}
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-[0.3em] text-primary flex items-center gap-2">
                   <Globe2 size={12} /> Клубын нэр
                 </label>
                 <input
                   type="text"
+                  name="name" // name заавал өгөх ёстой
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  onChange={handleInputChange} // Функцийн нэрийг дамжуулна
                   className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-primary/50 transition-all font-bold italic"
                   placeholder="Wizards Club..."
                 />
               </div>
 
+              {/* Хариуцах хүн */}
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-[0.3em] text-primary flex items-center gap-2">
                   <UserCheck size={12} /> Хариуцах хүн
                 </label>
                 <div className="relative">
                   <select
+                    name="teacher" // name заавал өгөх ёстой
                     value={formData.teacher}
-                    onChange={(e) =>
-                      setFormData({ ...formData, teacher: e.target.value })
-                    }
+                    onChange={handleInputChange}
                     className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer"
                   >
                     <option value="" className="bg-[#050c1f]">
@@ -72,6 +80,7 @@ export const ClubForm = ({
               </div>
             </div>
 
+            {/* Сурагчийн и-мэйл */}
             {formData.teacher === 'student' && (
               <div className="space-y-3 overflow-hidden origin-top">
                 <label className="text-[10px] font-black uppercase tracking-[0.3em] text-primary flex items-center gap-2">
@@ -81,13 +90,9 @@ export const ClubForm = ({
                 <div className="relative group">
                   <input
                     type="email"
+                    name="studentEmail" // name заавал өгөх ёстой
                     value={formData.studentEmail}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        studentEmail: e.target.value,
-                      })
-                    }
+                    onChange={handleInputChange}
                     className="w-full bg-primary/5 border border-primary/20 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-primary/50 focus:bg-primary/10 transition-all duration-300 placeholder:text-white/20"
                     placeholder="student@example.com"
                   />
@@ -97,36 +102,34 @@ export const ClubForm = ({
             )}
           </div>
 
-          {/* Goal Section */}
+          {/* Клубын зорилго */}
           <div className="space-y-3">
             <label className="text-[10px] font-black uppercase tracking-[0.3em] text-primary italic">
               Клубын зорилго
             </label>
             <textarea
               rows={2}
+              name="goal" // name заавал өгөх ёстой
               value={formData.goal}
-              onChange={(e) =>
-                setFormData({ ...formData, goal: e.target.value })
-              }
+              onChange={handleInputChange}
               className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none font-medium"
               placeholder="Энэхүү клубын үндсэн зорилгыг тодорхойлно уу..."
             />
           </div>
 
-          {/* CALENDAR & LOGISTICS SECTION */}
           <LogisticsSection
             formData={formData}
             setFormData={setFormData}
-            selectedDates={selectedDates} // ЗАСВАР: Массиваар дамжуулна
-            setSelectedDates={setSelectedDates} // ЗАСВАР: Setter дамжуулна
+            selectedDates={selectedDates}
+            setSelectedDates={setSelectedDates}
             currentMonth={currentMonth}
             handleMonthChange={handleMonthChange}
             renderCalendarDays={renderCalendarDays}
           />
 
-          {/* Action Button */}
           <div className="flex gap-4 pt-4">
             <button
+              type="button"
               onClick={handleSubmit}
               className="flex-1 h-20 rounded-3xl bg-primary text-xl font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] shadow-2xl shadow-primary/20 transition-all duration-300"
             >
