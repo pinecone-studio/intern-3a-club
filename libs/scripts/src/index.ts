@@ -1,1 +1,1 @@
-export * from './lib/scripts-scripts';
+export * from './lib/scripts';
