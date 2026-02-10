@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { ScrollArea } from "@/components/ui/scroll-area"
+
 
 import { clubs as initialClubs } from "@/lib/mockdata"
 import { ClubDetails } from "./Club-Detail"
@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { ClubCard } from "./Club-Card"
+import { ScrollArea } from "apps/club-web/components/ui/scroll-area"
 
 
 export function ClubsContent() {

@@ -18,7 +18,7 @@ import {
 } from "lucide-react"
 
 import { HiMiniUserGroup } from "react-icons/hi2"
-import { cn } from "lib/utils";
+import { cn } from "./utils";
 
 /**
  * Sidebar-ийн хүлээн авах үзүүлэлтүүд

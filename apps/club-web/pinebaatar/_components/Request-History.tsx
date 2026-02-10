@@ -1,5 +1,5 @@
 import { History } from "lucide-react"
-import { cn } from "lib/utils"
+import { cn } from "./utils"
 
 export const RequestHistory = () => {
   const requests = [

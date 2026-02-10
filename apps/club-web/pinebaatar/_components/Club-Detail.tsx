@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { InstructorCard } from "./Instructor-Card"
 import { Club } from "@/lib/type"
-import { cn } from "lib/utils"
+import { cn } from "./utils"
 
 interface ClubDetailsProps {
   selectedClub: Club & { isEnrolled?: boolean };

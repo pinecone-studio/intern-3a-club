@@ -5,8 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Globe2, UserCheck, MoveDownIcon
 } from 'lucide-react'
-import { Button } from "@/components/ui/button"
+
 import { LogisticsSection } from './Calendar-club'
+import { Button } from 'apps/club-web/components/ui/button'
 
 
 
@@ -14,7 +15,6 @@ interface ClubFormProps {
   formData: any;
   setFormData: (data: any) => void;
   handleSubmit: () => void;
-  // ЗАСВАР: selectedDate (нэг) биш selectedDates (массив) болгох
   selectedDates: Date[]; 
   setSelectedDates: (dates: Date[]) => void;
   currentMonth: Date;
@@ -26,8 +26,8 @@ export const ClubForm = ({
   formData,
   setFormData,
   handleSubmit,
-  selectedDates, // ЗАСВАР
-  setSelectedDates, // ЗАСВАР
+  selectedDates, 
+  setSelectedDates, 
   currentMonth,
   handleMonthChange,
   renderCalendarDays
@@ -122,7 +122,7 @@ export const ClubForm = ({
             </AnimatePresence>
           </div>
 
-          {/* Goal Section */}
+
           <div className="space-y-3">
             <label className="text-[10px] font-black uppercase tracking-[0.3em] text-primary italic">Клубын зорилго</label>
             <textarea
@@ -134,18 +134,18 @@ export const ClubForm = ({
             />
           </div>
 
-          {/* CALENDAR & LOGISTICS SECTION */}
+
           <LogisticsSection 
             formData={formData}
             setFormData={setFormData}
-            selectedDates={selectedDates} // ЗАСВАР: Массиваар дамжуулна
-            setSelectedDates={setSelectedDates} // ЗАСВАР: Setter дамжуулна
+            selectedDates={selectedDates} 
+            setSelectedDates={setSelectedDates} 
             currentMonth={currentMonth}
             handleMonthChange={handleMonthChange}
             renderCalendarDays={renderCalendarDays}
           />
 
-          {/* Action Button */}
+
           <div className="flex gap-4 pt-4">
             <Button 
               onClick={handleSubmit}
