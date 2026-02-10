@@ -1,0 +1,23 @@
+{
+  "name": "scripts",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/scripts/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/scripts/**/*.ts"]
+      }
+    },
+    "pre-push": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node libs/scripts/src/pre-push.ts",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  },
+  "tags": []
+}
