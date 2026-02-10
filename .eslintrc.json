@@ -1,5 +1,25 @@
 {
   "root": true,
+  "ignorePatterns": [
+    "!**/*",
+    ".next/**/*",
+    "node_modules",
+    "dist",
+    ".cache",
+    "**/components/ui/**/*",
+    "*.config.js",
+    "*.config.ts",
+    "*.config.cjs",
+    "*.config.mjs",
+    "next.config.js",
+    "postcss.config.js",
+    "tailwind.config.js",
+    "jest.config.ts",
+    "cypress.config.js",
+    "rollup.config.cjs",
+    "**/*.d.ts",
+    "**/cypress/**/*"
+  ],
   "ignorePatterns": ["!**/*", ".next/**/*"],
 
   "plugins": [
@@ -143,9 +163,118 @@
             "enforceBuildableLibDependency": true,
             "allow": [],
             "depConstraints": [
+              { "sourceTag": "*", "onlyDependOnLibsWithTags": ["*"] }
+            ]
+          }
+        ],
+        "camelcase": ["error", { "properties": "always" }]
+      }
+    },
+    {
+      "files": ["*.tsx"],
+      "rules": {
+        "complexity": ["error", { "max": 3 }]
+      }
+    },
+    {
+      "files": ["*.ts"],
+      "rules": {
+        "complexity": ["error", { "max": 3 }]
+      }
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "extends": ["plugin:@nx/typescript"],
+      "rules": {
+        "no-unused-vars": [
+          "error",
+          {
+            "vars": "all",
+            "args": "after-used",
+            "argsIgnorePattern": "^_",
+            "ignoreRestSiblings": true
+          }
+        ],
+        "no-magic-numbers": [
+          "off",
+          {
+            "ignore": [],
+            "ignoreArrayIndexes": true,
+            "enforceConst": true,
+            "detectObjects": false
+          }
+        ],
+        "no-secrets/no-secrets": "error",
+        "max-lines": ["error", { "max": 160 }],
+        "max-nested-callbacks": ["error", 3],
+        "max-depth": ["error", 4],
+        "@nx/enforce-module-boundaries": [
+          "error",
+          {
+            "allow": [],
+            "depConstraints": [
               {
-                "sourceTag": "*",
-                "onlyDependOnLibsWithTags": ["*"]
+                "sourceTag": "type:app",
+                "onlyDependOnLibsWithTags": [
+                  "type:feature",
+                  "type:data-access",
+                  "type:util",
+                  "type:ui"
+                ]
+              },
+              {
+                "sourceTag": "type:feature",
+                "onlyDependOnLibsWithTags": [
+                  "type:feature",
+                  "type:data-access",
+                  "type:util",
+                  "type:ui"
+                ]
+              },
+              {
+                "sourceTag": "type:data-access",
+                "onlyDependOnLibsWithTags": ["type:data-access", "type:util"]
+              },
+              {
+                "sourceTag": "type:ui",
+                "onlyDependOnLibsWithTags": ["type:ui", "type:util"]
+              },
+              {
+                "sourceTag": "type:util",
+                "onlyDependOnLibsWithTags": ["type:util"]
+              },
+              {
+                "sourceTag": "plugin:next",
+                "onlyDependOnLibsWithTags": [
+                  "plugin:next",
+                  "plugin:react",
+                  "plugin:node",
+                  "plugin:js"
+                ]
+              },
+              {
+                "sourceTag": "plugin:expo",
+                "onlyDependOnLibsWithTags": [
+                  "plugin:expo",
+                  "plugin:react",
+                  "plugin:js"
+                ]
+              },
+              {
+                "sourceTag": "plugin:react",
+                "onlyDependOnLibsWithTags": ["plugin:react", "plugin:js"]
+              },
+              {
+                "sourceTag": "plugin:express",
+                "onlyDependOnLibsWithTags": ["plugin:express", "plugin:js"]
+              },
+              {
+                "sourceTag": "plugin:nest",
+                "onlyDependOnLibsWithTags": ["plugin:nest", "plugin:js"]
+              },
+              {
+                "sourceTag": "scope:shared",
+                "onlyDependOnLibsWithTags": ["scope:shared"]
               }
             ]
           }
@@ -337,9 +466,15 @@
     },
     {
       "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
-      "env": {
-        "jest": true
-      },
+      "env": { "jest": true },
+      "rules": {
+        "max-lines": "off",
+        "complexity": "off"
+      }
+    },
+    {
+      "files": "*.json",
+      "parser": "jsonc-eslint-parser",
       "rules": {}
     },
     {

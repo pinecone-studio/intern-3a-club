@@ -53,9 +53,17 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/club-dash/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": [
+          "apps/club-dash/**/*.{ts,tsx,js,jsx}",
+          "!apps/club-dash/*.config.js",
+          "!apps/club-dash/*.config.ts",
+          "!apps/club-dash/next.config.js",
+          "!apps/club-dash/postcss.config.js",
+          "!apps/club-dash/tailwind.config.js",
+          "!apps/club-dash/jest.config.ts"
+        ]
       }
     }
   },
-  "tags": []
+  "tags": ["type:app"]
 }
