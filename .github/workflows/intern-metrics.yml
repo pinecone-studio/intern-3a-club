@@ -1,0 +1,109 @@
+name: Intern Metrics → Cloudflare KV
+
+on:
+  schedule:
+    - cron: '0 1 * * *' # daily 01:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: intern-metrics
+  cancel-in-progress: true
+
+env:
+  OWNER: pinecone-studio
+  REPO: intern-3a-club
+  START_DATE: '2026-01-01T00:00:00Z'
+  END_DATE: '2026-12-31T23:59:59Z'
+  KV_KEY: 'classId:8-club'
+
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Install in isolated folder to avoid monorepo dependency resolution
+      - name: Install deps (isolated)
+        run: |
+          rm -rf .metrics-tool
+          mkdir -p .metrics-tool
+          npm install --prefix .metrics-tool @octokit/graphql tsx
+
+      - name: Compute PR metrics (per author)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ env.OWNER }}
+          REPO: ${{ env.REPO }}
+          START_DATE: ${{ env.START_DATE }}
+          END_DATE: ${{ env.END_DATE }}
+          KV_KEY: ${{ env.KV_KEY }}
+          NODE_PATH: ${{ github.workspace }}/.metrics-tool/node_modules
+        run: .metrics-tool/node_modules/.bin/tsx scripts/intern-metrics.ts
+
+      - name: Upload to Cloudflare KV
+        env:
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_KV_NAMESPACE_ID: ${{ secrets.CF_KV_NAMESPACE_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          present() { if [ -n "${1:-}" ]; then echo "✅"; else echo "❌"; fi; }
+          echo "[env] CF_ACCOUNT_ID present: $(present "${CF_ACCOUNT_ID:-}")"
+          echo "[env] CF_KV_NAMESPACE_ID present: $(present "${CF_KV_NAMESPACE_ID:-}")"
+          echo "[env] CF_API_TOKEN present: $(present "${CF_API_TOKEN:-}")"
+          echo "[env] KV_KEY: ${KV_KEY}"
+
+          if [ ! -f metrics/intern-metrics.json ]; then
+            echo "❌ metrics/intern-metrics.json not found"
+            exit 1
+          fi
+
+          if [ -z "${CF_ACCOUNT_ID:-}" ] || [ -z "${CF_KV_NAMESPACE_ID:-}" ] || [ -z "${CF_API_TOKEN:-}" ]; then
+            echo "❌ Missing Cloudflare secrets (CF_ACCOUNT_ID / CF_KV_NAMESPACE_ID / CF_API_TOKEN)"
+            exit 1
+          fi
+
+          echo "Uploading metrics to Cloudflare KV key: $KV_KEY"
+          curl -sS -X PUT \
+            "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/storage/kv/namespaces/$CF_KV_NAMESPACE_ID/values/$KV_KEY" \
+            -H "Authorization: Bearer $CF_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary @metrics/intern-metrics.json \
+            | tee /tmp/cf_kv_response.json
+
+          # ✅ Correct success check (handles whitespace)
+          if command -v jq >/dev/null 2>&1; then
+            if ! jq -e '.success == true' /tmp/cf_kv_response.json >/dev/null; then
+              echo "❌ Cloudflare KV upload failed"
+              cat /tmp/cf_kv_response.json
+              exit 1
+            fi
+          else
+            if ! grep -Eq '"success"[[:space:]]*:[[:space:]]*true' /tmp/cf_kv_response.json; then
+              echo "❌ Cloudflare KV upload failed"
+              cat /tmp/cf_kv_response.json
+              exit 1
+            fi
+          fi
+
+          echo "✅ Cloudflare KV upload success"
+
+          # ✅ Optional read-back verification (prints only first 200 chars)
+          echo "Verifying KV read-back..."
+          curl -sS \
+            "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/storage/kv/namespaces/$CF_KV_NAMESPACE_ID/values/$KV_KEY" \
+            -H "Authorization: Bearer $CF_API_TOKEN" \
+            | head -c 200 && echo
