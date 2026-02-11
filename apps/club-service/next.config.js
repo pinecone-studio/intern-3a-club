@@ -1,22 +1,26 @@
-//@ts-check
+// Cloudflare-ийн орчны хувьсагчууд (Environment Variables)
+const cloudflareEnv = {
+    // D1 & Account Info
+    CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID || '',
+    CLOUDFLARE_API_TOKEN: process.env.CLOUDFLARE_API_TOKEN || '', // Ерөнхий API Token
+    TOKEN: process.env.TOKEN || '', // Drizzle/D1-д ашиглаж буй Token
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { composePlugins, withNx } = require('@nx/next');
-
-/**
- * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
- **/
-const nextConfig = {
-  nx: {
-    // Set this to true if you would like to use SVGR
-    // See: https://github.com/gregberge/svgr
-    svgr: false,
-  },
+ 
 };
 
-const plugins = [
-  // Add more Next.js plugins to this list if needed.
-  withNx,
-];
+// Webpack дээрх Cloudflare-д зориулсан тусгай тохиргоо (Ignore Plugin)
+// Энэ нь Cloudflare Workers орчинд ажиллахад зарим сангуудыг алгасах зориулалттай
+const webpackConfig = (config, { webpack }) => {
+    config.plugins.push(
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^pg-native$|^cloudflare:sockets$/,
+      })
+    );
+    return config;
+};
 
-module.exports = composePlugins(...plugins)(nextConfig);
+// Локал хөгжүүлэлтийн үед Cloudflare-ийн нөөцүүдийг (Bindings) дуудах хэсэг
+if (process.env.NODE_ENV === 'development') {
+  const { setupDevPlatform } = require('@cloudflare/next-on-pages/next-dev');
+  (async () => await setupDevPlatform())();
+}
