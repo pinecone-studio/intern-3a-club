@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@/*": ["apps/club-dash/*"],
       "@intern-3a-club/scripts/scripts": ["libs/scripts/scripts/src/index.ts"]
     }
   },
