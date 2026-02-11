@@ -1,7 +1,33 @@
 import { Calendar, DoorOpen, Users2, Clock } from 'lucide-react';
 import { DetailTile } from '../main/DetailTile';
 
-export const ApprovedClubDetail = ({ club, onEdit, onDelete }: any) => {
+interface Club {
+  goal: string;
+  time: string;
+  room: string;
+  students: number;
+  repeat: string;
+}
+
+interface ApprovedClubDetailProps {
+  club: Club;
+  onEdit?: (_club: Club) => void;
+  onDelete?: (_club: Club) => void;
+}
+
+export const ApprovedClubDetail = ({
+  club,
+  onEdit,
+  onDelete,
+}: ApprovedClubDetailProps) => {
+  const handleEdit = () => {
+    if (onEdit) onEdit(club);
+  };
+
+  const handleDelete = () => {
+    if (onDelete) onDelete(club);
+  };
+
   return (
     <div className="grid md:grid-cols-2 gap-6">
       <div className="space-y-4">
@@ -33,14 +59,14 @@ export const ApprovedClubDetail = ({ club, onEdit, onDelete }: any) => {
 
       <div className="flex items-end gap-3">
         <button
-          onClick={() => onEdit?.(club)}
+          onClick={handleEdit}
           className="flex-1 py-2 rounded-2xl bg-foreground text-background font-bold uppercase text-xs hover:bg-foreground/90"
         >
           Edit
         </button>
 
         <button
-          onClick={() => onDelete?.(club)}
+          onClick={handleDelete}
           className="flex-1 py-2 rounded-2xl bg-secondary border border-border text-foreground/70 font-black uppercase text-xs hover:bg-secondary/80 hover:text-foreground"
         >
           Delete
