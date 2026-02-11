@@ -1,60 +1,61 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShieldCheck } from 'lucide-react';
-import { useEffect } from 'react';
+
 import { requests } from '../../../../libs/mockdata';
-import { ClubCard } from '../approved/ClubCard';
+import { ClubCard } from '../approved/clubcard/ClubCard';
 import { PendingModal } from '../pending/PendingModal';
+import { Club } from '@/libs/types';
 
 export const AdminClubsView = () => {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [openModal, setOpenModal] = useState(false);
 
-  const [pending, setPending] = useState<any[]>(
+  const [pending, setPending] = useState<Club[]>(
     requests.filter((r) => r.status === 'pending')
   );
 
-  const [approved, setApproved] = useState<any[]>(
+  const [approved, setApproved] = useState<Club[]>(
     requests.filter((r) => r.status === 'approved')
   );
 
-  const handleApprove = (club: any) => {
-    setPending((prev) => prev.filter((p) => p.id !== club.id));
-
+  const handleApprove = (club: Club) => {
+    setPending((prev) => removeClub(prev, club.id));
     setApproved((prev) => [...prev, { ...club, status: 'approved' }]);
   };
-  const handleReject = (club: any) => {
-    setPending((prev) => prev.filter((c) => c.id !== club.id));
+
+  const handleReject = (club: Club) => {
+    setPending((prev) => removeClub(prev, club.id));
   };
-  const handleDelete = (club: any) => {
-    setApproved((prev) => prev.filter((c) => c.id !== club.id));
+
+  const handleDelete = (club: Club) => {
+    setApproved((prev) => removeClub(prev, club.id));
   };
+
+  const openModalHandler = () => setOpenModal(true);
+
   useEffect(() => {
-    if (pending.length === 0) {
-      setOpenModal(false);
-    }
+    if (pending.length === 0) setOpenModal(false);
   }, [pending]);
 
   return (
     <div className="p-10 text-foreground max-w-6xl mx-auto">
-      {/* Header */}
+      {/* HEADER */}
       <div className="flex items-center justify-between mb-12">
         <div>
-          <h2 className="text-4xl font-black uppercase tracking-tighter italic flex items-center gap-3">
-            <ShieldCheck className="h-10 w-10 text-foreground" /> Admin Clubs
+          <h2 className="text-4xl font-black uppercase italic flex gap-3">
+            <ShieldCheck className="h-10 w-10" /> Admin Clubs
           </h2>
-          <p className="text-muted-foreground mt-2 font-medium">
+          <p className="text-muted-foreground mt-2">
             Шинээр үүсгэх хүсэлтүүдийг хянах хэсэг.
           </p>
         </div>
 
         <button
-          onClick={() => setOpenModal(true)}
+          onClick={openModalHandler}
           className="relative bg-secondary border border-border px-6 py-3 rounded-2xl"
         >
-          <span className="text-xs font-black uppercase text-foreground">
-            Хүсэлт
-          </span>
+          <span className="text-xs font-black uppercase">Хүсэлт</span>
 
           {pending.length > 0 && (
             <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-foreground text-background text-[11px] font-black flex items-center justify-center">
@@ -75,7 +76,6 @@ export const AdminClubsView = () => {
               req={req}
               isPrimary={isPrimary}
               isExpanded={isExpanded}
-              expandedId={expandedId}
               setExpandedId={setExpandedId}
               onDelete={handleDelete}
             />
@@ -94,3 +94,5 @@ export const AdminClubsView = () => {
     </div>
   );
 };
+
+const removeClub = (arr: Club[], id: number) => arr.filter((c) => c.id !== id);

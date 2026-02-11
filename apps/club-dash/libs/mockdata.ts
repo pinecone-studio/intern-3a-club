@@ -1,4 +1,6 @@
-export const requests = [
+import { Club } from './types';
+
+export const requests: Club[] = [
   {
     id: 1,
     name: 'React',

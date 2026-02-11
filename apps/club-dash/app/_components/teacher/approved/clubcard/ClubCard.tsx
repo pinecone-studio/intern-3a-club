@@ -1,8 +1,9 @@
-import { cn } from 'lib/utils';
-import { ApprovedClubDetail } from './Approved';
-import { ClubCardProps } from './types';
+import { cn } from '@/libs/utils';
 import { ClubCardHeader } from './ClubCardHeader';
 import { ClubCardActions } from './ClubCardActions';
+import { ApprovedClubDetail } from '../Approved';
+import { getContainerClass } from './Helper';
+import { ClubCardProps } from '@/libs/types';
 
 export const ClubCard = ({
   req,
@@ -12,9 +13,12 @@ export const ClubCard = ({
   onDelete,
 }: ClubCardProps) => {
   const containerClass = getContainerClass(isExpanded, isPrimary);
+  const barClass = getBarClass(isPrimary);
 
   return (
     <div className={containerClass}>
+      <div className={barClass} />
+
       <div className="grid grid-cols-[1fr_auto] items-center gap-8 px-5 py-4">
         <ClubCardHeader req={req} />
 
@@ -35,12 +39,8 @@ export const ClubCard = ({
   );
 };
 
-//
-// helper (complexity энд)
-//
-const getContainerClass = (isExpanded: boolean, isPrimary: boolean) =>
+const getBarClass = (isPrimary: boolean) =>
   cn(
-    'group rounded-3xl border',
-    isExpanded ? 'bg-card border-border' : 'bg-secondary/40 border-border',
-    isPrimary && !isExpanded && 'border-foreground/20 bg-secondary/60'
+    'absolute left-0 top-0 bottom-0 w-1.5 rounded-l-3xl',
+    isPrimary ? 'bg-amber-400' : 'bg-primary'
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { getInitialTheme } from '../../../libs/theme/getInitialTheme';
+import { getInitialTheme } from '../../../libs/theme/get-initial-theme';
 import { Bell, Moon, Sun, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

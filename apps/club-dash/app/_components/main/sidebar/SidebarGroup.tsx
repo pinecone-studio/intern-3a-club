@@ -1,7 +1,7 @@
 'use client';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '../../../../libs/utils';
-import { SidebarGroupProps } from './types';
+import { SidebarGroupProps } from '@/libs/types';
 
 export const SidebarGroup = ({
   item,

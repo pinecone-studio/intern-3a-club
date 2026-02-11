@@ -1,5 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
+
   "compilerOptions": {
     "jsx": "preserve",
     "allowJs": true,
@@ -11,6 +12,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/libs/*": ["libs/*"]
+    },
     "plugins": [
       {
         "name": "next"

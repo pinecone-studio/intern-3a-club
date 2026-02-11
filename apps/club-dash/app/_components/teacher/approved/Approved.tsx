@@ -1,19 +1,6 @@
 import { Calendar, DoorOpen, Users2, Clock } from 'lucide-react';
 import { DetailTile } from '../main/DetailTile';
-
-interface Club {
-  goal: string;
-  time: string;
-  room: string;
-  students: number;
-  repeat: string;
-}
-
-interface ApprovedClubDetailProps {
-  club: Club;
-  onEdit?: (_club: Club) => void;
-  onDelete?: (_club: Club) => void;
-}
+import { ApprovedClubDetailProps } from '@/libs/types';
 
 export const ApprovedClubDetail = ({
   club,
