@@ -30,10 +30,10 @@ const CreateClub = () => {
   const [teacherName, setTeacherName] = useState<ClassTeacherType[]>([]);
   const [clubDesc, setClubDesc] = useState<string>('');
   const [clubStartDate, setClubStartDate] = useState<Date | undefined>();
-  const [clubFrequency, setClubFrequency] = useState<string>('');
-  const [clubClassRoom, setClubClassRoom] = useState<number>();
-  const [clubStartTime, setClubStartTime] = useState<string>('');
-  const [clubDuration, setClubDuration] = useState<string>('');
+  // const [clubFrequency, setClubFrequency] = useState<string>('');
+  // const [clubClassRoom, setClubClassRoom] = useState<number>();
+  // const [clubStartTime, setClubStartTime] = useState<string>('');
+  // const [clubDuration, setClubDuration] = useState<string>('');
   const [clubMaxStudent, setClubMaxStudent] = useState<string>('');
   const [clubMinStudent, setClubMinStudent] = useState<string>('');
   console.log({
