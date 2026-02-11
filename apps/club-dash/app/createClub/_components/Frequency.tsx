@@ -1,4 +1,4 @@
-import { FieldLabel } from '@/components/ui/field';
+import { FieldLabel } from '../../../components/ui/field';
 import {
   Select,
   SelectContent,
@@ -6,9 +6,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '../../../components/ui/select';
 
-export function Frequency() {
+export const Frequency = () => {
   return (
     <Select>
       <FieldLabel htmlFor="frequency">Давтамж</FieldLabel>
@@ -33,4 +33,4 @@ export function Frequency() {
       </SelectContent>
     </Select>
   );
-}
+};

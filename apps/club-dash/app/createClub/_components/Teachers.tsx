@@ -1,4 +1,4 @@
-import { FieldLabel } from '@/components/ui/field';
+import { FieldLabel } from '../../../components/ui/field';
 import {
   Select,
   SelectContent,
@@ -6,16 +6,15 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { ClassTeacherType } from '@/lib/types';
-import { Dispatch, SetStateAction } from 'react';
+} from '../../../components/ui/select';
 
-type TeachersProps = {
-  teacherName: ClassTeacherType[];
-  setTeacherName: Dispatch<SetStateAction<ClassTeacherType[]>>;
-};
+// type TeachersProps = {
+//   teacherName: ClassTeacherType[];
+//   setTeacherName: Dispatch<SetStateAction<ClassTeacherType[]>>;
+// };
 
-export function Teachers({ teacherName, setTeacherName }: TeachersProps) {
+// export function Teachers({ teacherName, setTeacherName }: TeachersProps) {
+export const Teachers = () => {
   return (
     <Select>
       <div className="flex flex-col w-full gap-3">
@@ -41,4 +40,4 @@ export function Teachers({ teacherName, setTeacherName }: TeachersProps) {
       </div>
     </Select>
   );
-}
+};

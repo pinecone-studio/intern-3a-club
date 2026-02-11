@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
+import { Button } from '../../components/ui/button';
+import { Calendar } from '../../components/ui/calendar';
 import {
   Dialog,
   DialogClose,
@@ -10,11 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+} from '../../components/ui/dialog';
+import { Field, FieldGroup, FieldLabel } from '../../components/ui/field';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { Textarea } from '../../components/ui/textarea';
 import React, { useState } from 'react';
 import {
   Frequency,
@@ -23,11 +23,10 @@ import {
   StartTime,
   Teachers,
 } from './_components';
-import { ClassTeacherType } from '@/lib/types';
 
 const CreateClub = () => {
   const [clubName, setClubName] = useState<string>('');
-  const [teacherName, setTeacherName] = useState<ClassTeacherType[]>([]);
+  // const [teacherName, setTeacherName] = useState<ClassTeacherType[]>([]);
   const [clubDesc, setClubDesc] = useState<string>('');
   const [clubStartDate, setClubStartDate] = useState<Date | undefined>();
   // const [clubFrequency, setClubFrequency] = useState<string>('');
@@ -39,11 +38,34 @@ const CreateClub = () => {
   console.log({
     clubStartDate,
     clubName,
-    teacherName,
+    // teacherName,
     clubDesc,
     clubMaxStudent,
     clubMinStudent,
   });
+  const handleClubName = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    setClubName(e.target.value);
+  };
+  const handleClubDesc = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    setClubDesc(e.target.value);
+  };
+  const handleDayClick = (day: Date) => {
+    setClubStartDate(day);
+  };
+  const handleClubMax = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    setClubMaxStudent(e.target.value);
+  };
+  const handleClubMin = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    setClubMinStudent(e.target.value);
+  };
   return (
     <div className="bg-white w-screen h-screen flex justify-center items-center">
       <Dialog>
@@ -61,19 +83,19 @@ const CreateClub = () => {
                 <Textarea
                   placeholder="Клубын нэр"
                   value={clubName}
-                  onChange={(e) => setClubName(e.target.value)}
+                  onChange={handleClubName}
                 />
               </Field>
               <Teachers
-                teacherName={teacherName}
-                setTeacherName={setTeacherName}
+              // teacherName={teacherName}
+              // setTeacherName={setTeacherName}
               />
               <Field>
                 <Label htmlFor="description">Клубын зорилго</Label>
                 <Textarea
                   placeholder="Клубын зорилго"
                   value={clubDesc}
-                  onChange={(e) => setClubDesc(e.target.value)}
+                  onChange={handleClubDesc}
                 />
               </Field>
               <FieldGroup className="md:grid md:grid-cols-2">
@@ -82,9 +104,7 @@ const CreateClub = () => {
                   <Calendar
                     mode="single"
                     className="rounded-lg border"
-                    onDayClick={(day) => {
-                      setClubStartDate(day);
-                    }}
+                    onDayClick={handleDayClick}
                   />
                 </Field>
                 <Field>
@@ -98,12 +118,12 @@ const CreateClub = () => {
                   <Input
                     placeholder="Max: 20"
                     value={clubMaxStudent}
-                    onChange={(e) => setClubMaxStudent(e.target.value)}
+                    onChange={handleClubMax}
                   />
                   <Input
                     placeholder="Min"
                     value={clubMinStudent}
-                    onChange={(e) => setClubMinStudent(e.target.value)}
+                    onChange={handleClubMin}
                   />
                 </Field>
               </FieldGroup>

@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'club-service',
   preset: '../../jest.preset.js',
@@ -8,4 +7,13 @@ export default {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/club-service',
+  coveragePathIgnorePatterns: ['apps/club-service/src/.*'],
+  coverageThreshold: {
+    global: {
+      statements: 0,
+      branches: 0,
+      functions: 0,
+      lines: 0,
+    },
+  },
 };

@@ -23,5 +23,4 @@ export type Club = {
 export type ClubCardProps = {
   club: Club & { isEnrolled?: boolean; bannedUntil?: number };
   isSelected: boolean;
-  onClick: (id: number) => void;
 };

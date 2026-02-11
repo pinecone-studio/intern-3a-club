@@ -1,4 +1,4 @@
-import { FieldLabel } from '@/components/ui/field';
+import { FieldLabel } from '../../../components/ui/field';
 import {
   Select,
   SelectContent,
@@ -6,9 +6,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '../../../components/ui/select';
 
-export function StartTime() {
+export const StartTime = () => {
   return (
     <Select>
       <div className="flex flex-col w-full gap-3">
@@ -32,4 +32,4 @@ export function StartTime() {
       </div>
     </Select>
   );
-}
+};
