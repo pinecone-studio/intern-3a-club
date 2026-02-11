@@ -12,27 +12,62 @@ import { gql } from 'graphql-tag';
 
 // 1. Schema тодорхойлох
 const typeDefsString = gql`
-  enum ClubType { self, mentor }
+  # Enum-ууд (Чиний schema.ts дээрх check constraint-уудтай таарах ёстой)
+  enum Gender { FEMALE, MALE, OTHER }
   enum ClubStatus { pending, approved, declined }
+  enum CourseType { CODING, DESIGN }
+
+  type Student {
+    id: ID!
+    firstName: String
+    lastName: String
+    studentCode: String!
+    azureEmail: String!
+    activeStatus: String!
+  }
+
+  type Teacher {
+    id: ID!
+    name: String!
+    email: String!
+    isActive: Int
+  }
+
+  type Class {
+    id: ID!
+    className: String!
+    classNumber: String!
+    course: CourseType!
+  }
 
   type Club {
     id: ID!
     name: String!
     description: String
-    type: ClubType!
     status: ClubStatus!
   }
 
+  # Бүх хүснэгтийг дуудах Query-нүүд
   type Query {
     getClubs: [Club]
+    getStudents: [Student]
+    getTeachers: [Teacher]
+    getClasses: [Class]
   }
 `;
 
 const resolvers = {
-  Query: {
-    getClubs: async () => {
-      return await DB.query.clubsTable.findMany();
-    },
+  getClubs: async () => {
+    return await DB.query.clubs.findMany();
+  },
+  getStudents: async () => {
+    return await DB.query.students.findMany();
+  },
+  getTeachers: async () => {
+    return await DB.query.teachers.findMany();
+  },
+  getClasses: async () => {
+    return await DB.query.classes.findMany();
   },
 };
 
@@ -70,14 +105,13 @@ const graphqlHandler = async (req: NextRequest): Promise<Response> => {
     const body = (await req.json()) as GraphqlRequest;
     const { query, variables, operationName } = body;
 
-    const response = await graphql({
-      schema: buildASTSchema(typeDefsString),
-      source: query,
-      rootValue: {  ...resolvers.Query },
-      variableValues: variables,
-      operationName: operationName,
-    //   contextValue: await getContextValue(req),
-    });
+  const response = await graphql({
+  schema: buildASTSchema(typeDefsString),
+  source: query,
+  rootValue: resolvers, // Заавал задлах шаардлагагүй, доторх функцүүд нь Query-тэй таарна
+  variableValues: variables,
+  operationName: operationName,
+});
     return jsonResponse(response);
   } catch (e) {
     console.error(e);
