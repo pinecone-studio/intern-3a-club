@@ -1,8 +1,16 @@
-'use client';
-
+import { Geist, Manrope } from 'next/font/google';
+import Providers from '../libs/apollo/providers';
 import './global.css';
-import { apolloClient } from '../libs/apolloClient';
-import { ApolloProvider } from '@apollo/client/react';
+
+const geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-geist',
+});
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
+});
 
 const RootLayout = ({
   children,
@@ -11,8 +19,8 @@ const RootLayout = ({
 }): React.ReactNode => {
   return (
     <html lang="en">
-      <body>
-        <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
+      <body className={`${geist.variable} ${manrope.variable}`}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
