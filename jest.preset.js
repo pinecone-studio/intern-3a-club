@@ -18,12 +18,12 @@ module.exports = {
   collectCoverageFrom: [
     '**/*.ts',
     '**/*.tsx',
-    '**/*.js',
-    '**/*.jsx',
+    '!**/*.js',
+    '!**/*.jsx',
     '!**/.next/**',
     '!**/jest.config.ts',
     '!**/eslint-rules/**',
-    '!**/libs/shadcn/src/lib/ui**',
+    '!**/libs/shadcn/**',
   ],
   coverageThreshold: {
     global: {
