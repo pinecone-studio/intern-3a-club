@@ -1,6 +1,6 @@
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { ClassRoom } from '@/app/createClub/_components';
+import { ClassRoom } from '../../app/createClub/_components';
 
 describe('ClassRoom Component', () => {
   it('renders the select trigger with the default placeholder', () => {

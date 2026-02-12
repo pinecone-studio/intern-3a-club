@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { Duration } from '@/app/createClub/_components';
+import { Duration } from '../../app/createClub/_components';
 
 describe('Duration Component', () => {
   it('renders with the correct label and default placeholder', () => {

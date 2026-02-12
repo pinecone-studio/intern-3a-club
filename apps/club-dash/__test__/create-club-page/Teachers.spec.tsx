@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { Teachers } from '@/app/createClub/_components';
+import { Teachers } from '../../app/createClub/_components';
 
 describe('Teachers Component', () => {
   it('renders the correct label and placeholder', () => {
