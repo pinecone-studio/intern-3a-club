@@ -23,7 +23,7 @@ module.exports = {
     '!**/.next/**',
     '!**/jest.config.ts',
     '!**/eslint-rules/**',
-    '!**/libs/shadcn/**',
+    '!**/libs/shadcn/**/*.tsx',
   ],
   coverageThreshold: {
     global: {
