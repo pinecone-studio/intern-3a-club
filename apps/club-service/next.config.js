@@ -1,10 +1,10 @@
 // Cloudflare-ийн орчны хувьсагчууд (Environment Variables)
-const cloudflareEnv = {
-  // D1 & Account Info
-  CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID || '',
-  CLOUDFLARE_API_TOKEN: process.env.CLOUDFLARE_API_TOKEN || '', // Ерөнхий API Token
-  TOKEN: process.env.TOKEN || '', // Drizzle/D1-д ашиглаж буй Token
-};
+// const cloudflareEnv = {
+//   // D1 & Account Info
+//   CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID || '',
+//   CLOUDFLARE_API_TOKEN: process.env.CLOUDFLARE_API_TOKEN || '', // Ерөнхий API Token
+//   TOKEN: process.env.TOKEN || '', // Drizzle/D1-д ашиглаж буй Token
+// };
 
 // Webpack дээрх Cloudflare-д зориулсан тусгай тохиргоо (Ignore Plugin)
 // Энэ нь Cloudflare Workers орчинд ажиллахад зарим сангуудыг алгасах зориулалттай

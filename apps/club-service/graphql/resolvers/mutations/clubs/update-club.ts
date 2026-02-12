@@ -15,22 +15,14 @@ interface UpdateClubInput {
 export const updateClub = async ({ input }: UpdateClubInput) => {
   const { id, ...updateData } = input;
 
-  try {
-    const [updatedClub] = await DB.update(clubs)
-      .set({
-        ...updateData,
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(clubs.id, id))
-      .returning();
+  // Шууд update хийгээд үр дүнг буцаах
+  const [updatedClub] = await DB.update(clubs)
+    .set({
+      ...updateData,
+      updatedAt: new Date().toISOString(),
+    })
+    .where(eq(clubs.id, id))
+    .returning();
 
-    if (!updatedClub) {
-      throw new Error('Club not found');
-    }
-
-    return updatedClub;
-  } catch (error) {
-    console.error('Update Error:', error);
-    throw error instanceof Error ? error : new Error('Failed to update club');
-  }
+  return updatedClub; // Олдсонгүй бол undefined буцна, энийг caller нь шалгана
 };

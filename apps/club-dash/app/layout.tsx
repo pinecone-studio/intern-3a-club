@@ -1,7 +1,7 @@
 'use client';
 
 import './global.css';
-import { apolloClient } from '../libs/apolloClient';
+import { apolloClient } from '../libs/apollo-client';
 import { ApolloProvider } from '@apollo/client/react';
 
 const RootLayout = ({
