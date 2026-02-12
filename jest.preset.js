@@ -13,15 +13,17 @@ module.exports = {
     'route.ts',
     'layout.tsx',
     'types.ts',
+    'utils.ts',
   ],
   collectCoverageFrom: [
     '**/*.ts',
     '**/*.tsx',
-    '**/*.js',
-    '**/*.jsx',
+    '!**/*.js',
+    '!**/*.jsx',
     '!**/.next/**',
     '!**/jest.config.ts',
     '!**/eslint-rules/**',
+    '!**/libs/shadcn/**/*.tsx',
   ],
   coverageThreshold: {
     global: {
