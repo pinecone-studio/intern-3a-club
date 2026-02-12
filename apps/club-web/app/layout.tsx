@@ -2,7 +2,7 @@
 import './global.css';
 
 import { ApolloProvider } from '@apollo/client/react';
-import { apolloClient } from '../lib/apolloClient';
+import { apolloClient } from '../lib/apollo-client';
 
 const RootLayout = ({
   children,

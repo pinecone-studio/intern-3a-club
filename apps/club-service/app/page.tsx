@@ -1,3 +1,5 @@
-export default async function Index() {
-  return <div className="bg-red-600">Hello</div>;
-}
+import React from 'react';
+
+export const page = () => {
+  return <div>page</div>;
+};

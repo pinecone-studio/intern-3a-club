@@ -1,8 +1,5 @@
-'use client';
-
+import { Providers } from '@/libs/apollo/Providers';
 import './global.css';
-import { apolloClient } from '../libs/apolloClient';
-import { ApolloProvider } from '@apollo/client/react';
 
 const RootLayout = ({
   children,
@@ -12,7 +9,7 @@ const RootLayout = ({
   return (
     <html lang="en">
       <body>
-        <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
