@@ -12,6 +12,8 @@ module.exports = {
     '.config.js',
     'route.ts',
     'layout.tsx',
+    'types.ts',
+    'utils.ts',
   ],
   collectCoverageFrom: [
     '**/*.ts',
@@ -32,6 +34,12 @@ module.exports = {
     '!**/drizzle.ts/**',
     '!**/club.schema.ts/**',
     '!**/timetable.schema.ts/**',
+    '!**/*.js',
+    '!**/*.jsx',
+    '!**/.next/**',
+    '!**/jest.config.ts',
+    '!**/eslint-rules/**',
+    '!**/libs/shadcn/**/*.tsx',
   ],
   coverageThreshold: {
     global: {
