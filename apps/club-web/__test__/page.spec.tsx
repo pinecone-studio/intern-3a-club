@@ -34,7 +34,7 @@ jest.mock('../lib/mockdata', () => ({
 }));
 
 jest.mock('../app/JoinClub/_components/ClubCard', () => ({
-  ClubCard: ({ onClick, club }: any) => (
+  ClubCard: ({ onClick, club }: { onClick: (_id: number) => void; club: { id: number; name: string } }) => (
     <div>
       <div onClick={() => onClick(club.id)} role="button">
         {club.name}

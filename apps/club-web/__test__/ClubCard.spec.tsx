@@ -41,7 +41,6 @@ describe('ClubCard', () => {
     const handleClick = jest.fn();
     render(<ClubCard club={mockClub} isSelected={false} onClick={handleClick} />);
 
-    const card = screen.getByRole('button', { hidden: true }) || screen.getByText(mockClub.name).closest('div');
     // Using fireEvent on the container div since it has the onClick handler
     // The component structure is a bit complex, let's target by text or container behavior
     // Actually, look at the component implementation if needed. 
@@ -63,7 +62,6 @@ describe('ClubCard', () => {
     // Usually theme changes background.
     // 'bg-blue-500/10' is for selected.
 
-    const card = screen.getByRole('button', { hidden: true }) || screen.getByText(mockClub.name).closest('div')?.closest('button');
     // Just verify it renders without error and maybe check for text class if possible, 
     // but the main goal is to hit the branch.
     expect(screen.getByText(/НЭЭЛТТЭЙ/i)).toBeInTheDocument();

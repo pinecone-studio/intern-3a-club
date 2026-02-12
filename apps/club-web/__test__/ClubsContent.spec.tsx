@@ -5,10 +5,11 @@ import React from 'react';
 const MOCK_NOW = 1700000000000;
 
 // Mock ClubList to capture onSelect and allow forcing invalid ID
+// Mock ClubList to capture onSelect and allow forcing invalid ID
 jest.mock('../app/JoinClub/_components/ClubList', () => ({
-  ClubList: ({ clubs, onSelect, selectedClubId }: any) => (
+  ClubList: ({ clubs, onSelect, selectedClubId: _selectedClubId }: { clubs: { id: number; name: string }[]; onSelect: (_id: number) => void; selectedClubId: number }) => (
     <div data-testid="club-list">
-      {clubs.map((c: any) => (
+      {clubs.map((c) => (
         <button key={c.id} onClick={() => onSelect(c.id)}>
           {c.name}
         </button>
