@@ -1,7 +1,3 @@
 export default function ClubDashHomePage() {
-  return (
-    <div>
-      <div>Locations</div>
-    </div>
-  );
+  return <div>Locations</div>;
 }
