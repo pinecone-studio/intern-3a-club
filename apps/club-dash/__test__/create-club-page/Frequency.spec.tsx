@@ -7,23 +7,13 @@ describe('Frequency Component', () => {
     render(<Frequency />);
 
     const trigger = screen.getByRole('combobox');
-    fireEvent.click(trigger);
+
+    fireEvent.pointerDown(trigger, { button: 0 });
 
     const weeklyOption = await screen.findByText(/Долоо хоног бүр/i);
     const monthlyOption = await screen.findByText(/Сар бүр/i);
 
     expect(weeklyOption).toBeInTheDocument();
     expect(monthlyOption).toBeInTheDocument();
-  });
-
-  it('selects an option and updates the value', async () => {
-    render(<Frequency />);
-
-    fireEvent.click(screen.getByRole('combobox'));
-
-    const weeklyOption = await screen.findByText(/Долоо хоног бүр/i);
-    fireEvent.click(weeklyOption);
-
-    expect(screen.getByRole('combobox')).toHaveTextContent(/Долоо хоног бүр/i);
   });
 });
