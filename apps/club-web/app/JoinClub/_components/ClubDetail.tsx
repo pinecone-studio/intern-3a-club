@@ -94,7 +94,7 @@ export const ClubDetail = ({
             </section> */}
 
             <div className="grid grid-cols-2 gap-4 mb-10">
-              {selectedClub.instructors.map((ins) => (
+              {selectedClub?.instructors?.map((ins) => (
                 <div
                   key={ins.name}
                   className="flex items-center gap-4 rounded-3xl border border-white/5 bg-white/[0.02] p-6"

@@ -7,7 +7,6 @@ import { ClubsHeader } from './_components/ClubsHeader';
 import { ClubDetail } from './_components/ClubDetail';
 
 const JoinClubPage = () => {
-  // 1. Датагаа төлөвт хадгалах
   const [allClubs, setAllClubs] = useState(() =>
     initialClubs.map((club) => ({
       ...club,
@@ -16,14 +15,14 @@ const JoinClubPage = () => {
     }))
   );
 
-  const [selectedId, setSelectedId] = useState<number>(initialClubs[0].id);
+  const [selectedId, setSelectedId] = useState<number>(() =>
+    initialClubs && initialClubs.length > 0 ? initialClubs[0].id : 0
+  );
 
-  // 2. JSX-no-inline-function алдааг засах нэрлэсэн функц
   const handleClubSelect = useCallback((id: number) => {
     setSelectedId(id);
   }, []);
 
-  // 3. Бүртгүүлэх логик
   const handleEnroll = useCallback((id: number) => {
     setAllClubs((prev) =>
       prev.map((club) =>
@@ -38,7 +37,6 @@ const JoinClubPage = () => {
     );
   }, []);
 
-  // 4. Гарах логик
   const handleLeave = useCallback((id: number) => {
     setAllClubs((prev) =>
       prev.map((club) =>
@@ -63,15 +61,13 @@ const JoinClubPage = () => {
     [allClubs]
   );
 
+  if (allClubs.length === 0) return <EmptyState />;
+
   return (
     <div className="relative min-h-screen w-full bg-[#050c1f] overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_15%,rgba(90,160,255,0.15),transparent_45%)]" />
-
       <div className="relative z-10 mx-auto max-w-7xl p-6 lg:p-12">
         <ClubsHeader openClubsCount={openClubsCount} />
-
         <div className="mt-12 flex flex-col gap-8 lg:flex-row">
-          {/* Зүүн тал */}
           <div className="w-full space-y-4 lg:w-[400px]">
             {allClubs.map((club) => (
               <ClubCard
@@ -82,8 +78,6 @@ const JoinClubPage = () => {
               />
             ))}
           </div>
-
-          {/* Баруун тал */}
           <div className="flex-1">
             {selectedClub ? (
               <ClubDetail
@@ -104,8 +98,8 @@ const JoinClubPage = () => {
 };
 
 const EmptyState = () => (
-  <div className="flex h-full items-center justify-center rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-md">
-    <p className="text-white/20 uppercase font-black italic">Клуб сонгоно уу</p>
+  <div className="flex h-full items-center justify-center p-8">
+    <p className="text-white/20 uppercase font-black">Клуб сонгоно уу</p>
   </div>
 );
 

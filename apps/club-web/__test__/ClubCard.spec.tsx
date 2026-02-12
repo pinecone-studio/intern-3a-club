@@ -1,33 +1,30 @@
 import { render, screen } from '@testing-library/react';
 import { ClubCard } from '../app/JoinClub/_components/ClubCard';
-import { Club } from '../lib/type';
+import { ExtendedClub } from '../lib/type';
+import React from 'react';
 
-const mockClub: Club = {
+const mockClub: ExtendedClub = {
   id: 1,
   name: 'React',
-  description: 'Энэ бол React клубын тайлбар', // Алдаа засах нэмэлт талбар
-  status: 'Open', // Алдаа засах нэмэлт талбар
-  instructors: [
-    // Алдаа засах нэмэлт талбар
-    { name: 'Багш', role: 'Mentor', image: '' },
-  ],
+  description: 'Энэ бол React клубын тайлбар',
+  status: 'Open',
+  instructors: [{ name: 'Багш', role: 'Mentor', image: '/teacher.png' }],
   currentMembers: 13,
   maxMembers: 20,
   schedule: 'Даваа, Лхагва',
   time: '18:00-20:00',
   class: '401-р өрөө',
+  image: '/react-club.jpg',
   isEnrolled: true,
   enrolledStudents: ['STU013'],
+  bannedUntil: 0,
 };
 
 describe('ClubCard', () => {
   it('Хэрэглэгч бүртгүүлсэн үед "ИДЭВХТЭЙ" статус харагдах ёстой', () => {
-    // Props-оор дамжуулахдаа одоо алдаа заахгүй
-    render(<ClubCard club={mockClub} isSelected={false} onClick={() => {}} />);
+    render(<ClubCard club={mockClub} isSelected={false} onClick={jest.fn()} />);
 
     const badge = screen.getByText(/ИДЭВХТЭЙ/i);
     expect(badge).toBeInTheDocument();
   });
 });
-
-// npx nx test club-web --codeCoverage

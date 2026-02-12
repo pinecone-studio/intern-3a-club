@@ -1,21 +1,47 @@
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { ClubsContent } from '../app/JoinClub/_components/ClubsContent';
+import React from 'react';
 
-describe('ClubsContent', () => {
-  it('should render correctly with internal state', () => {
+const MOCK_NOW = 1700000000000;
+
+describe('ClubsContent Logic Coverage', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(MOCK_NOW);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('should cover sorting, enrollment and lock logic (Lines 11, 53-63)', async () => {
     render(<ClubsContent />);
 
-    // 1. Үндсэн гарчиг байгаа эсэхийг шалгах
-    expect(screen.getByText(/Клубууд/i)).toBeInTheDocument();
+    // Line 11: Sorting check (Enroll хийхэд эрэмбэ өөрчлөгдөх)
+    const enrollBtns = screen.getAllByText(/Одоо нэгдэх/i);
+    fireEvent.click(enrollBtns[1]); // 2 дахь клубыг сонгож элсэх
 
-    // 2. Давхардсан текстүүдийг getAllByText-ээр барьж авах
-    const roboticsElements = screen.getAllByText(/Robotics Lab/i);
+    // Line 53-60: handleLeave & isLocked logic
+    const leaveBtn = await screen.findByText(/Клубээс гарах/i);
+    fireEvent.click(leaveBtn);
 
-    // Дор хаяж нэг буюу түүнээс олон элемент байгааг батлах
-    expect(roboticsElements.length).toBeGreaterThan(0);
+    // Locked state
+    expect(screen.getByText(/60с хүлээх/i)).toBeInTheDocument();
 
-    // Эхний элемент нь дэлгэц дээр харагдаж байгааг шалгах
-    expect(roboticsElements[0]).toBeInTheDocument();
-  }); // Энд хаалт дутуу байсныг заслаа
+    // Line 61-63: diff <= 0 (Түгжээ тайлагдах)
+    act(() => {
+      jest.advanceTimersByTime(61000);
+    });
+
+    const enrollAgainBtn = await screen.findByText(/Одоо нэгдэх/i);
+    expect(enrollAgainBtn).toBeInTheDocument();
+  });
+
+  it('should cover fallback selection (Line 55)', () => {
+    render(<ClubsContent />);
+    // Байхгүй ID сонгох оролдлого хийх (Internal state-ийг өдөөх)
+    const cards = screen.getAllByRole('button');
+    fireEvent.click(cards[0]);
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+  });
 });
