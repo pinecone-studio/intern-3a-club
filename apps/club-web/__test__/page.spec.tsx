@@ -1,9 +1,17 @@
 import { render, screen } from '@testing-library/react';
-import { page as Page } from '../app/page';
+import Index from '../app/page';
 
-describe('club-web page', () => {
-  it('renders', () => {
-    render(<Page />);
-    expect(screen.getByText('page')).toBeInTheDocument();
+describe('Index (page)', () => {
+  it('should render hello text', async () => {
+    const Page = await Index();
+    render(Page);
+    expect(screen.getByText('hello')).toBeInTheDocument();
+  });
+
+  it('should have a div with red background class', async () => {
+    const Page = await Index();
+    const { container } = render(Page);
+    const div = container.querySelector('.bg-red-500');
+    expect(div).toBeInTheDocument();
   });
 });

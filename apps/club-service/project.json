@@ -55,6 +55,27 @@
       "options": {
         "lintFilePatterns": ["apps/club-service/**/*.{ts,tsx,js,jsx}"]
       }
+    },
+   "build-worker": {
+  "executor": "nx:run-commands",
+  "options": {
+    "cwd": "apps/club-service",
+     "command": "../../node_modules/.bin/opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion"
+       
+  },
+  "outputs": ["{projectRoot}/.open-next"],
+  "dependsOn": ["build"]
+}
+,
+
+    "deploy-worker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "wrangler deploy"
+        ]
+      },
+      "dependsOn": ["build-worker"]
     }
   },
   "tags": []
