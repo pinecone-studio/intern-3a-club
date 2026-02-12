@@ -8,7 +8,7 @@ config({ path: resolve(__dirname, '.dev.vars') });
 export default defineConfig({
   dialect: 'sqlite',
   driver: 'd1-http', // Cloudflare D1 ашиглахад энэ драйвер хэрэгтэй
-  schema: './app/db/schema.ts', // Таны schema файл байрлаж буй зам
+  schema: './db/schema.ts', // Таны schema файл байрлаж буй зам
   out: './drizzle', // Migration-ууд хадгалагдах хавтас
   dbCredentials: {
     accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,

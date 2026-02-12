@@ -2804,7 +2804,7 @@
 
 "@graphql-tools/merge@^9.1.7":
   version "9.1.7"
-  resolved "https://registry.npmjs.org/@graphql-tools/merge/-/merge-9.1.7.tgz"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/merge/-/merge-9.1.7.tgz#8040553c19aeadf6df41060b811e9c5df8716be1"
   integrity sha512-Y5E1vTbTabvcXbkakdFUt4zUIzB1fyaEnVmIWN0l0GMed2gdD01TpZWLUm4RNAxpturvolrb24oGLQrBbPLSoQ==
   dependencies:
     "@graphql-tools/utils" "^11.0.0"
