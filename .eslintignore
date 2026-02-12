@@ -64,4 +64,4 @@ vendor/
 **/.nyc_output
 **/coverage
 
-
+libs/shadcn/src/lib/ui/**
