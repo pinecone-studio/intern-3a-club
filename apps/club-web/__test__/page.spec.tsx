@@ -216,11 +216,8 @@ describe('Club Web Page & Logic - ABSOLUTE 100% Coverage Suite', () => {
 
     it('covers null/empty branches in utils', () => {
       const d = new Date();
-      // @ts-ignore
       expect(isWeeklyMatch(d, null)).toBe(false);
-      // @ts-ignore
       expect(isMonthlyMatch(d, null)).toBe(false);
-      // @ts-ignore
       expect(isBiweeklyMatch(d, null, d.getTime())).toBe(false);
     });
   });
@@ -257,6 +254,7 @@ describe('Club Web Page & Logic - ABSOLUTE 100% Coverage Suite', () => {
       fireEvent.click(buttons[0]); // Add 1st available date (sorting trigger)
     }
   });
+
   // 10. Switch to None with Empty Selection (LogisticsSection Line 22)
   it('handles switching to none with empty dates', () => {
 
@@ -267,10 +265,10 @@ describe('Club Web Page & Logic - ABSOLUTE 100% Coverage Suite', () => {
 
     // 2. Remove all dates (manually click all selected buttons to toggle off)
     // April 15, 22, 29 are selected.
-    ['15', '22'].forEach(day => {
+    for (const day of ['15', '22']) {
       const btn = screen.getAllByRole('button').find(b => b.textContent === day && !b.hasAttribute('disabled'));
       if (btn) fireEvent.click(btn);
-    });
+    }
 
     fireEvent.change(repeatSelect, { target: { value: 'none' } });
   });
