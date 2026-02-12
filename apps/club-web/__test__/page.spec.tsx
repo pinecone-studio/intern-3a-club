@@ -1,5 +1,9 @@
-describe('club-web dummy', () => {
-  it('dummy test', () => {
-    expect(true).toBe(true);
+import { render, screen } from '@testing-library/react';
+import { page as Page } from '../app/page';
+
+describe('club-web page', () => {
+  it('renders', () => {
+    render(<Page />);
+    expect(screen.getByText('page')).toBeInTheDocument();
   });
 });
