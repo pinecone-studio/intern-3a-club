@@ -1,5 +1,4 @@
 'use client';
-
 import { Button } from '@intern-3a-club/shadcn';
 import { Calendar } from '@intern-3a-club/shadcn';
 import {
@@ -12,7 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@intern-3a-club/shadcn';
-// import { Field, FieldGroup, FieldLabel } from '../../components/ui/field';
 import { Input } from '@intern-3a-club/shadcn';
 import { Label } from '@intern-3a-club/shadcn';
 import { Textarea } from '@intern-3a-club/shadcn';
@@ -39,7 +37,6 @@ const CreateClub = () => {
   console.log({
     clubStartDate,
     clubName,
-    // teacherName,
     clubDesc,
     clubMaxStudent,
     clubMinStudent,
@@ -91,10 +88,7 @@ const CreateClub = () => {
                   onChange={handleClubName}
                 />
               </div>
-              <Teachers
-              // teacherName={teacherName}
-              // setTeacherName={setTeacherName}
-              />
+              <Teachers />
               <div className="flex flex-col gap-2">
                 <Label htmlFor="description">Клубын зорилго</Label>
                 <Textarea
@@ -162,5 +156,4 @@ const CreateClub = () => {
     </div>
   );
 };
-
 export default CreateClub;
