@@ -1,16 +1,18 @@
 import '@testing-library/jest-dom';
 
-class PointerEvent extends Event {
-  button: number;
-  ctrlKey: boolean;
-  pointerType: string;
+class MockPointerEvent extends Event {
+  public button: number;
+  public ctrlKey: boolean;
+  public pointerType: string;
+
   constructor(type: string, props: PointerEventInit = {}) {
     super(type, props);
-    this.button = props.button || 0;
-    this.ctrlKey = props.ctrlKey || false;
-    this.pointerType = props.pointerType || 'mouse';
+    this.button = props.button ?? 0;
+    this.ctrlKey = props.ctrlKey ?? false;
+    this.pointerType = props.pointerType ?? 'mouse';
   }
 }
-window.PointerEvent = PointerEvent as any;
+
+window.PointerEvent = MockPointerEvent as unknown as typeof PointerEvent;
 
 Element.prototype.scrollIntoView = jest.fn();
