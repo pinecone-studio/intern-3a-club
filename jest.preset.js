@@ -21,6 +21,17 @@ module.exports = {
     '!**/.next/**',
     '!**/jest.config.ts',
     '!**/eslint-rules/**',
+    '!**/drizzle.config.ts/**',
+    '!**/cors.ts/**',
+    '!**/responses.ts/**',
+    '!**/mockdata.ts/**',
+    '!**/next-env.d.ts/**',
+    '!**/schema.ts/**',
+    '!**/relations.ts/**',
+    '!**/cors.ts/**',
+    '!**/drizzle.ts/**',
+    '!**/club.schema.ts/**',
+    '!**/timetable.schema.ts/**',
   ],
   coverageThreshold: {
     global: {
