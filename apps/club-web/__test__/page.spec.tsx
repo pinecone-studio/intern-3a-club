@@ -110,7 +110,7 @@ describe('JoinClubPage Full Coverage', () => {
     // Alternative: Just test the EmptyState component directly if 100%
     // coverage is the goal, or adjust the mock so the ID won't match.
 
-    expect(screen.getByText(/Ghost Club/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Ghost Club/i)[0]).toBeInTheDocument();
 
     // Clean up
     Object.defineProperty(mockDataModule, 'clubs', { value: originalClubs });

@@ -18,8 +18,13 @@ describe('ClubsContent Logic Coverage', () => {
     render(<ClubsContent />);
 
     // Line 11: Sorting check (Enroll хийхэд эрэмбэ өөрчлөгдөх)
-    const enrollBtns = screen.getAllByText(/Одоо нэгдэх/i);
-    fireEvent.click(enrollBtns[1]); // 2 дахь клубыг сонгож элсэх
+    // Switch to the 3rd club (Code Club) which is Open
+    const codeClubCard = screen.getByText('Code Club');
+    fireEvent.click(codeClubCard);
+
+    // Now enroll in the selected club
+    const enrollBtn = screen.getByText(/Одоо нэгдэх/i);
+    fireEvent.click(enrollBtn);
 
     // Line 53-60: handleLeave & isLocked logic
     const leaveBtn = await screen.findByText(/Клубээс гарах/i);

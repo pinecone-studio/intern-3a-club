@@ -10,7 +10,7 @@ interface MockClubCardProps {
   onClick: (_id: number) => void;
 }
 
-jest.mock('./ClubCard', () => ({
+jest.mock('../app/JoinClub/_components/ClubCard', () => ({
   ClubCard: ({ club, isSelected, onClick }: MockClubCardProps) => (
     <div
       data-testid={`club-card-${club.id}`}
