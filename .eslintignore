@@ -65,3 +65,4 @@ vendor/
 **/coverage
 
 
+libs/shadcn/src/lib/ui/**

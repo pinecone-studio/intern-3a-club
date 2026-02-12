@@ -3,10 +3,10 @@ import { Settings, LogOut } from 'lucide-react';
 
 import { SidebarGroup } from './SidebarGroup';
 
-import { cn } from '@/libs/utils';
+import { cn } from '../../../../libs/utils';
 import { useSidebar } from './UseSidebar';
 import { navItems } from './Item';
-import { SidebarProps } from '@/libs/types';
+import { SidebarProps } from '../../../../libs/types';
 
 export const DashboardSidebar = ({
   onViewChange,

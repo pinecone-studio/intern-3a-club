@@ -36,6 +36,21 @@ describe('Club Web Page & Logic - ABSOLUTE 100% Coverage Suite', () => {
   it('renders home page', () => {
     render(<Home />);
     expect(screen.getByText('page')).toBeInTheDocument();
+import { render, screen } from '@testing-library/react';
+import Index from '../app/page';
+
+describe('Index (page)', () => {
+  it('should render hello text', async () => {
+    const Page = await Index();
+    render(Page);
+    expect(screen.getByText('hello')).toBeInTheDocument();
+  });
+
+  it('should have a div with red background class', async () => {
+    const Page = await Index();
+    const { container } = render(Page);
+    const div = container.querySelector('.bg-red-500');
+    expect(div).toBeInTheDocument();
   });
 
   // 2. Бүх Form Input-ууд болон Validation UI

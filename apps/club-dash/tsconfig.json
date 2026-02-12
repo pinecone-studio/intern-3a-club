@@ -1,6 +1,5 @@
 {
   "extends": "../../tsconfig.base.json",
-
   "compilerOptions": {
     "jsx": "preserve",
     "allowJs": true,
@@ -12,10 +11,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/libs/*": ["libs/*"]
-    },
     "plugins": [
       {
         "name": "next"
@@ -28,14 +23,8 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
-    "../../apps/club-dash/.next/types/**/*.ts",
-    "../../dist/apps/club-dash/.next/types/**/*.ts",
-    "next-env.d.ts"
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "jest.config.ts",
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts"
-  ]
+  "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
 }
