@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { DashboardHeader } from './_components/main/Header';
 import { DashboardSidebar } from './_components/main/sidebar/DashSidebar';
-import { ViewRenderer } from './_components/main/ViewRender';
+import { ViewRender } from './_components/main/ViewRender';
 
 export default function Dashboard() {
   const [activeView, setActiveView] = useState<string>('Join Club');
@@ -23,7 +23,7 @@ export default function Dashboard() {
         <DashboardHeader />
 
         <main className="flex-1">
-          <ViewRenderer activeView={activeView} />
+          <ViewRender activeView={activeView} />
         </main>
       </div>
     </div>

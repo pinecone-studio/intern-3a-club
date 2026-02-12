@@ -58,6 +58,11 @@ export interface ClubCardProps {
   onDelete?: (_club: Club) => void;
   expandedId?: number | null;
 }
+export interface ToggleItemProps {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}
 
 export interface Club {
   id: number;

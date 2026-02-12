@@ -8,38 +8,38 @@ export const ApprovedClubDetail = ({
   onDelete,
 }: ApprovedClubDetailProps) => {
   const handleEdit = () => {
-    if (onEdit) onEdit(club);
+    onEdit?.(club);
   };
 
   const handleDelete = () => {
-    if (onDelete) onDelete(club);
+    onDelete?.(club);
   };
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
       <div className="space-y-4">
-        <p className="text-sm text-muted-foreground italic">{club.goal}</p>
+        <p className="text-sm text-muted-foreground italic">{club?.goal}</p>
 
         <div className="grid grid-cols-2 gap-3">
           <DetailTile
             icon={<Clock size={14} />}
             label="Schedule"
-            value={club.time}
+            value={club?.time}
           />
           <DetailTile
             icon={<DoorOpen size={14} />}
             label="Room"
-            value={club.room}
+            value={club?.room}
           />
           <DetailTile
             icon={<Users2 size={14} />}
             label="Students"
-            value={club.students}
+            value={club?.students}
           />
           <DetailTile
             icon={<Calendar size={14} />}
             label="Recurrence"
-            value={club.repeat}
+            value={club?.repeat}
           />
         </div>
       </div>

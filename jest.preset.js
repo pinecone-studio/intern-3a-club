@@ -4,8 +4,25 @@ module.exports = {
   ...nxPreset,
   snapshotFormat: { escapeString: true, printBasicPrototype: true },
   coverageReporters: ['text', 'html'],
-  coveragePathIgnorePatterns: ['/node_modules/', 'index.ts', 'main.ts', '.spec.ts', '.config.js','route.ts', 'layout.tsx'],
-  collectCoverageFrom: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    'index.ts',
+    'main.ts',
+    '.spec.ts',
+    '.config.js',
+    'route.ts',
+    'layout.tsx',
+    'types.ts',
+  ],
+  collectCoverageFrom: [
+    '**/*.ts',
+    '**/*.tsx',
+    '**/*.js',
+    '**/*.jsx',
+    '!**/.next/**',
+    '!**/jest.config.ts',
+    '!**/eslint-rules/**',
+  ],
   coverageThreshold: {
     global: {
       branches: 100,

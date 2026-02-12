@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { toggleItem } from './ToggleItem';
+import { ToggleItem } from './ToggleItem';
 
 export const useSidebar = () => {
   const [expandedItems, setExpandedItems] = useState<string[]>([
@@ -8,7 +8,7 @@ export const useSidebar = () => {
   ]);
 
   const handleToggle = (label: string) => {
-    setExpandedItems((prev) => toggleItem(prev, label));
+    setExpandedItems((prev) => ToggleItem(prev, label));
   };
 
   return { expandedItems, handleToggle };

@@ -23,7 +23,6 @@ interface Props {
   activeView: string;
 }
 
-// 🔥 MAP pattern → complexity = 1
 const viewMap: Record<string, JSX.Element> = {
   'Admin Clubs': <AdminClubsView />,
   Courses: <AcademicView />,
@@ -32,6 +31,6 @@ const viewMap: Record<string, JSX.Element> = {
   Active: <ActiveChallenges />,
 };
 
-export const ViewRenderer = ({ activeView }: Props) => {
+export const ViewRender = ({ activeView }: Props) => {
   return viewMap[activeView] ?? null;
 };
