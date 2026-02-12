@@ -1,15 +1,15 @@
 import '@testing-library/jest-dom';
 
 class MockPointerEvent extends Event {
-  public button: number;
-  public ctrlKey: boolean;
-  public pointerType: string;
+  public button = 0;
+  public ctrlKey = false;
+  public pointerType = 'mouse';
 
   constructor(type: string, props: PointerEventInit = {}) {
     super(type, props);
-    this.button = props.button ?? 0;
-    this.ctrlKey = props.ctrlKey ?? false;
-    this.pointerType = props.pointerType ?? 'mouse';
+    if (props.button !== undefined) this.button = props.button;
+    if (props.ctrlKey !== undefined) this.ctrlKey = props.ctrlKey;
+    if (props.pointerType !== undefined) this.pointerType = props.pointerType;
   }
 }
 
