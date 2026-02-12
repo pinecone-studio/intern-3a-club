@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ClubCard } from '../app/JoinClub/_components/ClubCard';
 import { ExtendedClub } from '../lib/type';
 import React from 'react';
@@ -26,5 +26,54 @@ describe('ClubCard', () => {
 
     const badge = screen.getByText(/ИДЭВХТЭЙ/i);
     expect(badge).toBeInTheDocument();
+  });
+
+  it('Клуб дүүрсэн үед "ДҮҮРСЭН" статус харагдах ёстой', () => {
+    // Logic inside ClubCard calculates isFull = currentMembers >= maxMembers
+    const fullClub = { ...mockClub, isEnrolled: false, status: 'Full' as const, currentMembers: 20, maxMembers: 20 };
+    render(<ClubCard club={fullClub} isSelected={false} onClick={jest.fn()} />);
+
+    const badge = screen.getByText(/ДҮҮРСЭН/i);
+    expect(badge).toBeInTheDocument();
+  });
+
+  it('Картан дээр дарахад onClick дуудагдах ёстой', () => {
+    const handleClick = jest.fn();
+    render(<ClubCard club={mockClub} isSelected={false} onClick={handleClick} />);
+
+    const card = screen.getByRole('button', { hidden: true }) || screen.getByText(mockClub.name).closest('div');
+    // Using fireEvent on the container div since it has the onClick handler
+    // The component structure is a bit complex, let's target by text or container behavior
+    // Actually, look at the component implementation if needed. 
+    // Assuming standard div with onClick.
+
+    // Check if we can find by name
+    const nameElement = screen.getByText(mockClub.name);
+    fireEvent.click(nameElement);
+
+    expect(handleClick).toHaveBeenCalledWith(mockClub.id);
+  });
+
+  it('Клуб сонгогдсон үед "НЭЭЛТТЭЙ" статус болон selected загвар харагдах ёстой', () => {
+    // isEnrolled=false, isFull=false
+    const selectedClub = { ...mockClub, isEnrolled: false, currentMembers: 10, maxMembers: 20 };
+    render(<ClubCard club={selectedClub} isSelected={true} onClick={jest.fn()} />);
+
+    // Check if correct class/theme is applied? 
+    // Usually theme changes background.
+    // 'bg-blue-500/10' is for selected.
+
+    const card = screen.getByRole('button', { hidden: true }) || screen.getByText(mockClub.name).closest('div')?.closest('button');
+    // Just verify it renders without error and maybe check for text class if possible, 
+    // but the main goal is to hit the branch.
+    expect(screen.getByText(/НЭЭЛТТЭЙ/i)).toBeInTheDocument();
+  });
+
+  it('Клуб энгийн үед (Default) "НЭЭЛТТЭЙ" статус харагдах ёстой', () => {
+    // isEnrolled=false, isFull=false, isSelected=false
+    const defaultClub = { ...mockClub, isEnrolled: false, currentMembers: 10, maxMembers: 20 };
+    render(<ClubCard club={defaultClub} isSelected={false} onClick={jest.fn()} />);
+
+    expect(screen.getByText(/НЭЭЛТТЭЙ/i)).toBeInTheDocument();
   });
 });

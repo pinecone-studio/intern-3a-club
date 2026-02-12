@@ -56,11 +56,11 @@ export const ClubsContent = () => {
 
   // 2-рт: Түүн дээр суурилсан утгуудыг тооцоолно
   const isLocked = useMemo(() => {
-    return (selectedClub.bannedUntil ?? 0) > now;
+    return selectedClub.bannedUntil > now;
   }, [selectedClub.bannedUntil, now]);
 
   const remainingTime = useMemo(() => {
-    const diff = Math.ceil(((selectedClub.bannedUntil ?? 0) - now) / 1000);
+    const diff = Math.ceil((selectedClub.bannedUntil - now) / 1000);
     return diff > 0 ? diff : 0;
   }, [selectedClub.bannedUntil, now]);
 

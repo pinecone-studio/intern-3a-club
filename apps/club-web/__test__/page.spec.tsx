@@ -33,6 +33,19 @@ jest.mock('../lib/mockdata', () => ({
   ],
 }));
 
+jest.mock('../app/JoinClub/_components/ClubCard', () => ({
+  ClubCard: ({ onClick, club }: any) => (
+    <div>
+      <div onClick={() => onClick(club.id)} role="button">
+        {club.name}
+      </div>
+      <button onClick={() => onClick(-9999)} data-testid="force-invalid-selection">
+        Force Invalid
+      </button>
+    </div>
+  ),
+}));
+
 describe('JoinClubPage Full Coverage', () => {
   it('should cover line 11 (initial state) and club selection', () => {
     render(<JoinClubPage />);
@@ -81,38 +94,16 @@ describe('JoinClubPage Full Coverage', () => {
     Object.defineProperty(mockDataModule, 'clubs', { value: originalClubs });
   });
 
-  it('should cover line 82 (EmptyState fallback inside the main layout)', () => {
-    // 1. Mock the data so initialClubs has items (to pass the length === 0 check)
-    // 2. But we need find() to return undefined.
-
-    // An easier approach: Force allClubs to be an empty array AFTER
-    // the component passes the first if-statement (though React state makes this tricky).
-
-    // BEST APPROACH: Mock the 'find' behavior by making the initialClubs data
-    // inconsistent or empty specifically for the render.
-
-    const originalClubs = mockDataModule.clubs;
-
-    // We provide an item so we pass the "if (allClubs.length === 0)" check,
-    // but we make sure the selectedId logic fails.
-    Object.defineProperty(mockDataModule, 'clubs', {
-      value: [{ id: 999, name: 'Ghost Club' }],
-      configurable: true,
-    });
-
+  it('should cover line 82 (EmptyState fallback inside the main layout) properly', () => {
+    // 1. Render page with valid data (mocked above)
     render(<JoinClubPage />);
 
-    // Now, let's force the list to be empty while the selectedId is still 999
-    // In your actual code, this happens if a club is removed from the list.
-    // To trigger Line 82 specifically, we need allClubs to be empty
-    // but bypass the first return.
+    // 2. Click the special "Force Invalid" button injected by our ClubCard mock
+    // This calls onClick(-9999), setting selectedId to -9999.
+    const forceBtns = screen.getAllByTestId('force-invalid-selection');
+    fireEvent.click(forceBtns[0]);
 
-    // Alternative: Just test the EmptyState component directly if 100%
-    // coverage is the goal, or adjust the mock so the ID won't match.
-
-    expect(screen.getAllByText(/Ghost Club/i)[0]).toBeInTheDocument();
-
-    // Clean up
-    Object.defineProperty(mockDataModule, 'clubs', { value: originalClubs });
+    // 3. Verify EmptyState is rendered
+    expect(screen.getByText(/Клуб сонгоно уу/i)).toBeInTheDocument();
   });
 });
