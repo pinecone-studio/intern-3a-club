@@ -13,6 +13,15 @@
     {
       "files": ["*.js", "*.jsx"],
       "rules": {}
+    },
+    {
+      "files": ["libs/shadcn/src/lib/ui/*.tsx"],
+      "rules": {
+        "unicorn/filename-case": "off",
+        "complexity": "off",
+        "max-lines": "off",
+        "camelcase": "off"
+      }
     }
   ]
 }
