@@ -1,0 +1,302 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ClubDetail Snapshot & Content Snapshot тест ажиллуулах 1`] = `
+<DocumentFragment>
+  <div
+    class="flex-1 space-y-6"
+  >
+    <div
+      class="relative min-h-[500px] rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-md overflow-hidden"
+    >
+      <div
+        style="opacity: 0; transform: translateY(20px);"
+      >
+        <header
+          class="mb-8 flex items-start justify-between"
+        >
+          <div>
+            <span
+              class="rounded bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-400 uppercase"
+            >
+              Premium Club
+            </span>
+            <h1
+              class="text-4xl font-black uppercase text-white mt-2"
+            >
+              Robotics Lab
+            </h1>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-shield-check h-12 w-12 text-white/10"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+            />
+            <path
+              d="m9 12 2 2 4-4"
+            />
+          </svg>
+        </header>
+        <div
+          class="mb-8 border-l-2 border-blue-400 border-primary/30 pl-6"
+        >
+          <h4
+            class="text-xs text-blue-500 font-bold uppercase tracking-[0.2em] text-primary mb-2"
+          >
+            Зорилго
+          </h4>
+          <p
+            class="text-lg italic text-gray-300 text-muted-foreground leading-relaxed"
+          >
+            Build, program, and compete with autonomous robots.
+          </p>
+        </div>
+        <div
+          class="grid grid-cols-2 gap-4 mb-10"
+        >
+          <div
+            class="flex items-center gap-4 rounded-3xl border border-white/5 bg-white/[0.02] p-6"
+          >
+            <div
+              class="relative h-14 w-14 rounded-full border-2 border-blue-500/50 p-1"
+            >
+              <div
+                class="h-full w-full rounded-full bg-blue-500/20 flex items-center justify-center font-bold text-white uppercase"
+              >
+                A
+              </div>
+            </div>
+            <div>
+              <p
+                class="text-[9px] font-bold uppercase text-blue-400"
+              >
+                МЕНТОР
+              </p>
+              <h3
+                class="text-lg font-black uppercase text-white"
+              >
+                Ari
+              </h3>
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-4 rounded-3xl border border-white/5 bg-white/[0.02] p-6"
+          >
+            <div
+              class="relative h-14 w-14 rounded-full border-2 border-blue-500/50 p-1"
+            >
+              <div
+                class="h-full w-full rounded-full bg-blue-500/20 flex items-center justify-center font-bold text-white uppercase"
+              >
+                B
+              </div>
+            </div>
+            <div>
+              <p
+                class="text-[9px] font-bold uppercase text-blue-400"
+              >
+                МЕНТОР
+              </p>
+              <h3
+                class="text-lg font-black uppercase text-white"
+              >
+                Bata
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div
+          class="grid gap-6 md:grid-cols-2"
+        >
+          <div
+            class="rounded-2xl border border-white/5 bg-white/5 p-5"
+          >
+            <h4
+              class="mb-4 flex items-center gap-2 text-sm font-bold uppercase text-white"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-calendar h-4 w-4 text-blue-400"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8 2v4"
+                />
+                <path
+                  d="M16 2v4"
+                />
+                <rect
+                  height="18"
+                  rx="2"
+                  width="18"
+                  x="3"
+                  y="4"
+                />
+                <path
+                  d="M3 10h18"
+                />
+              </svg>
+               Хуваарь
+            </h4>
+            <div
+              class="space-y-2 text-sm text-white/60"
+            >
+              <div
+                class="flex justify-between border-b border-white/5 pb-2"
+              >
+                <span>
+                  Долоо хоногт
+                </span>
+                <span
+                  class="font-bold text-white"
+                >
+                  Tue & Thu
+                </span>
+              </div>
+              <div
+                class="flex justify-between pt-1"
+              >
+                <span>
+                  Анги
+                </span>
+                <span
+                  class="font-bold text-white"
+                >
+                  B-201
+                </span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="rounded-2xl border border-white/5 bg-white/5 p-5"
+          >
+            <div
+              class="mb-2 flex items-center justify-between"
+            >
+              <h4
+                class="flex items-center gap-2 text-sm font-bold uppercase text-white"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-users h-4 w-4 text-blue-400"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+                  />
+                  <path
+                    d="M16 3.128a4 4 0 0 1 0 7.744"
+                  />
+                  <path
+                    d="M22 21v-2a4 4 0 0 0-3-3.87"
+                  />
+                  <circle
+                    cx="9"
+                    cy="7"
+                    r="4"
+                  />
+                </svg>
+                 Гишүүд
+              </h4>
+              <span
+                class="text-xs font-black text-blue-400"
+              >
+                60%
+              </span>
+            </div>
+            <div
+              class="h-2 w-full rounded-full bg-white/5 overflow-hidden"
+            >
+              <div
+                class="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                style="width: 0px;"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="grid grid-cols-4 gap-2 mt-4"
+        >
+          <div
+            class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center"
+          >
+            <span
+              class="text-[10px] font-bold text-white/50 tracking-tighter"
+            >
+              ID: STU013
+            </span>
+          </div>
+          <div
+            class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center"
+          >
+            <span
+              class="text-[10px] font-bold text-white/50 tracking-tighter"
+            >
+              ID: STU014
+            </span>
+          </div>
+          <div
+            class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center"
+          >
+            <span
+              class="text-[10px] font-bold text-white/50 tracking-tighter"
+            >
+              ID: STU015
+            </span>
+          </div>
+          <div
+            class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center"
+          >
+            <span
+              class="text-[10px] font-bold text-white/50 tracking-tighter"
+            >
+              ID: STU027
+            </span>
+          </div>
+        </div>
+        <div
+          class="mt-8"
+        >
+          <div
+            class="space-y-3"
+          >
+            <button
+              class="group rounded-2xl relative w-full overflow-hidden py-5 text-xl font-black uppercase tracking-widest transition-all bg-blue-600 text-white hover:bg-blue-700"
+            >
+              <span>
+                Одоо нэгдэх
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
