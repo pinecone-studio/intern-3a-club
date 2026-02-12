@@ -1,17 +1,22 @@
-import { FieldLabel } from '../../../components/ui/field';
 import {
+  Label,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../components/ui/select';
+} from '@intern-3a-club/shadcn';
 
 export const Frequency = () => {
   return (
     <Select>
-      <FieldLabel htmlFor="frequency">Давтамж</FieldLabel>
+      <Label
+        htmlFor="frequency"
+        className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      >
+        Давтамж
+      </Label>
       <SelectTrigger className="w-full max-w-63.75">
         <SelectValue placeholder="Зөвхөн сонгосон өдрүүдэд" />
       </SelectTrigger>

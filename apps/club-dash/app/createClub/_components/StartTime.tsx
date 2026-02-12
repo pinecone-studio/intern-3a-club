@@ -1,18 +1,23 @@
-import { FieldLabel } from '../../../components/ui/field';
 import {
+  Label,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../components/ui/select';
+} from '@intern-3a-club/shadcn';
 
 export const StartTime = () => {
   return (
     <Select>
       <div className="flex flex-col w-full gap-3">
-        <FieldLabel htmlFor="startTime">Эхлэх цаг</FieldLabel>
+        <Label
+          htmlFor="startTime"
+          className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Эхлэх цаг
+        </Label>
         <div>
           <SelectTrigger className="w-full max-w-48">
             <SelectValue placeholder="13:00" />

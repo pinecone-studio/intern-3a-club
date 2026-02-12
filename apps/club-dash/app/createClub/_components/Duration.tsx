@@ -1,4 +1,4 @@
-import { FieldLabel } from '../../../components/ui/field';
+import { Label } from '@intern-3a-club/shadcn';
 import {
   Select,
   SelectContent,
@@ -6,13 +6,18 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../components/ui/select';
+} from '@intern-3a-club/shadcn';
 
 export const Duration = () => {
   return (
     <Select>
       <div className="flex flex-col w-full gap-3">
-        <FieldLabel htmlFor="duration">Үргэлжлэх хугацаа</FieldLabel>
+        <Label
+          htmlFor="duration"
+          className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Үргэлжлэх хугацаа
+        </Label>
         <div>
           <SelectTrigger className="w-full max-w-63.75">
             <SelectValue placeholder="1 цаг" />

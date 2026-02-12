@@ -1,12 +1,12 @@
-import { FieldLabel } from '../../../components/ui/field';
 import {
+  Label,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../components/ui/select';
+} from '@intern-3a-club/shadcn';
 
 // type TeachersProps = {
 //   teacherName: ClassTeacherType[];
@@ -18,7 +18,12 @@ export const Teachers = () => {
   return (
     <Select>
       <div className="flex flex-col w-full gap-3">
-        <FieldLabel htmlFor="duration">Хариуцсан багш</FieldLabel>
+        <Label
+          htmlFor="duration"
+          className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Хариуцсан багш
+        </Label>
         <div>
           <SelectTrigger className="w-full max-w-131.5">
             <SelectValue placeholder="Хариуцсан багш" />

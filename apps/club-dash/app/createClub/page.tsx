@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '../../components/ui/button';
-import { Calendar } from '../../components/ui/calendar';
+import { Button } from '@intern-3a-club/shadcn';
+import { Calendar } from '@intern-3a-club/shadcn';
 import {
   Dialog,
   DialogClose,
@@ -11,11 +11,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../../components/ui/dialog';
-import { Field, FieldGroup, FieldLabel } from '../../components/ui/field';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
+} from '@intern-3a-club/shadcn';
+// import { Field, FieldGroup, FieldLabel } from '../../components/ui/field';
+import { Input } from '@intern-3a-club/shadcn';
+import { Label } from '@intern-3a-club/shadcn';
+import { Textarea } from '@intern-3a-club/shadcn';
 import React, { useState } from 'react';
 import {
   Frequency,
@@ -81,8 +81,8 @@ const CreateClub = () => {
                 Шинэ клуб нээх формын мэдээллийг бөглөнө үү.
               </DialogDescription>
             </DialogHeader>
-            <FieldGroup>
-              <Field>
+            <div className="space-y-6">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="clubName">Клубын нэр</Label>
                 <Textarea
                   id="clubName"
@@ -90,12 +90,12 @@ const CreateClub = () => {
                   value={clubName}
                   onChange={handleClubName}
                 />
-              </Field>
+              </div>
               <Teachers
               // teacherName={teacherName}
               // setTeacherName={setTeacherName}
               />
-              <Field>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="description">Клубын зорилго</Label>
                 <Textarea
                   id="description"
@@ -103,24 +103,34 @@ const CreateClub = () => {
                   value={clubDesc}
                   onChange={handleClubDesc}
                 />
-              </Field>
-              <FieldGroup className="md:grid md:grid-cols-2">
-                <Field>
-                  <FieldLabel htmlFor="timetable">Клубын хуваарь</FieldLabel>
+              </div>
+              <div className="space-y-6 md:grid md:grid-cols-2">
+                <div className="flex flex-col gap-2">
+                  <Label
+                    htmlFor="timetable"
+                    className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Клубын хуваарь
+                  </Label>
                   <Calendar
                     mode="single"
                     className="rounded-lg border"
                     onDayClick={handleDayClick}
                   />
-                </Field>
-                <Field>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Frequency />
                   <div className="flex justify-between gap-5">
                     <ClassRoom />
                     <StartTime />
                   </div>
                   <Duration />
-                  <FieldLabel htmlFor="studentNumber">Сурагчдын тоо</FieldLabel>
+                  <Label
+                    htmlFor="studentNumber"
+                    className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Сурагчдын тоо
+                  </Label>
                   <Input
                     placeholder="Max: 20"
                     value={clubMaxStudent}
@@ -131,9 +141,9 @@ const CreateClub = () => {
                     value={clubMinStudent}
                     onChange={handleClubMin}
                   />
-                </Field>
-              </FieldGroup>
-            </FieldGroup>
+                </div>
+              </div>
+            </div>
             <DialogFooter>
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>

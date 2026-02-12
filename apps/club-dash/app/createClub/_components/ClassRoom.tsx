@@ -1,4 +1,4 @@
-import { FieldLabel } from '../../../components/ui/field';
+import { Label } from '@intern-3a-club/shadcn';
 import {
   Select,
   SelectContent,
@@ -6,13 +6,18 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../components/ui/select';
+} from '@intern-3a-club/shadcn';
 
 export const ClassRoom = () => {
   return (
     <Select>
       <div className="flex flex-col w-full gap-3">
-        <FieldLabel htmlFor="classRoom">Орох Анги</FieldLabel>
+        <Label
+          htmlFor="classRoom"
+          className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Орох Анги
+        </Label>
         <div>
           <SelectTrigger className="w-full max-w-48">
             <SelectValue placeholder="301" />
