@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -76,11 +77,15 @@ const CreateClub = () => {
           <DialogContent className="bg-white">
             <DialogHeader>
               <DialogTitle>Шинэ клуб нээх</DialogTitle>
+              <DialogDescription className="sr-only">
+                Шинэ клуб нээх формын мэдээллийг бөглөнө үү.
+              </DialogDescription>
             </DialogHeader>
             <FieldGroup>
               <Field>
                 <Label htmlFor="clubName">Клубын нэр</Label>
                 <Textarea
+                  id="clubName"
                   placeholder="Клубын нэр"
                   value={clubName}
                   onChange={handleClubName}
@@ -93,6 +98,7 @@ const CreateClub = () => {
               <Field>
                 <Label htmlFor="description">Клубын зорилго</Label>
                 <Textarea
+                  id="description"
                   placeholder="Клубын зорилго"
                   value={clubDesc}
                   onChange={handleClubDesc}

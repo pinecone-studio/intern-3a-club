@@ -6,8 +6,11 @@ describe('Teachers Component', () => {
   it('renders the correct label and placeholder', () => {
     render(<Teachers />);
 
-    expect(screen.getByText(/Хариуцсан багш/i)).toBeInTheDocument();
+    // expect(screen.getByText(/Хариуцсан багш/i)).toBeInTheDocument();
 
+    expect(
+      screen.getByText(/Хариуцсан багш/i, { selector: 'label' })
+    ).toBeInTheDocument();
     expect(screen.getByRole('combobox')).toHaveTextContent('Хариуцсан багш');
   });
 

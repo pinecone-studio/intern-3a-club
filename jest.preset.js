@@ -12,6 +12,7 @@ module.exports = {
     '.config.js',
     'route.ts',
     'layout.tsx',
+    'type.ts',
   ],
   collectCoverageFrom: [
     '**/*.ts',
