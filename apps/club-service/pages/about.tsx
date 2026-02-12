@@ -1,4 +1,4 @@
-export const Home = () => {
+export const About = () => {
   return (
     <div>
       <h1>Welcome to the Club Service!</h1>
