@@ -36,10 +36,6 @@ const CreateClub = () => {
   const [clubMinStudent, setClubMinStudent] = useState<string>('');
   console.log({
     clubStartDate,
-    clubName,
-    clubDesc,
-    clubMaxStudent,
-    clubMinStudent,
   });
   const handleClubName = (e: {
     target: { value: React.SetStateAction<string> };
@@ -65,95 +61,98 @@ const CreateClub = () => {
     setClubMinStudent(e.target.value);
   };
   return (
-    <div className="bg-white w-screen h-screen flex justify-center items-center">
-      <Dialog>
-        <form>
-          <DialogTrigger asChild>
-            <Button variant={'outline'}>Клуб нээх</Button>
-          </DialogTrigger>
-          <DialogContent className="bg-white">
-            <DialogHeader>
-              <DialogTitle>Шинэ клуб нээх</DialogTitle>
-              <DialogDescription className="sr-only">
-                Шинэ клуб нээх формын мэдээллийг бөглөнө үү.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-6">
+    <Dialog>
+      <form>
+        <DialogTrigger asChild>
+          <Button
+            variant={'outline'}
+            className="bg-secondary border border-border p-6 rounded-2xl text-xs font-black uppercase"
+          >
+            Клуб нээх
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Шинэ клуб нээх</DialogTitle>
+            <DialogDescription className="sr-only">
+              Шинэ клуб нээх формын мэдээллийг бөглөнө үү.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="clubName">Клубын нэр</Label>
+              <Textarea
+                id="clubName"
+                placeholder="Клубын нэр"
+                value={clubName}
+                onChange={handleClubName}
+              />
+            </div>
+            <Teachers />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="description">Клубын зорилго</Label>
+              <Textarea
+                id="description"
+                placeholder="Клубын зорилго"
+                value={clubDesc}
+                onChange={handleClubDesc}
+              />
+            </div>
+            <div className="space-y-6 md:grid md:grid-cols-2">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="clubName">Клубын нэр</Label>
-                <Textarea
-                  id="clubName"
-                  placeholder="Клубын нэр"
-                  value={clubName}
-                  onChange={handleClubName}
+                <Label
+                  htmlFor="timetable"
+                  className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Клубын хуваарь
+                </Label>
+                <Calendar
+                  mode="single"
+                  className="rounded-lg border"
+                  onDayClick={handleDayClick}
                 />
               </div>
-              <Teachers />
               <div className="flex flex-col gap-2">
-                <Label htmlFor="description">Клубын зорилго</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Клубын зорилго"
-                  value={clubDesc}
-                  onChange={handleClubDesc}
+                <Frequency />
+                <div className="flex justify-between gap-5">
+                  <ClassRoom />
+                  <StartTime />
+                </div>
+                <Duration />
+                <Label
+                  htmlFor="studentNumber"
+                  className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Сурагчдын тоо
+                </Label>
+                <Input
+                  placeholder="Max: 20"
+                  value={clubMaxStudent}
+                  onChange={handleClubMax}
                 />
-              </div>
-              <div className="space-y-6 md:grid md:grid-cols-2">
-                <div className="flex flex-col gap-2">
-                  <Label
-                    htmlFor="timetable"
-                    className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Клубын хуваарь
-                  </Label>
-                  <Calendar
-                    mode="single"
-                    className="rounded-lg border"
-                    onDayClick={handleDayClick}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Frequency />
-                  <div className="flex justify-between gap-5">
-                    <ClassRoom />
-                    <StartTime />
-                  </div>
-                  <Duration />
-                  <Label
-                    htmlFor="studentNumber"
-                    className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Сурагчдын тоо
-                  </Label>
-                  <Input
-                    placeholder="Max: 20"
-                    value={clubMaxStudent}
-                    onChange={handleClubMax}
-                  />
-                  <Input
-                    placeholder="Min"
-                    value={clubMinStudent}
-                    onChange={handleClubMin}
-                  />
-                </div>
+                <Input
+                  placeholder="Min"
+                  value={clubMinStudent}
+                  onChange={handleClubMin}
+                />
               </div>
             </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <Button
-                type="submit"
-                variant={'outline'}
-                className="bg-black text-white"
-              >
-                Create Club
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </form>
-      </Dialog>
-    </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button
+              type="submit"
+              variant={'outline'}
+              className="bg-black text-white"
+            >
+              Create Club
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </form>
+    </Dialog>
   );
 };
 export default CreateClub;
