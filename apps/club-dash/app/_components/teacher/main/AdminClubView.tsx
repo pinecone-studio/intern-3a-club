@@ -44,7 +44,7 @@ export const AdminClubsView = () => {
       {/* HEADER */}
       <div className="flex items-center justify-between mb-12">
         <div>
-          <h2 className="text-4xl font-black uppercase italic flex gap-3">
+          <h2 className="text-4xl font-black uppercase flex gap-3">
             <ShieldCheck className="h-10 w-10" /> Admin Clubs
           </h2>
           <p className="text-muted-foreground mt-2">

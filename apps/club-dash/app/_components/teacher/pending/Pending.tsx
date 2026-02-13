@@ -9,7 +9,7 @@ interface PendingClubDetailProps {
 export const PendingClubDetail = ({ club }: PendingClubDetailProps) => {
   return (
     <div>
-      <p className="text-sm text-muted-foreground italic pb-2.5">{club.goal}</p>
+      <p className="text-sm text-muted-foreground pb-2.5">{club.goal}</p>
 
       <div className="grid grid-cols-2 gap-3">
         <DetailTile

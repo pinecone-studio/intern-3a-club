@@ -1,6 +1,6 @@
 import { Calendar, DoorOpen, Users2, Clock } from 'lucide-react';
 import { DetailTile } from '../main/DetailTile';
-import { ApprovedClubDetailProps } from '@/libs/types';
+import { ApprovedClubDetailProps } from '../../../../libs/types';
 
 export const ApprovedClubDetail = ({
   club,
@@ -18,7 +18,7 @@ export const ApprovedClubDetail = ({
   return (
     <div className="grid md:grid-cols-2 gap-6">
       <div className="space-y-4">
-        <p className="text-sm text-muted-foreground italic">{club?.goal}</p>
+        <p className="text-sm text-muted-foreground">{club?.goal}</p>
 
         <div className="grid grid-cols-2 gap-3">
           <DetailTile
