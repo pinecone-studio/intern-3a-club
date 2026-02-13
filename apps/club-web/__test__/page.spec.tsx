@@ -36,21 +36,6 @@ describe('Club Web Page & Logic - ABSOLUTE 100% Coverage Suite', () => {
   it('renders home page', () => {
     render(<Home />);
     expect(screen.getByText('page')).toBeInTheDocument();
-import { render, screen } from '@testing-library/react';
-import Index from '../app/page';
-
-describe('Index (page)', () => {
-  it('should render hello text', async () => {
-    const Page = await Index();
-    render(Page);
-    expect(screen.getByText('hello')).toBeInTheDocument();
-  });
-
-  it('should have a div with red background class', async () => {
-    const Page = await Index();
-    const { container } = render(Page);
-    const div = container.querySelector('.bg-red-500');
-    expect(div).toBeInTheDocument();
   });
 
   // 2. Бүх Form Input-ууд болон Validation UI
@@ -92,7 +77,7 @@ describe('Index (page)', () => {
 
   // 3. ALERT & SUBMIT COVERAGE (CreateClubCenter Line 89)
   it('calls alert on form submit and covers onFormSubmit', () => {
-    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => { });
+    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
     render(<CreateClubCenter />);
 
     const submitBtn = screen.getByRole('button', { name: /хүсэлт илгээх/i });
@@ -118,7 +103,9 @@ describe('Index (page)', () => {
 
     // Mocked Today: 15 (2024-04-15)
     // Select 15th (Monday)
-    const dayButtons = screen.getAllByRole('button').filter((b) => b.textContent === '15');
+    const dayButtons = screen
+      .getAllByRole('button')
+      .filter((b) => b.textContent === '15');
     const activeDay = dayButtons.find((b) => !b.hasAttribute('disabled'));
 
     if (activeDay) {
@@ -167,7 +154,9 @@ describe('Index (page)', () => {
   // New Test for CreateClubCenter Line 74 (Toggle Remove)
   it('toggles date selection on and off (CreateClubCenter line 74)', () => {
     render(<CreateClubCenter />);
-    const buttons = screen.getAllByRole('button').filter(b => b.textContent === '15' && !b.hasAttribute('disabled'));
+    const buttons = screen
+      .getAllByRole('button')
+      .filter((b) => b.textContent === '15' && !b.hasAttribute('disabled'));
     const dayBtn = buttons[0];
 
     // 1. Select
@@ -187,10 +176,7 @@ describe('Index (page)', () => {
     // Select a valid date, e.g., 20
     const dayBtn = screen
       .getAllByRole('button')
-      .find(
-        (b) =>
-          !b.hasAttribute('disabled') && b.textContent === '20'
-      );
+      .find((b) => !b.hasAttribute('disabled') && b.textContent === '20');
     if (dayBtn) fireEvent.click(dayBtn);
 
     const removeIcon = screen.getByTestId('remove-date-icon');
@@ -231,8 +217,11 @@ describe('Index (page)', () => {
 
     it('covers null/empty branches in utils', () => {
       const d = new Date();
+      // @ts-expect-error: Testing edge case with null value to cover utility branches
       expect(isWeeklyMatch(d, null)).toBe(false);
+      // @ts-expect-error: Testing edge case with null value to cover utility branches
       expect(isMonthlyMatch(d, null)).toBe(false);
+      // @ts-expect-error: Testing edge case with null value to cover utility branches
       expect(isBiweeklyMatch(d, null, d.getTime())).toBe(false);
     });
   });
@@ -269,19 +258,18 @@ describe('Index (page)', () => {
       fireEvent.click(buttons[0]); // Add 1st available date (sorting trigger)
     }
   });
-
   // 10. Switch to None with Empty Selection (LogisticsSection Line 22)
   it('handles switching to none with empty dates', () => {
-
-    // 1. Switch to weekly (defaults to today -> 3 dates)
     render(<CreateClubCenter />);
     const repeatSelect = screen.getByDisplayValue(/Зөвхөн сонгосон өдрүүдэд/i);
     fireEvent.change(repeatSelect, { target: { value: 'weekly' } });
 
-    // 2. Remove all dates (manually click all selected buttons to toggle off)
-    // April 15, 22, 29 are selected.
-    for (const day of ['15', '22']) {
-      const btn = screen.getAllByRole('button').find(b => b.textContent === day && !b.hasAttribute('disabled'));
+    // forEach-ийн оронд for...of ашиглах (Nesting-ийг багасгана)
+    const daysToClick = ['15', '22'];
+    for (const day of daysToClick) {
+      const btn = screen
+        .getAllByRole('button')
+        .find((b) => b.textContent === day && !b.hasAttribute('disabled'));
       if (btn) fireEvent.click(btn);
     }
 
