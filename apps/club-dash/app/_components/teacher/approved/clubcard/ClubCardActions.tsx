@@ -1,6 +1,6 @@
 import { Edit3, Check, X, ChevronDown } from 'lucide-react';
-import { cn } from '@/libs/utils';
-import { Props } from '@/libs/types';
+import { cn } from '../../../../../libs/utils';
+import { Props } from '../../../../../libs/types';
 
 export const ClubCardActions = ({
   req,

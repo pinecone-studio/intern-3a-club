@@ -75,10 +75,7 @@
     },
     {
       "files": ["*.jsx", "*.tsx"],
-      "excludedFiles": [
-        "page.tsx",
-        "layout.tsx"
-      ],
+      "excludedFiles": ["page.tsx", "layout.tsx"],
       "rules": {
         "unicorn/prefer-module": "off",
         "unicorn/filename-case": ["error", { "case": "pascalCase" }],
@@ -346,6 +343,16 @@
       "files": "*.json",
       "parser": "jsonc-eslint-parser",
       "rules": {}
+    },
+    {
+      "files": ["libs/shadcn/**/*.{ts,tsx}"],
+      "rules": {
+        "unicorn/filename-case": "off",
+        "@nx/enforce-module-boundaries": "off",
+        "complexity": "off",
+        "max-lines": "off",
+        "camelcase": "off"
+      }
     }
   ]
 }

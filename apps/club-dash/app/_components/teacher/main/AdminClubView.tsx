@@ -5,7 +5,8 @@ import { ShieldCheck } from 'lucide-react';
 import { requests } from '../../../../libs/mockdata';
 import { ClubCard } from '../approved/clubcard/ClubCard';
 import { PendingModal } from '../pending/PendingModal';
-import { Club } from '@/libs/types';
+import { Club } from '../../../../libs/types';
+import CreateClub from '../../../createClub/page';
 
 export const AdminClubsView = () => {
   const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -51,18 +52,21 @@ export const AdminClubsView = () => {
           </p>
         </div>
 
-        <button
-          onClick={openModalHandler}
-          className="relative bg-secondary border border-border px-6 py-3 rounded-2xl"
-        >
-          <span className="text-xs font-black uppercase">Хүсэлт</span>
+        <div className="flex justify-between items-center gap-4">
+          <CreateClub />
+          <button
+            onClick={openModalHandler}
+            className="relative bg-secondary border border-border px-6 py-3 rounded-2xl"
+          >
+            <span className="text-xs font-black uppercase">Хүсэлт</span>
 
-          {pending.length > 0 && (
-            <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-foreground text-background text-[11px] font-black flex items-center justify-center">
-              {pending.length}
-            </span>
-          )}
-        </button>
+            {pending.length > 0 && (
+              <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-foreground text-background text-[11px] font-black flex items-center justify-center">
+                {pending.length}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="space-y-4">

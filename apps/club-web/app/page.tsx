@@ -1,4 +1,5 @@
 import React from 'react';
+import { CreateClubCenter } from '../components/create-club/CreateClubCenter';
 
 // Энийг хэвээр үлдээж болно
 export const JoinClubPage = () => {
@@ -7,3 +8,12 @@ export const JoinClubPage = () => {
 
 // Гэхдээ Next.js-д заавал default export хэрэгтэй:
 export default JoinClubPage;
+const Home = () => {
+  return (
+    <div className="bg-blue-400">
+      <CreateClubCenter />
+    </div>
+  );
+};
+
+export default Home;

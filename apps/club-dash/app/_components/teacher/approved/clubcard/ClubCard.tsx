@@ -1,9 +1,9 @@
-import { cn } from '@/libs/utils';
+import { cn } from '../../../../../libs/utils';
 import { ClubCardHeader } from './ClubCardHeader';
 import { ClubCardActions } from './ClubCardActions';
 import { ApprovedClubDetail } from '../Approved';
 import { getContainerClass } from './Helper';
-import { ClubCardProps } from '@/libs/types';
+import { ClubCardProps } from '../../../../../libs/types';
 
 export const ClubCard = ({
   req,

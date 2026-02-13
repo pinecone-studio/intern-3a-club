@@ -18,9 +18,9 @@ import { Providers } from '../libs/apollo/Providers';
 import { ToggleItem } from '../app/_components/main/sidebar/ToggleItem';
 
 import { getInitialTheme } from '../libs/theme/get-initial-theme';
-import { cn } from '../libs/utils';
 import * as Types from '../libs/types';
 import { ViewRender } from '../app/_components/main/ViewRender';
+import { cn } from '../libs/utils';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
