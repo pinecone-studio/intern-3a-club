@@ -1,4 +1,4 @@
-import { Providers } from '@/libs/apollo/Providers';
+import { Providers } from '../libs/apollo/providers';
 import './global.css';
 
 const RootLayout = ({
