@@ -110,7 +110,7 @@ const CreateClub = () => {
                 </Label>
                 <Calendar
                   mode="single"
-                  className="rounded-lg border"
+                  className="rounded-lg border w-80"
                   onDayClick={handleDayClick}
                 />
               </div>
