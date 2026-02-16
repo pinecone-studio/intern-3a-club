@@ -117,7 +117,7 @@ const CreateClub = () => {
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
                       <span className="text-[10px] text-muted-foreground uppercase">
-                        Макс
+                        Max
                       </span>
                       <Input
                         id="max-students"
@@ -129,7 +129,7 @@ const CreateClub = () => {
                     </div>
                     <div className="space-y-1">
                       <span className="text-[10px] text-muted-foreground uppercase">
-                        Мин
+                        Min
                       </span>
                       <Input
                         id="min-students"

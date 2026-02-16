@@ -11,7 +11,7 @@ import React from 'react';
 
 type ClassroomProps = {
   clubClassRoom: string;
-  setClubClassRoom: (_v: string) => void; // Нэрийг товчлов эсвэл _v болгоно
+  setClubClassRoom: (_v: string) => void;
 };
 
 const mockClassroom = [
