@@ -98,7 +98,9 @@ const CreateClub = () => {
                 onChange={handleClubDesc}
               />
             </div>
-            <div className="space-y-6 md:grid md:grid-cols-2">
+            {/* <div className="space-y-6 gap-6 md:grid md:grid-cols-2"> */}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="timetable"
