@@ -27,6 +27,11 @@
 
 import React from 'react';
 
+export type ClassTeacherType = {
+  id: string;
+  name: string;
+};
+
 export interface ChildItem {
   label: string;
 }

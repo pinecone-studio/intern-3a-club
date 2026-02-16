@@ -22,10 +22,10 @@ import {
   StartTime,
   Teachers,
 } from './_components';
-
+import { ClassTeacherType } from 'apps/club-dash/libs/types';
 const CreateClub = () => {
   const [clubName, setClubName] = useState<string>('');
-  // const [teacherName, setTeacherName] = useState<ClassTeacherType[]>([]);
+  const [teacherName, setTeacherName] = useState<ClassTeacherType[]>([]);
   const [clubDesc, setClubDesc] = useState<string>('');
   const [clubStartDate, setClubStartDate] = useState<Date | undefined>();
   // const [clubFrequency, setClubFrequency] = useState<string>('');
@@ -88,7 +88,10 @@ const CreateClub = () => {
                 onChange={handleClubName}
               />
             </div>
-            <Teachers />
+            <Teachers
+              teacherName={teacherName}
+              setTeacherName={setTeacherName}
+            />
             <div className="flex flex-col gap-2">
               <Label htmlFor="description">Клубын зорилго</Label>
               <Textarea
