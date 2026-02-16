@@ -15,7 +15,6 @@ export const ClubForm = ({
   handleMonthChange,
   renderCalendarDays,
 }: ClubFormProps) => {
-  // 1. Бүх төрлийн оролтыг (input, select, textarea) зохицуулах нэгдсэн функц
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -42,9 +41,9 @@ export const ClubForm = ({
                 </label>
                 <input
                   type="text"
-                  name="name" // name заавал өгөх ёстой
+                  name="name"
                   value={formData.name}
-                  onChange={handleInputChange} // Функцийн нэрийг дамжуулна
+                  onChange={handleInputChange}
                   className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-primary/50 transition-all font-bold italic"
                   placeholder="Wizards Club..."
                 />
@@ -61,7 +60,7 @@ export const ClubForm = ({
                 <div className="relative">
                   <select
                     id="teacher-select"
-                    name="teacher" // name заавал өгөх ёстой
+                    name="teacher"
                     value={formData.teacher}
                     onChange={handleInputChange}
                     className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer"
@@ -101,7 +100,7 @@ export const ClubForm = ({
                   <input
                     id="student-email"
                     type="email"
-                    name="studentEmail" // name заавал өгөх ёстой
+                    name="studentEmail"
                     value={formData.studentEmail}
                     onChange={handleInputChange}
                     className="w-full bg-primary/5 border border-primary/20 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-primary/50 focus:bg-primary/10 transition-all duration-300 placeholder:text-white/20"
@@ -120,7 +119,7 @@ export const ClubForm = ({
             </label>
             <textarea
               rows={2}
-              name="goal" // name заавал өгөх ёстой
+              name="goal"
               value={formData.goal}
               onChange={handleInputChange}
               className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none font-medium"

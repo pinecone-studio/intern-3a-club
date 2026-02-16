@@ -3,14 +3,11 @@
 import React from 'react';
 import { X } from 'lucide-react';
 
-// 1. Inline type-ийг болиулж тусад нь interface зарлав
 interface SelectedDateItemProps {
   date: Date;
   onRemove: (_date: Date) => void;
 }
 
-// 2. Map доторх элементийг тусад нь компонент болгов
-// Ингэснээр onClick handler-ийг цэвэрхэн шийдэж болно
 const SelectedDateItem = ({ date, onRemove }: SelectedDateItemProps) => {
   const handleRemove = () => onRemove(date);
 
@@ -37,14 +34,13 @@ const SelectedDateItem = ({ date, onRemove }: SelectedDateItemProps) => {
 
 interface SelectedDatesListProps {
   dates: Date[];
-  onRemove: (_date: Date) => void; // d-г _date болгож өөрчлөв
+  onRemove: (_date: Date) => void;
 }
 
 export const SelectedDatesList = ({
   dates,
   onRemove,
 }: SelectedDatesListProps) => {
-  // Sort хийх логикийг JSX дотор биш тусад нь гаргах нь зөв
   const sortedDates = [...dates].sort((a, b) => a.getTime() - b.getTime());
 
   return (
