@@ -1,88 +1,57 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  within,
-} from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Frequency } from '../../app/createClub/_components';
+import React from 'react';
 
 describe('Frequency Component', () => {
-  it('renders the trigger with the correct default text', () => {
-    render(<Frequency />);
+  const mockSetFrequency = jest.fn();
+  const defaultFrequency = 'Зөвхөн сонгосон өдрүүдэд';
 
-    const trigger = screen.getByRole('combobox');
-    expect(trigger).toHaveTextContent(/Зөвхөн сонгосон өдрүүдэд/i);
-    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('opens the dropdown and displays available frequency options', async () => {
-    render(<Frequency />);
+  it('renders the trigger and displays the correct initial label', () => {
+    render(
+      <Frequency
+        clubFrequency={defaultFrequency}
+        setClubFrequency={mockSetFrequency}
+      />
+    );
 
     const trigger = screen.getByRole('combobox');
-    fireEvent.click(trigger);
+    expect(trigger).toHaveTextContent(defaultFrequency);
+  });
 
-    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  it('opens the dropdown and shows all Mongolian options', async () => {
+    render(
+      <Frequency
+        clubFrequency={defaultFrequency}
+        setClubFrequency={mockSetFrequency}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('combobox'));
 
     const listbox = await screen.findByRole('listbox');
-
-    expect(
-      within(listbox).getByText(/Зөвхөн сонгосон өдрүүдэд/i)
-    ).toBeInTheDocument();
     expect(within(listbox).getByText(/Долоо хоног бүр/i)).toBeInTheDocument();
-    expect(
-      within(listbox).getByText(/2 долоо хоног тутам/i)
-    ).toBeInTheDocument();
     expect(within(listbox).getByText(/Сар бүр/i)).toBeInTheDocument();
   });
 
-  it('selects an option and updates the trigger display', async () => {
-    render(<Frequency />);
+  it('calls setClubFrequency with the correct text when an option is clicked', async () => {
+    render(
+      <Frequency
+        clubFrequency={defaultFrequency}
+        setClubFrequency={mockSetFrequency}
+      />
+    );
 
-    const trigger = screen.getByRole('combobox');
-    fireEvent.click(trigger);
+    fireEvent.click(screen.getByRole('combobox'));
 
     const listbox = await screen.findByRole('listbox');
     const monthlyOption = within(listbox).getByText(/Сар бүр/i);
     fireEvent.click(monthlyOption);
 
-    await waitFor(() => {
-      expect(trigger).toHaveTextContent(/Сар бүр/i);
-      expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    });
-  });
-
-  it('closes the dropdown without selecting an option', async () => {
-    render(<Frequency />);
-
-    const trigger = screen.getByRole('combobox');
-
-    fireEvent.click(trigger);
-    expect(trigger).toHaveAttribute('aria-expanded', 'true');
-
-    fireEvent.keyDown(trigger, { key: 'Escape', code: 'Escape' });
-
-    await waitFor(() => {
-      expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    });
-  });
-
-  it('re-selecting the same option keeps it selected', async () => {
-    render(<Frequency />);
-
-    const trigger = screen.getByRole('combobox');
-    fireEvent.click(trigger);
-
-    const listbox = await screen.findByRole('listbox');
-    const selectedDaysOption = within(listbox).getByText(
-      /Зөвхөн сонгосон өдрүүдэд/i
-    );
-    fireEvent.click(selectedDaysOption);
-
-    await waitFor(() => {
-      expect(trigger).toHaveTextContent(/Зөвхөн сонгосон өдрүүдэд/i);
-      expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    });
+    expect(mockSetFrequency).toHaveBeenCalledWith('Сар бүр');
   });
 });

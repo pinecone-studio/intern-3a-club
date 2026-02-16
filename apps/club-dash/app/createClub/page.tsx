@@ -1,6 +1,4 @@
 'use client';
-import { Button } from '@intern-3a-club/shadcn';
-import { Calendar } from '@intern-3a-club/shadcn';
 import {
   Dialog,
   DialogClose,
@@ -10,11 +8,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  Textarea,
+  Input,
+  Label,
+  Calendar,
+  Button,
 } from '@intern-3a-club/shadcn';
-import { Input } from '@intern-3a-club/shadcn';
-import { Label } from '@intern-3a-club/shadcn';
-import { Textarea } from '@intern-3a-club/shadcn';
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Frequency,
   ClassRoom,
@@ -22,121 +22,125 @@ import {
   StartTime,
   Teachers,
 } from './_components';
-
+import { useCreateClubState } from '../_hooks/use-createclub-states';
 const CreateClub = () => {
-  const [clubName, setClubName] = useState<string>('');
-  // const [teacherName, setTeacherName] = useState<ClassTeacherType[]>([]);
-  const [clubDesc, setClubDesc] = useState<string>('');
-  const [clubStartDate, setClubStartDate] = useState<Date | undefined>();
-  // const [clubFrequency, setClubFrequency] = useState<string>('');
-  // const [clubClassRoom, setClubClassRoom] = useState<number>();
-  // const [clubStartTime, setClubStartTime] = useState<string>('');
-  // const [clubDuration, setClubDuration] = useState<string>('');
-  const [clubMaxStudent, setClubMaxStudent] = useState<string>('');
-  const [clubMinStudent, setClubMinStudent] = useState<string>('');
-  console.log({
-    clubStartDate,
-  });
-  const handleClubName = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setClubName(e.target.value);
+  const { state, setters, handlers } = useCreateClubState();
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = {
+      name: state.clubName,
+      teacher: state.teacherName,
+      description: state.clubDesc,
+      startDate: state.clubStartDate,
+      frequency: state.clubFrequency,
+      classRoom: state.clubClassRoom,
+      startTime: state.clubStartTime,
+      duration: state.clubDuration,
+      minStudents: state.clubMinStudent,
+      maxStudents: state.clubMaxStudent,
+    };
+    console.log('Шинэ клубын мэдээлэл:', payload);
   };
-  const handleClubDesc = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setClubDesc(e.target.value);
-  };
-  const handleDayClick = (day: Date) => {
-    setClubStartDate(day);
-  };
-  const handleClubMax = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setClubMaxStudent(e.target.value);
-  };
-  const handleClubMin = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setClubMinStudent(e.target.value);
-  };
+
   return (
     <Dialog>
-      <form>
-        <DialogTrigger asChild>
-          <Button
-            variant={'outline'}
-            className="bg-secondary border border-border p-6 rounded-2xl text-xs font-black uppercase"
-          >
-            Клуб нээх
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          className="bg-secondary border p-6 rounded-2xl text-xs font-black uppercase"
+        >
+          Клуб нээх
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Шинэ клуб нээх</DialogTitle>
             <DialogDescription className="sr-only">
               Шинэ клуб нээх формын мэдээллийг бөглөнө үү.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6">
+          <div className="space-y-6 py-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="clubName">Клубын нэр</Label>
               <Textarea
                 id="clubName"
                 placeholder="Клубын нэр"
-                value={clubName}
-                onChange={handleClubName}
+                value={state.clubName}
+                onChange={handlers.handleName}
               />
             </div>
-            <Teachers />
+            <Teachers
+              teacherName={state.teacherName}
+              setTeacherName={setters.setTeacherName}
+            />
             <div className="flex flex-col gap-2">
               <Label htmlFor="description">Клубын зорилго</Label>
               <Textarea
                 id="description"
                 placeholder="Клубын зорилго"
-                value={clubDesc}
-                onChange={handleClubDesc}
+                value={state.clubDesc}
+                onChange={handlers.handleDesc}
               />
             </div>
-            {/* <div className="space-y-6 gap-6 md:grid md:grid-cols-2"> */}
-
-            <div className="grid grid-cols-1 md:grid-cols-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
-                <Label
-                  htmlFor="timetable"
-                  className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Клубын хуваарь
-                </Label>
+                <Label className="text-sm font-semibold">Клубын хуваарь</Label>
                 <Calendar
                   mode="single"
-                  className="rounded-lg border w-80"
-                  onDayClick={handleDayClick}
+                  className="rounded-lg border"
+                  selected={state.clubStartDate}
+                  onSelect={setters.setClubStartDate}
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <Frequency />
+              <div className="flex flex-col gap-4">
+                <Frequency
+                  clubFrequency={state.clubFrequency}
+                  setClubFrequency={setters.setClubFrequency}
+                />
                 <div className="flex justify-between gap-5">
-                  <ClassRoom />
-                  <StartTime />
+                  <ClassRoom
+                    clubClassRoom={state.clubClassRoom}
+                    setClubClassRoom={setters.setClubClassRoom}
+                  />
+                  <StartTime
+                    clubStartTime={state.clubStartTime}
+                    setClubStartTime={setters.setClubStartTime}
+                  />
                 </div>
-                <Duration />
-                <Label
-                  htmlFor="studentNumber"
-                  className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Сурагчдын тоо
-                </Label>
-                <Input
-                  placeholder="Max: 20"
-                  value={clubMaxStudent}
-                  onChange={handleClubMax}
+                <Duration
+                  clubDuration={state.clubDuration}
+                  setClubDuration={setters.setClubDuration}
                 />
-                <Input
-                  placeholder="Min"
-                  value={clubMinStudent}
-                  onChange={handleClubMin}
-                />
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold">Сурагчдын тоо</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-muted-foreground uppercase">
+                        Макс
+                      </span>
+                      <Input
+                        id="max-students"
+                        type="number"
+                        placeholder="20"
+                        value={state.clubMaxStudent}
+                        onChange={handlers.handleMax}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-muted-foreground uppercase">
+                        Мин
+                      </span>
+                      <Input
+                        id="min-students"
+                        type="number"
+                        placeholder="5"
+                        value={state.clubMinStudent}
+                        onChange={handlers.handleMin}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -144,16 +148,12 @@ const CreateClub = () => {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button
-              type="submit"
-              variant={'outline'}
-              className="bg-black text-white"
-            >
+            <Button type="submit" className="bg-black text-white">
               Create Club
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 };

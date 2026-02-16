@@ -7,42 +7,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@intern-3a-club/shadcn';
+import { ClassTeacherType } from '../../../../club-dash/libs/types';
 
-// type TeachersProps = {
-//   teacherName: ClassTeacherType[];
-//   setTeacherName: Dispatch<SetStateAction<ClassTeacherType[]>>;
-// };
+type TeachersProps = {
+  teacherName: string;
+  setTeacherName: (_name: string) => void;
+};
 
-// export function Teachers({ teacherName, setTeacherName }: TeachersProps) {
-export const Teachers = () => {
+const mockTeachers: ClassTeacherType[] = [
+  { id: '1', name: 'Erdenetsogt' },
+  { id: '2', name: 'Narantsatsralt' },
+  { id: '3', name: 'Bilguundul' },
+  { id: '4', name: 'Elbeg' },
+];
+
+export const Teachers = ({ teacherName, setTeacherName }: TeachersProps) => {
   return (
-    <Select>
-      <div className="flex flex-col w-full gap-3">
-        <Label
-          htmlFor="duration"
-          className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Хариуцсан багш
-        </Label>
-        <div>
-          <SelectTrigger className="w-full max-w-131.5">
-            <SelectValue placeholder="Хариуцсан багш" />
-          </SelectTrigger>
-          <SelectContent className="bg-white">
-            <SelectGroup>
-              <SelectItem
-                value="Erdenetsogt"
-                defaultChecked
-                defaultValue={'Erdenetsogt'}
-              >
-                Erdenetsogt
+    <div className="flex flex-col w-full gap-3">
+      <Label htmlFor="teacher-select" className="text-sm font-semibold">
+        Хариуцсан багш
+      </Label>
+      <Select onValueChange={setTeacherName} value={teacherName || ''}>
+        <SelectTrigger className="w-full max-w-131.5" id="teacher-select">
+          <SelectValue placeholder="Хариуцсан багш" />
+        </SelectTrigger>
+        <SelectContent className="bg-white">
+          <SelectGroup>
+            {mockTeachers.map((teacher) => (
+              <SelectItem value={teacher.name} key={teacher.id}>
+                {teacher.name}
               </SelectItem>
-              <SelectItem value="Narantsatsralt">Narantsatsralt</SelectItem>
-              <SelectItem value="Bilguundul">Bilguundul</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </div>
-      </div>
-    </Select>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
   );
 };

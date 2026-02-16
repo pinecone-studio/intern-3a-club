@@ -8,9 +8,36 @@ import {
   SelectValue,
 } from '@intern-3a-club/shadcn';
 
-export const Duration = () => {
+type DurationProps = {
+  clubDuration: string;
+  setClubDuration: React.Dispatch<React.SetStateAction<string>>;
+};
+const mockDuration = [
+  {
+    id: '1',
+    duration: '1:00',
+  },
+  {
+    id: '2',
+    duration: '1:30',
+  },
+  {
+    id: '3',
+    duration: '2:00',
+  },
+];
+
+export const Duration = ({ clubDuration, setClubDuration }: DurationProps) => {
+  const handleSelectedDuration = (selectedDurationId: string) => {
+    const selectedDuration = mockDuration.find(
+      (time) => time.id === selectedDurationId
+    );
+    if (selectedDuration) {
+      setClubDuration(selectedDuration.duration);
+    }
+  };
   return (
-    <Select>
+    <Select onValueChange={handleSelectedDuration}>
       <div className="flex flex-col w-full gap-3">
         <Label
           htmlFor="duration"
@@ -20,19 +47,15 @@ export const Duration = () => {
         </Label>
         <div>
           <SelectTrigger className="w-full max-w-63.75">
-            <SelectValue placeholder="1 цаг" />
+            <SelectValue placeholder="1 цаг">{clubDuration}</SelectValue>
           </SelectTrigger>
           <SelectContent className="bg-white">
             <SelectGroup>
-              <SelectItem
-                value="oneHour"
-                defaultChecked
-                defaultValue={'oneHour'}
-              >
-                1:00 цаг
-              </SelectItem>
-              <SelectItem value="oneHourHalf">1:30 цаг</SelectItem>
-              <SelectItem value="twoHour">2:00 цаг</SelectItem>
+              {mockDuration.map((time) => (
+                <SelectItem value={time.id} key={time.id}>
+                  {time.duration} цаг
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </div>
