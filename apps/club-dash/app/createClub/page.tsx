@@ -98,7 +98,9 @@ const CreateClub = () => {
                 onChange={handleClubDesc}
               />
             </div>
-            <div className="space-y-6 md:grid md:grid-cols-2">
+            {/* <div className="space-y-6 gap-6 md:grid md:grid-cols-2"> */}
+
+            <div className="grid grid-cols-1 md:grid-cols-2">
               <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="timetable"
@@ -108,7 +110,7 @@ const CreateClub = () => {
                 </Label>
                 <Calendar
                   mode="single"
-                  className="rounded-lg border"
+                  className="rounded-lg border w-80"
                   onDayClick={handleDayClick}
                 />
               </div>
