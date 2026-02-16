@@ -8,9 +8,47 @@ import {
   SelectValue,
 } from '@intern-3a-club/shadcn';
 
-export const StartTime = () => {
+type StartTimeProps = {
+  clubStartTime: string;
+  setClubStartTime: React.Dispatch<React.SetStateAction<string>>;
+};
+const mockStartTime = [
+  {
+    id: '1',
+    startTime: '13:00',
+  },
+  {
+    id: '2',
+    startTime: '14:00',
+  },
+  {
+    id: '3',
+    startTime: '15:00',
+  },
+  {
+    id: '4',
+    startTime: '16:00',
+  },
+  {
+    id: '5',
+    startTime: '17:00',
+  },
+];
+
+export const StartTime = ({
+  clubStartTime,
+  setClubStartTime,
+}: StartTimeProps) => {
+  const handleSelectedStarttime = (selectedStarttimeId: string) => {
+    const selectedStartTime = mockStartTime.find(
+      (time) => time.id === selectedStarttimeId
+    );
+    if (selectedStartTime) {
+      setClubStartTime(selectedStartTime.startTime);
+    }
+  };
   return (
-    <Select>
+    <Select onValueChange={handleSelectedStarttime}>
       <div className="flex flex-col w-full gap-3">
         <Label
           htmlFor="startTime"
@@ -20,17 +58,15 @@ export const StartTime = () => {
         </Label>
         <div>
           <SelectTrigger className="w-full max-w-48">
-            <SelectValue placeholder="13:00" />
+            <SelectValue placeholder="13:00">{clubStartTime}</SelectValue>
           </SelectTrigger>
           <SelectContent className="bg-white">
             <SelectGroup>
-              <SelectItem value="13:00" defaultChecked defaultValue={'13:00'}>
-                13:00
-              </SelectItem>
-              <SelectItem value="14:00">14:00</SelectItem>
-              <SelectItem value="15:00">15:00</SelectItem>
-              <SelectItem value="16:00">16:00</SelectItem>
-              <SelectItem value="17:00">17:00</SelectItem>
+              {mockStartTime.map((time) => (
+                <SelectItem value={time.id} key={time.id}>
+                  {time.startTime}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </div>
