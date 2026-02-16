@@ -4,7 +4,6 @@ import { MoveDownIcon } from 'lucide-react';
 import React, { ChangeEvent } from 'react';
 import { CalendarSelectFieldProps, SelectOption } from './types';
 
-// 1. Option-д зориулсан тусдаа жижиг компонент (Энэ нь complexity-г хувааж авна)
 const CalendarOption = ({
   opt,
   index,

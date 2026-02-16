@@ -9,18 +9,18 @@ export interface CalendarSelectFieldProps {
   label: string;
   icon: ReactNode;
   value: string | number;
-  onChange: (_value: string) => void; // _ нэмсэн
+  onChange: (_value: string) => void;
   options: (string | SelectOption)[];
 }
 
 export interface ClubFormProps {
   formData: FormDataType;
-  setFormData: (_data: FormDataType) => void; // _ нэмсэн
+  setFormData: (_data: FormDataType) => void;
   handleSubmit: () => void;
   selectedDates: Date[];
-  setSelectedDates: (_dates: Date[]) => void; // _ нэмсэн
+  setSelectedDates: (_dates: Date[]) => void;
   currentMonth: Date;
-  handleMonthChange: (_offset: number) => void; // _ нэмсэн
+  handleMonthChange: (_offset: number) => void;
   renderCalendarDays: () => React.ReactNode;
 }
 
@@ -38,24 +38,19 @@ export type FormDataType = {
 
 export interface LogisticsSectionProps {
   formData: FormDataType;
-  setFormData: (_data: FormDataType) => void; // _ нэмсэн
+  setFormData: (_data: FormDataType) => void;
   selectedDates: Date[];
-  setSelectedDates: (_dates: Date[]) => void; // _ нэмсэн
+  setSelectedDates: (_dates: Date[]) => void;
   currentMonth: Date;
-  handleMonthChange: (_offset: number) => void; // _ нэмсэн
+  handleMonthChange: (_offset: number) => void;
   renderCalendarDays: () => React.ReactNode;
 }
 export interface CalendarDayProps {
   day: number;
-
   date: Date;
-
   isPast: boolean;
-
   isSelected: boolean;
-
   isToday: boolean;
-
   onToggle: (_d: Date) => void;
 }
 

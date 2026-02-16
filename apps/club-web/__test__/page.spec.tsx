@@ -1,4 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  cleanup,
+  waitFor,
+} from '@testing-library/react';
 import JoinClubPage from '../app/JoinClub/page';
 import React from 'react';
 import * as mockDataModule from '../lib/mockdata';
@@ -34,12 +40,21 @@ jest.mock('../lib/mockdata', () => ({
 }));
 
 jest.mock('../app/JoinClub/_components/ClubCard', () => ({
-  ClubCard: ({ onClick, club }: { onClick: (_id: number) => void; club: { id: number; name: string } }) => (
+  ClubCard: ({
+    onClick,
+    club,
+  }: {
+    onClick: (_id: number) => void;
+    club: { id: number; name: string };
+  }) => (
     <div>
       <div onClick={() => onClick(club.id)} role="button">
         {club.name}
       </div>
-      <button onClick={() => onClick(-9999)} data-testid="force-invalid-selection">
+      <button
+        onClick={() => onClick(-9999)}
+        data-testid="force-invalid-selection"
+      >
         Force Invalid
       </button>
     </div>
@@ -105,13 +120,10 @@ describe('JoinClubPage Full Coverage', () => {
 
     // 3. Verify EmptyState is rendered
     expect(screen.getByText(/Клуб сонгоно уу/i)).toBeInTheDocument();
-import {
-  render,
-  screen,
-  fireEvent,
-  cleanup,
-  waitFor,
-} from '@testing-library/react';
+  });
+});
+//
+
 import Home from '../app/page';
 import '@testing-library/jest-dom';
 import { CreateClubCenter } from '../components/create-club/CreateClubCenter';

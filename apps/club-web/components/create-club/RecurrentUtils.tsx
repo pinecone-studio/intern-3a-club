@@ -12,7 +12,6 @@ export const isBiweeklyMatch = (
 ) => {
   if (!(weekDays || []).includes(date.getDay())) return false;
 
-  // Цагийг үл харгалзан зөвхөн хоногийн зөрүүг авах
   const d1 = new Date(date).setHours(0, 0, 0, 0);
   const d2 = new Date(anchorTime).setHours(0, 0, 0, 0);
 
