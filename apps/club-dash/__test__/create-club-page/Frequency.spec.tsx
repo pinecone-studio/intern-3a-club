@@ -23,7 +23,18 @@ describe('Frequency Component', () => {
     expect(trigger).toHaveTextContent(defaultFrequency);
   });
 
-  it('opens the dropdown and shows all Mongolian options', async () => {
+  it('hides weekday buttons initially or when ID: 1 is selected', () => {
+    render(
+      <Frequency
+        clubFrequency={defaultFrequency}
+        setClubFrequency={mockSetFrequency}
+      />
+    );
+
+    expect(screen.queryByText('M')).not.toBeInTheDocument();
+  });
+
+  it('shows weekday buttons when a frequency other than ID: 1 is selected', async () => {
     render(
       <Frequency
         clubFrequency={defaultFrequency}
@@ -34,8 +45,34 @@ describe('Frequency Component', () => {
     fireEvent.click(screen.getByRole('combobox'));
 
     const listbox = await screen.findByRole('listbox');
-    expect(within(listbox).getByText(/Долоо хоног бүр/i)).toBeInTheDocument();
-    expect(within(listbox).getByText(/Сар бүр/i)).toBeInTheDocument();
+    const weeklyOption = within(listbox).getByText(/Долоо хоног бүр/i);
+    fireEvent.click(weeklyOption);
+
+    expect(screen.getByText('M')).toBeInTheDocument();
+  });
+
+  it('toggles weekday button styles using data-id attribute', async () => {
+    render(
+      <Frequency
+        clubFrequency="Долоо хоног бүр"
+        setClubFrequency={mockSetFrequency}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('combobox'));
+    const listbox = await screen.findByRole('listbox');
+    fireEvent.click(within(listbox).getByText(/Долоо хоног бүр/i));
+
+    const mondayButton = screen.getByText('M');
+
+    expect(mondayButton).toHaveClass('bg-white');
+    expect(mondayButton).toHaveAttribute('data-id', '1');
+
+    fireEvent.click(mondayButton);
+    expect(mondayButton).toHaveClass('bg-black');
+
+    fireEvent.click(mondayButton);
+    expect(mondayButton).toHaveClass('bg-white');
   });
 
   it('calls setClubFrequency with the correct text when an option is clicked', async () => {
