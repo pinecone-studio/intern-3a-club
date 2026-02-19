@@ -27,7 +27,7 @@ const CreateClub = () => {
   const { state, setters, handlers } = useCreateClubState();
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = {
+    const allValues = {
       name: state.clubName,
       teacher: state.teacherName,
       description: state.clubDesc,
@@ -39,9 +39,8 @@ const CreateClub = () => {
       minStudents: state.clubMinStudent,
       maxStudents: state.clubMaxStudent,
     };
-    console.log('Шинэ клубын мэдээлэл:', payload);
+    console.log('Шинэ клубын мэдээлэл:', allValues);
   };
-
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -92,12 +91,12 @@ const CreateClub = () => {
                   selected={state.clubStartDate}
                   onSelect={setters.setClubStartDate}
                 />
-              </div>
-              <div className="flex flex-col gap-4">
                 <Frequency
                   clubFrequency={state.clubFrequency}
                   setClubFrequency={setters.setClubFrequency}
                 />
+              </div>
+              <div className="flex flex-col gap-4">
                 <div className="flex justify-between gap-5">
                   <ClassRoom
                     clubClassRoom={state.clubClassRoom}
