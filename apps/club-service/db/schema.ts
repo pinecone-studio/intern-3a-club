@@ -78,11 +78,11 @@ export const clubs = sqliteTable('clubs', {
   name: text('name').notNull(),
   description: text('description'),
   teacherId: text('teacherId'),
-  minMember: integer('minMember'),
-  maxMember: integer('maxMember'),
+  minMember: integer('minMember').notNull(),
+  maxMember: integer('maxMember').notNull(),
   type: text('type').notNull(),
   preferredTeacher: text('preferredTeacher'),
-  status: text('status').default('pending').notNull(),
+  status: text('status').notNull(),
   createdAt: text('createdAt')
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),
@@ -121,9 +121,8 @@ export const clubMembers = sqliteTable('club_members', {
 export const timetable = sqliteTable('timetable', {
   id: text('id').primaryKey(),
   date: text('date').notNull(),
+  room: text('room'),
   clubStartTime: text('clubStartTime'),
-  clubEndTime: text('clubEndTime'),
-  room: integer('room'),
   duration: integer('duration'),
   clubId: text('clubId')
     .notNull()

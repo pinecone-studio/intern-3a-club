@@ -2283,7 +2283,7 @@
     tslib "^2.4.0"
     ws "^8.19.0"
 
-"@graphql-tools/executor@^1.4.13", "@graphql-tools/executor@^1.4.9":
+"@graphql-tools/executor@^1.4.13", "@graphql-tools/executor@^1.4.9", "@graphql-tools/executor@^1.5.1":
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/@graphql-tools/executor/-/executor-1.5.1.tgz#2171473cc7cd0b7ca468c21d767eec9ac9df00fe"
   integrity sha512-n94Qcu875Mji9GQ52n5UbgOTxlgvFJicBPYD+FRks9HKIQpdNPjkkrKZUYNG51XKa+bf03rxNflm4+wXhoHHrA==
@@ -4298,6 +4298,13 @@
   integrity sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==
   dependencies:
     "@types/node" "*"
+
+"@types/graphql@^14.5.0":
+  version "14.5.0"
+  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-14.5.0.tgz#a545fb3bc8013a3547cf2f07f5e13a33642b75d6"
+  integrity sha512-MOkzsEp1Jk5bXuAsHsUi6BVv0zCO+7/2PTiZMXWDSsMXvNU6w/PLMQT2vHn8hy2i0JqojPz1Sz6rsFjHtsU0lA==
+  dependencies:
+    graphql "*"
 
 "@types/http-cache-semantics@*":
   version "4.2.0"
@@ -8181,7 +8188,7 @@ graphql-ws@^6.0.6:
   resolved "https://registry.yarnpkg.com/graphql-ws/-/graphql-ws-6.0.7.tgz#140307a513f0ba659ecec618d6cf15354a842f96"
   integrity sha512-yoLRW+KRlDmnnROdAu7sX77VNLC0bsFoZyGQJLy1cF+X/SkLg/fWkRGrEEYQK8o2cafJ2wmEaMqMEZB3U3DYDg==
 
-graphql@^16.12.0:
+graphql@*, graphql@^16.12.0:
   version "16.12.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.12.0.tgz#28cc2462435b1ac3fdc6976d030cef83a0c13ac7"
   integrity sha512-DKKrynuQRne0PNpEbzuEdHlYOMksHSUI8Zc9Unei5gTsMNA2/vMpoMz/yKba50pejK56qj98qM0SjYxAKi13gQ==
