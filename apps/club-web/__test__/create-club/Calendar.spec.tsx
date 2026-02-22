@@ -14,6 +14,19 @@ describe('Calendar Interaction Suite', () => {
 
   it('toggles date selection on and off (CreateClubCenter line 74)', () => {
     render(<CreateClubCenter />);
+
+    // Fill Step 1
+    fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
+      target: { value: 'Coding Club', name: 'name' },
+    });
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: 'bat', name: 'teacher' },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/Зорилго.../i), {
+      target: { value: 'Learn to code', name: 'goal' },
+    });
+    fireEvent.click(screen.getByText(/Үргэлжлүүлэх/i));
+
     const buttons = screen
       .getAllByRole('button')
       .filter((b) => b.textContent === '15' && !b.hasAttribute('disabled'));
@@ -26,12 +39,36 @@ describe('Calendar Interaction Suite', () => {
 
   it('navigates months and renders empty slots', () => {
     render(<CreateClubCenter />);
+    // Fill Step 1
+    fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
+      target: { value: 'Coding Club', name: 'name' },
+    });
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: 'bat', name: 'teacher' },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/Зорилго.../i), {
+      target: { value: 'Learn to code', name: 'goal' },
+    });
+    fireEvent.click(screen.getByText(/Үргэлжлүүлэх/i));
+
     fireEvent.click(screen.getByTestId('next-month-btn'));
     fireEvent.click(screen.getByTestId('prev-month-btn'));
   });
 
   it('handles sorting and date removal via icon', () => {
     render(<CreateClubCenter />);
+    // Fill Step 1
+    fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
+      target: { value: 'Coding Club', name: 'name' },
+    });
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: 'bat', name: 'teacher' },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/Зорилго.../i), {
+      target: { value: 'Learn to code', name: 'goal' },
+    });
+    fireEvent.click(screen.getByText(/Үргэлжлүүлэх/i));
+
     const buttons = screen
       .getAllByRole('button')
       .filter(
