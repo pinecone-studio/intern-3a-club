@@ -2,14 +2,11 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Award } from 'lucide-react';
 import { Club } from '../../../lib/type';
-// import { cn } from 'lib/utils';
-// import { InstructorCard } from './InsructorCard';
 import { ClubInfoGrid } from './ClubInfoGrid';
 import { ClubActionButtons } from './ClubActionButton';
 
-// 1. Алга болсон interface-ийг нэмж өгнө
 interface ClubDetailProps {
   selectedClub: Club & { isEnrolled?: boolean };
   onEnroll: (_id: number) => void;
@@ -25,12 +22,6 @@ export const ClubDetail = ({
   isLocked,
   remainingTime,
 }: ClubDetailProps) => {
-  // 2. Грид классыг complexity багасгахын тулд гадна тооцоолох
-  // const gridCols =
-  //   selectedClub.instructors.length === 1
-  //     ? 'grid-cols-1'
-  //     : 'grid-cols-1 md:grid-cols-2';
-
   const handleEnroll = () => {
     onEnroll(selectedClub.id);
   };
@@ -39,76 +30,82 @@ export const ClubDetail = ({
     onLeave(selectedClub.id);
   };
 
+  // Student ID Badge - Илүү гүн өнгөтэй болгов
   const StudentIdBadge = ({ id }: { id: string }) => (
-    <div className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-      <span className="text-[10px] font-bold text-white/50 tracking-tighter">
-        ID: {id}
+    <div className="px-3 py-2 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center transition-all hover:bg-white/10 hover:border-white/20">
+      <span className="text-[10px] font-medium text-white/40 tracking-wider">
+        {id}
       </span>
     </div>
   );
 
   return (
-    <div className="flex-1 space-y-6">
-      <div className="relative min-h-[500px] rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-md overflow-hidden">
+    <div className="flex-1 w-full h-full">
+      {/* Үндсэн контейнер -rgba(5, 10, 18, 0.6) ашиглан арын дэвсгэртэй уусгав */}
+      <div className="relative h-full rounded-3xl border border-white/10 bg-transparent bg-[radial-gradient(circle_at_20%_30%,_rgba(29,78,216,0.25)_0%,_transparent_30%),_radial-gradient(circle_at_20%_30%,_rgba(100,116,139,0.15)_0%,_transparent_90%)] p-8 lg:p-10 backdrop-blur-2xl overflow-hidden shadow-2xl">
+        
+        {/* Арын фонны туяа - Таны хэлсэн rgba цэнхэр туяаг энд ашиглав */}
+        <div 
+          className="absolute -top-24 -right-24 w-80 h-80 opacity-20 blur-[120px] rounded-full pointer-events-none"
+          style={{ backgroundColor: 'rgba(29, 78, 216, 0.8)' }}
+        />
+        
         <AnimatePresence mode="wait">
           <motion.div
             key={selectedClub.id}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="relative z-10"
           >
             {/* Header */}
-            <header className="mb-8 flex items-start justify-between">
-              <div>
-                <span className="rounded bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-400 uppercase">
-                  Premium Club
-                </span>
-                <h1 className="text-4xl font-black uppercase text-white mt-2">
+            <header className="mb-10 flex items-start justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1 text-[10px] font-bold text-blue-400 uppercase tracking-[0.1em] border border-blue-500/20">
+                    <Award size={12} /> Premium Club
+                  </span>
+                </div>
+                <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
                   {selectedClub.name}
                 </h1>
               </div>
-              <ShieldCheck className="h-12 w-12 text-white/10" />
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+                <ShieldCheck className="h-8 w-8 text-blue-400/50" />
+              </div>
             </header>
 
-            {/* Goal */}
-            <div className="mb-8 border-l-2 border-blue-400 border-primary/30 pl-6">
-              <h4 className="text-xs text-blue-500 font-bold uppercase tracking-[0.2em] text-primary mb-2">
-                Зорилго
-              </h4>
-              <p className="text-lg italic text-gray-300 text-muted-foreground leading-relaxed">
-                {selectedClub.description}
-              </p>
+            {/* Description/Goal */}
+            <div className="mb-12 relative max-w-3xl">
+              <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-gradient-to-b from-blue-500/50 to-transparent" />
+              <div className="pl-6">
+                <h4 className="text-[10px] text-blue-400/60 font-bold uppercase tracking-[0.2em] mb-3">
+                  Зорилго болон чиглэл
+                </h4>
+                <p className="text-xl text-white/80 font-light leading-relaxed">
+                  {selectedClub.description}
+                </p>
+              </div>
             </div>
 
-            {/* Instructors Grid */}
-            {/* <section className="mb-8 overflow-hidden rounded-[2rem] bg-white/5 border border-white/5">
-              <div className={cn('grid divide-white/5', gridCols)}>
-                {selectedClub.instructors.map((ins, idx) => (
-                  <InstructorCard
-                    key={`${ins.name}-${idx}`}
-                    instructor={ins}
-                    isMultiple={selectedClub.instructors.length > 1}
-                  />
-                ))}
-              </div>
-            </section> */}
-
-            <div className="grid grid-cols-2 gap-4 mb-10">
+            {/* Mentor Cards - Өнгийг rgba(5, 10, 18, 0.8) болгож өөрчлөв */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
               {selectedClub?.instructors?.map((ins) => (
                 <div
                   key={ins.name}
-                  className="flex items-center gap-4 rounded-3xl border border-white/5 bg-white/[0.02] p-6"
+                  className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.03] p-5 hover:bg-white/[0.06] transition-all group"
                 >
-                  <div className="relative h-14 w-14 rounded-full border-2 border-blue-500/50 p-1">
-                    <div className="h-full w-full rounded-full bg-blue-500/20 flex items-center justify-center font-bold text-white uppercase">
+                  <div className="relative h-14 w-14 rounded-full border border-white/10 p-1 shrink-0 group-hover:border-blue-500/50 transition-colors">
+                    <div className="h-full w-full rounded-full bg-gradient-to-br from-blue-500/20 to-transparent flex items-center justify-center font-bold text-blue-400">
                       {ins.name[0]}
                     </div>
                   </div>
                   <div>
-                    <p className="text-[9px] font-bold uppercase text-blue-400">
+                    <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest mb-0.5">
                       МЕНТОР
                     </p>
-                    <h3 className="text-lg font-black uppercase text-white">
+                    <h3 className="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors">
                       {ins.name}
                     </h3>
                   </div>
@@ -116,22 +113,30 @@ export const ClubDetail = ({
               ))}
             </div>
 
-            {/* Info and Progress */}
-            <ClubInfoGrid
-              schedule={selectedClub.schedule}
-              className={selectedClub.class}
-              current={selectedClub.currentMembers}
-              max={selectedClub.maxMembers}
-            />
-
-            <div className="grid grid-cols-4 gap-2 mt-4">
-              {['STU013', 'STU014', 'STU015', 'STU027'].map((id) => (
-                <StudentIdBadge key={id} id={id} />
-              ))}
+            {/* Info Grid Section */}
+            <div className="bg-white/[0.02] rounded-3xl border border-white/5 p-8 mb-6">
+               <ClubInfoGrid
+                schedule={selectedClub.schedule}
+                className={selectedClub.class}
+                current={selectedClub.currentMembers}
+                max={selectedClub.maxMembers}
+              />
             </div>
 
-            {/* Enrollment Logic */}
-            <div className="mt-8">
+            {/* Students Section */}
+            <div className="space-y-4">
+               <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.3em] ml-1">
+                 Бүртгүүлсэн суралцагчид
+               </p>
+               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+                {['STU013', 'STU014', 'STU015', 'STU027'].map((id) => (
+                  <StudentIdBadge key={id} id={id} />
+                ))}
+              </div>
+            </div>
+
+            {/* Action Buttons Container */}
+            <div className="mt-12 pt-8 border-t border-white/10">
               <ClubActionButtons
                 isEnrolled={Boolean(selectedClub.isEnrolled)}
                 isLocked={isLocked}

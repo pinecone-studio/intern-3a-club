@@ -61,24 +61,31 @@ const JoinClubPage = () => {
     [allClubs]
   );
 
-  if (allClubs.length === 0) return <EmptyState />;
-
   return (
-    <div className="relative min-h-screen w-full bg-[#050c1f] overflow-hidden">
-      <div className="relative z-10 mx-auto max-w-7xl p-6 lg:p-12">
+    <div className="relative min-h-screen w-full bg-[#050a12] bg-[radial-gradient(circle_at_20%_30%,_rgba(29,78,216,0.25)_0%,_transparent_30%),_radial-gradient(circle_at_30%_10%,_rgba(100,116,139,0.15)_0%,_transparent_60%)] overflow-hidden">
+      <div className="mx-auto max-w-[1600px] p-6 lg:p-8">
         <ClubsHeader openClubsCount={openClubsCount} />
-        <div className="mt-12 flex flex-col gap-8 lg:flex-row">
-          <div className="w-full space-y-4 lg:w-[400px]">
-            {allClubs.map((club) => (
-              <ClubCard
-                key={club.id}
-                club={club}
-                isSelected={selectedId === club.id}
-                onClick={handleClubSelect}
-              />
-            ))}
+
+        <div className="mt-8 flex flex-col gap-6 lg:flex-row items-start">
+          <div className="w-full space-y-3 lg:w-[380px] shrink-0 h-[calc(100vh-200px)] overflow-y-auto no-scrollbar">
+            {allClubs.length > 0 ? (
+              allClubs.map((club) => (
+                <ClubCard
+                  key={club.id}
+                  club={club}
+                  isSelected={selectedId === club.id}
+                  onClick={handleClubSelect}
+                />
+              ))
+            ) : (
+              <div className="text-white/40 text-sm text-center py-10">
+                Клуб олдсонгүй
+              </div>
+            )}
           </div>
-          <div className="flex-1">
+
+          {/* Баруун талын дэлгэрэнгүй хэсэг */}
+          <div className="flex-1 w-full min-h-[600px] bg-[#11161D]/50 border border-white/5 rounded-2xl backdrop-blur-sm">
             {selectedClub ? (
               <ClubDetail
                 selectedClub={selectedClub}
@@ -97,9 +104,15 @@ const JoinClubPage = () => {
   );
 };
 
+// EmptyState-ийг илүү "Modern Dashboard" стиль рүү оруулав
 const EmptyState = () => (
-  <div className="flex h-full items-center justify-center p-8">
-    <p className="text-white/20 uppercase font-black">Клуб сонгоно уу</p>
+  <div className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center">
+    <div className="w-16 h-16 mb-4 rounded-full bg-white/5 flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-dashed border-white/20 rounded-full animate-spin-slow" />
+    </div>
+    <p className="text-white/30 text-sm font-medium tracking-widest uppercase">
+      Мэдээлэл харахын тулд клуб сонгоно уу
+    </p>
   </div>
 );
 
