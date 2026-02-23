@@ -1,6 +1,7 @@
 import { DB } from 'db/drizzle';
 import { clubs, timetable } from 'db/schema';
 import { GraphQLError } from 'graphql';
+import { getNextDateOfDay } from 'graphql-gql/utils/date.util';
 
 type ClubStatus = 'pending' | 'approved' | 'declined';
 interface CreateClubInput {
@@ -28,48 +29,6 @@ interface CreateClubWithSchedulesArgs {
  * @param startDate Эхлэх огноо (YYYY-MM-DD)
  * @param dayName Гарагийн нэр (Monday, Tuesday...)
  */
-const getNextDateOfDay = (startDate: string, dayName: string): string => {
-  const days = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
-  const targetDay = days.findIndex(
-    (d) => d.toLowerCase() === dayName.toLowerCase()
-  );
-  const start = new Date(startDate);
-  const resultDate = new Date(start);
-  resultDate.setDate(start.getDate() + ((targetDay + 7 - start.getDay()) % 7));
-  return resultDate.toISOString().split('T')[0];
-};
-
-const prepareSchedules = (
-  clubId: string,
-  args: CreateClubWithSchedulesArgs
-) => {
-  const { startDate, classroom, startTime, duration, frequency, selectedDays } =
-    args;
-  const common = {
-    clubId,
-    room: classroom,
-    clubStartTime: startTime,
-    duration,
-  };
-
-  if (frequency === 'ONCE' || !selectedDays || selectedDays.length === 0) {
-    return [{ id: crypto.randomUUID(), date: startDate, ...common }];
-  }
-
-  return selectedDays.map((day) => ({
-    id: crypto.randomUUID(),
-    date: getNextDateOfDay(startDate, day),
-    ...common,
-  }));
-};
 
 export const createClubWithSchedules = async (
   _: unknown,
@@ -77,8 +36,17 @@ export const createClubWithSchedules = async (
 ) => {
   console.log('MUTATION START:', args);
 
+  const {
+    input,
+    startDate,
+    classroom,
+    startTime,
+    duration,
+    frequency,
+    selectedDays,
+  } = args;
+
   try {
-    const { input } = args;
     const clubId = crypto.randomUUID();
     const isTeacherCreated = !!input.teacherId;
 
@@ -90,7 +58,6 @@ export const createClubWithSchedules = async (
         description: input.description,
         creatorId: input.creatorId,
         teacherId: isTeacherCreated ? input.teacherId : null,
-        // Хэрэв багш томилогдсон бол шууд approved, үгүй бол pending
         status: isTeacherCreated ? 'approved' : 'pending',
         type: input.type || (isTeacherCreated ? 'mentor' : 'self'),
         preferredTeachers: isTeacherCreated ? null : input.preferredTeachers,
@@ -99,10 +66,38 @@ export const createClubWithSchedules = async (
       })
       .returning();
 
-    if (!newClub) throw new Error('Клуб үүсгэж чадсангүй.');
+    if (!newClub) {
+      throw new Error('Клуб үүсгэж чадсангүй.');
+    }
 
-    const schedules = prepareSchedules(clubId, args);
-    await DB.insert(timetable).values(schedules);
+    const schedulesToInsert = [];
+    const commonSchedule = {
+      clubId: clubId,
+      room: classroom,
+      clubStartTime: startTime,
+      duration: duration,
+    };
+
+    if (frequency === 'ONCE' || !selectedDays || selectedDays.length === 0) {
+      schedulesToInsert.push({
+        id: crypto.randomUUID(),
+        date: startDate,
+        ...commonSchedule,
+      });
+    } else {
+      for (const day of selectedDays) {
+        const actualDate = getNextDateOfDay(startDate, day);
+        schedulesToInsert.push({
+          id: crypto.randomUUID(),
+          date: actualDate,
+          ...commonSchedule,
+        });
+      }
+    }
+
+    if (schedulesToInsert.length > 0) {
+      await DB.insert(timetable).values(schedulesToInsert);
+    }
 
     console.log('SUCCESS: Club and schedules created.');
     return newClub;
