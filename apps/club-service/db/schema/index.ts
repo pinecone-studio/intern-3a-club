@@ -1,6 +1,0 @@
-// export * from './classes.schema';
-// export * from './club-members.schema';
-// export * from './clubs.schema';
-// export * from './students.schema';
-// export * from './teachers.schema';
-// export * from './timetable.schema';

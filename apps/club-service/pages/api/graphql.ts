@@ -1,9 +1,8 @@
 import * as GraphQL from 'graphql';
-import { makeExecutableSchema } from '@graphql-tools/schema'; //  заавал ашигла
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { NextRequest, NextResponse } from 'next/server';
 import { cors } from '../../utils/cors';
 import { errorResponse, jsonResponse } from '../../utils/responses';
-
 import { typeDefs } from 'graphql-gql/schema';
 import { resolvers } from 'graphql-gql/resolvers';
 import { Maybe } from 'graphql/jsutils/Maybe';

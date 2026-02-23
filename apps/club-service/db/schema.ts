@@ -107,6 +107,7 @@ export const classTeachers = sqliteTable('class_teachers', {
     .notNull(),
 });
 
+// --- CLUB MEMBERS TABLE ---
 export const clubMembers = sqliteTable('club_members', {
   id: text('id').primaryKey(),
   clubId: text('clubId')
@@ -120,6 +121,7 @@ export const clubMembers = sqliteTable('club_members', {
     .notNull(),
 });
 
+// --- CLUB TIMETABLE TABLE ---
 export const timetable = sqliteTable('timetable', {
   id: text('id').primaryKey(),
   date: text('date').notNull(),

@@ -6,4 +6,3 @@ export * from './min.member.util';
 export * from './preferred.teacher.util';
 export * from './schedule.util';
 export * from './teacher.util';
-export * from './type';

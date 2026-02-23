@@ -1,9 +1,9 @@
-import { createClubWithSchedules } from './mutations/clubs/create-club';
 import { DB } from 'db/drizzle';
-import { clubs, timetable } from 'db/schema';
 import { eq } from 'drizzle-orm';
 import { getAllClubs, getClubById } from './queries';
 import { InferSelectModel } from 'drizzle-orm';
+import { clubs, timetable } from 'db/schema';
+import { createClubWithSchedules } from './mutations';
 
 export type Club = InferSelectModel<typeof clubs>;
 interface GetClubByIdArgs {

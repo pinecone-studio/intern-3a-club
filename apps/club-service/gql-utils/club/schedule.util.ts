@@ -1,4 +1,4 @@
-import { CreateClubWithSchedulesArgs } from './type';
+import { CreateClubWithSchedulesArgs } from 'gql-type';
 import { getNextDateOfDay } from './date.util';
 
 export const resolveSchedules = (

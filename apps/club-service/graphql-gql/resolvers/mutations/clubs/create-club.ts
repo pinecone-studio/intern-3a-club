@@ -1,8 +1,7 @@
 import { DB } from 'db/drizzle';
 import { clubs, timetable } from 'db/schema';
-import { GraphQLError } from 'graphql';
+import { CreateClubWithSchedulesArgs } from 'gql-type';
 import {
-  CreateClubWithSchedulesArgs,
   resolveMaxMember,
   resolveMinMember,
   resolvePreferredTeachers,
@@ -10,7 +9,9 @@ import {
   resolveStatus,
   resolveTeacherId,
   resolveType,
-} from 'graphql-gql/utils';
+} from 'gql-utils/club';
+
+import { GraphQLError } from 'graphql';
 
 const handleMutationError = (error: unknown): never => {
   const message = error instanceof Error ? error.message : 'Unknown error';
