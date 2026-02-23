@@ -7,17 +7,11 @@ import { cn } from 'lib/utils';
 
 const ProgressBar = ({ step }: { step: number }) => (
   <div className="flex gap-4">
-    <div
-      className={cn(
-        'h-1 flex-1 rounded-full bg-primary'
-      )}
-    />
-    <div
-      className={cn(
-        'h-1 flex-1 rounded-full',
-        step === 2 ? 'bg-primary' : 'bg-white/10'
-      )}
-    />
+    {step === 1 ? (
+      <div className={cn('h-5 flex-1 rounded-full text-white')}>Алхам 1</div>
+    ) : (
+      <div className={cn('h-5 flex-1 rounded-full text-white')}>Алхам 2</div>
+    )}
   </div>
 );
 
@@ -26,7 +20,6 @@ export const ClubForm = (props: ClubFormProps) => {
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Complexity 3-аас хэтрүүлэхгүй тулд шалгалтыг маш энгийн болгов
   const getStep1Errors = useCallback(() => {
     const { name, teacher, goal } = formData;
     return [
@@ -63,12 +56,11 @@ export const ClubForm = (props: ClubFormProps) => {
 
   const onBack = useCallback(() => setStep(1), []);
 
-  // JSX хэсгийг Complexity-д тооцуулахгүйн тулд ийм байдлаар бичив
   const isStep1 = step === 1;
 
   return (
-    <div className="lg:col-span-12 space-y-8">
-      <div className="rounded-[3rem] border border-white/10 bg-white/5 p-10 backdrop-blur-3xl shadow-2xl">
+    <div className="lg:col-span-7 space-y-8 ">
+      <div className="rounded-[3rem] border border-white/10 bg-white/5 p-10 backdrop-blur-3xl shadow-2xl bg-zinc-700">
         <div className="space-y-10">
           <ProgressBar step={step} />
 

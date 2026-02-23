@@ -91,7 +91,7 @@ export const LogisticsForm = ({
             Number(formData.maxStudents) > 25 ? 'text-red-500' : 'text-white/40'
           )}
         >
-          <UserPlus2 size={12} /> Сурагчид (Макс 25)
+          <UserPlus2 size={12} /> Сурагчид (Макс 20)
         </p>
         <input
           type="number"

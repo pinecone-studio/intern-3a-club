@@ -1,4 +1,4 @@
-import { Globe2, MoveDownIcon, UserCheck } from 'lucide-react';
+import { Globe2, MoveDownIcon, UserCheck, Goal, Mail } from 'lucide-react';
 import React, { ChangeEvent } from 'react';
 import { Step1Props } from './types';
 import { cn } from 'lib/utils';
@@ -12,8 +12,8 @@ interface InputFieldBaseProps {
 }
 
 const InputField = ({ label, icon, children, error }: InputFieldBaseProps) => (
-  <div className="space-y-3">
-    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-primary flex items-center gap-2">
+  <div className="space-y-3 text-white">
+    <label className="text-[10px] font-black  text-primary flex items-center gap-2">
       {icon} {label}
     </label>
     {children}
@@ -26,7 +26,6 @@ export const Step1 = ({
   setFormData,
   errors = {},
 }: Step1Props & { errors?: Record<string, string> }) => {
-  // Алдаа 2: Complexity бууруулахын тулд логикийг хялбарчлав
   if (!formData) return null;
 
   const handleInputChange = (
@@ -80,7 +79,11 @@ export const Step1 = ({
       </div>
 
       {formData.teacher === 'student' && (
-        <InputField label="Сурагчийн и-мэйл хаяг" error={errors.studentEmail}>
+        <InputField
+          label="Сурагчийн и-мэйл хаяг"
+          icon={<Mail size={12} />}
+          error={errors.studentEmail}
+        >
           <input
             type="email"
             name="studentEmail"
@@ -92,7 +95,11 @@ export const Step1 = ({
         </InputField>
       )}
 
-      <InputField label="Клубын зорилго" error={errors.goal}>
+      <InputField
+        label="Клубын зорилго"
+        icon={<Goal size={12} />}
+        error={errors.goal}
+      >
         <textarea
           name="goal"
           rows={2}
