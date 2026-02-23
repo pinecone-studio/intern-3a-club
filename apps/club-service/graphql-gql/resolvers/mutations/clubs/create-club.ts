@@ -53,7 +53,6 @@ const prepareSchedules = (
 ) => {
   const { startDate, classroom, startTime, duration, frequency, selectedDays } =
     args;
-  const schedules = [];
   const common = {
     clubId,
     room: classroom,
@@ -62,17 +61,14 @@ const prepareSchedules = (
   };
 
   if (frequency === 'ONCE' || !selectedDays || selectedDays.length === 0) {
-    schedules.push({ id: crypto.randomUUID(), date: startDate, ...common });
-  } else {
-    for (const day of selectedDays) {
-      schedules.push({
-        id: crypto.randomUUID(),
-        date: getNextDateOfDay(startDate, day),
-        ...common,
-      });
-    }
+    return [{ id: crypto.randomUUID(), date: startDate, ...common }];
   }
-  return schedules;
+
+  return selectedDays.map((day) => ({
+    id: crypto.randomUUID(),
+    date: getNextDateOfDay(startDate, day),
+    ...common,
+  }));
 };
 
 export const createClubWithSchedules = async (
@@ -86,6 +82,7 @@ export const createClubWithSchedules = async (
     const clubId = crypto.randomUUID();
     const isTeacherCreated = !!input.teacherId;
 
+    // 1. Клуб үүсгэх (Cloudflare D1 дээр шууд DB ашиглана)
     const [newClub] = await DB.insert(clubs)
       .values({
         id: clubId,
@@ -93,6 +90,7 @@ export const createClubWithSchedules = async (
         description: input.description,
         creatorId: input.creatorId,
         teacherId: isTeacherCreated ? input.teacherId : null,
+        // Хэрэв багш томилогдсон бол шууд approved, үгүй бол pending
         status: isTeacherCreated ? 'approved' : 'pending',
         type: input.type || (isTeacherCreated ? 'mentor' : 'self'),
         preferredTeachers: isTeacherCreated ? null : input.preferredTeachers,
@@ -101,14 +99,11 @@ export const createClubWithSchedules = async (
       })
       .returning();
 
-    if (!newClub) {
-      throw new Error('Клуб үүсгэж чадсангүй.');
-    }
+    if (!newClub) throw new Error('Клуб үүсгэж чадсангүй.');
 
-    const schedulesToInsert = prepareSchedules(clubId, args);
-    if (schedulesToInsert.length > 0) {
-      await DB.insert(timetable).values(schedulesToInsert);
-    }
+    const schedules = prepareSchedules(clubId, args);
+    await DB.insert(timetable).values(schedules);
+
     console.log('SUCCESS: Club and schedules created.');
     return newClub;
   } catch (error) {
