@@ -45,6 +45,11 @@ export interface LogisticsSectionProps {
   handleMonthChange: (_offset: number) => void;
   renderCalendarDays: () => React.ReactNode;
 }
+
+export interface Step1Props {
+  formData: FormDataType;
+  setFormData: (_data: FormDataType) => void;
+}
 export interface CalendarDayProps {
   day: number;
   date: Date;
