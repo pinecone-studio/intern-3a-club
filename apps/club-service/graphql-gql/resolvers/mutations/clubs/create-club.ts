@@ -3,7 +3,6 @@ import { clubs, timetable } from 'db/schema';
 import { GraphQLError } from 'graphql';
 import {
   CreateClubWithSchedulesArgs,
-  getNextDateOfDay,
   resolveMaxMember,
   resolveMinMember,
   resolvePreferredTeachers,
@@ -12,6 +11,11 @@ import {
   resolveTeacherId,
   resolveType,
 } from 'graphql-gql/utils';
+
+const handleMutationError = (error: unknown): never => {
+  const message = error instanceof Error ? error.message : 'Unknown error';
+  throw new GraphQLError(`Алдаа гарлаа: ${message}`);
+};
 
 export const createClubWithSchedules = async (
   _: unknown,
@@ -50,7 +54,6 @@ export const createClubWithSchedules = async (
     console.log('SUCCESS: Club and schedules created.');
     return newClub;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    throw new GraphQLError(`Алдаа гарлаа: ${message}`);
+    handleMutationError(error);
   }
 };
