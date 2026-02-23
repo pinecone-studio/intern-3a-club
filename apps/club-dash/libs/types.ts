@@ -93,3 +93,18 @@ export interface Props {
   isExpanded: boolean;
   setExpandedId: (_id: number | null) => void;
 }
+
+export type CreateClubState = {
+  clubName: string;
+  clubDesc: string;
+  teacherName: string;
+  clubMinStudent: string;
+  clubMaxStudent: string;
+  clubStartDate: Date | undefined;
+  clubClassRoom: string;
+  clubStartTime: string;
+  clubDuration: string;
+  clubFrequency: string;
+  selectedDays: string[];
+  selectedFreqId: string;
+};

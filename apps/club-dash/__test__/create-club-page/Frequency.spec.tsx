@@ -1,94 +1,82 @@
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Frequency } from '../../app/createClub/_components';
-import React from 'react';
+import React, { useState } from 'react';
+
+// A wrapper to manage the state just like your useCreateClubState hook does
+const FrequencyTestWrapper = ({ initialFreqId = '1' }) => {
+  const [clubFrequency, setClubFrequency] = useState(
+    'Зөвхөн сонгосон өдрүүдэд'
+  );
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [selectedFreqId, setSelectedFreqId] = useState(initialFreqId);
+
+  return (
+    <Frequency
+      clubFrequency={clubFrequency}
+      setClubFrequency={setClubFrequency}
+      selectedDays={selectedDays}
+      setSelectedDays={setSelectedDays}
+      selectedFreqId={selectedFreqId}
+      setSelectedFreqId={setSelectedFreqId}
+    />
+  );
+};
 
 describe('Frequency Component', () => {
-  const mockSetFrequency = jest.fn();
-  const defaultFrequency = 'Зөвхөн сонгосон өдрүүдэд';
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('renders the trigger and displays the correct initial label', () => {
-    render(
-      <Frequency
-        clubFrequency={defaultFrequency}
-        setClubFrequency={mockSetFrequency}
-      />
-    );
-
+    render(<FrequencyTestWrapper />);
     const trigger = screen.getByRole('combobox');
-    expect(trigger).toHaveTextContent(defaultFrequency);
+    expect(trigger).toHaveTextContent('Зөвхөн сонгосон өдрүүдэд');
   });
 
-  it('hides weekday buttons initially or when ID: 1 is selected', () => {
-    render(
-      <Frequency
-        clubFrequency={defaultFrequency}
-        setClubFrequency={mockSetFrequency}
-      />
-    );
-
+  it('hides weekday buttons when ID: 1 (Once) is selected', () => {
+    render(<FrequencyTestWrapper initialFreqId="1" />);
+    // Days shouldn't exist in the DOM
     expect(screen.queryByText('M')).not.toBeInTheDocument();
   });
 
   it('shows weekday buttons when a frequency other than ID: 1 is selected', async () => {
-    render(
-      <Frequency
-        clubFrequency={defaultFrequency}
-        setClubFrequency={mockSetFrequency}
-      />
-    );
+    render(<FrequencyTestWrapper initialFreqId="1" />);
 
+    // Open Select
     fireEvent.click(screen.getByRole('combobox'));
 
-    const listbox = await screen.findByRole('listbox');
-    const weeklyOption = within(listbox).getByText(/Долоо хоног бүр/i);
+    // Select "Weekly" (ID: 2)
+    const weeklyOption = await screen.findByText('Долоо хоног бүр');
     fireEvent.click(weeklyOption);
 
+    // Now days should appear
     expect(screen.getByText('M')).toBeInTheDocument();
   });
 
-  it('toggles weekday button styles using data-id attribute', async () => {
-    render(
-      <Frequency
-        clubFrequency="Долоо хоног бүр"
-        setClubFrequency={mockSetFrequency}
-      />
-    );
-
-    fireEvent.click(screen.getByRole('combobox'));
-    const listbox = await screen.findByRole('listbox');
-    fireEvent.click(within(listbox).getByText(/Долоо хоног бүр/i));
+  it('toggles weekday button styles when clicked', async () => {
+    // Start with Weekly (ID: 2) so buttons are visible
+    render(<FrequencyTestWrapper initialFreqId="2" />);
 
     const mondayButton = screen.getByText('M');
 
+    // Initial state: Not selected (bg-white)
     expect(mondayButton).toHaveClass('bg-white');
-    expect(mondayButton).toHaveAttribute('data-id', '1');
 
+    // Click to select
     fireEvent.click(mondayButton);
     expect(mondayButton).toHaveClass('bg-black');
 
+    // Click to deselect
     fireEvent.click(mondayButton);
     expect(mondayButton).toHaveClass('bg-white');
   });
 
-  it('calls setClubFrequency with the correct text when an option is clicked', async () => {
-    render(
-      <Frequency
-        clubFrequency={defaultFrequency}
-        setClubFrequency={mockSetFrequency}
-      />
-    );
+  it('updates the trigger text when an option is selected', async () => {
+    render(<FrequencyTestWrapper />);
 
     fireEvent.click(screen.getByRole('combobox'));
 
-    const listbox = await screen.findByRole('listbox');
-    const monthlyOption = within(listbox).getByText(/Сар бүр/i);
+    const monthlyOption = await screen.findByText('Сар бүр');
     fireEvent.click(monthlyOption);
 
-    expect(mockSetFrequency).toHaveBeenCalledWith('Сар бүр');
+    const trigger = screen.getByRole('combobox');
+    expect(trigger).toHaveTextContent('Сар бүр');
   });
 });

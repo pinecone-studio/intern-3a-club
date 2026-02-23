@@ -23,24 +23,11 @@ import {
   Teachers,
 } from './_components';
 import { useCreateClubState } from '../_hooks/use-createclub-states';
+import { useCreateClubMutation } from '../_hooks/use-create-club';
+
 const CreateClub = () => {
   const { state, setters, handlers } = useCreateClubState();
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const allValues = {
-      name: state.clubName,
-      teacher: state.teacherName,
-      description: state.clubDesc,
-      startDate: state.clubStartDate,
-      frequency: state.clubFrequency,
-      classRoom: state.clubClassRoom,
-      startTime: state.clubStartTime,
-      duration: state.clubDuration,
-      minStudents: state.clubMinStudent,
-      maxStudents: state.clubMaxStudent,
-    };
-    console.log('Шинэ клубын мэдээлэл:', allValues);
-  };
+  const { handleSubmit, loading } = useCreateClubMutation(state);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -94,6 +81,10 @@ const CreateClub = () => {
                 <Frequency
                   clubFrequency={state.clubFrequency}
                   setClubFrequency={setters.setClubFrequency}
+                  selectedDays={state.selectedDays}
+                  setSelectedDays={setters.setSelectedDays}
+                  selectedFreqId={state.selectedFreqId}
+                  setSelectedFreqId={setters.setSelectedFreqId}
                 />
               </div>
               <div className="flex flex-col gap-4">
@@ -147,8 +138,12 @@ const CreateClub = () => {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" className="bg-black text-white">
-              Create Club
+            <Button
+              type="submit"
+              className="bg-black text-white px-8"
+              disabled={loading}
+            >
+              {loading ? 'Creating...' : 'Create Club'}
             </Button>
           </DialogFooter>
         </form>
