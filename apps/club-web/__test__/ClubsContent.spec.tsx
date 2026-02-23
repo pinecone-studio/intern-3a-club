@@ -4,10 +4,36 @@ import React from 'react';
 
 const MOCK_NOW = 1700000000000;
 
+// Mock framer-motion to bypass animations that get stuck with fake timers
+jest.mock('framer-motion', () => {
+  const React = require('react');
+  return {
+    motion: {
+      div: React.forwardRef(({ children, ...props }: any, ref: any) => {
+        const { initial, animate, exit, transition, ...rest } = props;
+        return (
+          <div ref={ref} {...rest}>
+            {children}
+          </div>
+        );
+      }),
+    },
+    AnimatePresence: ({ children }: any) => <>{children}</>,
+  };
+});
+
 // Mock ClubList to capture onSelect and allow forcing invalid ID
 // Mock ClubList to capture onSelect and allow forcing invalid ID
 jest.mock('../app/JoinClub/_components/ClubList', () => ({
-  ClubList: ({ clubs, onSelect, selectedClubId: _selectedClubId }: { clubs: { id: number; name: string }[]; onSelect: (_id: number) => void; selectedClubId: number }) => (
+  ClubList: ({
+    clubs,
+    onSelect,
+    selectedClubId: _selectedClubId,
+  }: {
+    clubs: { id: number; name: string }[];
+    onSelect: (_id: number) => void;
+    selectedClubId: number;
+  }) => (
     <div data-testid="club-list">
       {clubs.map((c) => (
         <button key={c.id} onClick={() => onSelect(c.id)}>
@@ -36,15 +62,17 @@ describe('ClubsContent Logic Coverage', () => {
 
     // Line 11: Sorting check (Enroll хийхэд эрэмбэ өөрчлөгдөх)
     // Switch to the 3rd club (Code Club) which is Open
-    const codeClubCard = screen.getByText('Code Club');
+    const codeClubCard = screen.getByRole('button', { name: 'Code Club' });
     fireEvent.click(codeClubCard);
 
     // Now enroll in the selected club
-    const enrollBtn = screen.getByText(/Одоо нэгдэх/i);
+    const enrollBtn = screen.getByRole('button', { name: /Одоо нэгдэх/i });
     fireEvent.click(enrollBtn);
 
     // Line 53-60: handleLeave & isLocked logic
-    const leaveBtn = await screen.findByText(/Клубээс гарах/i);
+    const leaveBtn = screen.getByRole('button', {
+      name: /Клубээс гарах/i,
+    });
     fireEvent.click(leaveBtn);
 
     // Locked state
@@ -55,7 +83,7 @@ describe('ClubsContent Logic Coverage', () => {
       jest.advanceTimersByTime(61000);
     });
 
-    const enrollAgainBtn = await screen.findByText(/Одоо нэгдэх/i);
+    const enrollAgainBtn = screen.getByRole('button', { name: /Одоо нэгдэх/i });
     expect(enrollAgainBtn).toBeInTheDocument();
   });
 
@@ -65,15 +93,17 @@ describe('ClubsContent Logic Coverage', () => {
     // Enroll TWO clubs to test "Enrolled vs Enrolled" comparison (returns 0)
 
     // 1. Enroll Code Club
-    const codeClubBtn = screen.getByText('Code Club');
+    const codeClubBtn = screen.getByRole('button', { name: 'Code Club' });
     fireEvent.click(codeClubBtn);
-    const enrollBtn = screen.getByText(/Одоо нэгдэх/i);
+
+    const enrollBtn = screen.getByRole('button', { name: /Одоо нэгдэх/i });
     fireEvent.click(enrollBtn);
 
     // 2. Enroll Robotics Lab (First one)
-    const roboticsBtn = screen.getByText('Robotics Lab');
+    const roboticsBtn = screen.getByRole('button', { name: 'Robotics Lab' });
     fireEvent.click(roboticsBtn);
-    const enrollBtn2 = screen.getByText(/Одоо нэгдэх/i);
+
+    const enrollBtn2 = screen.getByRole('button', { name: /Одоо нэгдэх/i });
     fireEvent.click(enrollBtn2);
 
     // Both are enrolled. Order should be preserved or stable.
@@ -91,8 +121,8 @@ describe('ClubsContent Logic Coverage', () => {
     // Should fallback to the first club (Robotics Lab)
     // We check if the Detail view shows Robotics Lab
     // Using regex for case-insensitive match as validatable text might be uppercase via CSS
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/ROBOTICS LAB/i);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      /ROBOTICS LAB/i
+    );
   });
 });
-
-
