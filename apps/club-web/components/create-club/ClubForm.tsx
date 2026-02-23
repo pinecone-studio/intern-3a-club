@@ -67,7 +67,7 @@ export const ClubForm = (props: ClubFormProps) => {
   const isStep1 = step === 1;
 
   return (
-    <div className="lg:col-span-7 space-y-8">
+    <div className="lg:col-span-12 space-y-8">
       <div className="rounded-[3rem] border border-white/10 bg-white/5 p-10 backdrop-blur-3xl shadow-2xl">
         <div className="space-y-10">
           <ProgressBar step={step} />

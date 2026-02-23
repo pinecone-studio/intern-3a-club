@@ -5,6 +5,9 @@ import { cn } from 'lib/utils';
 import { ClubForm } from './ClubForm';
 import { HeaderSection } from './HeaderSection';
 import { FormDataType, CalendarDayProps } from './types';
+import { MyClubsList } from '../club-add/PersonalClubs';
+import { RequestHistory } from '../club-add/RequestHistory';
+import { SystemTip } from '../club-add/SystemTip';
 const CalendarDay = ({
   day,
   date,
@@ -117,13 +120,14 @@ export const CreateClubCenter = () => {
   };
 
   return (
-    <div className="max-w-[1400px] mx-auto p-6 lg:p-10 relative z-10">
+    <div className="max-w-[1400px] mx-auto p-6 lg:p-10 relative z-10 ">
       <HeaderSection
         title="Клуб Нээх"
         subtitle="Шинэ клуб нээх хүсэлт болон хуваарь илгээх."
       />
+     <div className='flex gap-20'>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         <ClubForm
           formData={formData}
           setFormData={setFormData}
@@ -133,8 +137,14 @@ export const CreateClubCenter = () => {
           handleMonthChange={handleMonthChange}
           renderCalendarDays={renderCalendarDays}
           handleSubmit={onFormSubmit}
-        />
+          />
       </div>
+      <div className="lg:col-span-5 space-y-8">
+         <MyClubsList />
+         <RequestHistory />
+         <SystemTip />
+      </div>
+    </div>
     </div>
   );
 };
