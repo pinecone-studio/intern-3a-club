@@ -473,6 +473,7 @@ export default function CreateClubPage() {
                   <div>{schedule.clubId}</div>
                   <div>{schedule.date}</div>
                   <div>{schedule.room}</div>
+                  <div>{schedule.clubStartTime}</div>
                   <div>{schedule.duration}</div>
                 </div>
               ))}

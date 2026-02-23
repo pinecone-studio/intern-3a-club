@@ -1,8 +1,8 @@
 import { DB } from 'db/drizzle';
 import { eq } from 'drizzle-orm';
-import { getAllClubs, getClubById } from './queries';
 import { InferSelectModel } from 'drizzle-orm';
 import { clubs, timetable } from 'db/schema';
+import { getAllClubs } from './queries';
 import { createClubWithSchedules } from './mutations';
 
 export type Club = InferSelectModel<typeof clubs>;
@@ -12,8 +12,8 @@ interface GetClubByIdArgs {
 export const resolvers = {
   Query: {
     getAllClubs: async () => await getAllClubs(),
-    getClubById: async (_: unknown, args: GetClubByIdArgs) =>
-      await getClubById(_, args),
+    // getClubById: async (_: unknown, args: GetClubByIdArgs) =>
+    //   await getClubById(_, args),
   },
   Mutation: {
     createClubWithSchedules,
