@@ -77,11 +77,13 @@ export const clubs = sqliteTable('clubs', {
   creatorId: text('creatorId'),
   name: text('name').notNull(),
   description: text('description'),
-  teacherId: text('teacherId'),
+  teacherId: text('teacherId').references(() => teachers.id),
   minMember: integer('minMember').notNull(),
   maxMember: integer('maxMember').notNull(),
   type: text('type').notNull(),
-  preferredTeacher: text('preferredTeacher'),
+  preferredTeachers: text('preferredTeachers', { mode: 'json' }).$type<
+    string[]
+  >(),
   status: text('status').notNull(),
   createdAt: text('createdAt')
     .default(sql`(CURRENT_TIMESTAMP)`)
@@ -121,8 +123,8 @@ export const clubMembers = sqliteTable('club_members', {
 export const timetable = sqliteTable('timetable', {
   id: text('id').primaryKey(),
   date: text('date').notNull(),
-  room: text('room'),
-  clubStartTime: text('clubStartTime'),
+  room: text('room').notNull(),
+  clubStartTime: text('clubStartTime').notNull(),
   duration: integer('duration'),
   clubId: text('clubId')
     .notNull()

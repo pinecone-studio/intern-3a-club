@@ -24,7 +24,7 @@ export const timetableTypeDefs = gql`
   input UpdateTimetableInput {
     id: ID!
     date: String
-    room: Int
+    room: String
     clubStartTime: String
     duration: Int
   }

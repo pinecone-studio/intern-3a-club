@@ -43,6 +43,7 @@ export const createClubWithSchedules = async (_: any, args: any) => {
 
   try {
     const clubId = crypto.randomUUID();
+    const isTeacherCreated = !!input.teacherId;
 
     // 1. Клуб үүсгэх (Cloudflare D1 дээр шууд DB ашиглана)
     const [newClub] = await DB.insert(clubs)
@@ -50,10 +51,12 @@ export const createClubWithSchedules = async (_: any, args: any) => {
         id: clubId,
         name: input.name,
         description: input.description,
-        teacherId: input.teacherId,
+        creatorId: input.creatorId,
+        teacherId: isTeacherCreated ? input.teacherId : null,
         // Хэрэв багш томилогдсон бол шууд approved, үгүй бол pending
-        status: input.teacherId ? 'approved' : 'pending',
-        type: input.type || (input.teacherId ? 'mentor' : 'self'),
+        status: isTeacherCreated ? 'approved' : 'pending',
+        type: input.type || (isTeacherCreated ? 'mentor' : 'self'),
+        preferredTeachers: isTeacherCreated ? null : input.preferredTeachers,
         minMember: input.minMember || 0,
         maxMember: input.maxMember || 0,
       })
@@ -63,7 +66,7 @@ export const createClubWithSchedules = async (_: any, args: any) => {
       throw new Error('Клуб үүсгэж чадсангүй.');
     }
 
-    // Хуваарийн нийтлэг дата
+    const schedulesToInsert = [];
     const commonSchedule = {
       clubId: clubId,
       room: classroom,
@@ -71,10 +74,9 @@ export const createClubWithSchedules = async (_: any, args: any) => {
       duration: duration,
     };
 
-    // Хуваарь (Timetable) үүсгэх логик
     if (frequency === 'ONCE' || !selectedDays || selectedDays.length === 0) {
       // Ганц удаагийн хуваарь
-      await DB.insert(timetable).values({
+      schedulesToInsert.push({
         id: crypto.randomUUID(),
         date: startDate,
         ...commonSchedule,
@@ -83,12 +85,16 @@ export const createClubWithSchedules = async (_: any, args: any) => {
       // Сонгогдсон гарагуудаар давтан хуваарь үүсгэх
       for (const day of selectedDays) {
         const actualDate = getNextDateOfDay(startDate, day);
-        await DB.insert(timetable).values({
+        schedulesToInsert.push({
           id: crypto.randomUUID(),
           date: actualDate,
           ...commonSchedule,
         });
       }
+    }
+
+    if (schedulesToInsert.length > 0) {
+      await DB.insert(timetable).values(schedulesToInsert);
     }
 
     console.log('SUCCESS: Club and schedules created.');

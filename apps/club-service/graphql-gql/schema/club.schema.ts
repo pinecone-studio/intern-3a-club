@@ -15,7 +15,7 @@ export const clubTypeDefs = gql`
     type: String!
     creatorId: String
     teacherId: String
-    preferredTeacher: String
+    preferredTeachers: [String]
     minMember: Int
     maxMember: Int
     createdAt: String!
@@ -30,7 +30,7 @@ export const clubTypeDefs = gql`
     type: String!
     creatorId: String
     teacherId: String
-    preferredTeacher: String
+    preferredTeachers: [String]
     minMember: Int
     maxMember: Int
   }
