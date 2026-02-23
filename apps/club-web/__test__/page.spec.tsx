@@ -2,22 +2,22 @@ import {
   render,
   screen,
   fireEvent,
-  cleanup,
-  waitFor,
+  // cleanup,
+  // waitFor,
 } from '@testing-library/react';
 import JoinClubPage from '../app/JoinClub/page';
 import React from 'react';
 import * as mockDataModule from '../lib/mockdata';
-import Home from '../app/page';
+// import Home from '../app/page';
 import '@testing-library/jest-dom';
-import { CreateClubCenter } from '../components/create-club/CreateClubCenter';
-import {
-  isWeeklyMatch,
-  isMonthlyMatch,
-  isBiweeklyMatch,
-  checkDateMatch,
-  generateDates,
-} from '../components/create-club/RecurrentUtils';
+// import { CreateClubCenter } from '../components/create-club/CreateClubCenter';
+// import {
+//   isWeeklyMatch,
+//   isMonthlyMatch,
+//   isBiweeklyMatch,
+//   checkDateMatch,
+//   generateDates,
+// } from '../components/create-club/RecurrentUtils';
 
 jest.mock('../lib/mockdata', () => ({
   __esModule: true,
