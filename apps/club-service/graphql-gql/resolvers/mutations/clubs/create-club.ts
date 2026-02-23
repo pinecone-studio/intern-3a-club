@@ -2,33 +2,13 @@ import { DB } from 'db/drizzle';
 import { clubs, timetable } from 'db/schema';
 import { GraphQLError } from 'graphql';
 import { getNextDateOfDay } from 'graphql-gql/utils/date.util';
-
-type ClubStatus = 'pending' | 'approved' | 'declined';
-interface CreateClubInput {
-  name: string;
-  description?: string;
-  creatorId?: string;
-  teacherId?: string;
-  status?: ClubStatus;
-  type?: string;
-  preferredTeachers?: string[];
-  minMember?: number;
-  maxMember?: number;
-}
-interface CreateClubWithSchedulesArgs {
-  input: CreateClubInput;
-  startDate: string;
-  classroom: string;
-  startTime: string;
-  duration: number;
-  frequency: string;
-  selectedDays?: string[];
-}
-/**
- * Тухайн гарагийн дараагийн огноог тооцоолох туслах функц
- * @param startDate Эхлэх огноо (YYYY-MM-DD)
- * @param dayName Гарагийн нэр (Monday, Tuesday...)
- */
+import { resolveMaxMember } from 'graphql-gql/utils/maxmemb.util';
+import { resolveMinMember } from 'graphql-gql/utils/minmemb.util';
+import { resolvePreferredTeachers } from 'graphql-gql/utils/preferred.util';
+import { resolveStatus } from 'graphql-gql/utils/status.util';
+import { resolveTeacherId } from 'graphql-gql/utils/teacher.util';
+import { CreateClubWithSchedulesArgs } from 'graphql-gql/utils/type';
+import { resolveType } from 'graphql-gql/utils/type.util';
 
 export const createClubWithSchedules = async (
   _: unknown,
@@ -48,7 +28,6 @@ export const createClubWithSchedules = async (
 
   try {
     const clubId = crypto.randomUUID();
-    const isTeacherCreated = !!input.teacherId;
 
     // 1. Клуб үүсгэх (Cloudflare D1 дээр шууд DB ашиглана)
     const [newClub] = await DB.insert(clubs)
@@ -57,12 +36,15 @@ export const createClubWithSchedules = async (
         name: input.name,
         description: input.description,
         creatorId: input.creatorId,
-        teacherId: isTeacherCreated ? input.teacherId : null,
-        status: isTeacherCreated ? 'approved' : 'pending',
-        type: input.type || (isTeacherCreated ? 'mentor' : 'self'),
-        preferredTeachers: isTeacherCreated ? null : input.preferredTeachers,
-        minMember: input.minMember || 0,
-        maxMember: input.maxMember || 0,
+        teacherId: resolveTeacherId(input.teacherId),
+        status: resolveStatus(input.teacherId),
+        type: resolveType(input.type, input.teacherId),
+        preferredTeachers: resolvePreferredTeachers(
+          input.teacherId,
+          input.preferredTeachers
+        ),
+        minMember: resolveMinMember(input.minMember),
+        maxMember: resolveMaxMember(input.maxMember),
       })
       .returning();
 
