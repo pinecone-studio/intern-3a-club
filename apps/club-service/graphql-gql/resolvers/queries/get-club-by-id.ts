@@ -3,7 +3,11 @@ import { clubs } from 'db/schema';
 import { eq } from 'drizzle-orm';
 
 export const getClubById = async (_: any, { id }: { id: string }) => {
-  const result = await DB.select().from(clubs).where(eq(clubs.id, id));
-
-  return result[0] || null;
+  try {
+    const result = await DB.select().from(clubs).where(eq(clubs.id, id));
+    return result[0] || null;
+  } catch (error) {
+    console.error('Error in getClubById:', error);
+    throw new Error('Клубын мэдээллийг авахад алдаа гарлаа.');
+  }
 };

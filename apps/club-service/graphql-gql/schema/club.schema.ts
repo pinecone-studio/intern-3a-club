@@ -16,8 +16,8 @@ export const clubTypeDefs = gql`
     creatorId: String
     teacherId: String
     preferredTeachers: [String]
-    minMember: Int
-    maxMember: Int
+    minMember: Int!
+    maxMember: Int!
     createdAt: String!
     updatedAt: String!
     timetables: [Timetable]
@@ -31,8 +31,8 @@ export const clubTypeDefs = gql`
     creatorId: String
     teacherId: String
     preferredTeachers: [String]
-    minMember: Int
-    maxMember: Int
+    minMember: Int!
+    maxMember: Int!
   }
 
   input UpdateClubInput {
@@ -45,7 +45,7 @@ export const clubTypeDefs = gql`
   }
 
   extend type Query {
-    getClubs: [Club]
+    getAllClubs: [Club]
     getClubById(id: ID!): Club
   }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, MouseEvent } from 'react';
+import React, { useState } from 'react';
 import { gql } from '@apollo/client';
 import {
   Dialog,
@@ -18,13 +18,62 @@ import {
   Button,
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@intern-3a-club/shadcn';
-import { useMutation } from '@apollo/client/react';
+import { useMutation, useQuery } from '@apollo/client/react';
 
+export type Data = {
+  getAllClubs: GetAllClub[];
+};
+
+export type GetAllClub = {
+  id: string;
+  name: string;
+  description: string;
+  creatorId: any;
+  teacherId: string;
+  type: string;
+  status: string;
+  preferredTeachers: any;
+  minMember: number;
+  maxMember: number;
+  timetables: Timetable[];
+};
+export type Timetable = {
+  id: string;
+  clubId: string;
+  date: string;
+  room: string;
+  clubStartTime: string;
+  duration: number;
+};
+
+export const GET_ALL_CLUBS = gql`
+  query GetAllClubs {
+    getAllClubs {
+      id
+      name
+      description
+      creatorId
+      teacherId
+      type
+      status
+      preferredTeachers
+      minMember
+      maxMember
+      timetables {
+        id
+        clubId
+        date
+        room
+        clubStartTime
+        duration
+      }
+    }
+  }
+`;
 // --- GRAPHQL MUTATION ---
 const CREATE_CLUB_WITH_SCHEDULE = gql`
   mutation CreateClubWithSchedules(
@@ -129,8 +178,15 @@ export default function CreateClubPage() {
   console.log({ clubMinStudent });
 
   // APOLLO MUTATION
-  const [createClub, { loading }] = useMutation(CREATE_CLUB_WITH_SCHEDULE);
-
+  const [createClub, { loading }] = useMutation(CREATE_CLUB_WITH_SCHEDULE, {
+    refetchQueries: [{ query: GET_ALL_CLUBS }],
+  });
+  const {
+    loading: isLoading,
+    error: err,
+    data,
+  } = useQuery<Data>(GET_ALL_CLUBS);
+  console.log({ data });
   const handleToggleDay = (id: string) => {
     setSelectedDays((prev) =>
       prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]
@@ -176,8 +232,11 @@ export default function CreateClubPage() {
     }
   };
 
+  if (isLoading) return <div>Уншиж байна...</div>;
+  if (err) return <div>Алдаа гарлаа: {err.message}</div>;
+
   return (
-    <div className="p-10">
+    <div className="flex flex-col gap-10 p-10">
       <Dialog>
         <DialogTrigger asChild>
           <Button
@@ -393,6 +452,34 @@ export default function CreateClubPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <div className="flex flex-col gap-8">
+        {data?.getAllClubs.map((club) => (
+          <div className="border rounded-md p-6" key={club.id}>
+            <div>{club.id}</div>
+            <div>{club.name}</div>
+            <div>{club.description}</div>
+            <div>{club.creatorId}</div>
+            <div>{club.teacherId}</div>
+            <div>{club.preferredTeachers}</div>
+            <div>{club.type}</div>
+            <div>{club.status}</div>
+            <div>{club.minMember}</div>
+            <div>{club.maxMember}</div>
+            <div className="flex flex-col gap-2 p-4">
+              {club.timetables.map((schedule) => (
+                <div key={schedule.id} className="bg-red-50">
+                  <div>{schedule.id}</div>
+                  <div>{schedule.clubId}</div>
+                  <div>{schedule.date}</div>
+                  <div>{schedule.room}</div>
+                  <div>{schedule.duration}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
