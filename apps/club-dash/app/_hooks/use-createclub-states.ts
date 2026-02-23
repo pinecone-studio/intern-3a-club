@@ -1,18 +1,20 @@
 import { useState, ChangeEvent, Dispatch, SetStateAction } from 'react';
 
 export const useCreateClubState = () => {
-  const [clubName, setClubName] = useState('');
-  const [teacherName, setTeacherName] = useState(''); // String утга авна
-  const [clubDesc, setClubDesc] = useState('');
+  const [clubName, setClubName] = useState<string>('');
+  const [teacherName, setTeacherName] = useState<string>('');
+  const [clubDesc, setClubDesc] = useState<string>('');
   const [clubStartDate, setClubStartDate] = useState<Date | undefined>(
     undefined
   );
-  const [clubFrequency, setClubFrequency] = useState('');
-  const [clubClassRoom, setClubClassRoom] = useState('');
-  const [clubStartTime, setClubStartTime] = useState('');
-  const [clubDuration, setClubDuration] = useState('');
-  const [clubMaxStudent, setClubMaxStudent] = useState('');
-  const [clubMinStudent, setClubMinStudent] = useState('');
+  const [clubFrequency, setClubFrequency] = useState<string>('ONCE');
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [selectedFreqId, setSelectedFreqId] = useState<string>('1');
+  const [clubClassRoom, setClubClassRoom] = useState<string>('301');
+  const [clubStartTime, setClubStartTime] = useState<string>('13:00');
+  const [clubDuration, setClubDuration] = useState<string>('1:00');
+  const [clubMaxStudent, setClubMaxStudent] = useState<string>('20');
+  const [clubMinStudent, setClubMinStudent] = useState<string>('5');
 
   const handleChange =
     (setter: Dispatch<SetStateAction<string>>) =>
@@ -26,6 +28,8 @@ export const useCreateClubState = () => {
       clubDesc,
       clubStartDate,
       clubFrequency,
+      selectedDays,
+      selectedFreqId,
       clubClassRoom,
       clubStartTime,
       clubDuration,
@@ -36,6 +40,8 @@ export const useCreateClubState = () => {
       setTeacherName,
       setClubStartDate,
       setClubFrequency,
+      setSelectedDays,
+      setSelectedFreqId,
       setClubClassRoom,
       setClubStartTime,
       setClubDuration,

@@ -57,3 +57,13 @@ export const requests: Club[] = [
     status: 'pending',
   },
 ];
+
+export const mockWeekdays = [
+  { id: '1', day: 'M', value: 'MONDAY' },
+  { id: '2', day: 'T', value: 'TUESDAY' },
+  { id: '3', day: 'W', value: 'WEDNESDAY' },
+  { id: '4', day: 'T', value: 'THURSDAY' },
+  { id: '5', day: 'F', value: 'FRIDAY' },
+  { id: '6', day: 'S', value: 'SATURDAY' },
+  { id: '7', day: 'S', value: 'SUNDAY' },
+];

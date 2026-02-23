@@ -10,39 +10,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@intern-3a-club/shadcn';
-import React, { MouseEvent, useState } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 
 type FrequencyProps = {
   clubFrequency: string;
   setClubFrequency: (_val: string) => void;
+  selectedDays: string[];
+  setSelectedDays: Dispatch<SetStateAction<string[]>>;
+  selectedFreqId: string;
+  setSelectedFreqId: Dispatch<SetStateAction<string>>;
 };
 
-type Weekdays = { id: string; day: string };
-
 const mockFrequency = [
-  { id: '1', frequency: 'Зөвхөн сонгосон өдрүүдэд' },
-  { id: '2', frequency: 'Долоо хоног бүр' },
-  { id: '3', frequency: '2 долоо хоног тутам' },
-  { id: '4', frequency: 'Сар бүр' },
+  { id: '1', label: 'Зөвхөн сонгосон өдрүүдэд', value: 'ONCE' },
+  { id: '2', label: 'Долоо хоног бүр', value: 'WEEKLY' },
+  { id: '3', label: '2 долоо хоног тутам', value: 'BIWEEKLY' },
+  { id: '4', label: 'Сар бүр', value: 'MONTHLY' },
 ];
 
-const mockWeekdays: Weekdays[] = [
-  { id: '1', day: 'M' },
-  { id: '2', day: 'T' },
-  { id: '3', day: 'W' },
-  { id: '4', day: 'T' },
-  { id: '5', day: 'F' },
-  { id: '6', day: 'S' },
-  { id: '7', day: 'S' },
+const mockWeekdays = [
+  { id: '1', day: 'M', value: 'MONDAY' },
+  { id: '2', day: 'T', value: 'TUESDAY' },
+  { id: '3', day: 'W', value: 'WEDNESDAY' },
+  { id: '4', day: 'T', value: 'THURSDAY' },
+  { id: '5', day: 'F', value: 'FRIDAY' },
+  { id: '6', day: 'S', value: 'SATURDAY' },
+  { id: '7', day: 'S', value: 'SUNDAY' },
 ];
 
 export const Frequency = ({
   clubFrequency,
   setClubFrequency,
+  selectedDays,
+  setSelectedDays,
+  selectedFreqId,
+  setSelectedFreqId,
 }: FrequencyProps) => {
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [selectedFreqId, setSelectedFreqId] = useState<string>('');
-  const handleToggleDay = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleToggleDay = (e: React.MouseEvent<HTMLButtonElement>) => {
     const id = e.currentTarget.dataset.id;
     if (!id) return;
     setSelectedDays((day) =>
@@ -55,7 +59,7 @@ export const Frequency = ({
       (frequency) => frequency.id === selectedFrequencyId
     );
     if (selectedFrequency) {
-      setClubFrequency(selectedFrequency.frequency);
+      setClubFrequency(selectedFrequency.label);
     }
   };
 
@@ -77,7 +81,7 @@ export const Frequency = ({
           <SelectGroup>
             {mockFrequency.map((frequency) => (
               <SelectItem value={frequency.id} key={frequency.id}>
-                {frequency.frequency}
+                {frequency.label}
               </SelectItem>
             ))}
           </SelectGroup>
