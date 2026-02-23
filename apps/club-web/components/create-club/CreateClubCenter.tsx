@@ -117,7 +117,7 @@ export const CreateClubCenter = () => {
   };
 
   return (
-    <div className="max-w-[1400px] mx-auto p-6 lg:p-10 relative z-10">
+    <div className="max-w-[1400px] mx-auto p-6 lg:p-10 relative z-10 h-full">
       <HeaderSection
         title="Клуб Нээх"
         subtitle="Шинэ клуб нээх хүсэлт болон хуваарь илгээх."

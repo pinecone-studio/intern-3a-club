@@ -79,7 +79,7 @@ export const LogisticsSection = (props: LogisticsSectionProps) => {
   return (
     <div className="p-8 rounded-[2.5rem] bg-black/30 border border-white/5 space-y-8">
       <header className="flex items-center justify-between border-b border-white/5 pb-4">
-        <h4 className="text-xs font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
+        <h4 className="text-xs font-black text-white text-primary flex items-center gap-2">
           <CalendarDays size={16} /> Хуваарь ба Логистик
         </h4>
         <div className="flex items-center gap-4">
@@ -97,7 +97,7 @@ export const LogisticsSection = (props: LogisticsSectionProps) => {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        <div className="space-y-6">
+        <div className="space-y-6 text-white">
           <CalendarHeader
             currentMonth={currentMonth}
             onMonthChange={props.handleMonthChange}
