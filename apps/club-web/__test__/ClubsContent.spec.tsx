@@ -4,24 +4,6 @@ import React from 'react';
 
 const MOCK_NOW = 1700000000000;
 
-// Mock framer-motion to bypass animations that get stuck with fake timers
-jest.mock('framer-motion', () => {
-  const React = require('react');
-  return {
-    motion: {
-      div: React.forwardRef(({ children, ...props }: any, ref: any) => {
-        const { initial, animate, exit, transition, ...rest } = props;
-        return (
-          <div ref={ref} {...rest}>
-            {children}
-          </div>
-        );
-      }),
-    },
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-  };
-});
-
 // Mock ClubList to capture onSelect and allow forcing invalid ID
 // Mock ClubList to capture onSelect and allow forcing invalid ID
 jest.mock('../app/JoinClub/_components/ClubList', () => ({
@@ -65,9 +47,18 @@ describe('ClubsContent Logic Coverage', () => {
     const codeClubCard = screen.getByRole('button', { name: 'Code Club' });
     fireEvent.click(codeClubCard);
 
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
     // Now enroll in the selected club
     const enrollBtn = screen.getByRole('button', { name: /Одоо нэгдэх/i });
     fireEvent.click(enrollBtn);
+
+    // Wait for the transition to finish if any
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
 
     // Line 53-60: handleLeave & isLocked logic
     const leaveBtn = screen.getByRole('button', {
@@ -96,12 +87,20 @@ describe('ClubsContent Logic Coverage', () => {
     const codeClubBtn = screen.getByRole('button', { name: 'Code Club' });
     fireEvent.click(codeClubBtn);
 
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
     const enrollBtn = screen.getByRole('button', { name: /Одоо нэгдэх/i });
     fireEvent.click(enrollBtn);
 
     // 2. Enroll Robotics Lab (First one)
     const roboticsBtn = screen.getByRole('button', { name: 'Robotics Lab' });
     fireEvent.click(roboticsBtn);
+
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
 
     const enrollBtn2 = screen.getByRole('button', { name: /Одоо нэгдэх/i });
     fireEvent.click(enrollBtn2);
