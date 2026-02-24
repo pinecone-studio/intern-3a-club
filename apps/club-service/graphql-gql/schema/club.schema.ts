@@ -62,6 +62,6 @@ export const clubTypeDefs = gql`
 
     createClub(input: CreateClubInput!): Club
     updateClub(input: UpdateClubInput!): Club
-    deleteClub(id: ID!): Boolean
+    deleteClub(id: ID!): ID
   }
 `;

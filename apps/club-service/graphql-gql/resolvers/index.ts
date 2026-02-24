@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import { InferSelectModel } from 'drizzle-orm';
 import { clubs, timetable } from 'db/schema';
 import { getAllClubs } from './queries';
-import { createClubWithSchedules } from './mutations';
+import { createClubWithSchedules, deleteClub } from './mutations';
 
 export type Club = InferSelectModel<typeof clubs>;
 // interface GetClubByIdArgs {
@@ -17,6 +17,7 @@ export const resolvers = {
   },
   Mutation: {
     createClubWithSchedules,
+    deleteClub,
   },
   // Relationship (Холболт) хэсэг:
   Club: {
