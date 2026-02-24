@@ -575,6 +575,7 @@ export default function CreateClubPage() {
                   <div>{schedule.room}</div>
                   <div>{schedule.clubStartTime}</div>
                   <div>{schedule.duration}</div>
+                  <Button>Edit</Button>
                 </div>
               ))}
             </div>
