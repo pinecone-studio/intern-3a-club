@@ -28,11 +28,13 @@ export type FormDataType = {
   name: string;
   goal: string;
   teacher: string;
+  startDate: string;
   time: string;
   duration: string;
   studentEmail: string;
   room: string;
   maxStudents: string;
+  minStudents: string;
   repeat: string;
 };
 
@@ -64,3 +66,17 @@ export interface RecurrenceConfig {
   dayNumbers: number[];
   anchorTime: number;
 }
+
+export const INITIAL_FORM_DATA: FormDataType = {
+  name: '',
+  goal: '',
+  teacher: '',
+  startDate: '',
+  time: '13:00',
+  duration: '1:30',
+  studentEmail: '',
+  room: '301',
+  maxStudents: '',
+  minStudents: '',
+  repeat: 'none',
+};

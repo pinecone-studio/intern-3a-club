@@ -1,7 +1,42 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { MockedProvider } from '@apollo/client/testing/react';
 import { CreateClubCenter } from '../../components/create-club/CreateClubCenter';
 import { Step1 } from '../../components/create-club/Step1';
+import { FormDataType } from '../../components/create-club/types';
+import { CREATE_CLUB_WITH_SCHEDULE } from '../../graphql/mutations';
+
+const mocks = [
+  {
+    request: {
+      query: CREATE_CLUB_WITH_SCHEDULE,
+      variables: {
+        input: {
+          name: 'Coding Club',
+          description: 'Learn to code',
+          type: 'mentor',
+          teacherId: '1',
+          minMember: 0,
+          maxMember: 0,
+        },
+        startDate: '2024-04-14',
+        classroom: '301',
+        startTime: '13:00',
+        duration: 90,
+        frequency: 'ONCE',
+        selectedDays: ['MONDAY'],
+      },
+    },
+    result: {
+      data: {
+        createClubWithSchedules: {
+          id: '1',
+          name: 'Coding Club',
+        },
+      },
+    },
+  },
+];
 
 afterEach(cleanup);
 
@@ -15,168 +50,204 @@ describe('Club Form & Validation UI', () => {
     cleanup();
   });
 
-  it('handles all form input changes and validation UI branches (LogisticsForm 28, 32, 36)', () => {
-    render(<CreateClubCenter />);
-
-    // Basic Info
-    fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
+  const fillStep1 = () => {
+    fireEvent.change(screen.getByLabelText(/Клубын нэр/i), {
       target: { value: 'Coding Club', name: 'name' },
     });
-    fireEvent.change(screen.getByPlaceholderText(/Зорилго.../i), {
+    fireEvent.change(screen.getByLabelText(/Клубын зорилго/i), {
       target: { value: 'Learn to code', name: 'goal' },
     });
-    fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'bat', name: 'teacher' },
+    fireEvent.change(screen.getByLabelText(/Хариуцах хүн/i), {
+      target: { value: '1', name: 'teacher' },
     });
-
-    // Move to Step 2
     fireEvent.click(screen.getByText(/Үргэлжлүүлэх/i));
+  };
 
-    // Logistics Inputs (Coverage for Line 28, 32, 36)
-    const selects = screen.getAllByRole('combobox');
+  it('handles all form input changes and validation UI branches', async () => {
+    render(
+      <MockedProvider mocks={mocks}>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
 
-    // repeat
-    fireEvent.change(selects[0], { target: { value: 'weekly' } });
-    // room
-    fireEvent.change(selects[1], { target: { value: '302' } });
+    fillStep1();
 
-    // time
-    fireEvent.change(selects[2], { target: { value: '14:00' } });
+    // Step 2
+    fireEvent.change(screen.getByLabelText(/Давтамж/i), { target: { value: 'weekly' } });
+    fireEvent.change(screen.getByLabelText(/Орох Анги/i), { target: { value: '302' } });
+    fireEvent.change(screen.getByLabelText(/Эхлэх цаг/i), { target: { value: '14:00' } });
+    fireEvent.change(screen.getByLabelText(/Үргэлжлэх/i), { target: { value: '2:00' } });
 
-    // duration
-    fireEvent.change(selects[3], { target: { value: '2:00' } });
-
-    const maxStudentsInput = screen.getByPlaceholderText('15');
-    fireEvent.change(maxStudentsInput, { target: { value: '30' } });
-    expect(maxStudentsInput).toHaveValue(30);
+    const maxInput = screen.getByPlaceholderText('15');
+    fireEvent.change(maxInput, { target: { value: '30' } });
+    expect(maxInput).toHaveValue(30);
   });
 
-  it('calls alert on form submit', () => {
-    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
-    render(<CreateClubCenter />);
+  it('calls alert on form submit', async () => {
+    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => { });
+    render(
+      <MockedProvider mocks={mocks}>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
 
-    // Fill Step 1
-    fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
-      target: { value: 'Coding Club', name: 'name' },
-    });
-    fireEvent.change(screen.getByPlaceholderText(/Зорилго.../i), {
-      target: { value: 'Learn to code', name: 'goal' },
-    });
-    fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'bat', name: 'teacher' },
-    });
-    fireEvent.click(screen.getByText(/Үргэлжлүүлэх/i));
+    fillStep1();
 
-    // Fill Step 2 (Room is already 301 by default)
-
-    // Select a date (Required)
     const dayBtn = screen
       .getAllByRole('button')
       .find((b) => b.textContent === '15' && !b.hasAttribute('disabled'));
     if (dayBtn) fireEvent.click(dayBtn);
 
     fireEvent.click(screen.getByRole('button', { name: /хүсэлт илгээх/i }));
-    expect(alertSpy).toHaveBeenCalled();
+
+    await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Клуб амжилттай үүслээ!'), { timeout: 3000 });
     alertSpy.mockRestore();
   });
 
-  it('covers student email field visibility (ClubForm line 90)', () => {
-    render(<CreateClubCenter />);
+  it('covers student email field visibility', () => {
+    render(
+      <MockedProvider mocks={mocks}>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
 
-    const teacherSelect = screen.getByRole('combobox');
-    fireEvent.change(teacherSelect, { target: { value: 'student' } });
-
+    fireEvent.change(screen.getByLabelText(/Хариуцах хүн/i), { target: { value: 'student' } });
     const emailInput = screen.getByTestId('student-email-input');
     fireEvent.change(emailInput, { target: { value: 'test@edu.mn' } });
-
     expect(emailInput).toBeInTheDocument();
   });
 
   it('covers error display and validation failure in Step 1', () => {
-    render(<CreateClubCenter />);
+    render(
+      <MockedProvider mocks={mocks}>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
 
-    // Click Next without filling anything
     fireEvent.click(screen.getByText(/Үргэлжлүүлэх/i));
-
-    // Should see "Заавал" error messages
-    const errors = screen.getAllByText(/Заавал/i);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(screen.getByText(/Үргэлжлүүлэх/i)).toBeInTheDocument(); // Still on Step 1
+    expect(screen.getAllByText(/Заавал/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Үргэлжлүүлэх/i)).toBeInTheDocument();
   });
 
-  it('handles back button navigation and branch coverage for ProgressBar', () => {
-    render(<CreateClubCenter />);
+  it('handles back button navigation', () => {
+    render(
+      <MockedProvider mocks={mocks}>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
 
-    // Fill Step 1
-    fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
-      target: { value: 'Coding Club', name: 'name' },
-    });
-    fireEvent.change(screen.getByPlaceholderText(/Зорилго.../i), {
-      target: { value: 'Learn to code', name: 'goal' },
-    });
-    fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'bat', name: 'teacher' },
-    });
-    fireEvent.click(screen.getByText(/Үргэлжлүүлэх/i));
-
-    // Click Back
+    fillStep1();
     fireEvent.click(screen.getByText(/Буцах/i));
-    expect(screen.getByText(/Үргэлжлүүлэх/i)).toBeInTheDocument(); // Back on Step 1
+    expect(screen.getByText(/Үргэлжлүүлэх/i)).toBeInTheDocument();
   });
 
   it('covers Step 2 validation failure', () => {
-    render(<CreateClubCenter />);
+    render(
+      <MockedProvider mocks={mocks}>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
 
-    // Fill Step 1
-    fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
-      target: { value: 'Coding Club', name: 'name' },
-    });
-    fireEvent.change(screen.getByPlaceholderText(/Зорилго.../i), {
-      target: { value: 'Learn to code', name: 'goal' },
-    });
-    fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'bat', name: 'teacher' },
-    });
-    fireEvent.click(screen.getByText(/Үргэлжлүүлэх/i));
-
-    // Deselect all dates (if any) or just click submit without dates
-    // In current logic, room is '301' by default, but dates is empty.
+    fillStep1();
+    // submit without dates
     fireEvent.click(screen.getByRole('button', { name: /хүсэлт илгээх/i }));
-
-    // Should stay on Step 2
     expect(screen.getByText(/Буцах/i)).toBeInTheDocument();
   });
 
   it('covers Step1 null formData branch', () => {
     const { container } = render(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      <Step1 formData={null as any} setFormData={() => {}} />
+      <Step1 formData={null as unknown as FormDataType} setFormData={() => { }} />
     );
     expect(container.firstChild).toBeNull();
   });
 
   it('covers Step 2 room validation failure', () => {
-    render(<CreateClubCenter />);
+    render(
+      <MockedProvider mocks={mocks}>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
 
-    // Fill Step 1
-    fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
-      target: { value: 'Coding Club', name: 'name' },
-    });
-    fireEvent.change(screen.getByPlaceholderText(/Зорилго.../i), {
-      target: { value: 'Learn to code', name: 'goal' },
-    });
-    fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'bat', name: 'teacher' },
-    });
-    fireEvent.click(screen.getByText(/Үргэлжлүүлэх/i));
+    fillStep1();
+    fireEvent.change(screen.getByLabelText(/Орох Анги/i), { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: /хүсэлт илгээх/i }));
+    expect(screen.getByText(/Буцах/i)).toBeInTheDocument();
+  });
 
-    // Empty the room select
-    const selects = screen.getAllByRole('combobox');
-    fireEvent.change(selects[1], { target: { value: '' } });
+  it('covers month change and date untoggle', () => {
+    render(
+      <MockedProvider mocks={mocks}>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
+
+    fillStep1();
+
+    // Month next
+    fireEvent.click(screen.getByTestId('next-month-btn'));
+    expect(screen.getByText(/May/i)).toBeInTheDocument();
+
+    // Month prev
+    fireEvent.click(screen.getByTestId('prev-month-btn'));
+    expect(screen.getByText(/April/i)).toBeInTheDocument();
+
+    // Toggle on
+    const dayBtn = screen.getByRole('button', { name: /16/i });
+    fireEvent.click(dayBtn);
+    expect(dayBtn).toHaveClass('bg-primary');
+
+    // Toggle off
+    fireEvent.click(dayBtn);
+    expect(dayBtn).not.toHaveClass('bg-primary');
+  });
+
+  it('calls alert on mutation error and covers catch block', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => { });
+
+    const errorMocks = [
+      {
+        request: {
+          query: CREATE_CLUB_WITH_SCHEDULE,
+          variables: {
+            input: {
+              name: 'Coding Club',
+              description: 'Learn to code',
+              type: 'mentor',
+              teacherId: '1',
+              minMember: 0,
+              maxMember: 0,
+            },
+            startDate: '2024-04-14',
+            classroom: '301',
+            startTime: '13:00',
+            duration: 90,
+            frequency: 'ONCE',
+            selectedDays: ['MONDAY'],
+          },
+        },
+        error: new Error('GraphQL Error'),
+      },
+    ];
+
+    render(
+      <MockedProvider mocks={errorMocks}>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
+
+    fillStep1();
+
+    const dayBtn = screen.getByRole('button', { name: /15/i });
+    fireEvent.click(dayBtn);
 
     fireEvent.click(screen.getByRole('button', { name: /хүсэлт илгээх/i }));
 
-    // Should stay on Step 2
-    expect(screen.getByText(/Буцах/i)).toBeInTheDocument();
+    await waitFor(() => expect(alertSpy).toHaveBeenCalledWith(expect.stringContaining('Алдаа гарлаа')));
+    // In current implementation, onError is called AND mutate throws if using MockedProvider with 'error'
+    // So both should be hit.
+
+    alertSpy.mockRestore();
+    consoleSpy.mockRestore();
   });
 });

@@ -11,9 +11,9 @@ interface InputFieldBaseProps {
   error?: string;
 }
 
-const InputField = ({ label, icon, children, error }: InputFieldBaseProps) => (
+const InputField = ({ label, icon, children, error, id }: InputFieldBaseProps & { id?: string }) => (
   <div className="space-y-3 text-white">
-    <label className="text-[10px] font-black  text-primary flex items-center gap-2">
+    <label htmlFor={id} className="text-[10px] font-black  text-primary flex items-center gap-2">
       {icon} {label}
     </label>
     {children}
@@ -47,8 +47,10 @@ export const Step1 = ({
           label="Клубын нэр"
           icon={<Globe2 size={12} />}
           error={errors.name}
+          id="name-input"
         >
           <input
+            id="name-input"
             name="name"
             value={formData.name}
             onChange={handleInputChange}
@@ -61,16 +63,19 @@ export const Step1 = ({
           label="Хариуцах хүн"
           icon={<UserCheck size={12} />}
           error={errors.teacher}
+          id="teacher-select"
         >
           <div className="relative">
             <select
+              id="teacher-select"
               name="teacher"
               value={formData.teacher}
               onChange={handleInputChange}
               className={inputClass(!!errors.teacher)}
             >
               <option value="">Сонгох...</option>
-              <option value="bat">Б.Бат (Ph.D)</option>
+              <option value="1">Эрдэнэцогт</option>
+              <option value="2">Наранцацралт</option>
               <option value="student">Сурагч</option>
             </select>
             <MoveDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
@@ -83,8 +88,10 @@ export const Step1 = ({
           label="Сурагчийн и-мэйл хаяг"
           icon={<Mail size={12} />}
           error={errors.studentEmail}
+          id="student-email"
         >
           <input
+            id="student-email"
             type="email"
             name="studentEmail"
             value={formData.studentEmail}
@@ -99,8 +106,10 @@ export const Step1 = ({
         label="Клубын зорилго"
         icon={<Goal size={12} />}
         error={errors.goal}
+        id="goal-input"
       >
         <textarea
+          id="goal-input"
           name="goal"
           rows={2}
           value={formData.goal}
