@@ -5,7 +5,7 @@ import React from 'react';
 const MOCK_NOW = 1700000000000;
 
 // Mock ClubList to capture onSelect and allow forcing invalid ID
-// Mock ClubList to capture onSelect and allow forcing invalid ID
+
 jest.mock('../app/JoinClub/_components/ClubList', () => ({
   ClubList: ({
     clubs,
@@ -44,65 +44,69 @@ describe('ClubsContent Logic Coverage', () => {
 
     // Line 11: Sorting check (Enroll хийхэд эрэмбэ өөрчлөгдөх)
     // Switch to the 3rd club (Code Club) which is Open
-    const codeClubCard = screen.getByRole('button', { name: 'Code Club' });
+    const codeClubCard = await screen.findByRole('button', {
+      name: 'Code Club',
+    });
     fireEvent.click(codeClubCard);
 
-    act(() => {
-      jest.advanceTimersByTime(1000);
-    });
+    // Wait for the detail view to update to Code Club
+    await screen.findByRole('heading', { level: 1, name: /Code Club/i });
 
     // Now enroll in the selected club
-    const enrollBtn = screen.getByRole('button', { name: /Одоо нэгдэх/i });
+    const enrollBtn = await screen.findByRole('button', {
+      name: /Одоо нэгдэх/i,
+    });
     fireEvent.click(enrollBtn);
 
-    // Wait for the transition to finish if any
-    act(() => {
-      jest.advanceTimersByTime(1000);
-    });
-
     // Line 53-60: handleLeave & isLocked logic
-    const leaveBtn = screen.getByRole('button', {
+    const leaveBtn = await screen.findByRole('button', {
       name: /Клубээс гарах/i,
     });
     fireEvent.click(leaveBtn);
 
     // Locked state
-    expect(screen.getByText(/60с хүлээх/i)).toBeInTheDocument();
+    await screen.findByText(/60с хүлээх/i);
 
     // Line 61-63: diff <= 0 (Түгжээ тайлагдах)
     act(() => {
       jest.advanceTimersByTime(61000);
     });
 
-    const enrollAgainBtn = screen.getByRole('button', { name: /Одоо нэгдэх/i });
+    const enrollAgainBtn = await screen.findByRole('button', {
+      name: /Одоо нэгдэх/i,
+    });
     expect(enrollAgainBtn).toBeInTheDocument();
   });
 
-  it('should cover sorting logic (Line 11) fully - multiple enrolled', () => {
+  it('should cover sorting logic (Line 11) fully - multiple enrolled', async () => {
     render(<ClubsContent />);
 
     // Enroll TWO clubs to test "Enrolled vs Enrolled" comparison (returns 0)
 
     // 1. Enroll Code Club
-    const codeClubBtn = screen.getByRole('button', { name: 'Code Club' });
-    fireEvent.click(codeClubBtn);
-
-    act(() => {
-      jest.advanceTimersByTime(1000);
+    const codeClubBtn = await screen.findByRole('button', {
+      name: 'Code Club',
     });
+    fireEvent.click(codeClubBtn);
+    await screen.findByRole('heading', { level: 1, name: /Code Club/i });
 
-    const enrollBtn = screen.getByRole('button', { name: /Одоо нэгдэх/i });
+    const enrollBtn = await screen.findByRole('button', {
+      name: /Одоо нэгдэх/i,
+    });
     fireEvent.click(enrollBtn);
+    // Wait for enrollment state update
+    await screen.findByRole('button', { name: /Клубээс гарах/i });
 
     // 2. Enroll Robotics Lab (First one)
-    const roboticsBtn = screen.getByRole('button', { name: 'Robotics Lab' });
-    fireEvent.click(roboticsBtn);
-
-    act(() => {
-      jest.advanceTimersByTime(1000);
+    const roboticsBtn = await screen.findByRole('button', {
+      name: 'Robotics Lab',
     });
+    fireEvent.click(roboticsBtn);
+    await screen.findByRole('heading', { level: 1, name: /Robotics Lab/i });
 
-    const enrollBtn2 = screen.getByRole('button', { name: /Одоо нэгдэх/i });
+    const enrollBtn2 = await screen.findByRole('button', {
+      name: /Одоо нэгдэх/i,
+    });
     fireEvent.click(enrollBtn2);
 
     // Both are enrolled. Order should be preserved or stable.
