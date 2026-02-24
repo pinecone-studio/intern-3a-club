@@ -45,47 +45,48 @@ export const ClubActionButtons = (props: ActionProps) => {
     className = '',
   } = props;
 
-  // 1. Complexity-г багасгахын тулд хамгийн эхний нөхцөлийг салгах
+  // Клубээс гарах хэсэгт CustomButton-ыг ашиглав
   if (isEnrolled) {
     return (
       <CustomButton
         variant="destructive"
         onClick={onLeave}
-        className="w-full py-5 text-xl"
+        // Зураг дээрх шиг гүн улаан, тунгалаг эффект
+        className={cn(
+          "w-full py-6 text-sm border border-red-500/20 bg-red-500/10 hover:bg-red-500 transition-all duration-300",
+          className
+        )}
       >
-        <LogOut className="mr-2 h-6 w-6" /> Клубээс гарах
+        <LogOut className="mr-2 h-5 w-5" /> Клубээс гарах
       </CustomButton>
     );
   }
 
-  const buttonClass = cn(
-    'group rounded-2xl relative w-full overflow-hidden py-5 text-xl font-black uppercase tracking-widest transition-all',
-    {
-      'bg-white/10 text-white/20 cursor-not-allowed': isLocked,
-      'bg-blue-600 text-white hover:bg-blue-700': !isLocked,
-    },
-    className // Гаднаас орж ирэх className-ийг нэмэв
-  );
-
   return (
-    <div className="space-y-3">
-      <button
+    <div className="space-y-4">
+      <CustomButton
+        // CustomButton-д зориулсан Dashboard стиль
         disabled={status === 'Full' || isLocked}
         onClick={onEnroll}
-        className={buttonClass}
+        className={cn(
+          "w-full py-7 text-sm transition-all duration-300 shadow-xl",
+          isLocked || status === 'Full'
+            ? "bg-white/5 text-white/20 border-white/5 cursor-not-allowed opacity-50"
+            : "bg-blue-600 text-white hover:bg-blue-500 border border-blue-400/30 shadow-blue-600/20",
+          className
+        )}
       >
         <ButtonContent
           isLocked={isLocked}
           time={remainingTime}
           status={status}
         />
-      </button>
+      </CustomButton>
 
       {isLocked && <LockedMessage />}
     </div>
   );
 };
-
 // Жижиг мессежийг тусад нь гаргах нь complexity-г нэмэхгүй
 const LockedMessage = () => (
   <p className="text-center text-[10px] font-bold uppercase text-red-500 animate-pulse">

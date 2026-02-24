@@ -18,7 +18,7 @@ describe('ClubActionButtons 100% Coverage', () => {
     const button = screen.getByRole('button');
 
     // Анхны классууд байгаа эсэхийг шалгах
-    expect(button).toHaveClass('group');
+    expect(button).toHaveClass('w-full');
 
     // 2. className дамжуулах (Line 33-ийн хувьсагч ашиглагдах хэсгийг хамрах)
     const customClass = 'my-custom-style';

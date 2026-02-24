@@ -1,0 +1,413 @@
+
+> nx run club-web:test
+
+(node:80409) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS club-web apps/club-web/__test__/ClubList.spec.tsx
+(node:80408) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS club-web apps/club-web/__test__/ClubDetail.spec.tsx
+(node:80407) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS club-web apps/club-web/__test__/ClubCard.spec.tsx
+(node:80402) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL club-web apps/club-web/__test__/ClubActionButton.spec.tsx
+  ● ClubActionButtons 100% Coverage › should cover line 33 (default className) and pass custom className
+
+    expect(element).toHaveClass("group")
+
+    Expected the element to have class:
+      group
+    Received:
+      flex items-center justify-center rounded-xl px-6 py-4 text-[13px] font-bold uppercase tracking-[0.15em] transition-all duration-300 active:scale-[0.98] disabled:opacity-50 bg-blue-600 hover:bg-blue-500 text-white border border-blue-400/30 shadow-[0_0_20px_rgba(59,130,246,0.15)] active:bg-blue-700 w-full py-7 text-sm transition-all duration-300 shadow-xl bg-blue-600 text-white hover:bg-blue-500 border border-blue-400/30 shadow-blue-600/20
+
+      19 |
+      20 |     // Анхны классууд байгаа эсэхийг шалгах
+    > 21 |     expect(button).toHaveClass('group');
+         |                    ^
+      22 |
+      23 |     // 2. className дамжуулах (Line 33-ийн хувьсагч ашиглагдах хэсгийг хамрах)
+      24 |     const customClass = 'my-custom-style';
+
+      at Object.toHaveClass (__test__/ClubActionButton.spec.tsx:21:20)
+
+(node:80401) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:80405) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:80406) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS club-web apps/club-web/__test__/create-club/Recurrence.spec.tsx
+PASS club-web apps/club-web/lib/__test__/apollo-client.spec.ts
+PASS club-web apps/club-web/__test__/page.spec.tsx
+PASS club-web apps/club-web/__test__/root_page.spec.tsx
+PASS club-web apps/club-web/__test__/Avatar.spec.tsx
+PASS club-web apps/club-web/__test__/Button.spec.tsx
+PASS club-web apps/club-web/__test__/create-club/RecurrentUtils.spec.tsx
+PASS club-web apps/club-web/__test__/CustomButton.spec.tsx
+PASS club-web apps/club-web/lib/__test__/utils.spec.ts
+FAIL club-web apps/club-web/__test__/ClubsContent.spec.tsx
+  ● ClubsContent Logic Coverage › should cover sorting, enrollment and lock logic (Lines 11, 53-63)
+
+    Unable to find an element with the text: /Клубээс гарах/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto h-screen space-y-8 p-6 bg-gradient-to-br from-[#050c1f] to-[#0b2b5c]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-end justify-between border-b border-white/5 pb-6 mb-2"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-1"[39m
+            [36m>[39m
+              [36m<h2[39m
+                [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white leading-none"[39m
+              [36m>[39m
+                [0mКлубууд[0m
+              [36m</h2>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-[12px] font-medium text-white/40 tracking-normal"[39m
+              [36m>[39m
+                [0mӨөрийн ур чадвараа дараагийн түвшинд гарга[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center gap-4"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-3"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex -space-x-2.5"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"h-8 w-8 rounded-full border-2 border-[#0B0E14] bg-[#11161D] shadow-lg flex items-center justify-center overflow-hidden"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"h-full w-full bg-gradient-to-br from-white/10 to-transparent"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"h-8 w-8 rounded-full border-2 border-[#0B0E14] bg-[#11161D] shadow-lg flex items-center justify-center overflow-hidden"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"h-full w-full bg-gradient-to-br from-white/10 to-transparent"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"h-8 w-8 rounded-full border-2 border-[#0B0E14] bg-[#11161D] shadow-lg flex items-center justify-center overflow-hidden"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"h-full w-full bg-gradient-to-br from-white/10 to-transparent"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"h-8 w-8 rounded-full border-2 border-[#0B0E14] bg-[#11161D] shadow-lg flex items-center justify-center overflow-hidden"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"h-full w-full bg-gradient-to-br from-white/10 to-transparent"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"bg-blue-500/10 border border-blue-500/20 px-2 py-1 rounded-md"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-wider text-blue-400"[39m
+                  [36m>[39m
+                    [0m2[0m
+                    [0m нээлттэй клуб[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-col gap-8 lg:flex-row"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mdata-testid[39m=[32m"club-list"[39m
+            [36m>[39m
+              [36m<button>[39m
+                [0mRobotics Lab[0m
+              [36m</button>[39m
+              [36m<button>[39m
+                [0mDesign Studio[0m
+              [36m</button>[39m
+              [36m<button>[39m
+                [0mCode Club[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mdata-testid[39m=[32m"force-invalid-select"[39m
+              [36m>[39m
+                [0mForce Invalid ID[0m
+              [36m</button>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex-1 w-full h-full"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative h-full rounded-3xl border border-white/10 bg-transparent bg-[radial-gradient(circle_at_20%_30%,_rgba(29,78,216,0.25)_0%,_transparent_30%),_radial-gradient(circle_at_20%_30%,_rgba(100,116,139,0.15)_0%,_transparent_90%)] p-8 lg:p-10 backdrop-blur-2xl overflow-hidden shadow-2xl"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"absolute -top-24 -right-24 w-80 h-80 opacity-20 blur-[120px] rounded-full pointer-events-none"[39m
+                  [33mstyle[39m=[32m"background-color: rgba(29, 78, 216, 0.8);"[39m
+                [36m/>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"relative z-10"[39m
+                  [33mstyle[39m=[32m"opacity: 0.9555784527037758; transform: translateY(0.4442154729622416px);"[39m
+                [36m>[39m
+                  [36m<header[39m
+                    [33mclass[39m=[32m"mb-10 flex items-start justify-between"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"space-y-3"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex items-center gap-2"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1 text-[10px] font-bold text-blue-400 uppercase tracking-[0.1em] border border-blue-500/20"[39m
+                        [36m>[39m
+                          [36m<svg[39m
+                            [33maria-hidden[39m=[32m"true"[39m
+                            [33mclass[39m=[32m"lucide lucide-award"[39m
+                            [33mfill[39m=[32m"none"[39m
+                            [33mheight[39m=[32m"12"[39m
+                            [33mstroke[39m=[32m"currentColor"[39m
+                            [33mstroke-linecap[39m=[32m"round"[39m
+                            [33mstroke-linejoin[39m=[32m"round"[39m
+                            [33mstroke-width[39m=[32m"2"[39m
+                            [33mviewBox[39m=[32m"0 0 24 24"[39m
+                            [33mwidth[39m=[32m"12"[39m
+                            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                          [36m>[39m
+                            [36m<path[39m
+                              [33md[39m=[32m"m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"[39m
+                            [36m/>[39m
+                            [36m<circle[39m
+                              [33mcx[39m=[32m"12"[39m
+                              [33mcy[39m=[32m"8"[39m
+                              [33mr[39m=[32m"6"[39m
+                            [36m/>[39m
+                         ...
+
+      45 |
+      46 |     // Line 53-60: handleLeave & isLocked logic
+    > 47 |     const leaveBtn = await screen.findByText(/Клубээс гарах/i);
+         |                                   ^
+      48 |     fireEvent.click(leaveBtn);
+      49 |
+      50 |     // Locked state
+
+      at waitForWrapper (../../node_modules/@testing-library/dom/dist/wait-for.js:163:27)
+      at ../../node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+      at Object.findByText (__test__/ClubsContent.spec.tsx:47:35)
+
+  ● ClubsContent Logic Coverage › should cover sorting logic (Line 11) fully - multiple enrolled
+
+    TestingLibraryElementError: Found multiple elements with the text: Robotics Lab
+
+    Here are the matching elements:
+
+    Ignored nodes: comments, script, style
+    [36m<button>[39m
+      [0mRobotics Lab[0m
+    [36m</button>[39m
+
+    Ignored nodes: comments, script, style
+    [36m<h1[39m
+      [33mclass[39m=[32m"text-4xl md:text-6xl font-black tracking-tight text-white leading-tight"[39m
+    [36m>[39m
+      [0mRobotics Lab[0m
+    [36m</h1>[39m
+
+    (If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto h-screen space-y-8 p-6 bg-gradient-to-br from-[#050c1f] to-[#0b2b5c]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-end justify-between border-b border-white/5 pb-6 mb-2"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-1"[39m
+            [36m>[39m
+              [36m<h2[39m
+                [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white leading-none"[39m
+              [36m>[39m
+                [0mКлубууд[0m
+              [36m</h2>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-[12px] font-medium text-white/40 tracking-normal"[39m
+              [36m>[39m
+                [0mӨөрийн ур чадвараа дараагийн түвшинд гарга[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center gap-4"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-3"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex -space-x-2.5"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"h-8 w-8 rounded-full border-2 border-[#0B0E14] bg-[#11161D] shadow-lg flex items-center justify-center overflow-hidden"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"h-full w-full bg-gradient-to-br from-white/10 to-transparent"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"h-8 w-8 rounded-full border-2 border-[#0B0E14] bg-[#11161D] shadow-lg flex items-center justify-center overflow-hidden"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"h-full w-full bg-gradient-to-br from-white/10 to-transparent"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"h-8 w-8 rounded-full border-2 border-[#0B0E14] bg-[#11161D] shadow-lg flex items-center justify-center overflow-hidden"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"h-full w-full bg-gradient-to-br from-white/10 to-transparent"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"h-8 w-8 rounded-full border-2 border-[#0B0E14] bg-[#11161D] shadow-lg flex items-center justify-center overflow-hidden"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"h-full w-full bg-gradient-to-br from-white/10 to-transparent"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"bg-blue-500/10 border border-blue-500/20 px-2 py-1 rounded-md"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-wider text-blue-400"[39m
+                  [36m>[39m
+                    [0m2[0m
+                    [0m нээлттэй клуб[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-col gap-8 lg:flex-row"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mdata-testid[39m=[32m"club-list"[39m
+            [36m>[39m
+              [36m<button>[39m
+                [0mRobotics Lab[0m
+              [36m</button>[39m
+              [36m<button>[39m
+                [0mDesign Studio[0m
+              [36m</button>[39m
+              [36m<button>[39m
+                [0mCode Club[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mdata-testid[39m=[32m"force-invalid-select"[39m
+              [36m>[39m
+                [0mForce Invalid ID[0m
+              [36m</button>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex-1 w-full h-full"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative h-full rounded-3xl border border-white/10 bg-transparent bg-[radial-gradient(circle_at_20%_30%,_rgba(29,78,216,0.25)_0%,_transparent_30%),_radial-gradient(circle_at_20%_30%,_rgba(100,116,139,0.15)_0%,_transparent_90%)] p-8 lg:p-10 backdrop-blur-2xl overflow-hidden shadow-2xl"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"absolute -top-24 -right-24 w-80 h-80 opacity-20 blur-[120px] rounded-full pointer-events-none"[39m
+                  [33mstyle[39m=[32m"background-color: rgba(29, 78, 216, 0.8);"[39m
+                [36m/>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"relative z-10"[39m
+                  [33mstyle[39m=[32m"opacity: 0; transform: translateY(10px);"[39m
+                [36m>[39m
+                  [36m<header[39m
+                    [33mclass[39m=[32m"mb-10 flex items-start justify-between"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"space-y-3"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex items-center gap-2"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1 text-[10px] font-bold text-blue-400 uppercase tracking-[0.1em] border border-blue-500/20"[39m
+                        [36m>[39m
+                          [36m<svg[39m
+                            [33maria-hidden[39m=[32m"true"[39m
+                            [33mclass[39m=[32m"lucide lucide-award"[39m
+                            [33mfill[39m=[32m"none"[39m
+                            [33mheight[39m=[32m"12"[39m
+                            [33mstroke[39m=[32m"currentColor"[39m
+                            [33mstroke-linecap[39m=[32m"round"[39m
+                            [33mstroke-linejoin[39m=[32m"round"[39m
+                            [33mstroke-width[39m=[32m"2"[39m
+                            [33mviewBox[39m=[32m"0 0 24 24"[39m
+                            [33mwidth[39m=[32m"12"[39m
+                            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                          [36m>[39m
+                            [36m<path[39m
+                              [33md[39m=[32m"m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"[39m
+                            [36m/>[39m
+                            [36m<circle[39m
+                              [33mcx[39m=[32m"12"[39m
+                              [33mcy[39m=[32m"8"[39m
+                              [33mr[39m=[32m"6"[39m
+                            [36m/>[39m
+                          [36m</svg>[39m
+                   ...
+
+      72 |
+      73 |     // 2. Enroll Robotics Lab (First one)
+    > 74 |     const roboticsBtn = screen.getByText('Robotics Lab');
+         |                                ^
+      75 |     fireEvent.click(roboticsBtn);
+      76 |     const enrollBtn2 = screen.getByText(/Одоо нэгдэх/i);
+      77 |     fireEvent.click(enrollBtn2);
+
+      at Object.getElementError (../../node_modules/@testing-library/dom/dist/config.js:37:19)
+      at getElementError (../../node_modules/@testing-library/dom/dist/query-helpers.js:20:35)
+      at getMultipleElementsFoundError (../../node_modules/@testing-library/dom/dist/query-helpers.js:23:10)
+      at ../../node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+      at ../../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (__test__/ClubsContent.spec.tsx:74:32)
+
+(node:80404) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS club-web apps/club-web/__test__/create-club/Calendar.spec.tsx
+(node:80403) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS club-web apps/club-web/__test__/create-club/FormValidation.spec.tsx
+
+Test Suites: 2 failed, 14 passed, 16 total
+Tests:       3 failed, 44 passed, 47 total
+Snapshots:   0 total
+Time:        1.725 s, estimated 2 s
+Ran all test suites.
+
+ 
+
+ >  NX   Running target test for project club-web failed
+
+   Failed tasks:
+   
+   - club-web:test
+   
+   Hint: run the command with --verbose for more details.
+
