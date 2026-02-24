@@ -77,6 +77,55 @@ export const GET_ALL_CLUBS = gql`
     }
   }
 `;
+
+export const GET_ALL_PENDING_CLUBS = gql`
+  query GetAllPendingClubs {
+    getAllPendingClubs {
+      id
+      name
+      description
+      creatorId
+      type
+      status
+      preferredTeachers
+      minMember
+      maxMember
+      timetables {
+        id
+        clubId
+        date
+        room
+        clubStartTime
+        duration
+      }
+    }
+  }
+`;
+
+export const GET_ALL_APPROVED_CLUBS = gql`
+  query GetAllApprovedClubs {
+    getAllApprovedClubs {
+      id
+      name
+      description
+      creatorId
+      teacherId
+      type
+      status
+      minMember
+      maxMember
+      timetables {
+        id
+        clubId
+        date
+        room
+        clubStartTime
+        duration
+      }
+    }
+  }
+`;
+
 // --- GRAPHQL MUTATION ---
 const CREATE_CLUB_WITH_SCHEDULE = gql`
   mutation CreateClubWithSchedules(
@@ -186,9 +235,12 @@ export default function CreateClubPage() {
   console.log({ clubMinStudent });
 
   // APOLLO MUTATION
-  const [createClub, { loading }] = useMutation(CREATE_CLUB_WITH_SCHEDULE, {
-    refetchQueries: [{ query: GET_ALL_CLUBS }],
-  });
+  const [createClub, { loading: isCreating }] = useMutation(
+    CREATE_CLUB_WITH_SCHEDULE,
+    {
+      refetchQueries: [{ query: GET_ALL_CLUBS }],
+    }
+  );
 
   const [deleteClub, { loading: isDeleting }] = useMutation<DeleteClubData>(
     DELETE_CLUB,
@@ -208,7 +260,21 @@ export default function CreateClubPage() {
     data,
   } = useQuery<Data>(GET_ALL_CLUBS);
 
+  const {
+    loading: isLoadingApproved,
+    error: errClubApproved,
+    data: clubDataApproved,
+  } = useQuery<Data>(GET_ALL_APPROVED_CLUBS);
+
+  const {
+    loading: isLoadingPending,
+    error: errClubPending,
+    data: clubDataPending,
+  } = useQuery<Data>(GET_ALL_PENDING_CLUBS);
+
   console.log({ data });
+  console.log({ clubDataApproved });
+  console.log({ clubDataPending });
 
   const handleToggleDay = (id: string) => {
     setSelectedDays((prev) =>
@@ -263,6 +329,11 @@ export default function CreateClubPage() {
 
   if (isLoading) return <div>Уншиж байна...</div>;
   if (err) return <div>Алдаа гарлаа: {err.message}</div>;
+  if (isLoadingApproved) return <div>Уншиж байна...</div>;
+  if (errClubApproved)
+    return <div>Алдаа гарлаа: {errClubApproved.message}</div>;
+  if (isLoadingPending) return <div>Уншиж байна...</div>;
+  if (errClubPending) return <div>Алдаа гарлаа: {errClubPending.message}</div>;
 
   return (
     <div className="flex flex-col gap-10 p-10">
@@ -473,9 +544,9 @@ export default function CreateClubPage() {
               <Button
                 type="submit"
                 className="bg-black text-white px-8"
-                disabled={loading}
+                disabled={isCreating}
               >
-                {loading ? 'Creating...' : 'Create Club'}
+                {isCreating ? 'Creating...' : 'Create Club'}
               </Button>
             </DialogFooter>
           </form>
