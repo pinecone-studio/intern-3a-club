@@ -13,7 +13,8 @@ module.exports = {
     'route.ts',
     'layout.tsx',
     'types.ts',
-    'utils.ts',
+    'type.ts',
+    '.d.ts',
   ],
   collectCoverageFrom: [
     '**/*.ts',
