@@ -1,8 +1,8 @@
 import { apolloClient } from '../apollo-client';
 
-describe('Apollo Client', () => {
-  it('Client зөв үүсгэгдсэн байх ёстой', () => {
-    expect(apolloClient).toBeDefined();
-    expect(apolloClient.extract()).toBeDefined();
-  });
+describe('Apollo Client (lib/root)', () => {
+    it('should be defined', () => {
+        expect(apolloClient).toBeDefined();
+        expect(apolloClient.extract()).toBeDefined();
+    });
 });
