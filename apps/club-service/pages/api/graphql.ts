@@ -1,11 +1,12 @@
-import { buildASTSchema, graphql } from 'graphql';
+import * as GraphQL from 'graphql';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { NextRequest, NextResponse } from 'next/server';
 import { cors } from '../../utils/cors';
 import { errorResponse, jsonResponse } from '../../utils/responses';
-
-import { typeDefs } from 'graphql/schema';
-import { resolvers } from 'graphql/resolvers';
+import { typeDefs } from 'graphql-gql/schema';
+import { resolvers } from 'graphql-gql/resolvers';
 import { Maybe } from 'graphql/jsutils/Maybe';
+
 type GraphqlRequest = {
   query: string;
   variables?: Maybe<{
@@ -17,6 +18,12 @@ type GraphqlRequest = {
 export const config = {
   runtime: 'edge',
 };
+
+const schema = makeExecutableSchema({
+  typeDefs, // нэгтгэсэн typeDefs
+  resolvers, // бүх Mutation, Query-г агуулсан resolvers
+});
+
 const handler = async (req: NextRequest) => {
   let res: Response;
 
@@ -37,10 +44,9 @@ const graphqlHandler = async (req: NextRequest): Promise<Response> => {
     const body = (await req.json()) as GraphqlRequest;
     const { query, variables, operationName } = body;
 
-    const response = await graphql({
-      schema: buildASTSchema(typeDefs),
+    const response = await GraphQL.graphql({
+      schema: schema,
       source: query,
-      rootValue: { ...resolvers.Mutation, ...resolvers.Query },
       variableValues: variables,
       operationName: operationName,
     });

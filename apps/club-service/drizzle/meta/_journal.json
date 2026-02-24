@@ -8,6 +8,13 @@
       "when": 1770814014378,
       "tag": "0000_little_the_hunter",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1771816249089,
+      "tag": "0001_romantic_shatterstar",
+      "breakpoints": true
     }
   ]
 }

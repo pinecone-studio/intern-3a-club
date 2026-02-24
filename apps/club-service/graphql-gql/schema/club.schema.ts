@@ -12,32 +12,31 @@ export const clubTypeDefs = gql`
     name: String!
     description: String
     status: ClubStatus!
-    type: String! # SQLite дээр .notNull() байгаа тул ! нэмэв
+    type: String!
     creatorId: String
     teacherId: String
-    preferredTeacher: String
-    minMember: Int
-    maxMember: Int
+    preferredTeachers: [String]
+    minMember: Int!
+    maxMember: Int!
     createdAt: String!
     updatedAt: String!
+    timetables: [Timetable]
   }
 
   input CreateClubInput {
     name: String!
     description: String
     status: ClubStatus
-    type: String! # Заавал оруулах шаардлагатай
+    type: String!
     creatorId: String
     teacherId: String
-    preferredTeacher: String
-    minMember: Int
-    maxMember: Int
+    preferredTeachers: [String]
+    minMember: Int!
+    maxMember: Int!
   }
 
   input UpdateClubInput {
     id: ID!
-    name: String
-    description: String
     status: ClubStatus
     type: String
     teacherId: String
@@ -46,11 +45,21 @@ export const clubTypeDefs = gql`
   }
 
   extend type Query {
-    getClubs: [Club]
+    getAllClubs: [Club]
     getClubById(id: ID!): Club
   }
 
   extend type Mutation {
+    createClubWithSchedules(
+      input: CreateClubInput!
+      startDate: String!
+      classroom: String!
+      startTime: String!
+      duration: Int!
+      frequency: String!
+      selectedDays: [String!]
+    ): Club
+
     createClub(input: CreateClubInput!): Club
     updateClub(input: UpdateClubInput!): Club
     deleteClub(id: ID!): Boolean

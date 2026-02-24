@@ -77,12 +77,14 @@ export const clubs = sqliteTable('clubs', {
   creatorId: text('creatorId'),
   name: text('name').notNull(),
   description: text('description'),
-  teacherId: text('teacherId'),
-  minMember: integer('minMember'),
-  maxMember: integer('maxMember'),
+  teacherId: text('teacherId').references(() => teachers.id),
+  minMember: integer('minMember').notNull(),
+  maxMember: integer('maxMember').notNull(),
   type: text('type').notNull(),
-  preferredTeacher: text('preferredTeacher'),
-  status: text('status').default('pending').notNull(),
+  preferredTeachers: text('preferredTeachers', { mode: 'json' }).$type<
+    string[]
+  >(),
+  status: text('status').notNull(),
   createdAt: text('createdAt')
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),
@@ -105,6 +107,7 @@ export const classTeachers = sqliteTable('class_teachers', {
     .notNull(),
 });
 
+// --- CLUB MEMBERS TABLE ---
 export const clubMembers = sqliteTable('club_members', {
   id: text('id').primaryKey(),
   clubId: text('clubId')
@@ -118,12 +121,12 @@ export const clubMembers = sqliteTable('club_members', {
     .notNull(),
 });
 
+// --- CLUB TIMETABLE TABLE ---
 export const timetable = sqliteTable('timetable', {
   id: text('id').primaryKey(),
   date: text('date').notNull(),
-  clubStartTime: text('clubStartTime'),
-  clubEndTime: text('clubEndTime'),
-  room: integer('room'),
+  room: text('room').notNull(),
+  clubStartTime: text('clubStartTime').notNull(),
   duration: integer('duration'),
   clubId: text('clubId')
     .notNull()

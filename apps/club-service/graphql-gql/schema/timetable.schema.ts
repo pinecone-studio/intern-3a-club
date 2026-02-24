@@ -1,34 +1,31 @@
-import { gql } from 'graphql-tag';
+import gql from 'graphql-tag';
 
 export const timetableTypeDefs = gql`
   type Timetable {
     id: ID!
     date: String!
-    clubStartTime: String
-    clubEndTime: String
-    room: Int
-    duration: Int
+    room: String!
+    clubStartTime: String!
+    duration: Int!
     clubId: String!
-    club: Club # Timetable-ээс тухайн клубын мэдээллийг шууд харах боломжтой
+    club: Club
     createdAt: String!
     updatedAt: String!
   }
 
   input CreateTimetableInput {
     date: String!
-    clubStartTime: String
-    clubEndTime: String
-    room: Int
-    duration: Int
+    room: String!
+    clubStartTime: String!
+    duration: Int!
     clubId: String!
   }
 
   input UpdateTimetableInput {
     id: ID!
     date: String
+    room: String
     clubStartTime: String
-    clubEndTime: String
-    room: Int
     duration: Int
   }
 
@@ -43,7 +40,6 @@ export const timetableTypeDefs = gql`
     deleteTimetable(id: ID!): Boolean
   }
 
-  # Өмнөх Club төрөл дээр timetable-үүдийг нь нэмж өгвөл хэрэгтэй
   extend type Club {
     timetables: [Timetable]
   }

@@ -14,6 +14,7 @@ export const classTeachersRelations = relations(classTeachers, ({one}) => ({
 
 export const teachersRelations = relations(teachers, ({many}) => ({
 	classTeachers: many(classTeachers),
+	clubs: many(clubs),
 }));
 
 export const classesRelations = relations(classes, ({many}) => ({
@@ -35,8 +36,12 @@ export const studentsRelations = relations(students, ({many}) => ({
 	clubMembers: many(clubMembers),
 }));
 
-export const clubsRelations = relations(clubs, ({many}) => ({
+export const clubsRelations = relations(clubs, ({one, many}) => ({
 	clubMembers: many(clubMembers),
+	teacher: one(teachers, {
+		fields: [clubs.teacherId],
+		references: [teachers.id]
+	}),
 	timetables: many(timetable),
 }));
 
