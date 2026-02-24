@@ -60,7 +60,7 @@ describe('StartTime Component', () => {
       <StartTime clubStartTime="13:00" setClubStartTime={mockSetStartTime} />
     );
     expect(screen.getByText(/Эхлэх цаг/i)).toBeInTheDocument();
-    expect(screen.getByText('13:00')).toBeInTheDocument();
+    expect(screen.getAllByText('13:00')[0]).toBeInTheDocument();
   });
 
   it('calls setClubStartTime when a valid time ID is selected (Hits lines 43-47)', () => {

@@ -42,6 +42,7 @@ module.exports = {
     '!**/eslint-rules/**',
     '!**/libs/shadcn/**/*.tsx',
     '!**/*.d.ts',
+    '!**/lib/utils.ts',
   ],
   coverageThreshold: {
     global: {

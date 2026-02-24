@@ -101,12 +101,9 @@ describe('CreateClub Page', () => {
     fireEvent.change(screen.getByLabelText(/Клубын зорилго/i), {
       target: { value: 'New Desc' },
     });
-    fireEvent.change(screen.getByLabelText(/Max/i), {
-      target: { value: '30' },
-    });
-    fireEvent.change(screen.getByLabelText(/Min/i), {
-      target: { value: '10' },
-    });
+    const spinbuttons = screen.getAllByRole('spinbutton');
+    fireEvent.change(spinbuttons[0], { target: { value: '30' } });
+    fireEvent.change(spinbuttons[1], { target: { value: '10' } });
 
     expect(mockHandlers.handleName).toHaveBeenCalled();
     expect(mockHandlers.handleDesc).toHaveBeenCalled();
