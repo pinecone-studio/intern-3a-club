@@ -50,6 +50,9 @@ export type Timetable = {
   duration: number;
 };
 
+type DeleteClubData = {
+  deleteClub: string;
+};
 export const GET_ALL_CLUBS = gql`
   query GetAllClubs {
     getAllClubs {
@@ -97,6 +100,12 @@ const CREATE_CLUB_WITH_SCHEDULE = gql`
       id
       name
     }
+  }
+`;
+
+const DELETE_CLUB = gql`
+  mutation DeleteClub($id: ID!) {
+    deleteClub(id: $id)
   }
 `;
 
@@ -149,7 +158,6 @@ const mockDuration = [
 
 // --- MAIN COMPONENT ---
 export default function CreateClubPage() {
-  // FORM STATES
   const [clubName, setClubName] = useState('');
   const [teacherId, setTeacherId] = useState('');
   const [clubDesc, setClubDesc] = useState('');
@@ -181,12 +189,27 @@ export default function CreateClubPage() {
   const [createClub, { loading }] = useMutation(CREATE_CLUB_WITH_SCHEDULE, {
     refetchQueries: [{ query: GET_ALL_CLUBS }],
   });
+
+  const [deleteClub, { loading: isDeleting }] = useMutation<DeleteClubData>(
+    DELETE_CLUB,
+    {
+      refetchQueries: [{ query: GET_ALL_CLUBS }],
+      onCompleted: (data) => {
+        alert('Клуб амжилттай устгагдлаа.');
+        console.log('Устсан клубын ID:', data.deleteClub);
+      },
+      onError: (error) => alert(`Алдаа гарлаа: ${error.message}`),
+    }
+  );
+
   const {
     loading: isLoading,
     error: err,
     data,
   } = useQuery<Data>(GET_ALL_CLUBS);
+
   console.log({ data });
+
   const handleToggleDay = (id: string) => {
     setSelectedDays((prev) =>
       prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]
@@ -229,6 +252,12 @@ export default function CreateClubPage() {
     } catch (error) {
       console.error(error);
       alert('Алдаа гарлаа');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Та энэ клубыг устгахдаа итгэлтэй байна уу?')) {
+      await deleteClub({ variables: { id } });
     }
   };
 
@@ -478,6 +507,9 @@ export default function CreateClubPage() {
                 </div>
               ))}
             </div>
+            <Button onClick={() => handleDelete(club.id)} disabled={isDeleting}>
+              {isDeleting ? 'Deleting...' : 'Delete Club'}
+            </Button>
           </div>
         ))}
       </div>
