@@ -17,7 +17,7 @@ export interface Club {
   class: string;
   enrolledStudents: string[];
   image: string;
-  isEnrolled?: boolean; // Энэ мөрийг нэмээрэй (? тавьснаар сонголтоор байж болно)
+  isEnrolled?: boolean;
 }
 
 export type ClubCardProps = {

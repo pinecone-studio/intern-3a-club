@@ -101,7 +101,9 @@ describe('JoinClubPage Full Coverage', () => {
     });
     fireEvent.click(leaveBtn);
 
-    expect(screen.getByText(/Одоо нэгдэх/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Түр хүлээх шаардлагатай!/i)
+    ).toBeInTheDocument();
   });
 
   it('should cover line 82 (EmptyState fallback)', () => {

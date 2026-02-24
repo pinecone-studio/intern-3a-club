@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ClubDetail } from './ClubDetail';
 import { ClubList } from './ClubList';
-import { ClubsHeader } from './ClubsHeader';
+// import { ClubsHeader } from './ClubsHeader';
 import { clubs as initialClubs } from '../../../lib/mockdata';
 import { ExtendedClub } from '../../../lib/type';
 
@@ -50,28 +50,30 @@ export const ClubsContent = () => {
 
   // 1-рт: SelectedClub-ийг тодорхойлно
   const selectedClub = useMemo(
-    () => sortedClubs.find((c) => c.id === selectedClubId) ?? sortedClubs[0],
+    () => sortedClubs.find((c) => c.id === selectedClubId),
     [sortedClubs, selectedClubId]
   );
 
   // 2-рт: Түүн дээр суурилсан утгуудыг тооцоолно
   const isLocked = useMemo(() => {
+    if (!selectedClub) return false;
     return selectedClub.bannedUntil > now;
-  }, [selectedClub.bannedUntil, now]);
+  }, [selectedClub, now]);
 
   const remainingTime = useMemo(() => {
+    if (!selectedClub) return 0;
     const diff = Math.ceil((selectedClub.bannedUntil - now) / 1000);
     return diff > 0 ? diff : 0;
-  }, [selectedClub.bannedUntil, now]);
+  }, [selectedClub, now]);
 
-  const openClubsCount = useMemo(
-    () => allClubs.filter((c) => c.status === 'Open').length,
-    [allClubs]
-  );
+  // const openClubsCount = useMemo(
+  //   () => allClubs.filter((c) => c.status === 'Open').length,
+  //   [allClubs]
+  // );
   return (
     <div className="mx-auto h-screen space-y-8 p-6 bg-gradient-to-br from-[#050c1f] to-[#0b2b5c]">
-      <ClubsHeader openClubsCount={openClubsCount} />
-      <div className="flex flex-col gap-8 lg:flex-row">
+      {/* <ClubsHeader openClubsCount={openClubsCount} /> */}
+      <div className="flex flex-col mt-4 gap-8 lg:flex-row">
         <ClubList
           clubs={sortedClubs}
           selectedClubId={selectedClubId}
