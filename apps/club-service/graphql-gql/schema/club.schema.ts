@@ -45,8 +45,10 @@ export const clubTypeDefs = gql`
   }
 
   extend type Query {
-    getAllClubs: [Club]
+    getAllClubs: [Club!]!
     getClubById(id: ID!): Club
+    getAllPendingClubs: [Club!]!
+    getAllApprovedClubs: [Club!]!
   }
 
   extend type Mutation {
