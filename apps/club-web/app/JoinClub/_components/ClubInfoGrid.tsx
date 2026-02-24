@@ -40,11 +40,11 @@ export const ClubInfoGrid = ({ schedule, className, current, max }: InfoGridProp
           <span className="text-xs font-bold text-white/60">{current}/{max}</span>
         </div>
         <div className="space-y-2">
-          <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+          <div className="h-1.5 w-full rounded-full bg-white overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${percent}%` }}
-              className="h-full bg-blue-500 transition-all duration-700"
+              className="h-full rounded-full bg-blue-600 transition-all duration-700"
             />
           </div>
           <div className="flex justify-end">

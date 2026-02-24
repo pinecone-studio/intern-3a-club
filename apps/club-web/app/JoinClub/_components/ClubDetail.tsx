@@ -47,47 +47,35 @@ export const ClubDetail = ({
   );
 
   return (
-    <div className="flex-1 w-full h-full">
-      {/* Үндсэн контейнер -rgba(5, 10, 18, 0.6) ашиглан арын дэвсгэртэй уусгав */}
-      <div className="relative h-full rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_20%_30%,_rgba(29,78,216,0.25)_0%,_transparent_30%),_radial-gradient(circle_at_20%_30%,_rgba(100,116,139,0.15)_0%,_transparent_90%)] p-8 lg:p-10 backdrop-blur-2xl overflow-hidden shadow-2xl">
-        {/* Арын фонны туяа - Таны хэлсэн rgba цэнхэр туяаг энд ашиглав */}
-        <div
-          className="absolute -top-24 -right-24 w-80 h-80 opacity-20 blur-[120px] rounded-full pointer-events-none"
-          style={{ backgroundColor: 'rgba(29, 78, 216, 0.8)' }}
-        />
-
+    <div className="flex-1 h-full px-6">
+      <div className="relative  h-full rounded-3xl bg-[radial-gradient(circle_at_20%_30%,_rgba(29,78,216,0.25)_0%,_transparent_30%),_radial-gradient(circle_at_20%_30%,_rgba(100,116,139,0.15)_0%,_transparent_90%)] p-8 overflow-hidden shadow-2xl">
         <AnimatePresence mode="wait">
           <motion.div
-            key={selectedClub.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="relative z-10"
+          
           >
             {/* Header */}
             <header className="mb-10 flex items-start justify-between">
-              <div className="space-y-3">
+              <div className="space-y-5">
                 <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1 text-[10px] font-bold text-blue-400 uppercase tracking-[0.1em] border border-blue-500/20">
+                  <div className="flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1 text-[10px] font-bold text-blue-400 uppercase tracking-[0.1em] border border-blue-500/20">
                     <Award size={12} /> Premium Club
-                  </span>
+                  </div>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
+                <h1 className="md:text-5xl font-black tracking-tight text-white/90">
                   {selectedClub.name}
                 </h1>
               </div>
               <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-                <ShieldCheck className="h-8 w-8 text-blue-400/50" />
+                <ShieldCheck className="h-6 w-6 text-blue-400/50" />
               </div>
             </header>
 
             {/* Description/Goal */}
             <div className="mb-12 relative max-w-3xl">
-              <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-gradient-to-b from-blue-500/50 to-transparent" />
-              <div className="pl-6">
-                <h4 className="text-[10px] text-blue-400/60 font-bold uppercase tracking-[0.2em] mb-3">
-                  Зорилго болон чиглэл
+              <div className="absolute left-0 top-0 bottom-0 w-[1.8px] bg-gradient-to-b from-blue-500/50 to-transparent" />
+              <div className="pl-5">
+                <h4 className="text-[10px] text-blue-400/60 font-bold uppercase tracking-[0.2em] mb-1.5">
+                  Зорилго болон чиглэл 
                 </h4>
                 <p className="text-xl text-white/80 font-light leading-relaxed">
                   {selectedClub.description}
@@ -131,11 +119,11 @@ export const ClubDetail = ({
 
             {/* Students Section */}
             <div className="space-y-4">
-              <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.3em] ml-1">
+              <p className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
                 Бүртгүүлсэн суралцагчид
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-                {['STU013', 'STU014', 'STU015', 'STU027'].map((id) => (
+                {['25LP9878', '25LP4578', '25LP6786', '25LP2344'].map((id) => (
                   <StudentIdBadge key={id} id={id} />
                 ))}
               </div>

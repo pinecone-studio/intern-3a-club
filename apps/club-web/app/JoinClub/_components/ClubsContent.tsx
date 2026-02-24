@@ -71,14 +71,15 @@ export const ClubsContent = () => {
   //   [allClubs]
   // );
   return (
-    <div className="mx-auto h-screen space-y-8 p-6 bg-gradient-to-br from-[#050c1f] to-[#0b2b5c]">
+    <div className="mx-auto h-screen space-y-8 p-14 bg-gradient-to-br from-[#050c1f] to-[#0b2b5c]">
       {/* <ClubsHeader openClubsCount={openClubsCount} /> */}
-      <div className="flex flex-col mt-4 gap-8 lg:flex-row">
+      <div className="flex flex-col my-6 gap-6 lg:flex-row">
         <ClubList
           clubs={sortedClubs}
           selectedClubId={selectedClubId}
           onSelect={handleSelect}
         />
+       
         <ClubDetail
           selectedClub={selectedClub}
           onEnroll={handleEnroll}
@@ -86,6 +87,7 @@ export const ClubsContent = () => {
           isLocked={isLocked}
           remainingTime={remainingTime}
         />
+      
       </div>
     </div>
   );
