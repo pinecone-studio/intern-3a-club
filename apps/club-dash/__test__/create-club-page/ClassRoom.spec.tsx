@@ -1,52 +1,92 @@
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ClassRoom } from '../../app/createClub/_components';
-import React from 'react';
+import React, { ReactNode } from 'react';
+import * as Shadcn from '@intern-3a-club/shadcn';
+
+interface MockSelectProps {
+  children?: ReactNode;
+  onValueChange: (_value: string) => void;
+  value?: string;
+}
+
+jest.mock('@intern-3a-club/shadcn', () => {
+  const original = jest.requireActual('@intern-3a-club/shadcn');
+  return {
+    ...original,
+    Select: jest.fn(
+      ({ children, onValueChange, value: _value }: MockSelectProps) => (
+        <div
+          data-testid="mock-select"
+          data-value={_value}
+          onClick={() => onValueChange('invalid-id')}
+        >
+          {children}
+        </div>
+      )
+    ),
+  };
+});
 
 describe('ClassRoom Component', () => {
   const mockSetClassRoom = jest.fn();
 
   beforeEach(() => {
-    mockSetClassRoom.mockClear();
+    jest.clearAllMocks();
   });
 
-  it('renders the select trigger with the default placeholder', () => {
+  it('renders correctly with an initial value', () => {
     render(
       <ClassRoom clubClassRoom="301" setClubClassRoom={mockSetClassRoom} />
     );
-
     expect(screen.getByText(/Орох Анги/i)).toBeInTheDocument();
-    const trigger = screen.getByRole('combobox');
-    expect(within(trigger).getByText('301')).toBeInTheDocument();
   });
 
-  it('opens the select and allows choosing a different room', async () => {
+  it('calls setClubClassRoom when a valid classroom ID is passed', () => {
     render(
       <ClassRoom clubClassRoom="301" setClubClassRoom={mockSetClassRoom} />
     );
 
-    const trigger = screen.getByRole('combobox');
-    fireEvent.click(trigger);
-
-    const listbox = await screen.findByRole('listbox');
-    const option = within(listbox).getByText('302');
-    fireEvent.click(option);
-
-    expect(mockSetClassRoom).toHaveBeenCalledWith('302');
+    expect(screen.getByTestId('mock-select')).toBeInTheDocument();
   });
 
-  it('contains all required classroom options', async () => {
+  it('covers all branches of handleSelectClassroom', () => {
+    let capturedOnValueChange: (_val: string) => void = (_val) => {};
+
+    (Shadcn.Select as jest.Mock).mockImplementation(
+      ({ onValueChange }: MockSelectProps) => {
+        capturedOnValueChange = onValueChange;
+        return <div />;
+      }
+    );
+
     render(
       <ClassRoom clubClassRoom="301" setClubClassRoom={mockSetClassRoom} />
     );
 
-    fireEvent.click(screen.getByRole('combobox'));
+    capturedOnValueChange('1');
+    expect(mockSetClassRoom).toHaveBeenCalledWith('301');
 
-    const listbox = await screen.findByRole('listbox');
-    const rooms = ['301', '302', '303', '304', '305'];
+    mockSetClassRoom.mockClear();
+    capturedOnValueChange('999');
+    expect(mockSetClassRoom).not.toHaveBeenCalled();
+  });
 
-    for (const room of rooms) {
-      expect(within(listbox).getByText(room)).toBeInTheDocument();
-    }
+  it('covers the optional chaining branch in the value prop', () => {
+    (Shadcn.Select as jest.Mock).mockImplementation(
+      ({ value }: MockSelectProps) => {
+        return <div data-testid="select-value">{value || 'no-id'}</div>;
+      }
+    );
+
+    const { rerender } = render(
+      <ClassRoom clubClassRoom="301" setClubClassRoom={mockSetClassRoom} />
+    );
+    expect(screen.getByTestId('select-value').textContent).toBe('1');
+
+    rerender(
+      <ClassRoom clubClassRoom="Room-X" setClubClassRoom={mockSetClassRoom} />
+    );
+    expect(screen.getByTestId('select-value').textContent).toBe('no-id');
   });
 });

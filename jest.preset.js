@@ -41,6 +41,7 @@ module.exports = {
     '!**/jest.config.ts',
     '!**/eslint-rules/**',
     '!**/libs/shadcn/**/*.tsx',
+    '!**/*.d.ts',
   ],
   coverageThreshold: {
     global: {
