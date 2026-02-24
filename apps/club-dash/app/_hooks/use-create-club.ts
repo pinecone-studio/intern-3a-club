@@ -1,6 +1,5 @@
 import gql from 'graphql-tag';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { mockWeekdays } from '../../../club-dash/libs/mockdata';
 import { CreateClubState, Data } from '../../../club-dash/libs/types';
 
 export const GET_ALL_CLUBS = gql`
@@ -53,16 +52,25 @@ export const CREATE_CLUB_WITH_SCHEDULE = gql`
   }
 `;
 
+const weekdays = [
+  { id: '1', day: 'M', value: 'MONDAY' },
+  { id: '2', day: 'T', value: 'TUESDAY' },
+  { id: '3', day: 'W', value: 'WEDNESDAY' },
+  { id: '4', day: 'T', value: 'THURSDAY' },
+  { id: '5', day: 'F', value: 'FRIDAY' },
+  { id: '6', day: 'S', value: 'SATURDAY' },
+  { id: '7', day: 'S', value: 'SUNDAY' },
+];
+
 const getDurationInMinutes = (durationStr: string): number => {
   const [hours, minutes] = durationStr.split(':').map(Number);
   return (hours || 0) * 60 + (minutes || 0);
 };
 
-const getFormattedDays = (selectedIds: string[]): string[] => {
-  return selectedIds
-    .map((id) => mockWeekdays.find((d) => d.id === id)?.value)
+const getFormattedDays = (selectedIds: string[]): string[] =>
+  selectedIds
+    .map((id) => weekdays.find((d) => d.id === id)?.value)
     .filter((val): val is string => Boolean(val));
-};
 
 export const useCreateClubMutation = (state: CreateClubState) => {
   const [createClub, { loading }] = useMutation(CREATE_CLUB_WITH_SCHEDULE, {
