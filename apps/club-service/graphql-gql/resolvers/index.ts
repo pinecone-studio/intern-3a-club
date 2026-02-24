@@ -6,9 +6,9 @@ import { getAllClubs } from './queries';
 import { createClubWithSchedules } from './mutations';
 
 export type Club = InferSelectModel<typeof clubs>;
-interface GetClubByIdArgs {
-  id: string;
-}
+// interface GetClubByIdArgs {
+//   id: string;
+// }
 export const resolvers = {
   Query: {
     getAllClubs: async () => await getAllClubs(),
