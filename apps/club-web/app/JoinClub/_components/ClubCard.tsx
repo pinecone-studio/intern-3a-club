@@ -7,32 +7,23 @@ import { ClubCardProps } from '../../../lib/type';
 
 const CARD_THEMES = {
   enrolled: {
-    container: 'border-[#00ff9d]/40 bg-[#00ff9d]/5 ring-1 ring-[#00ff9d]/20',
-    text: 'text-[#00ff9d]',
+    container: 'border-blue-500 bg-blue-500/10',
     badge: 'bg-blue-600 text-white',
-    bar: 'bg-[#00ff9d] rounded-full',
     label: 'ИДЭВХТЭЙ',
   },
   full: {
-    container: 'border-white/5 bg-[#0a162e]/80 opacity-60',
-    text: 'text-blue-200/50',
-    badge: 'bg-gray-700 text-gray-300',
-    bar: 'bg-gray-600 rounded-full',
+    container: 'border-blue-500 bg-blue-500/10',
+    badge: 'bg-gray-600 text-white/70',
     label: 'ДҮҮРСЭН',
   },
   selected: {
-    container:
-      'border-blue-500 bg-blue-500/10 shadow-[0_0_20px_rgba(59,130,246,0.15)]',
-    text: 'text-blue-400',
+    container: 'border-blue-500 bg-blue-500/10',
     badge: 'bg-blue-600 text-white',
-    bar: 'bg-blue-600 rounded-full',
     label: 'НЭЭЛТТЭЙ',
   },
   default: {
-    container: 'rounded-[24px] bg-[#0a192f]/60',
-    text: 'text-blue-200/80',
+    container: 'rounded-full bg-[#0a192f]/60',
     badge: 'bg-blue-600 text-white',
-    bar: 'bg-blue-600 rounded-full',
     label: 'НЭЭЛТТЭЙ',
   },
 };
@@ -59,27 +50,21 @@ export const ClubCard = ({ club, isSelected, onClick }: ClubCardProps) => {
 
   return (
     <motion.button
-      whileHover={{ scale: 1.01, x: 2 }}
-      whileTap={{ scale: 0.98 }}
       className={cn(
-        'relative w-full rounded-xl border p-4 text-left transition-all duration-300 backdrop-blur-sm',
-        theme.container
+        'relative w-full rounded-lg p-4 text-left transition-colors duration-200',
+        'bg-blue-600/10 border border-white/[0.06] backdrop-blur-md',
+        'hover:bg-blue-600/20 cursor-pointer select-none'
       )}
       onClick={handleOnClick}
     >
       <div className="flex flex-col gap-3">
         <div className="flex justify-between items-start">
-          <h3
-            className={cn(
-              'text-[15px] font-semibold tracking-tight',
-              theme.text
-            )}
-          >
+          <h3 className="text-[17px] font-bold text-white tracking-wide leading-tight">
             {club.name}
           </h3>
           <span
             className={cn(
-              'rounded-md px-1.5 py-0.5 text-[10px] font-bold tracking-wider',
+              'rounded-xl px-2 py-0.5 text-[10px] font-bold',
               theme.badge
             )}
           >
@@ -88,24 +73,33 @@ export const ClubCard = ({ club, isSelected, onClick }: ClubCardProps) => {
         </div>
 
         <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-[12px] text-white/40">
-            <Clock size={13} strokeWidth={2.5} className="opacity-50" />
+          <div className="flex items-center gap-2 text-[12px] text-white/70">
+            <Clock
+              size={13}
+              strokeWidth={2.5}
+              className="opacity-50 text-white/70"
+            />
             <span className="font-medium">
               {club.schedule} • {club.time}
             </span>
           </div>
-          <div className="flex items-center gap-2 text-[12px] text-white/40">
-            <MapPin size={13} strokeWidth={2.5} className="opacity-50" />
+          <div className="flex items-center gap-2 text-[12px] text-white/70">
+            <MapPin
+              size={13}
+              strokeWidth={2.5}
+              className="opacity-50 text-white/70"
+            />
             <span className="font-medium">{club.class}</span>
           </div>
         </div>
 
-        <div className="mt-1 h-[4px] w-full rounded-full bg-white overflow-hidden">
+        <div className="mt-1 h-[4px] w-full rounded-full bg-white">
           <div
-            className={cn('h-full transition-all', theme.bar)}
+            className="h-full bg-blue-600 rounded-full"
             style={{ width: `${progress}%` }}
           />
         </div>
+        <div className="flex items-center gap-6 mt-auto pt-2"></div>
       </div>
     </motion.button>
   );
