@@ -114,18 +114,14 @@ describe('ClubsContent Logic Coverage', () => {
     expect(leaveBtns.length).toBeGreaterThan(0);
   });
 
-  it('should cover fallback selection (Line 53)', () => {
+  it('should cover fallback selection (Empty State)', () => {
     render(<ClubsContent />);
 
     // Trigger the fallback: select an ID that doesn't exist
     const forceInvalid = screen.getByTestId('force-invalid-select');
     fireEvent.click(forceInvalid);
 
-    // Should fallback to the first club (Robotics Lab)
-    // We check if the Detail view shows Robotics Lab
-    // Using regex for case-insensitive match as validatable text might be uppercase via CSS
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      /ROBOTICS LAB/i
-    );
+    // Should render EmptyState because the club is not found
+    expect(screen.getByText(/Клуб сонгоно уу/i)).toBeInTheDocument();
   });
 });

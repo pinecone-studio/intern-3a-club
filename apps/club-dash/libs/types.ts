@@ -1,30 +1,3 @@
-// export type Club = {
-//   id: string;
-//   creatorId: string;
-//   name: string;
-//   description?: string;
-//   teacherIds: string[];
-//   minMember: number;
-//   maxMember: number;
-//   members?: string[];
-//   type: 'self' | 'mentor';
-//   preferredTeachers?: string[];
-//   status: 'pending' | 'approved' | 'declined';
-//   createdAt: string;
-//   updatedAt: string;
-// };
-
-// export type TimeTable = {
-//   id: string;
-//   date: string;
-//   clubEndDate?: string;
-//   room: number;
-//   duration: number;
-//   clubId: Club;
-//   createdAt: string;
-//   updatedAt: string;
-// };
-
 import React from 'react';
 
 export type ClassTeacherType = {
@@ -63,6 +36,7 @@ export interface ClubCardProps {
   onDelete?: (_club: Club) => void;
   expandedId?: number | null;
 }
+
 export interface ToggleItemProps {
   label: string;
   active: boolean;
@@ -107,4 +81,31 @@ export type CreateClubState = {
   clubFrequency: string;
   selectedDays: string[];
   selectedFreqId: string;
+};
+
+export type Data = {
+  getAllClubs: GetAllClub[];
+};
+
+export type GetAllClub = {
+  id: string;
+  name: string;
+  description: string;
+  creatorId: string | null; // Changed from any
+  teacherId: string;
+  type: string;
+  status: string;
+  preferredTeachers: string[] | null; // Changed from any
+  minMember: number;
+  maxMember: number;
+  timetables: Timetable[];
+};
+
+export type Timetable = {
+  id: string;
+  clubId: string;
+  date: string;
+  room: string;
+  clubStartTime: string;
+  duration: number;
 };

@@ -1,33 +1,87 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { StartTime } from '../../app/createClub/_components';
-import React, { useState } from 'react';
+import React, { ReactNode } from 'react';
 
-const StartTimeWrapper = () => {
-  const [time, setTime] = useState('13:00');
-  return <StartTime clubStartTime={time} setClubStartTime={setTime} />;
-};
+interface MockSelectProps {
+  children?: ReactNode;
+  onValueChange: (_value: string) => void;
+}
+
+jest.mock('@intern-3a-club/shadcn', () => {
+  const actual = jest.requireActual('@intern-3a-club/shadcn');
+  return {
+    ...actual,
+    Select: ({ children, onValueChange }: MockSelectProps) => (
+      <div data-testid="mock-select" onClick={() => onValueChange('1')}>
+        <button
+          data-testid="trigger-invalid"
+          onClick={(e) => {
+            e.stopPropagation();
+            onValueChange('999');
+          }}
+        >
+          Fail
+        </button>
+        {children}
+      </div>
+    ),
+    SelectTrigger: ({ children }: { children: ReactNode }) => (
+      <div>{children}</div>
+    ),
+    SelectValue: ({
+      children,
+      placeholder,
+    }: {
+      children?: ReactNode;
+      placeholder?: string;
+    }) => <div>{children || placeholder}</div>,
+    SelectContent: ({ children }: { children: ReactNode }) => (
+      <div>{children}</div>
+    ),
+    SelectGroup: ({ children }: { children: ReactNode }) => (
+      <div>{children}</div>
+    ),
+    SelectItem: ({ children }: { children: ReactNode }) => (
+      <div>{children}</div>
+    ),
+  };
+});
 
 describe('StartTime Component', () => {
-  it('renders the correct label and initial placeholder value', () => {
-    render(<StartTimeWrapper />);
+  const mockSetStartTime = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders correctly with initial time', () => {
+    render(
+      <StartTime clubStartTime="13:00" setClubStartTime={mockSetStartTime} />
+    );
     expect(screen.getByText(/Эхлэх цаг/i)).toBeInTheDocument();
     expect(screen.getByText('13:00')).toBeInTheDocument();
   });
 
-  it('updates the trigger text when a new time is selected', async () => {
-    render(<StartTimeWrapper />);
+  it('calls setClubStartTime when a valid time ID is selected (Hits lines 43-47)', () => {
+    render(
+      <StartTime clubStartTime="13:00" setClubStartTime={mockSetStartTime} />
+    );
 
-    const trigger = screen.getByRole('combobox');
-    fireEvent.click(trigger);
+    const select = screen.getByTestId('mock-select');
+    fireEvent.click(select);
 
-    const option = await screen.findByText('15:00');
-    fireEvent.click(option);
+    expect(mockSetStartTime).toHaveBeenCalledWith('13:00');
+  });
 
-    await waitFor(() => {
-      expect(screen.getByText('15:00')).toBeInTheDocument();
-    });
+  it('does not call setClubStartTime when an invalid ID is passed (Branch coverage)', () => {
+    render(
+      <StartTime clubStartTime="13:00" setClubStartTime={mockSetStartTime} />
+    );
 
-    expect(screen.queryByText('13:00')).not.toBeInTheDocument();
+    const failBtn = screen.getByTestId('trigger-invalid');
+    fireEvent.click(failBtn);
+
+    expect(mockSetStartTime).not.toHaveBeenCalled();
   });
 });

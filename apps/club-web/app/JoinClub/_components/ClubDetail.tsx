@@ -8,7 +8,7 @@ import { ClubInfoGrid } from './ClubInfoGrid';
 import { ClubActionButtons } from './ClubActionButton';
 
 interface ClubDetailProps {
-  selectedClub: Club & { isEnrolled?: boolean };
+  selectedClub: (Club & { isEnrolled?: boolean }) | undefined;
   onEnroll: (_id: number) => void;
   onLeave: (_id: number) => void;
   isLocked: boolean;
@@ -22,6 +22,13 @@ export const ClubDetail = ({
   isLocked,
   remainingTime,
 }: ClubDetailProps) => {
+  if (!selectedClub)
+    return (
+      <div className="flex-1 w-full h-full flex items-center justify-center min-h-[400px]">
+        <div className="text-white/50 text-xl font-medium">Клуб сонгоно уу</div>
+      </div>
+    );
+
   const handleEnroll = () => {
     onEnroll(selectedClub.id);
   };
@@ -42,14 +49,13 @@ export const ClubDetail = ({
   return (
     <div className="flex-1 w-full h-full">
       {/* Үндсэн контейнер -rgba(5, 10, 18, 0.6) ашиглан арын дэвсгэртэй уусгав */}
-      <div className="relative h-full rounded-3xl border border-white/10 bg-transparent bg-[radial-gradient(circle_at_20%_30%,_rgba(29,78,216,0.25)_0%,_transparent_30%),_radial-gradient(circle_at_20%_30%,_rgba(100,116,139,0.15)_0%,_transparent_90%)] p-8 lg:p-10 backdrop-blur-2xl overflow-hidden shadow-2xl">
-        
+      <div className="relative h-full rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_20%_30%,_rgba(29,78,216,0.25)_0%,_transparent_30%),_radial-gradient(circle_at_20%_30%,_rgba(100,116,139,0.15)_0%,_transparent_90%)] p-8 lg:p-10 backdrop-blur-2xl overflow-hidden shadow-2xl">
         {/* Арын фонны туяа - Таны хэлсэн rgba цэнхэр туяаг энд ашиглав */}
-        <div 
+        <div
           className="absolute -top-24 -right-24 w-80 h-80 opacity-20 blur-[120px] rounded-full pointer-events-none"
           style={{ backgroundColor: 'rgba(29, 78, 216, 0.8)' }}
         />
-        
+
         <AnimatePresence mode="wait">
           <motion.div
             key={selectedClub.id}
@@ -115,7 +121,7 @@ export const ClubDetail = ({
 
             {/* Info Grid Section */}
             <div className="bg-white/[0.02] rounded-3xl border border-white/5 p-8 mb-6">
-               <ClubInfoGrid
+              <ClubInfoGrid
                 schedule={selectedClub.schedule}
                 className={selectedClub.class}
                 current={selectedClub.currentMembers}
@@ -125,10 +131,10 @@ export const ClubDetail = ({
 
             {/* Students Section */}
             <div className="space-y-4">
-               <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.3em] ml-1">
-                 Бүртгүүлсэн суралцагчид
-               </p>
-               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+              <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.3em] ml-1">
+                Бүртгүүлсэн суралцагчид
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
                 {['STU013', 'STU014', 'STU015', 'STU027'].map((id) => (
                   <StudentIdBadge key={id} id={id} />
                 ))}
