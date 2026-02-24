@@ -28,18 +28,18 @@ const CARD_THEMES = {
   },
 };
 
-// eslint-disable-next-line complexity
 export const ClubCard = ({ club, isSelected, onClick }: ClubCardProps) => {
   const isEnrolled = !!club.isEnrolled;
   const isFull = club.currentMembers >= club.maxMembers;
 
-  const stateKey = isEnrolled
-    ? 'enrolled'
-    : isFull
-    ? 'full'
-    : isSelected
-    ? 'selected'
-    : 'default';
+  const states = [
+    { match: isEnrolled, key: 'enrolled' as const },
+    { match: isFull, key: 'full' as const },
+    { match: isSelected, key: 'selected' as const },
+  ];
+
+  const matchedState = states.find((s) => s.match);
+  const stateKey = matchedState ? matchedState.key : 'default';
 
   const theme = CARD_THEMES[stateKey];
   const progress = Math.min((club.currentMembers / club.maxMembers) * 100, 100);

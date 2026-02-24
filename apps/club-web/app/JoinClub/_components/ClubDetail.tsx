@@ -8,7 +8,7 @@ import { ClubInfoGrid } from './ClubInfoGrid';
 import { ClubActionButtons } from './ClubActionButton';
 
 interface ClubDetailProps {
-  selectedClub: Club & { isEnrolled?: boolean };
+  selectedClub: (Club & { isEnrolled?: boolean }) | undefined;
   onEnroll: (_id: number) => void;
   onLeave: (_id: number) => void;
   isLocked: boolean;
@@ -23,11 +23,11 @@ export const ClubDetail = ({
   remainingTime,
 }: ClubDetailProps) => {
   const handleEnroll = () => {
-    onEnroll(selectedClub.id);
+    if (selectedClub) onEnroll(selectedClub.id);
   };
 
   const handleLeave = () => {
-    onLeave(selectedClub.id);
+    if (selectedClub) onLeave(selectedClub.id);
   };
 
   // Student ID Badge - Илүү гүн өнгөтэй болгов
@@ -38,6 +38,13 @@ export const ClubDetail = ({
       </span>
     </div>
   );
+
+  if (!selectedClub)
+    return (
+      <div className="flex-1 w-full h-full flex items-center justify-center min-h-[400px]">
+        <div className="text-white/50 text-xl font-medium">Клуб сонгоно уу</div>
+      </div>
+    );
 
   return (
     <div className="flex-1 w-full h-full">

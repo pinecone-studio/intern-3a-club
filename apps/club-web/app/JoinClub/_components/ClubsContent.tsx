@@ -50,19 +50,21 @@ export const ClubsContent = () => {
 
   // 1-рт: SelectedClub-ийг тодорхойлно
   const selectedClub = useMemo(
-    () => sortedClubs.find((c) => c.id === selectedClubId) ?? sortedClubs[0],
+    () => sortedClubs.find((c) => c.id === selectedClubId),
     [sortedClubs, selectedClubId]
   );
 
   // 2-рт: Түүн дээр суурилсан утгуудыг тооцоолно
   const isLocked = useMemo(() => {
+    if (!selectedClub) return false;
     return selectedClub.bannedUntil > now;
-  }, [selectedClub.bannedUntil, now]);
+  }, [selectedClub, now]);
 
   const remainingTime = useMemo(() => {
+    if (!selectedClub) return 0;
     const diff = Math.ceil((selectedClub.bannedUntil - now) / 1000);
     return diff > 0 ? diff : 0;
-  }, [selectedClub.bannedUntil, now]);
+  }, [selectedClub, now]);
 
   // const openClubsCount = useMemo(
   //   () => allClubs.filter((c) => c.status === 'Open').length,
