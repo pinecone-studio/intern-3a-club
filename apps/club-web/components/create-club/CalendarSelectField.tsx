@@ -32,18 +32,23 @@ export const CalendarSelectField = ({
   value,
   onChange,
   options,
-}: CalendarSelectFieldProps) => {
+  id,
+}: CalendarSelectFieldProps & { id?: string }) => {
   const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
     onChange(e.target.value);
   };
 
   return (
     <div className="space-y-2">
-      <p className="text-[9px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
+      <label
+        htmlFor={id}
+        className="text-[9px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2"
+      >
         {icon} {label}
-      </p>
+      </label>
       <div className="relative">
         <select
+          id={id}
           value={value}
           onChange={handleSelectChange}
           className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 appearance-none cursor-pointer font-medium"
