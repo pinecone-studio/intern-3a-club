@@ -4,18 +4,16 @@ import { eq } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
 
 export const deleteClub = async (_: unknown, { id }: { id: string }) => {
-  try {
-    const deletedRows = await DB.delete(clubs)
-      .where(eq(clubs.id, id))
-      .returning({ deletedId: clubs.id });
+  const deletedRows = await DB.delete(clubs)
+    .where(eq(clubs.id, id))
+    .returning({ deletedId: clubs.id })
+    .catch(() => {
+      throw new GraphQLError('Клуб устгахад алдаа гарлаа.');
+    });
 
-    if (deletedRows.length === 0) {
-      throw new GraphQLError('Устгах клуб олдсонгүй.');
-    }
-
-    return deletedRows[0].deletedId;
-  } catch (error) {
-    if (error instanceof GraphQLError) throw error;
-    throw new GraphQLError('Клуб устгахад алдаа гарлаа.');
+  if (!deletedRows?.length) {
+    throw new GraphQLError('Устгах клуб олдсонгүй.');
   }
+
+  return deletedRows[0].deletedId;
 };
