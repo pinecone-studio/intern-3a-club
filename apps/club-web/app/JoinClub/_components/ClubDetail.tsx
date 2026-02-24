@@ -22,12 +22,19 @@ export const ClubDetail = ({
   isLocked,
   remainingTime,
 }: ClubDetailProps) => {
+  if (!selectedClub)
+    return (
+      <div className="flex-1 w-full h-full flex items-center justify-center min-h-[400px]">
+        <div className="text-white/50 text-xl font-medium">Клуб сонгоно уу</div>
+      </div>
+    );
+
   const handleEnroll = () => {
-    if (selectedClub) onEnroll(selectedClub.id);
+    onEnroll(selectedClub.id);
   };
 
   const handleLeave = () => {
-    if (selectedClub) onLeave(selectedClub.id);
+    onLeave(selectedClub.id);
   };
 
   // Student ID Badge - Илүү гүн өнгөтэй болгов
@@ -38,13 +45,6 @@ export const ClubDetail = ({
       </span>
     </div>
   );
-
-  if (!selectedClub)
-    return (
-      <div className="flex-1 w-full h-full flex items-center justify-center min-h-[400px]">
-        <div className="text-white/50 text-xl font-medium">Клуб сонгоно уу</div>
-      </div>
-    );
 
   return (
     <div className="flex-1 w-full h-full">
