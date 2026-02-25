@@ -16,11 +16,7 @@
         "name": "next"
       }
     ],
-    "types": [
-      "jest",
-      "node",
-      "@testing-library/jest-dom"
-    ]
+    "types": ["jest", "node", "@testing-library/jest-dom"]
   },
   "include": [
     "**/*.ts",
@@ -29,7 +25,8 @@
     "**/*.jsx",
     "../../apps/club-web/.next/types/**/*.ts",
     "../../dist/apps/club-web/.next/types/**/*.ts",
-    "next-env.d.ts"
+    "next-env.d.ts",
+    "../../test-redis.ts"
   ],
   "exclude": [
     "node_modules",
