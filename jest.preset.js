@@ -45,6 +45,11 @@ module.exports = {
     '!**/*.d.ts',
     '!**/*utils.ts',
     '!**/lib/utils.ts',
+    '!**/graphql-codegen.yml',
+    '!**/.vercel',
+    '!**/.vercel/output/**/*.json',
+    '!**/.vercel/output/**/*.js',
+    '!**/*utils.ts',
   ],
   coverageThreshold: {
     global: {
