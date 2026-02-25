@@ -1,0 +1,20 @@
+overwrite: true
+schema:
+  - '${CLUB_SERVICE_ENDPOINT}'
+
+documents:
+  - './apps/club-dash/app/testForBackend/**/*.graphql'
+
+generates:
+  ./apps/club-dash/app/testForBackend/generated/index.ts:
+    config:
+      reactApolloVersion: 3
+      withHooks: true
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+config:
+  reactApolloVersion: 3
+  withHooks: true
+  apolloReactHooksImportFrom: '@apollo/client/react'

@@ -3,26 +3,21 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClubCard } from './ClubCard';
-import { Club } from '../../../lib/type';
-
-interface ExtendedClub extends Club {
-  isEnrolled?: boolean;
-  bannedUntil?: number;
-}
+import { GetAllClub } from '../../../lib/type';
 
 interface ClubListProps {
-  clubs: ExtendedClub[];
-  selectedClubId: number;
-  onSelect: (_id: number) => void;
+  clubs: GetAllClub[];
+  selectedClubId: string;
+  onSelect: (_id: string) => void;
 }
 
 export const ClubList = ({
-  clubs,
   selectedClubId,
   onSelect,
+  clubs,
 }: ClubListProps) => {
   return (
-    <div className="w-full lg:w-[380px] flex flex-col h-full max-h-[calc(100vh-160px)]">
+    <div className="w-full lg:w-[320px] flex flex-col h-full max-h-[calc(100vh-160px)]">
       <div className="mb-6 px-1 flex justify-between items-center">
         <div className="space-y-1">
           <h2 className="text-white/90 font-bold text-lg tracking-tight">
@@ -35,12 +30,12 @@ export const ClubList = ({
       </div>
 
       <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar">
-        <div className="flex flex-col gap-3 pb-4">
+        <div className="flex flex-col gap-4 pb-4">
           <AnimatePresence mode="popLayout" initial={false}>
-            {clubs.map((club) => (
+            {clubs.map((item) => (
               <motion.div
-                key={club.id}
-                layout // Жагсаалт өөрчлөгдөхөд зөөлөн шилжихэд тусална
+                key={item.id}
+                layout
                 transition={{
                   type: 'spring',
                   stiffness: 500,
@@ -49,8 +44,8 @@ export const ClubList = ({
                 }}
               >
                 <ClubCard
-                  club={club}
-                  isSelected={selectedClubId === club.id}
+                  club={item}
+                  isSelected={selectedClubId === item.id}
                   onClick={onSelect}
                 />
               </motion.div>

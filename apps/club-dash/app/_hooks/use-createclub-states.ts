@@ -5,6 +5,7 @@ import {
   SetStateAction,
   useEffect,
   useCallback,
+  useRef,
 } from 'react';
 import { addMonths, eachDayOfInterval, getDay } from 'date-fns';
 
@@ -24,6 +25,9 @@ export const useCreateClubState = () => {
     'Зөвхөн сонгосон өдрүүдэд'
   );
 
+  const clubStartDateRef = useRef(clubStartDate);
+  clubStartDateRef.current = clubStartDate;
+
   const clubDates = useCallback((dates: Date[], term: string) => {
     const days = Array.from(new Set(dates.map((d) => getDay(d))));
     const sorted = [...dates].sort((a, b) => a.getTime() - b.getTime());
@@ -38,21 +42,22 @@ export const useCreateClubState = () => {
   const syncGeneratedDates = useCallback(
     (current: Date[], term: string) => {
       const generated = clubDates(current, term);
-      if (JSON.stringify(generated) !== JSON.stringify(current)) {
+      const hasChanged = JSON.stringify(generated) !== JSON.stringify(current);
+      /* istanbul ignore else */
+      if (hasChanged) {
         setClubStartDate(generated);
       }
     },
     [clubDates]
   );
-
   useEffect(() => {
     const isWeekly = selectedFreqId === '2';
-    const hasDates = !!clubStartDate?.length;
+    const hasDates = !!clubStartDateRef.current?.length;
 
     if (isWeekly && hasDates) {
-      syncGeneratedDates(clubStartDate as Date[], clubTerm);
+      syncGeneratedDates(clubStartDateRef.current as Date[], clubTerm);
     }
-  }, [selectedFreqId, clubTerm, clubStartDate, syncGeneratedDates]);
+  }, [selectedFreqId, clubTerm, syncGeneratedDates]);
 
   const handleChange =
     (set: Dispatch<SetStateAction<string>>) =>

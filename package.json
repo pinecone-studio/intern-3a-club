@@ -18,6 +18,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@swc/helpers": "~0.5.2",
     "@types/graphql": "^14.5.0",
+    "@upstash/redis": "^1.36.2",
     "autoprefixer": "^10.4.24",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

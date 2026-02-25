@@ -1,7 +1,7 @@
 import { Calendar, Input, Label } from '@intern-3a-club/shadcn';
 import React from 'react';
 import { format } from 'date-fns';
-import { Pin, Timer } from 'lucide-react';
+import { History, Pin, Timer } from 'lucide-react';
 import { Frequency, ClassRoom, Duration, StartTime } from '../_components';
 import {
   CreateClubHandlers,
@@ -31,10 +31,20 @@ export const CreatedTimetable = ({
   const datesArray = state.clubStartDate || [];
   const sorted = [...datesArray].sort(compareByTime);
 
+  const handleEmptyFields = () => {
+    setters.setClubClassRoom('301');
+    setters.setClubDuration('1:00');
+    setters.setClubFrequency('Зөвхөн сонгосон өдрүүдэд');
+    setters.setClubStartDate([]);
+    setters.setClubStartTime('13:00');
+    setters.setClubTerm('1');
+    setters.setSelectedFreqId('1');
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mt-10">
           <Label className="text-sm font-semibold">Клубын хуваарь</Label>
           <Calendar
             mode="multiple"
@@ -44,6 +54,16 @@ export const CreatedTimetable = ({
           />
         </div>
         <div className="flex flex-col gap-3">
+          <div className="flex justify-end">
+            <div
+              className="px-2 py-1 rounded-md bg-gray-100 hover:bg-gray-200 flex gap-2 justify-center items-center hover:cursor-pointer"
+              onClick={handleEmptyFields}
+            >
+              <History size={20} />
+              <p className="text-sm font-semibold">Хоослох</p>
+            </div>
+          </div>
+
           <Frequency
             selectedFreqId={state.selectedFreqId}
             setSelectedFreqId={setters.setSelectedFreqId}
