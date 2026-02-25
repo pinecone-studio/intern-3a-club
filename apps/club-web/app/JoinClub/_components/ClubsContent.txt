@@ -2,36 +2,59 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ClubDetail } from './ClubDetail';
 import { ClubList } from './ClubList';
-// import { ClubsHeader } from './ClubsHeader';
-import { clubs as initialClubs } from '../../../lib/mockdata';
-import { ExtendedClub } from '../../../lib/type';
+// import { initialClubs } from '../../../lib/mockdata';
+import {
+  Data,
+  ExtendedClub,
+  GET_ALL_CLUBS,
+  GetAllClub,
+} from '../../../lib/type';
+import { useQuery } from '@apollo/client/react';
 
-const sortClubs = (clubs: ExtendedClub[]) => {
-  return [...clubs].sort((a, b) =>
+const sortClubs = (getAllClubs: ExtendedClub[]) => {
+  return [...getAllClubs].sort((a, b) =>
     a.isEnrolled === b.isEnrolled ? 0 : a.isEnrolled ? -1 : 1
   );
 };
 
+const mapClubsData = (clubs: GetAllClub[]): ExtendedClub[] => {
+  return clubs.map((club) => ({
+    ...club,
+    isEnrolled: false,
+    bannedUntil: 0,
+  }));
+};
+
 export const ClubsContent = () => {
-  const [allClubs, setAllClubs] = useState<ExtendedClub[]>(() =>
-    initialClubs.map((c) => ({ ...c, isEnrolled: false, bannedUntil: 0 }))
-  );
-  const [selectedClubId, setSelectedClubId] = useState<number>(1);
+  const [allClubs, setAllClubs] = useState<ExtendedClub[]>([]);
+  const [selectedClubId, setSelectedClubId] = useState<string>('');
   const [now, setNow] = useState<number>(Date.now());
+
+  const { loading, error, data } = useQuery<Data>(GET_ALL_CLUBS);
+
+  useEffect(() => {
+    const rawClubs = data?.getAllClubs;
+
+    if (!rawClubs || rawClubs.length === 0) return;
+
+    const mapped = mapClubsData(rawClubs);
+    setAllClubs(mapped);
+
+    setSelectedClubId((prevId) => prevId || mapped[0].id);
+  }, [data]);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Арга хэмжээний функцууд
-  const handleEnroll = useCallback((id: number) => {
+  const handleEnroll = useCallback((id: string) => {
     setAllClubs((prev) =>
       prev.map((c) => (c.id === id ? { ...c, isEnrolled: true } : c))
     );
   }, []);
 
-  const handleLeave = useCallback((id: number) => {
+  const handleLeave = useCallback((id: string) => {
     setAllClubs((prev) =>
       prev.map((c) =>
         c.id === id
@@ -41,23 +64,20 @@ export const ClubsContent = () => {
     );
   }, []);
 
-  const handleSelect = useCallback((id: number) => {
+  const handleSelect = useCallback((id: string) => {
     setSelectedClubId(id);
   }, []);
 
-  // Өгөгдөл боловсруулах (Дараалал чухал!)
   const sortedClubs = useMemo(() => sortClubs(allClubs), [allClubs]);
 
-  // 1-рт: SelectedClub-ийг тодорхойлно
   const selectedClub = useMemo(
     () => sortedClubs.find((c) => c.id === selectedClubId),
     [sortedClubs, selectedClubId]
   );
 
-  // 2-рт: Түүн дээр суурилсан утгуудыг тооцоолно
   const isLocked = useMemo(() => {
     if (!selectedClub) return false;
-    return selectedClub.bannedUntil > now;
+    return (selectedClub.bannedUntil ?? 0) > now;
   }, [selectedClub, now]);
 
   const remainingTime = useMemo(() => {
@@ -70,15 +90,18 @@ export const ClubsContent = () => {
   //   () => allClubs.filter((c) => c.status === 'Open').length,
   //   [allClubs]
   // );
+  if (loading) return null;
+  if (error) return <div className="text-red-500 p-4">{error.message}</div>;
   return (
-    <div className="mx-auto h-screen space-y-8 p-6 bg-gradient-to-br from-[#050c1f] to-[#0b2b5c]">
+    <div className="mx-auto h-screen space-y-6 p-12 bg-gradient-to-br from-[#050c1f] to-[#0b2b5c]">
       {/* <ClubsHeader openClubsCount={openClubsCount} /> */}
-      <div className="flex flex-col mt-4 gap-8 lg:flex-row">
+      <div className="flex flex-col my-4 gap-2 lg:flex-row">
         <ClubList
-          clubs={sortedClubs}
           selectedClubId={selectedClubId}
           onSelect={handleSelect}
+          clubs={sortedClubs}
         />
+
         <ClubDetail
           selectedClub={selectedClub}
           onEnroll={handleEnroll}
