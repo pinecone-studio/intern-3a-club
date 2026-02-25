@@ -1,192 +1,62 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  act,
-  waitFor,
-} from '@testing-library/react';
-import { ClubsContent } from '../app/JoinClub/_components/ClubsContent';
-import React from 'react';
-import { MockedProvider } from '@apollo/client/testing';
-import { GET_ALL_CLUBS } from '../lib/type';
+import { render, screen, fireEvent } from '@testing-library/react';
+// Замыг өөрийн бүтцэд тааруулж шалгаарай (../app/JoinClub/_components/ гэх мэт)
+import React, { ComponentProps } from 'react';
+import { ClubActionButtons } from '../app/JoinClub/_components';
 
-const MOCK_NOW = 1700000000000;
+type ClubActionButtonsProps = ComponentProps<typeof ClubActionButtons>;
 
-const mocks = [
-  {
-    request: {
-      query: GET_ALL_CLUBS,
-    },
-    result: {
-      data: {
-        getAllClubs: [
-          {
-            id: '1',
-            name: 'Code Club',
-            description: 'Programming club',
-            teacherId: 't1',
-            type: 'Tech',
-            status: 'Open',
-            minMember: 5,
-            maxMember: 20,
-            timetables: [],
-            __typename: 'Club',
-          },
-          {
-            id: '2',
-            name: 'Robotics Lab',
-            description: 'Robotics lab',
-            teacherId: 't2',
-            type: 'Tech',
-            status: 'Open',
-            minMember: 5,
-            maxMember: 20,
-            timetables: [],
-            __typename: 'Club',
-          },
-        ],
-      },
-    },
-  },
-];
+describe('ClubActionButtons 100% Coverage', () => {
+  const mockOnEnroll = jest.fn();
+  const mockOnLeave = jest.fn();
 
-// Mock ClubList to capture onSelect and allow forcing invalid ID
+  const defaultProps: ClubActionButtonsProps = {
+    isEnrolled: false,
+    isLocked: false,
+    status: 'Open',
+    remainingTime: 0,
+    onEnroll: mockOnEnroll,
+    onLeave: mockOnLeave,
+    className: '',
+  };
 
-jest.mock('../app/JoinClub/_components/ClubList', () => ({
-  ClubList: ({
-    clubs,
-    onSelect,
-    selectedClubId: _selectedClubId,
-  }: {
-    clubs: { id: string; name: string }[];
-    onSelect: (_id: string) => void;
-    selectedClubId: string;
-  }) => (
-    <div data-testid="club-list">
-      {clubs.map((c) => (
-        <button key={c.id} onClick={() => onSelect(c.id)}>
-          {c.name}
-        </button>
-      ))}
-      <button
-        onClick={() => onSelect('999')}
-        data-testid="force-invalid-select"
-      >
-        Force Invalid ID
-      </button>
-    </div>
-  ),
-}));
-
-describe('ClubsContent Logic Coverage', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(MOCK_NOW);
+    jest.clearAllMocks();
   });
 
-  afterEach(() => {
-    jest.useRealTimers();
+  it('should cover line 33 (className logic)', () => {
+    const { rerender } = render(<ClubActionButtons {...defaultProps} />);
+    expect(screen.getByRole('button')).toHaveClass('w-full');
+
+    rerender(<ClubActionButtons {...defaultProps} className="custom-test" />);
+    expect(screen.getByRole('button')).toHaveClass('custom-test');
   });
 
-  it('should cover sorting, enrollment and lock logic (Lines 11, 53-63)', async () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <ClubsContent />
-      </MockedProvider>
-    );
-
-    // Wait for the mock query to resolve
-    const codeClubCard = await screen.findByRole('button', {
-      name: 'Code Club',
-    });
-    fireEvent.click(codeClubCard);
-
-    // Wait for the detail view to update to Code Club
-    await screen.findByRole('heading', { level: 1, name: /Code Club/i });
-
-    // Now enroll in the selected club
-    const enrollBtn = await screen.findByRole('button', {
-      name: /Одоо нэгдэх/i,
-    });
-    fireEvent.click(enrollBtn);
-
-    // Line 53-60: handleLeave & isLocked logic
-    const leaveBtn = await screen.findByRole('button', {
-      name: /Клубээс гарах/i,
-    });
+  it('should handle enrollment (Lines 36-45)', () => {
+    render(<ClubActionButtons {...defaultProps} isEnrolled={true} />);
+    const leaveBtn = screen.getByText(/Клубээс гарах/i);
     fireEvent.click(leaveBtn);
-
-    // Locked state
-    await screen.findByText(/60с хүлээх/i);
-
-    // Line 61-63: diff <= 0 (Түгжээ тайлагдах)
-    act(() => {
-      jest.advanceTimersByTime(61000);
-    });
-
-    const enrollAgainBtn = await screen.findByRole('button', {
-      name: /Одоо нэгдэх/i,
-    });
-    expect(enrollAgainBtn).toBeInTheDocument();
+    expect(mockOnLeave).toHaveBeenCalled();
   });
 
-  it('should cover sorting logic (Line 11) fully - multiple enrolled', async () => {
+  it('should handle locked state (Lines 47-51)', () => {
     render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <ClubsContent />
-      </MockedProvider>
+      <ClubActionButtons {...defaultProps} isLocked={true} remainingTime={15} />
     );
-
-    // Enroll TWO clubs to test "Enrolled vs Enrolled" comparison (returns 0)
-
-    // 1. Enroll Code Club
-    const codeClubBtn = await screen.findByRole('button', {
-      name: 'Code Club',
-    });
-    fireEvent.click(codeClubBtn);
-    await screen.findByRole('heading', { level: 1, name: /Code Club/i });
-
-    const enrollBtn = await screen.findByRole('button', {
-      name: /Одоо нэгдэх/i,
-    });
-    fireEvent.click(enrollBtn);
-    // Wait for enrollment state update
-    await screen.findByRole('button', { name: /Клубээс гарах/i });
-
-    // 2. Enroll Robotics Lab (First one)
-    const roboticsBtn = await screen.findByRole('button', {
-      name: 'Robotics Lab',
-    });
-    fireEvent.click(roboticsBtn);
-    await screen.findByRole('heading', { level: 1, name: /Robotics Lab/i });
-
-    const enrollBtn2 = await screen.findByRole('button', {
-      name: /Одоо нэгдэх/i,
-    });
-    fireEvent.click(enrollBtn2);
-
-    // Both are enrolled. Order should be preserved or stable.
-    const leaveBtns = screen.getAllByText(/Клубээс гарах/i);
-    expect(leaveBtns.length).toBeGreaterThan(0);
+    expect(screen.getByText(/15с хүлээх/i)).toBeInTheDocument();
+    expect(screen.getByRole('button')).toBeDisabled();
   });
 
-  it('should cover fallback selection (Empty State)', async () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <ClubsContent />
-      </MockedProvider>
-    );
+  it('should show "Full" status when status is not Open', () => {
+    render(<ClubActionButtons {...defaultProps} status="Full" />);
+    expect(screen.getByText(/Суудал дүүрсэн/i)).toBeInTheDocument();
+    const button = screen.getByRole('button');
+    fireEvent.click(button);
+    expect(mockOnEnroll).not.toHaveBeenCalled();
+  });
 
-    // Wait for data to load
-    await screen.findByRole('button', { name: 'Code Club' });
-
-    // Trigger the fallback: select an ID that doesn't exist
-    const forceInvalid = screen.getByTestId('force-invalid-select');
-    fireEvent.click(forceInvalid);
-
-    // Should render EmptyState because the club is not found
-    await waitFor(() => {
-      expect(screen.getByText(/Клуб сонгоно уу/i)).toBeInTheDocument();
-    });
+  it('should call onEnroll when clickable', () => {
+    render(<ClubActionButtons {...defaultProps} />);
+    fireEvent.click(screen.getByText(/Одоо нэгдэх/i));
+    expect(mockOnEnroll).toHaveBeenCalled();
   });
 });

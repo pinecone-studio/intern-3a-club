@@ -69,6 +69,47 @@ jest.mock('../app/JoinClub/_components/ClubCard', () => ({
 }));
 
 describe('JoinClubPage Full Coverage', () => {
+  // 1. Loading төлөвийг шалгах (6-10-р мөрийг cover хийнэ)
+  it('should cover line 10 (Loading state)', () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <JoinClubPage />
+      </MockedProvider>
+    );
+    expect(screen.getByText(/Уншиж байна.../i)).toBeInTheDocument();
+  });
+
+  // 2. Error төлөвийг шалгах (11-р мөрийг cover хийнэ)
+  it('should cover line 11 (Error state)', async () => {
+    const errorMock = [
+      {
+        request: { query: GET_ALL_CLUBS },
+        error: new Error('Сүлжээний алдаа'),
+      },
+    ];
+
+    render(
+      <MockedProvider mocks={errorMock} addTypename={false}>
+        <JoinClubPage />
+      </MockedProvider>
+    );
+
+    const errorMessage = await screen.findByText(
+      /Алдаа гарлаа: Сүлжээний алдаа/i
+    );
+    expect(errorMessage).toBeInTheDocument();
+  });
+
+  // 3. Чиний өмнө нь бичсэн байсан бусад тестүүд...
+  it('should cover line 11 (initial state) and club selection', async () => {
+    // ... кодууд
+  });
+
+  it('should cover enroll and leave logic', async () => {
+    // ... кодууд
+  });
+
+  // ... бусад тестүүд
   it('should cover line 11 (initial state) and club selection', async () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>

@@ -1,54 +1,7 @@
 'use client';
 import { useQuery } from '@apollo/client/react';
 import { ClubsContent } from './_components/ClubsContent';
-import { gql } from '@apollo/client';
-
-export type Data = {
-  getAllClubs: GetAllClub[];
-};
-
-export type GetAllClub = {
-  id: string;
-  name: string;
-  description: string;
-  teacherId: string;
-  type: string;
-  status: string;
-  minMember: number;
-  maxMember: number;
-  timetables: Timetable[];
-};
-export type Timetable = {
-  id: string;
-  clubId: string;
-  date: string;
-  room: string;
-  clubStartTime: string;
-  duration: number;
-};
-
-export const GET_ALL_CLUBS = gql`
-  query GetAllClubs {
-    getAllClubs {
-      id
-      name
-      description
-      teacherId
-      type
-      status
-      minMember
-      maxMember
-      timetables {
-        id
-        clubId
-        date
-        room
-        clubStartTime
-        duration
-      }
-    }
-  }
-`;
+import { Data, GET_ALL_CLUBS } from '../../lib/type';
 
 const JoinClubPage = () => {
   const { loading, error, data } = useQuery<Data>(GET_ALL_CLUBS);
