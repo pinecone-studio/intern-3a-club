@@ -16,15 +16,16 @@ export const updateClub = async (
   }
 ) => {
   try {
-    const updateValues = { updatedAt: new Date().toISOString() };
+    const { id, ...dataToUpdate } = input;
+
+    const finalUpdate = {
+      ...dataToUpdate,
+      updatedAt: new Date().toISOString(),
+    };
+
     const [updatedClub] = await DB.update(clubs)
-      .set({
-        ...(input.status && { status: input.status }),
-        // Хэрэв багш сонгосон бол шинэчилнэ, үгүй бол бааз дээрх хэвээрээ үлдэнэ
-        ...(input.teacherId && { teacherId: input.teacherId }),
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(clubs.id, input.id))
+      .set(finalUpdate)
+      .where(eq(clubs.id, id))
       .returning();
 
     return updatedClub;
