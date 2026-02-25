@@ -20,7 +20,16 @@ export const useClubAction = ({
   const [banned, setBanned] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Page load дээр TTL сэргээх
+  // 🔹 Helper to reduce complexity in main functions
+  const handleBanResponse = (time: number) => {
+    if (time > 0) {
+      setRemainingTime(time);
+      setBanned(true);
+      return true;
+    }
+    return false;
+  };
+
   useEffect(() => {
     const fetchBan = async () => {
       try {
@@ -28,21 +37,16 @@ export const useClubAction = ({
           `/api/club/ban-status?userId=${userid}&clubId=${clubid}`
         );
         const data = await res.json();
-        if (data.remainingTime && data.remainingTime > 0) {
-          setRemainingTime(data.remainingTime);
-          setBanned(true);
-        }
+        handleBanResponse(data.remainingTime);
       } catch (err) {
-        console.error('Fetch ban status error', err);
+        console.error('Fetch error', err);
       }
     };
     fetchBan();
   }, [userid, clubid]);
 
-  // 🔹 Countdown effect
   useEffect(() => {
     if (!remainingTime) return;
-
     const interval = setInterval(() => {
       setRemainingTime((prev) => {
         if (!prev || prev <= 1) {
@@ -54,11 +58,20 @@ export const useClubAction = ({
         return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(interval);
   }, [remainingTime]);
 
-  // 🔹 Join button click
+  // helper function (Complexity: 2)
+  const processJoinResult = (status: number, time: number) => {
+    if (status === 403 || time > 0) {
+      setRemainingTime(time);
+      setBanned(true);
+      return;
+    }
+    onEnrollSuccess();
+  };
+
+  // handleEnroll (Complexity: 3)
   const handleEnroll = useCallback(async () => {
     setLoading(true);
     try {
@@ -67,34 +80,18 @@ export const useClubAction = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: userid, clubId: clubid }),
       });
-
-      if (res.status === 403) {
-        const data = await res.json();
-        setRemainingTime(data.remainingTime);
-        setBanned(true);
-        return;
-      }
-
       const data = await res.json();
-      if (data.remainingTime) {
-        setRemainingTime(data.remainingTime);
-        setBanned(true);
-      }
 
-      onEnrollSuccess();
+      // Zero branching here - just calling a helper
+      processJoinResult(res.status, data.remainingTime);
     } catch (err) {
       console.error('Join error:', err);
     } finally {
       setLoading(false);
     }
   }, [userid, clubid, onEnrollSuccess]);
-
-  // 🔹 Leave button click
   const handleLeave = useCallback(async () => {
-    const confirmLeave = window.confirm(
-      'Та клубээс гарахдаа итгэлтэй байна уу?'
-    );
-    if (!confirmLeave) return;
+    if (!window.confirm('Та клубээс гарахдаа итгэлтэй байна уу?')) return;
 
     setLoading(true);
     try {
@@ -103,13 +100,8 @@ export const useClubAction = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: userid, clubId: clubid }),
       });
-
       const data = await res.json();
-      if (data.remainingTime) {
-        setRemainingTime(data.remainingTime);
-        setBanned(true);
-      }
-
+      handleBanResponse(data.remainingTime);
       onLeaveSuccess();
     } catch (err) {
       console.error('Leave error:', err);
@@ -118,24 +110,5 @@ export const useClubAction = ({
     }
   }, [userid, clubid, onLeaveSuccess]);
 
-  return {
-    remainingTime,
-    banned,
-    loading,
-    handleEnroll,
-    handleLeave,
-  };
+  return { remainingTime, banned, loading, handleEnroll, handleLeave };
 };
-
-// const {
-//   remainingTime,
-//   banned,
-//   loading,
-//   handleEnroll,
-//   handleLeave,
-// } = useClubAction({
-//   userid: '123',
-//   clubid: 1,
-//   onEnrollSuccess: () => console.log('Joined!'),
-//   onLeaveSuccess: () => console.log('Left!'),
-// });
