@@ -1,33 +1,16 @@
 import { Calendar, DoorOpen, Users2, Clock } from 'lucide-react';
-import { DetailTile } from '../main/DetailTile';
-import { ApprovedClubDetailProps, Club, Data } from '../../../../libs/types';
-import { useMutation, useQuery } from '@apollo/client/react';
+import { useMemo, useState } from 'react';
 import { gql } from '@apollo/client';
-import { useState } from 'react';
-import EditTimetableDialog from './EditTimetableDialog';
-
-function getDescription(club: Club) {
-  return club?.description ?? '';
-}
-function getStartTime(primary?: Club['timetables'][0]) {
-  return primary?.clubStartTime ?? '-';
-}
-function getRoom(primary?: Club['timetables'][0]) {
-  return primary?.room ?? '-';
-}
-function getMembers(club: Club) {
-  return `${club?.minMember ?? 0} - ${club?.maxMember ?? 0}`;
-}
-function getDetailDisplay(club: Club) {
-  const primary = club.timetables?.[0];
-  return {
-    description: getDescription(club),
-    startTime: getStartTime(primary),
-    room: getRoom(primary),
-    members: getMembers(club),
-    status: club?.status,
-  };
-}
+import { useMutation, useQuery } from '@apollo/client/react';
+import { DetailTile } from '../main/DetailTile';
+import { ApprovedClubDetailProps, Data } from '../../../../libs/types';
+import { EditTimetableDialog } from './EditTimetableDialog';
+import {
+  getDetailDisplay,
+  mockClassroom,
+  mockDuration,
+  mockStartTime,
+} from './approved-utils';
 
 const DELETE_CLUB = gql`
   mutation DeleteClub($id: ID!) {
@@ -64,35 +47,17 @@ export const GET_ALL_CLUBS = gql`
   }
 `;
 
-/* --- edit dialog-д хэрэгтэй mock data --- */
-const mockClassroom = [
-  { id: '1', classRoom: '301' },
-  { id: '2', classRoom: '302' },
-  { id: '3', classRoom: '303' },
-];
-
-const mockStartTime = [
-  { id: '1', startTime: '13:00' },
-  { id: '2', startTime: '14:00' },
-  { id: '3', startTime: '15:00' },
-];
-
-const mockDuration = [
-  { id: '1', duration: '1:00' },
-  { id: '2', duration: '1:30' },
-  { id: '3', duration: '2:00' },
-];
+function getAllTimetablesFromData(data: Data | undefined) {
+  return data?.getAllClubs?.flatMap((c) => c.timetables ?? []) ?? [];
+}
 
 export const ApprovedClubDetail = ({
   club,
   onDelete,
 }: ApprovedClubDetailProps) => {
   const display = getDetailDisplay(club);
-
   const { data } = useQuery<Data>(GET_ALL_CLUBS);
-  const allTimetables =
-    data?.getAllClubs?.flatMap((c) => c.timetables ?? []) ?? [];
-
+  const allTimetables = useMemo(() => getAllTimetablesFromData(data), [data]);
   const [openEdit, setOpenEdit] = useState(false);
   const primaryTimetable = club.timetables?.[0] ?? null;
 
@@ -122,7 +87,8 @@ export const ApprovedClubDetail = ({
     setOpenEdit(true);
   };
 
-  console.log(primaryTimetable);
+  const handleCloseEdit = () => setOpenEdit(false);
+
   return (
     <>
       <div className="grid md:grid-cols-2 gap-6">
@@ -173,7 +139,7 @@ export const ApprovedClubDetail = ({
 
       <EditTimetableDialog
         open={openEdit}
-        onClose={() => setOpenEdit(false)}
+        onClose={handleCloseEdit}
         timetables={club.timetables}
         mockClassroom={mockClassroom}
         mockStartTime={mockStartTime}

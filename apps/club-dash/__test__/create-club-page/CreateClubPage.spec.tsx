@@ -97,9 +97,12 @@ describe('CreateClub Page', () => {
     fireEvent.change(screen.getByLabelText(/Клубын зорилго/i), {
       target: { value: 'New Desc' },
     });
-    fireEvent.change(screen.getByLabelText(/Max/i), {
+    fireEvent.change(screen.getByPlaceholderText(/Max/i), {
       target: { value: '30' },
     });
+    // fireEvent.change(screen.getByLabelText(/Сурагчдын тоо/i), {
+    //   target: { value: '30' },
+    // });
 
     expect(mockHandlers.handleName).toHaveBeenCalled();
     expect(mockHandlers.handleDesc).toHaveBeenCalled();
