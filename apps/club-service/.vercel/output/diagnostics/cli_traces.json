@@ -1,1 +1,74 @@
-[{"name":"vc.builder.install","duration":86778,"timestamp":101020468040,"id":"3c627b39-1b95-4d01-ade7-91267a69d93d","parentId":"db54e201-e981-44ea-91f5-6b6b340a0f85","tags":{"cliType":"yarn","lockfileVersion":"1","detectedPackageManager":"yarn@1.x"},"startTime":1771995593527},{"name":"vc.builder.build","duration":3321623,"timestamp":101020556002,"id":"1977b62e-0c48-47c0-8340-587b2123809f","parentId":"db54e201-e981-44ea-91f5-6b6b340a0f85","tags":{"buildScriptName":"vercel-build"},"startTime":1771995593615},{"name":"vc.builder","duration":3464589,"timestamp":101020465429,"id":"db54e201-e981-44ea-91f5-6b6b340a0f85","parentId":"1273c9ae-e41c-46df-bae2-ed60f1538e62","tags":{"builder.name":"@vercel/next","builder.version":"4.15.34","builder.dynamicallyInstalled":"false","install":"true","build":"true"},"startTime":1771995593525},{"name":"vc.builder.diagnostics","duration":615,"timestamp":101023930033,"id":"c611311a-3063-4b98-b4cc-b9c6b5a5fb49","parentId":"db54e201-e981-44ea-91f5-6b6b340a0f85","tags":{},"startTime":1771995596989},{"name":"vc.builder.writeBuildResult","duration":10880,"timestamp":101023930689,"id":"ca96b822-fe89-41de-a9da-21b093d62e17","parentId":"db54e201-e981-44ea-91f5-6b6b340a0f85","tags":{"buildOutputLength":"1"},"startTime":1771995596990},{"name":"vc.doBuild","duration":3552395,"timestamp":101020392085,"id":"1273c9ae-e41c-46df-bae2-ed60f1538e62","parentId":"6f6bfc08-fbcb-429e-ae8d-b61006cb50f5","tags":{},"startTime":1771995593451},{"name":"vc","duration":3556557,"timestamp":101020387927,"id":"6f6bfc08-fbcb-429e-ae8d-b61006cb50f5","tags":{},"startTime":1771995593447}]
+[
+  {
+    "name": "vc.builder.install",
+    "duration": 80657,
+    "timestamp": 98993828738,
+    "id": "b81738c5-021e-419b-a7ad-5f363bc8c621",
+    "parentId": "1601527c-56db-4c30-a425-e16463f71345",
+    "tags": {
+      "cliType": "yarn",
+      "lockfileVersion": "1",
+      "detectedPackageManager": "yarn@1.x"
+    },
+    "startTime": 1771993566912
+  },
+  {
+    "name": "vc.builder.build",
+    "duration": 2205727,
+    "timestamp": 98993910046,
+    "id": "571ffb10-4a39-4fd4-8175-65be0b1470c6",
+    "parentId": "1601527c-56db-4c30-a425-e16463f71345",
+    "tags": { "buildScriptName": "vercel-build" },
+    "startTime": 1771993566994
+  },
+  {
+    "name": "vc.builder",
+    "duration": 2342187,
+    "timestamp": 98993826056,
+    "id": "1601527c-56db-4c30-a425-e16463f71345",
+    "parentId": "015c6f28-ffef-47d1-acd3-b96eb02b3f81",
+    "tags": {
+      "builder.name": "@vercel/next",
+      "builder.version": "4.15.34",
+      "builder.dynamicallyInstalled": "false",
+      "install": "true",
+      "build": "true"
+    },
+    "startTime": 1771993566910
+  },
+  {
+    "name": "vc.builder.diagnostics",
+    "duration": 526,
+    "timestamp": 98996168296,
+    "id": "a58788f3-5158-4caa-ba66-e5f6cbbdbf0d",
+    "parentId": "1601527c-56db-4c30-a425-e16463f71345",
+    "tags": {},
+    "startTime": 1771993569252
+  },
+  {
+    "name": "vc.builder.writeBuildResult",
+    "duration": 10328,
+    "timestamp": 98996168868,
+    "id": "c415c070-c79f-4dec-97bd-d9361e1aeb16",
+    "parentId": "1601527c-56db-4c30-a425-e16463f71345",
+    "tags": { "buildOutputLength": "1" },
+    "startTime": 1771993569252
+  },
+  {
+    "name": "vc.doBuild",
+    "duration": 2428952,
+    "timestamp": 98993753025,
+    "id": "015c6f28-ffef-47d1-acd3-b96eb02b3f81",
+    "parentId": "cbc81342-9438-4160-a655-94ba7f9b9b92",
+    "tags": {},
+    "startTime": 1771993566837
+  },
+  {
+    "name": "vc",
+    "duration": 2433661,
+    "timestamp": 98993748320,
+    "id": "cbc81342-9438-4160-a655-94ba7f9b9b92",
+    "tags": {},
+    "startTime": 1771993566832
+  }
+]
