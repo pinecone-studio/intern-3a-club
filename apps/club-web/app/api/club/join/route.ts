@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { redis } from '../../../../lib/redis';
-=======
-import { redis } from 'apps/club-web/lib/redis';
->>>>>>> 88fe588 (codegen config)
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {

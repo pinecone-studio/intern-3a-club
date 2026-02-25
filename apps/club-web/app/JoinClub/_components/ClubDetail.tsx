@@ -145,10 +145,11 @@ export const ClubDetail = ({
             <div className="mt-12 pt-8 border-t border-white/10">
               <ClubActionButtons
                 isEnrolled={Boolean(selectedClub.isEnrolled)}
+                isLocked={isLocked}
                 status={selectedClub.status}
+                remainingTime={remainingTime}
                 onEnroll={handleEnroll}
                 onLeave={handleLeave}
-                clubid={selectedClub.id}
               />
             </div>
           </motion.div>
