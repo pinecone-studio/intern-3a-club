@@ -1,68 +1,65 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  // cleanup,
-  // waitFor,
-} from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import JoinClubPage from '../app/JoinClub/page';
 import React from 'react';
-import * as mockDataModule from '../lib/mockdata';
-// import Home from '../app/page';
 import '@testing-library/jest-dom';
-// import { CreateClubCenter } from '../components/create-club/CreateClubCenter';
-// import {
-//   isWeeklyMatch,
-//   isMonthlyMatch,
-//   isBiweeklyMatch,
-//   checkDateMatch,
-//   generateDates,
-// } from '../components/create-club/RecurrentUtils';
+import { MockedProvider } from '@apollo/client/testing';
+import { GET_ALL_CLUBS } from '../lib/type';
 
-jest.mock('../lib/mockdata', () => ({
-  __esModule: true,
-  clubs: [
-    {
-      id: 1,
-      name: 'Test Club',
-      status: 'Open',
-      currentMembers: 10,
-      description: 'D1',
-      schedule: 'Mon',
-      location: 'L1',
-      image: '/t1.jpg',
-      tags: ['T1'],
-      members: [],
-    },
-    {
-      id: 2,
-      name: 'Second Club',
-      status: 'Closed',
-      currentMembers: 5,
-      description: 'D2',
-      schedule: 'Tue',
-      location: 'L2',
-      image: '/t2.jpg',
-      tags: ['T2'],
-      members: [],
-    },
-  ],
-}));
+const mockClubsData = [
+  {
+    id: '1',
+    name: 'Test Club',
+    description: 'D1',
+    teacherId: 't1',
+    type: 'Tech',
+    status: 'Open',
+    minMember: 10,
+    maxMember: 20,
+    timetables: [],
+    __typename: 'Club',
+  },
+  {
+    id: '2',
+    name: 'Second Club',
+    description: 'D2',
+    teacherId: 't2',
+    type: 'Tech',
+    status: 'Open',
+    minMember: 5,
+    maxMember: 20,
+    timetables: [],
+    __typename: 'Club',
+  },
+];
+
+const mocks = [
+  {
+    request: { query: GET_ALL_CLUBS },
+    result: { data: { getAllClubs: mockClubsData } },
+  },
+];
+
+const emptyMocks = [
+  {
+    request: { query: GET_ALL_CLUBS },
+    result: { data: { getAllClubs: [] } },
+  },
+];
 
 jest.mock('../app/JoinClub/_components/ClubCard', () => ({
   ClubCard: ({
     onClick,
     club,
   }: {
-    onClick: (_id: number) => void;
-    club: { id: number; name: string };
+    onClick: (_id: string) => void;
+    club: { id: string; name: string };
   }) => (
     <div>
       <div onClick={() => onClick(club.id)} role="button">
         {club.name}
       </div>
       <button
-        onClick={() => onClick(-9999)}
+        onClick={() => onClick('-9999')}
         data-testid="force-invalid-selection"
       >
         Force Invalid
@@ -72,30 +69,35 @@ jest.mock('../app/JoinClub/_components/ClubCard', () => ({
 }));
 
 describe('JoinClubPage Full Coverage', () => {
-  it('should cover line 11 (initial state) and club selection', () => {
-    render(<JoinClubPage />);
+  it('should cover line 11 (initial state) and club selection', async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <JoinClubPage />
+      </MockedProvider>
+    );
 
-    // Эхний клуб автоматаар сонгогдсон байх ёстой (Line 11 coverage)
-    const firstClubTitle = screen.getAllByText(/Test Club/i);
+    const firstClubTitle = await screen.findAllByText(/Test Club/i);
     expect(firstClubTitle.length).toBeGreaterThan(0);
 
-    // Клуб солих
     const clubCards = screen.getAllByRole('button');
     fireEvent.click(clubCards[1]);
 
-    // Multiple elements error засах: Хэд хэдэн "Second Club" байгаа тул getAll ашиглах
     const selectedTitles = screen.getAllByText(/Second Club/i);
     expect(selectedTitles[0]).toBeInTheDocument();
   });
 
   it('should cover enroll and leave logic', async () => {
-    render(<JoinClubPage />);
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <JoinClubPage />
+      </MockedProvider>
+    );
 
-    // Бүртгүүлэх
-    const enrollBtn = screen.getByRole('button', { name: /Одоо нэгдэх/i });
+    const enrollBtn = await screen.findByRole('button', {
+      name: /Одоо нэгдэх/i,
+    });
     fireEvent.click(enrollBtn);
 
-    // Гарах
     const leaveBtn = await screen.findByRole('button', {
       name: /Клубээс гарах/i,
     });
@@ -106,31 +108,28 @@ describe('JoinClubPage Full Coverage', () => {
     ).toBeInTheDocument();
   });
 
-  it('should cover line 82 (EmptyState fallback)', () => {
-    // mockData-г түр хугацаанд хоосон болгох
-    const originalClubs = mockDataModule.clubs;
-    Object.defineProperty(mockDataModule, 'clubs', {
-      value: [],
-      configurable: true,
-    });
+  it('should cover line 82 (EmptyState fallback)', async () => {
+    render(
+      <MockedProvider mocks={emptyMocks} addTypename={false}>
+        <JoinClubPage />
+      </MockedProvider>
+    );
 
-    render(<JoinClubPage />);
-    // Line 82: selectedClub байхгүй үед EmptyState харагдах ёстой
-    expect(screen.getByText(/Клуб сонгоно уу/i)).toBeInTheDocument();
-
-    Object.defineProperty(mockDataModule, 'clubs', { value: originalClubs });
+    expect(await screen.findByText(/Клуб сонгоно уу/i)).toBeInTheDocument();
   });
 
-  it('should cover line 82 (EmptyState fallback inside the main layout) properly', () => {
-    // 1. Render page with valid data (mocked above)
-    render(<JoinClubPage />);
+  it('should cover line 82 (EmptyState fallback inside the main layout) properly', async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <JoinClubPage />
+      </MockedProvider>
+    );
 
-    // 2. Click the special "Force Invalid" button injected by our ClubCard mock
-    // This calls onClick(-9999), setting selectedId to -9999.
+    await screen.findByText(/Test Club/i);
+
     const forceBtns = screen.getAllByTestId('force-invalid-selection');
     fireEvent.click(forceBtns[0]);
 
-    // 3. Verify EmptyState is rendered
     expect(screen.getByText(/Клуб сонгоно уу/i)).toBeInTheDocument();
   });
 });

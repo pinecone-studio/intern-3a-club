@@ -21,6 +21,7 @@
 //   isEnrolled?: boolean;
 // }
 
+
 export interface ExtendedClub extends GetAllClub {
   isEnrolled: boolean;
   bannedUntil: number;

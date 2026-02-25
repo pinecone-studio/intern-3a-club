@@ -4,6 +4,8 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Award } from 'lucide-react';
 import { ExtendedClub } from '../../../lib/type';
+import { ClubActionButtons } from './ClubActionButton';
+import { ClubInfoGrid } from './ClubInfoGrid';
 
 interface ClubDetailProps {
   selectedClub: ExtendedClub | undefined;
@@ -16,11 +18,11 @@ interface ClubDetailProps {
 
 export const ClubDetail = ({
   selectedClub,
-}: // onEnroll,
-// onLeave,
-// isLocked,
-// remainingTime,
-ClubDetailProps) => {
+  onEnroll,
+  onLeave,
+  isLocked,
+  remainingTime,
+}: ClubDetailProps) => {
   if (!selectedClub)
     return (
       <div className="flex-1 w-full h-full flex items-center justify-center min-h-[400px]">
@@ -28,13 +30,13 @@ ClubDetailProps) => {
       </div>
     );
 
-  // const handleEnroll = () => {
-  //   onEnroll(selectedClub.id);
-  // };
+  const handleEnroll = () => {
+    onEnroll(selectedClub.id);
+  };
 
-  // const handleLeave = () => {
-  //   onLeave(selectedClub.id);
-  // };
+  const handleLeave = () => {
+    onLeave(selectedClub.id);
+  };
 
   const StudentIdBadge = ({ id }: { id: string }) => (
     <div className="px-3 py-2 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center transition-all hover:bg-white/10 hover:border-white/20">
@@ -99,12 +101,10 @@ ClubDetailProps) => {
 
             {/* Info Grid Section */}
             <div className="bg-white/[0.02] rounded-3xl border border-white/5 p-8 mb-6">
-              {/* <ClubInfoGrid
-                // schedule={club.schedule}
-                club={selectedClub.class}
-                minMember={selectedClub.minMember}
-                maxMember={selectedClub.maxMember}
-              /> */}
+              <ClubInfoGrid
+                schedule={selectedClub.timetables?.[0]?.date ?? 'TBD'}
+                club={selectedClub}
+              />
             </div>
 
             {/* Students Section */}
@@ -121,14 +121,14 @@ ClubDetailProps) => {
 
             {/* Action Buttons Container */}
             <div className="mt-12 pt-8 border-t border-white/10">
-              {/* <ClubActionButtons
+              <ClubActionButtons
                 isEnrolled={Boolean(selectedClub.isEnrolled)}
                 isLocked={isLocked}
                 status={selectedClub.status}
                 remainingTime={remainingTime}
                 onEnroll={handleEnroll}
                 onLeave={handleLeave}
-              /> */}
+              />
             </div>
           </motion.div>
         </AnimatePresence>

@@ -1,8 +1,54 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  act,
+  waitFor,
+} from '@testing-library/react';
 import { ClubsContent } from '../app/JoinClub/_components/ClubsContent';
 import React from 'react';
+import { MockedProvider } from '@apollo/client/testing';
+import { GET_ALL_CLUBS } from '../lib/type';
 
 const MOCK_NOW = 1700000000000;
+
+const mocks = [
+  {
+    request: {
+      query: GET_ALL_CLUBS,
+    },
+    result: {
+      data: {
+        getAllClubs: [
+          {
+            id: '1',
+            name: 'Code Club',
+            description: 'Programming club',
+            teacherId: 't1',
+            type: 'Tech',
+            status: 'Open',
+            minMember: 5,
+            maxMember: 20,
+            timetables: [],
+            __typename: 'Club',
+          },
+          {
+            id: '2',
+            name: 'Robotics Lab',
+            description: 'Robotics lab',
+            teacherId: 't2',
+            type: 'Tech',
+            status: 'Open',
+            minMember: 5,
+            maxMember: 20,
+            timetables: [],
+            __typename: 'Club',
+          },
+        ],
+      },
+    },
+  },
+];
 
 // Mock ClubList to capture onSelect and allow forcing invalid ID
 
@@ -12,9 +58,9 @@ jest.mock('../app/JoinClub/_components/ClubList', () => ({
     onSelect,
     selectedClubId: _selectedClubId,
   }: {
-    clubs: { id: number; name: string }[];
-    onSelect: (_id: number) => void;
-    selectedClubId: number;
+    clubs: { id: string; name: string }[];
+    onSelect: (_id: string) => void;
+    selectedClubId: string;
   }) => (
     <div data-testid="club-list">
       {clubs.map((c) => (
@@ -22,7 +68,10 @@ jest.mock('../app/JoinClub/_components/ClubList', () => ({
           {c.name}
         </button>
       ))}
-      <button onClick={() => onSelect(999)} data-testid="force-invalid-select">
+      <button
+        onClick={() => onSelect('999')}
+        data-testid="force-invalid-select"
+      >
         Force Invalid ID
       </button>
     </div>
@@ -40,10 +89,13 @@ describe('ClubsContent Logic Coverage', () => {
   });
 
   it('should cover sorting, enrollment and lock logic (Lines 11, 53-63)', async () => {
-    render(<ClubsContent />);
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <ClubsContent />
+      </MockedProvider>
+    );
 
-    // Line 11: Sorting check (Enroll хийхэд эрэмбэ өөрчлөгдөх)
-    // Switch to the 3rd club (Code Club) which is Open
+    // Wait for the mock query to resolve
     const codeClubCard = await screen.findByRole('button', {
       name: 'Code Club',
     });
@@ -79,7 +131,11 @@ describe('ClubsContent Logic Coverage', () => {
   });
 
   it('should cover sorting logic (Line 11) fully - multiple enrolled', async () => {
-    render(<ClubsContent />);
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <ClubsContent />
+      </MockedProvider>
+    );
 
     // Enroll TWO clubs to test "Enrolled vs Enrolled" comparison (returns 0)
 
@@ -114,14 +170,23 @@ describe('ClubsContent Logic Coverage', () => {
     expect(leaveBtns.length).toBeGreaterThan(0);
   });
 
-  it('should cover fallback selection (Empty State)', () => {
-    render(<ClubsContent />);
+  it('should cover fallback selection (Empty State)', async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <ClubsContent />
+      </MockedProvider>
+    );
+
+    // Wait for data to load
+    await screen.findByRole('button', { name: 'Code Club' });
 
     // Trigger the fallback: select an ID that doesn't exist
     const forceInvalid = screen.getByTestId('force-invalid-select');
     fireEvent.click(forceInvalid);
 
     // Should render EmptyState because the club is not found
-    expect(screen.getByText(/Клуб сонгоно уу/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Клуб сонгоно уу/i)).toBeInTheDocument();
+    });
   });
 });
