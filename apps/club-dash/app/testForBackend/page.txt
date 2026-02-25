@@ -47,110 +47,12 @@ export default function CreateClubPage() {
             <div className="flex flex-col gap-2 p-4">
               {club.timetables.map((schedule: any) => (
                 <div key={schedule.id} className="bg-red-50">
-                  <div>TimeTableId:{schedule.id}</div>
-                  <div>ClubId:{schedule.clubId}</div>
-                  <div>Date:{schedule.date}</div>
-                  <div>Room:{schedule.room}</div>
-                  <div>StartTime:{schedule.clubStartTime}</div>
-                  <div>Duration:{schedule.duration}</div>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        onClick={() => handleTimetableEditClick(schedule)}
-                      >
-                        Edit TimeTable
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="bg-white max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Хуваарь засах</DialogTitle>
-                      </DialogHeader>
-
-                      <div className="grid gap-4 py-4">
-                        {/* Огноо засах */}
-                        <div className="flex flex-col gap-2">
-                          <Label>Өдөр сонгох</Label>
-                          <Calendar
-                            mode="single"
-                            selected={clubStartDate}
-                            onSelect={setClubStartDate}
-                            className="rounded-lg border shadow-sm mx-auto"
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label>Өрөө</Label>
-                            <Select
-                              onValueChange={setClubClassRoom}
-                              value={clubClassRoom}
-                            >
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="bg-white">
-                                {mockClassroom.map((c) => (
-                                  <SelectItem key={c.id} value={c.classRoom}>
-                                    {c.classRoom}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Эхлэх цаг</Label>
-                            <Select
-                              onValueChange={setClubStartTime}
-                              value={clubStartTime}
-                            >
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="bg-white">
-                                {mockStartTime.map((s) => (
-                                  <SelectItem key={s.id} value={s.startTime}>
-                                    {s.startTime}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Үргэлжлэх хугацаа</Label>
-                          <Select
-                            onValueChange={setClubDuration}
-                            value={clubDuration}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white">
-                              {mockDuration.map((d) => (
-                                <SelectItem key={d.id} value={d.duration}>
-                                  {d.duration} цаг
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-
-                      <DialogFooter>
-                        <Button
-                          onClick={onUpdateTimetable}
-                          disabled={isUpdatingTimetable}
-                          className="w-full bg-blue-600 text-white"
-                        >
-                          {isUpdatingTimetable
-                            ? 'Хадгалж байна...'
-                            : 'Шинэчлэх'}
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
+                  <div>{schedule.id}</div>
+                  <div>{schedule.clubId}</div>
+                  <div>{schedule.date}</div>
+                  <div>{schedule.room}</div>
+                  <div>{schedule.clubStartTime}</div>
+                  <div>{schedule.duration}</div>
                 </div>
               ))}
             </div>
