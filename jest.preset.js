@@ -34,6 +34,7 @@ module.exports = {
     '!**/relations.ts/**',
     '!**/cors.ts/**',
     '!**/drizzle.ts/**',
+    '!**/redis.ts/**',
     '!**/club.schema.ts/**',
     '!**/timetable.schema.ts/**',
     '!**/*.js',
