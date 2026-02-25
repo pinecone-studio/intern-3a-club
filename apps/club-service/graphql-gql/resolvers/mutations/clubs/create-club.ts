@@ -1,6 +1,7 @@
 import { DB } from 'db/drizzle';
 import { clubs, timetable } from 'db/schema';
 import { CreateClubWithSchedulesArgs } from 'gql-type';
+import { handleMutationError } from 'gql-utils';
 import {
   resolveMaxMember,
   resolveMinMember,
@@ -10,13 +11,6 @@ import {
   resolveTeacherId,
   resolveType,
 } from 'gql-utils/club';
-
-import { GraphQLError } from 'graphql';
-
-const handleMutationError = (error: unknown): never => {
-  const message = error instanceof Error ? error.message : 'Unknown error';
-  throw new GraphQLError(`Алдаа гарлаа: ${message}`);
-};
 
 export const createClubWithSchedules = async (
   _: unknown,
@@ -52,7 +46,7 @@ export const createClubWithSchedules = async (
     const schedules = resolveSchedules(args, clubId);
     await DB.insert(timetable).values(schedules);
 
-    console.log('SUCCESS: Club and schedules created.');
+    console.log('SUCCESS: Club and schedules created.', newClub);
     return newClub;
   } catch (error) {
     handleMutationError(error);

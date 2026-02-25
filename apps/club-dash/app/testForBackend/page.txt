@@ -114,6 +114,18 @@ const DELETE_CLUB = gql`
   }
 `;
 
+const UPDATE_TIMETABLE = gql`
+  mutation UpdateTimetable($input: UpdateTimetableInput!) {
+    updateTimetable(input: $input) {
+      id
+      date
+      room
+      clubStartTime
+      duration
+    }
+  }
+`;
+
 // --- MOCK DATA ---
 const mockTeachers = [
   { id: '1', name: 'Erdenetsogt' },
@@ -177,6 +189,9 @@ export default function CreateClubPage() {
   const [clubDuration, setClubDuration] = useState('1:00');
   const [clubMaxStudent, setClubMaxStudent] = useState('20');
   const [clubMinStudent, setClubMinStudent] = useState('5');
+  const [editingTimetable, setEditingTimetable] = useState<Timetable | null>(
+    null
+  );
   console.log({ clubName });
   console.log({ teacherId });
   console.log({ clubDesc });
@@ -210,6 +225,13 @@ export default function CreateClubPage() {
     }
   );
 
+  const [updateTimetable, { loading: isUpdatingTimetable }] = useMutation(
+    UPDATE_TIMETABLE,
+    {
+      refetchQueries: [{ query: GET_ALL_CLUBS }],
+    }
+  );
+
   const {
     loading: isLoading,
     error: err,
@@ -238,14 +260,22 @@ export default function CreateClubPage() {
     );
   };
 
+  // --- Duration-ийг минут руу хөрвүүлэх helper (handleSubmit-ээс гадна гаргав) ---
+  const durationInMinutes = (val: string) => {
+    const [hours, minutes] = val.split(':').map(Number);
+    return hours * 60 + (minutes || 0);
+  };
+
+  // --- Минутыг буцаагаад "1:30" хэлбэрт оруулах helper ---
+  const formatDurationFromMinutes = (mins: number) => {
+    const hours = Math.floor(mins / 60);
+    const minutes = mins % 60;
+    return `${hours}:${minutes === 0 ? '00' : minutes}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!clubStartDate) return alert('Огноо сонгоно уу');
-
-    const durationInMinutes = (val: string) => {
-      const [hours, minutes] = val.split(':').map(Number);
-      return hours * 60 + (minutes || 0);
-    };
 
     const formattedDays = selectedDays
       .map((id) => mockWeekdays.find((d) => d.id === id)?.value)
@@ -280,6 +310,42 @@ export default function CreateClubPage() {
   const handleDelete = async (id: string) => {
     if (window.confirm('Та энэ клубыг устгахдаа итгэлтэй байна уу?')) {
       await deleteClub({ variables: { id } });
+    }
+  };
+
+  const handleTimetableEditClick = (schedule: Timetable) => {
+    setEditingTimetable(schedule);
+    // Энд Calendar болон цагийн Input-үүдээ тухайн schedule-ийн утгаар дүүргэнэ
+    setClubStartDate(new Date(schedule.date));
+    setClubClassRoom(schedule.room);
+    setClubStartTime(schedule.clubStartTime);
+    const hours = Math.floor(schedule.duration / 60);
+    const minutes = schedule.duration % 60;
+    setClubDuration(`${hours}:${minutes === 0 ? '00' : minutes}`);
+  };
+
+  const onUpdateTimetable = async () => {
+    if (!editingTimetable) return;
+
+    try {
+      await updateTimetable({
+        variables: {
+          input: {
+            id: editingTimetable.id,
+            date: clubStartDate
+              ? clubStartDate.toISOString().split('T')[0]
+              : editingTimetable.date,
+            room: clubClassRoom,
+            clubStartTime: clubStartTime,
+            duration: durationInMinutes(clubDuration),
+          },
+        },
+      });
+      alert('Хуваарь амжилттай шинэчлэгдлээ!');
+      setEditingTimetable(null);
+    } catch (error) {
+      console.error(error);
+      alert('Засахад алдаа гарлаа');
     }
   };
 
@@ -525,12 +591,110 @@ export default function CreateClubPage() {
             <div className="flex flex-col gap-2 p-4">
               {club.timetables.map((schedule) => (
                 <div key={schedule.id} className="bg-red-50">
-                  <div>{schedule.id}</div>
-                  <div>{schedule.clubId}</div>
-                  <div>{schedule.date}</div>
-                  <div>{schedule.room}</div>
-                  <div>{schedule.clubStartTime}</div>
-                  <div>{schedule.duration}</div>
+                  <div>TimeTableId:{schedule.id}</div>
+                  <div>ClubId:{schedule.clubId}</div>
+                  <div>Date:{schedule.date}</div>
+                  <div>Room:{schedule.room}</div>
+                  <div>StartTime:{schedule.clubStartTime}</div>
+                  <div>Duration:{schedule.duration}</div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        onClick={() => handleTimetableEditClick(schedule)}
+                      >
+                        Edit TimeTable
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-white max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Хуваарь засах</DialogTitle>
+                      </DialogHeader>
+
+                      <div className="grid gap-4 py-4">
+                        {/* Огноо засах */}
+                        <div className="flex flex-col gap-2">
+                          <Label>Өдөр сонгох</Label>
+                          <Calendar
+                            mode="single"
+                            selected={clubStartDate}
+                            onSelect={setClubStartDate}
+                            className="rounded-lg border shadow-sm mx-auto"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Өрөө</Label>
+                            <Select
+                              onValueChange={setClubClassRoom}
+                              value={clubClassRoom}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-white">
+                                {mockClassroom.map((c) => (
+                                  <SelectItem key={c.id} value={c.classRoom}>
+                                    {c.classRoom}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Эхлэх цаг</Label>
+                            <Select
+                              onValueChange={setClubStartTime}
+                              value={clubStartTime}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-white">
+                                {mockStartTime.map((s) => (
+                                  <SelectItem key={s.id} value={s.startTime}>
+                                    {s.startTime}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Үргэлжлэх хугацаа</Label>
+                          <Select
+                            onValueChange={setClubDuration}
+                            value={clubDuration}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                              {mockDuration.map((d) => (
+                                <SelectItem key={d.id} value={d.duration}>
+                                  {d.duration} цаг
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <DialogFooter>
+                        <Button
+                          onClick={onUpdateTimetable}
+                          disabled={isUpdatingTimetable}
+                          className="w-full bg-blue-600 text-white"
+                        >
+                          {isUpdatingTimetable
+                            ? 'Хадгалж байна...'
+                            : 'Шинэчлэх'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               ))}
             </div>
