@@ -97,7 +97,7 @@ describe('CreateClub Page', () => {
     fireEvent.change(screen.getByLabelText(/Клубын зорилго/i), {
       target: { value: 'New Desc' },
     });
-    fireEvent.change(screen.getByLabelText(/Max/i), {
+    fireEvent.change(screen.getByPlaceholderText(/Max/i), {
       target: { value: '30' },
     });
 
