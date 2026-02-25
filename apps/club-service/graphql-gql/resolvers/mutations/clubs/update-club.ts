@@ -16,6 +16,7 @@ export const updateClub = async (
   }
 ) => {
   try {
+    const updateValues = { updatedAt: new Date().toISOString() };
     const [updatedClub] = await DB.update(clubs)
       .set({
         ...(input.status && { status: input.status }),
