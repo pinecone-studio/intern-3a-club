@@ -229,7 +229,12 @@ const parseDate = (d: string) => {
   return new Date(y, m - 1, day);
 };
 
-const formatDate = (date: Date) => date.toISOString().split('T')[0];
+const formatDate = (date: Date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
 
 const mins = (v: string) => {
   const [h, m] = v.split(':').map(Number);
@@ -246,6 +251,7 @@ type Props = {
   open: boolean;
   onClose: () => void;
   timetables: Timetable[];
+  allTimetables: Timetable[];
   mockClassroom: { id: string; classRoom: string }[];
   mockStartTime: { id: string; startTime: string }[];
   mockDuration: { id: string; duration: string }[];
@@ -258,6 +264,7 @@ export default function EditTimetableDialog({
   mockClassroom,
   mockStartTime,
   mockDuration,
+  allTimetables,
 }: Props) {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [active, setActive] = useState<Timetable | null>(null);
@@ -305,13 +312,27 @@ export default function EditTimetableDialog({
 
     const newDateStr = formatDate(selectedDate);
 
-    const conflict = timetables.find(
-      (t) =>
-        t.id !== active.id && t.date === newDateStr && t.clubStartTime === time
-    );
+    const newStart = mins(time);
+    const newDuration = mins(duration);
+    const newEnd = newStart + newDuration;
+
+    const conflict = allTimetables.find((t) => {
+      if (t.id === active.id) return false;
+
+      // Зөвхөн ижил өдөр + ижил өрөөнд шалгана
+      if (t.date !== newDateStr || t.room !== room) return false;
+
+      const existingStart = mins(t.clubStartTime);
+      const existingEnd = existingStart + t.duration; // t.duration минут гэж үзэж байна
+
+      // Цагийн интервалууд давхцаж байна уу?
+      const isOverlap = !(newEnd <= existingStart || existingEnd <= newStart);
+
+      return isOverlap;
+    });
 
     if (conflict) {
-      alert('Энэ өдөр, энэ цагт аль хэдийн клуб байна.');
+      alert('Энэ өрөөнд энэ цагийн интервалд аль хэдийн клуб байна.');
       return;
     }
 
@@ -346,13 +367,32 @@ export default function EditTimetableDialog({
             highlighted,
             selectedEdit: selectedDate ? [selectedDate] : [],
             conflict: selectedDate
-              ? timetables
-                  .filter(
-                    (t) =>
-                      t.id !== active?.id &&
-                      t.date === formatDate(selectedDate) &&
-                      t.clubStartTime === time
-                  )
+              ? allTimetables
+                  .filter((t) => {
+                    if (!active) return false;
+                    if (t.id === active.id) return false;
+
+                    // Зөвхөн ижил өдөр + ижил өрөөнд шалгана
+                    if (
+                      t.date !== formatDate(selectedDate) ||
+                      t.room !== room
+                    ) {
+                      return false;
+                    }
+
+                    const newStart = mins(time);
+                    const newDuration = mins(duration);
+                    const newEnd = newStart + newDuration;
+
+                    const existingStart = mins(t.clubStartTime);
+                    const existingEnd = existingStart + t.duration; // минут гэж үзэж байна
+
+                    const isOverlap = !(
+                      newEnd <= existingStart || existingEnd <= newStart
+                    );
+
+                    return isOverlap;
+                  })
                   .map((t) => parseDate(t.date))
               : [],
           }}

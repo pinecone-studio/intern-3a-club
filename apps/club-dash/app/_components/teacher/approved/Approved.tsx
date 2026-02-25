@@ -1,7 +1,7 @@
 import { Calendar, DoorOpen, Users2, Clock } from 'lucide-react';
 import { DetailTile } from '../main/DetailTile';
-import { ApprovedClubDetailProps, Club } from '../../../../libs/types';
-import { useMutation } from '@apollo/client/react';
+import { ApprovedClubDetailProps, Club, Data } from '../../../../libs/types';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { gql } from '@apollo/client';
 import { useState } from 'react';
 import EditTimetableDialog from './EditTimetableDialog';
@@ -89,6 +89,10 @@ export const ApprovedClubDetail = ({
 }: ApprovedClubDetailProps) => {
   const display = getDetailDisplay(club);
 
+  const { data } = useQuery<Data>(GET_ALL_CLUBS);
+  const allTimetables =
+    data?.getAllClubs?.flatMap((c) => c.timetables ?? []) ?? [];
+
   const [openEdit, setOpenEdit] = useState(false);
   const primaryTimetable = club.timetables?.[0] ?? null;
 
@@ -174,6 +178,7 @@ export const ApprovedClubDetail = ({
         mockClassroom={mockClassroom}
         mockStartTime={mockStartTime}
         mockDuration={mockDuration}
+        allTimetables={allTimetables}
       />
     </>
   );
