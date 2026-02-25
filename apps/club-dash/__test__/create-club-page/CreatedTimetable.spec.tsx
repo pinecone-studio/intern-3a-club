@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import React from 'react';
 import {
@@ -96,12 +96,32 @@ describe('CreatedTimetable', () => {
 
     const cards = screen.getAllByTestId('schedule-card');
     expect(cards).toHaveLength(2);
-
     expect(cards[0]).toHaveTextContent('2026-01-10');
     expect(cards[1]).toHaveTextContent('2026-06-15');
-
     expect(cards[0]).toHaveTextContent('Room 101');
     expect(cards[0]).toHaveTextContent('10:00');
     expect(cards[0]).toHaveTextContent('2.5ц');
+  });
+
+  it('calls all setters with default values when reset button is clicked', () => {
+    render(
+      <CreatedTimetable
+        state={baseState}
+        setters={mockSetters}
+        handlers={mockHandlers}
+      />
+    );
+
+    fireEvent.click(screen.getByText('Хоослох'));
+
+    expect(mockSetters.setClubClassRoom).toHaveBeenCalledWith('301');
+    expect(mockSetters.setClubDuration).toHaveBeenCalledWith('1:00');
+    expect(mockSetters.setClubFrequency).toHaveBeenCalledWith(
+      'Зөвхөн сонгосон өдрүүдэд'
+    );
+    expect(mockSetters.setClubStartDate).toHaveBeenCalledWith([]);
+    expect(mockSetters.setClubStartTime).toHaveBeenCalledWith('13:00');
+    expect(mockSetters.setClubTerm).toHaveBeenCalledWith('1');
+    expect(mockSetters.setSelectedFreqId).toHaveBeenCalledWith('1');
   });
 });
