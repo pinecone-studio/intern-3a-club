@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 // Замыг өөрийн бүтцэд тааруулж шалгаарай (../app/JoinClub/_components/ гэх мэт)
+import { ClubActionButtons } from '../app/JoinClub/_components/ClubActionButton';
 import React, { ComponentProps } from 'react';
-import { ClubActionButtons } from '../app/JoinClub/_components';
 
 type ClubActionButtonsProps = ComponentProps<typeof ClubActionButtons>;
 

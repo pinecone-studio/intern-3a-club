@@ -4,8 +4,9 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Award } from 'lucide-react';
 import { ExtendedClub } from '../../../lib/type';
-import { ClubActionButtons } from './ClubActionButton';
+
 import { ClubInfoGrid } from './ClubInfoGrid';
+import { ClubActionButtons } from './ClubActionButton';
 
 interface ClubDetailProps {
   selectedClub: ExtendedClub | undefined;

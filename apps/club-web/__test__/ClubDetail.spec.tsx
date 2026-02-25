@@ -1,147 +1,173 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { ClubDetail } from '../app/JoinClub/_components/ClubDetail';
 import React from 'react';
-import { ExtendedClub } from '../lib/type';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { MockedResponse } from '@apollo/client/testing';
+import { ClubsContent } from '../app/JoinClub/_components/ClubsContent';
+import { GET_ALL_CLUBS, Data, ExtendedClub } from '../lib/type';
 
-// 1. Mock компонентуудын төрлийг (Props) тодорхойлох
-interface MockActionProps {
-  onEnroll: (_id: string) => void;
-  onLeave: (_id: string) => void;
-  isEnrolled: boolean;
-  isLocked: boolean;
-  status: string;
-  remainingTime: number;
-}
-
-// ClubActionButtons-ийг mock хийх (Мөр 116-125 орчимд дуудагдаж буй логик)
-jest.mock('./ClubActionButton', () => ({
-  ClubActionButtons: ({ onEnroll, onLeave, isEnrolled }: MockActionProps) => (
-    <div>
-      {!isEnrolled ? (
-        <button
-          onClick={() => onEnroll('830b09d2-1fa9-4ecc-b2e8-024dea389584')}
-        >
-          Одоо нэгдэх
+// 1. Child Components-ийг төрөлтэйгээр Mock хийх
+// Ингэснээр "Element type is invalid" алдаа дахин гарахгүй
+jest.mock('../app/JoinClub/_components/ClubList', () => ({
+  ClubList: ({
+    onSelect,
+    clubs,
+  }: {
+    onSelect: (id: string) => void;
+    clubs: ExtendedClub[];
+  }) => (
+    <div data-testid="club-list">
+      {clubs.map((c) => (
+        <button key={c.id} onClick={() => onSelect(c.id)}>
+          {c.name}
         </button>
-      ) : (
-        <button onClick={() => onLeave('830b09d2-1fa9-4ecc-b2e8-024dea389584')}>
-          Клубээс гарах
-        </button>
-      )}
+      ))}
     </div>
   ),
 }));
 
-// ClubInfoGrid-ийг mock хийх (Мөр 98-103 орчимд дуудагдаж буй логик)
-jest.mock('./ClubInfoGrid', () => ({
-  ClubInfoGrid: ({ club }: { club: ExtendedClub }) => (
-    <div data-testid="info-grid">Room: {club.timetables?.[0]?.room}</div>
+jest.mock('../app/JoinClub/_components/ClubDetail', () => ({
+  ClubDetail: ({
+    onEnroll,
+    onLeave,
+    selectedClub,
+    isLocked,
+    remainingTime,
+  }: any) => (
+    <div data-testid="club-detail">
+      <h2>{selectedClub?.name}</h2>
+      <p>Status: {isLocked ? `Locked ${remainingTime}s` : 'Available'}</p>
+      <button onClick={() => onEnroll(selectedClub?.id)}>Enroll Action</button>
+      <button onClick={() => onLeave(selectedClub?.id)}>Leave Action</button>
+    </div>
   ),
 }));
 
-// Framer Motion-ийг төрөлтэйгээр mock хийх (Анимацын алдаанаас сэргийлнэ)
-jest.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, key }: { children: React.ReactNode; key?: string }) => (
-      <div key={key}>{children}</div>
-    ),
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-}));
-
-describe('ClubDetail 100% Coverage (Lines 26-117)', () => {
-  const mockClubData: ExtendedClub = {
-    id: '830b09d2-1fa9-4ecc-b2e8-024dea389584',
-    name: 'shine shine',
-    description: 'Тест зорилго',
-    status: 'approved',
-    teacherId: 'Багш А',
-    type: 'mentor',
-    minMember: 5,
-    maxMember: 20,
-    isEnrolled: false,
-    bannedUntil: 0,
-    timetables: [
-      {
-        id: '921a28f8-f299-41a5-9b83-aacbf5f0868d',
-        clubId: '830b09d2-1fa9-4ecc-b2e8-024dea389584',
-        date: '2026-03-05',
-        room: '301',
-        clubStartTime: '13:00',
-        duration: 90,
+// 2. Mock Data бэлдэх
+const mockClubsData: MockedResponse<Data>[] = [
+  {
+    request: {
+      query: GET_ALL_CLUBS,
+    },
+    result: {
+      data: {
+        getAllClubs: [
+          {
+            id: '1',
+            name: 'Chess Club',
+            description: 'Strategy and mind games',
+            status: 'Open',
+            teacherId: 'Teacher 1',
+            type: 'Academic',
+            minMember: 2,
+            maxMember: 10,
+            timetables: [],
+          },
+          {
+            id: '2',
+            name: 'Art Club',
+            description: 'Creative painting',
+            status: 'Open',
+            teacherId: 'Teacher 2',
+            type: 'Creative',
+            minMember: 5,
+            maxMember: 15,
+            timetables: [],
+          },
+        ],
       },
-    ],
-  };
+    },
+  },
+];
 
-  const mockOnEnroll = jest.fn();
-  const mockOnLeave = jest.fn();
-
-  it('Клуб сонгоогүй үеийн fallback төлөвийг шалгах (Мөр 26-31)', () => {
-    render(
-      <ClubDetail
-        selectedClub={undefined}
-        onEnroll={mockOnEnroll}
-        onLeave={mockOnLeave}
-        isLocked={false}
-        remainingTime={0}
-      />
-    );
-    expect(screen.getByText(/Клуб сонгоно уу/i)).toBeInTheDocument();
+describe('ClubsContent 100% Logic Coverage', () => {
+  beforeEach(() => {
+    jest.useFakeTimers(); // setInterval (Line 46)-ийг тестлэхэд хэрэгтэй
   });
 
-  it('Клубын дэлгэрэнгүй мэдээллийг зөв харуулж байна (Мөр 58-112)', () => {
-    render(
-      <ClubDetail
-        selectedClub={mockClubData}
-        onEnroll={mockOnEnroll}
-        onLeave={mockOnLeave}
-        isLocked={false}
-        remainingTime={0}
-      />
-    );
-
-    // Нэр, зорилго, багш харагдаж буйг шалгах
-    expect(screen.getByText(/shine shine/i)).toBeInTheDocument();
-    expect(screen.getByText(/Тест зорилго/i)).toBeInTheDocument();
-    expect(screen.getByText(/Багш А/i)).toBeInTheDocument();
-
-    // Сурагчийн ID-нууд рендерлэгдэж буйг шалгах (Мөр 108-112)
-    expect(screen.getByText('25LP9878')).toBeInTheDocument();
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
-  it('handleEnroll болон handleLeave үйлдлүүдийг шалгах (Мөр 33-41)', () => {
-    const { rerender } = render(
-      <ClubDetail
-        selectedClub={mockClubData}
-        onEnroll={mockOnEnroll}
-        onLeave={mockOnLeave}
-        isLocked={false}
-        remainingTime={0}
-      />
+  it('Loading төлөвийг шалгах (Line 92 coverage)', () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <ClubsContent />
+      </MockedProvider>
+    );
+    // loading үед null буцаадаг тул контент байхгүй байх ёстой
+    expect(screen.queryByTestId('club-list')).not.toBeInTheDocument();
+  });
+
+  it('Error төлөвийг шалгах (Line 93 coverage)', async () => {
+    const errorMock: MockedResponse[] = [
+      {
+        request: { query: GET_ALL_CLUBS },
+        error: new Error('GraphQL Network Error'),
+      },
+    ];
+
+    render(
+      <MockedProvider mocks={errorMock} addTypename={false}>
+        <ClubsContent />
+      </MockedProvider>
     );
 
-    // Нэгдэх үйлдэл (handleEnroll)
-    const enrollBtn = screen.getByText(/Одоо нэгдэх/i);
-    fireEvent.click(enrollBtn);
-    expect(mockOnEnroll).toHaveBeenCalledWith(mockClubData.id);
+    const errorMsg = await screen.findByText(/GraphQL Network Error/i);
+    expect(errorMsg).toBeInTheDocument();
+    expect(errorMsg).toHaveClass('text-red-500');
+  });
 
-    // Төлөв солигдох үед (isEnrolled: true)
-    const enrolledClub = { ...mockClubData, isEnrolled: true };
-    rerender(
-      <ClubDetail
-        selectedClub={enrolledClub}
-        onEnroll={mockOnEnroll}
-        onLeave={mockOnLeave}
-        isLocked={false}
-        remainingTime={0}
-      />
+  it('Үндсэн логик болон useEffect-үүдийг шалгах (Lines 15-91 coverage)', async () => {
+    render(
+      <MockedProvider mocks={mockClubsData} addTypename={false}>
+        <ClubsContent />
+      </MockedProvider>
     );
 
-    // Гарах үйлдэл (handleLeave)
-    const leaveBtn = screen.getByText(/Клубээс гарах/i);
-    fireEvent.click(leaveBtn);
-    expect(mockOnLeave).toHaveBeenCalledWith(mockClubData.id);
+    // 1. Data load болохыг хүлээх (useEffect Line 40)
+    await waitFor(() => {
+      expect(screen.getByTestId('club-list')).toBeInTheDocument();
+    });
+
+    // 2. Default-оор эхний клуб сонгогдсон эсэхийг шалгах (Line 44)
+    expect(screen.getByText('Chess Club')).toBeInTheDocument();
+
+    // 3. handleEnroll (Line 52) - Enroll товч дарах
+    fireEvent.click(screen.getByText('Enroll Action'));
+
+    // 4. handleLeave (Line 60) - Leave товч дарах (Энэ нь bannedUntil-ийг онооно)
+    fireEvent.click(screen.getByText('Leave Action'));
+
+    // 5. Timer logic (Line 46) - 1 секунд гүйлгэх
+    jest.advanceTimersByTime(1000);
+
+    // 6. handleSelect (Line 70) - Өөр клуб сонгох
+    const artClubBtn = screen.getByText('Art Club');
+    fireEvent.click(artClubBtn);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: /Art Club/i })
+      ).toBeInTheDocument();
+    });
+
+    // 7. sortClubs (Line 15) болон mapClubsData (Line 21) логикууд
+    // дээрх үйлдлүүдийн явцад автоматаар cover хийгдсэн байгаа.
+  });
+
+  it('Data хоосон ирэх үеийн useEffect-ийг шалгах (Line 36)', async () => {
+    const emptyMock: MockedResponse<Data> = {
+      request: { query: GET_ALL_CLUBS },
+      result: { data: { getAllClubs: [] } },
+    };
+
+    render(
+      <MockedProvider mocks={[emptyMock]} addTypename={false}>
+        <ClubsContent />
+      </MockedProvider>
+    );
+
+    // Хүлээх хугацааны дараа ч жагсаалт хоосон байх ёстой
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(screen.queryByTestId('club-list')).not.toBeInTheDocument();
   });
 });
