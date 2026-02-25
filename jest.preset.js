@@ -25,7 +25,7 @@ module.exports = {
     '!**/.next/**',
     '!**/jest.config.ts',
     '!**/eslint-rules/**',
-    '!**/workspace-plugin/**',
+    '!**/workspace-plugin',
     '!**/drizzle.config.ts/**',
     '!**/cors.ts/**',
     '!**/responses.ts/**',
