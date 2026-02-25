@@ -8,6 +8,12 @@ jest.mock('@apollo/client/react', () => ({
   useMutation: () => [mockMutate, { loading: false, data: null, error: null }],
 }));
 
+jest.mock('@apollo/client/react', () => ({
+  ...jest.requireActual('@apollo/client/react'),
+  useQuery: () => ({ data: { getAllClubs: [] }, loading: false, error: null }),
+  useMutation: () => [mockMutate, { loading: false, data: null, error: null }],
+}));
+
 const club: Club = {
   id: '1',
   name: 'Test Club',
@@ -37,14 +43,17 @@ describe('ApprovedClubDetail', () => {
     jest.clearAllMocks();
   });
 
-  it('calls onEdit when Edit clicked', () => {
-    const onEdit = jest.fn();
-    render(
-      <ApprovedClubDetail club={club} onEdit={onEdit} onDelete={undefined} />
-    );
+  it('opens edit dialog when Edit clicked', () => {
+    render(<ApprovedClubDetail club={club} onDelete={undefined} />);
 
+    // эхлээд dialog харагдахгүй байх ёстой
+    expect(screen.queryByText(/Schedule edit/i)).not.toBeInTheDocument();
+
+    // Edit товчийг дарна
     fireEvent.click(screen.getByText(/edit/i));
-    expect(onEdit).toHaveBeenCalledWith(club);
+
+    // EditTimetableDialog нээгдсэн эсэхийг title-ээр нь шалгана
+    expect(screen.getByText(/Schedule edit/i)).toBeInTheDocument();
   });
 
   it('calls delete mutation when Delete clicked and confirm true', async () => {
