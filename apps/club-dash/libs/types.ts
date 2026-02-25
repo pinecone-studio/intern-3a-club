@@ -32,9 +32,9 @@ export interface ClubCardProps {
   req: Club;
   isPrimary: boolean;
   isExpanded: boolean;
-  setExpandedId: (_id: number | null) => void;
+  setExpandedId: (_id: string | null) => void;
   onDelete?: (_club: Club) => void;
-  expandedId?: number | null;
+  expandedId?: string | null;
 }
 
 export interface ToggleItemProps {
@@ -44,15 +44,14 @@ export interface ToggleItemProps {
 }
 
 export interface Club {
-  id: number;
+  id: string;
   name: string;
-  leader: string;
-  time: string;
-  room: string;
-  goal: string;
-  repeat: string;
-  students: string;
-  status?: 'pending' | 'approved';
+  description: string | null;
+  teacherId: string | null;
+  minMember: number;
+  maxMember: number;
+  status: string;
+  timetables: Timetable[];
 }
 
 export interface ApprovedClubDetailProps {
@@ -65,7 +64,7 @@ export interface Props {
   req: Club;
   isPrimary: boolean;
   isExpanded: boolean;
-  setExpandedId: (_id: number | null) => void;
+  setExpandedId: (_id: string | null) => void;
 }
 
 export type CreateClubState = {
@@ -86,6 +85,14 @@ export type CreateClubState = {
 
 export type Data = {
   getAllClubs: GetAllClub[];
+};
+
+export type ApprovedClubsData = {
+  getAllApprovedClubs: GetAllClub[];
+};
+
+export type PendingClubsData = {
+  getAllPendingClubs: GetAllClub[];
 };
 
 export type GetAllClub = {

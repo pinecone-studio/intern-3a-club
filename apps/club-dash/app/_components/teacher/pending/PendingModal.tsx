@@ -2,7 +2,7 @@
 
 import { X } from 'lucide-react';
 import { PendingClubDetail } from './Pending';
-import { Club } from '@/libs/types';
+import { Club } from '../../../../libs/types';
 
 interface PendingModalProps {
   pending: Club[];
@@ -72,7 +72,9 @@ const PendingItem = ({ club, onApprove, onReject }: PendingItemProps) => {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h4 className="font-black uppercase">{club.name}</h4>
-          <p className="text-xs text-muted-foreground">{club.leader}</p>
+          <p className="text-xs text-muted-foreground">
+            {club.description ?? ''}
+          </p>
         </div>
 
         <div className="flex gap-2">

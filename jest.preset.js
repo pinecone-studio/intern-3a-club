@@ -44,6 +44,7 @@ module.exports = {
     '!**/libs/shadcn/**/*.tsx',
     '!**/*.d.ts',
     '!**/*utils.ts',
+    '!**/lib/utils.ts',
   ],
   coverageThreshold: {
     global: {

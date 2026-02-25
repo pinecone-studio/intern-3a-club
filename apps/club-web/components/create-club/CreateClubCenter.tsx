@@ -1,61 +1,26 @@
 'use client';
-
 import { useState, useCallback, useMemo } from 'react';
-import { cn } from 'lib/utils';
+import { useMutation } from '@apollo/client/react';
 import { ClubForm } from './ClubForm';
 import { HeaderSection } from './HeaderSection';
-import { FormDataType, CalendarDayProps } from './types';
+import { FormDataType, INITIAL_FORM_DATA } from './types';
 import { MyClubsList } from '../club-add/PersonalClubs';
 import { RequestHistory } from '../club-add/RequestHistory';
 import { SystemTip } from '../club-add/SystemTip';
-const CalendarDay = ({
-  day,
-  date,
-  isPast,
-  isSelected,
-  isToday,
-  onToggle,
-}: CalendarDayProps) => {
-  const handleClick = useCallback(() => onToggle(date), [date, onToggle]);
-
-  return (
-    <button
-      type="button"
-      disabled={isPast}
-      onClick={handleClick}
-      className={cn(
-        'h-10 w-10 rounded-xl text-xs font-bold transition-all relative flex items-center justify-center bg-white/5',
-        {
-          'opacity-10 cursor-not-allowed': isPast,
-          'hover:bg-primary/20 text-white/80': !isPast,
-          'bg-primary text-white shadow-[0_0_15px_rgba(var(--primary),0.5)]':
-            isSelected,
-          'border border-primary text-primary': isToday && !isSelected,
-        }
-      )}
-    >
-      {day}
-      {isSelected && (
-        <div className="absolute -top-1 -right-1 h-2 w-2 bg-emerald-500 rounded-full border-2 border-[#0b2b5c]" />
-      )}
-    </button>
-  );
-};
-
+import { CREATE_CLUB_WITH_SCHEDULE } from '../../graphql/mutations';
+import { CalendarDay } from './CalendarDay';
+import {
+  calculateTotalMinutes,
+  getDayNames,
+  getFrequency,
+  getMinMax,
+} from './create-club-helpers';
 export const CreateClubCenter = () => {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [formData, setFormData] = useState<FormDataType>({
-    name: '',
-    goal: '',
-    teacher: '',
-    time: '13:00',
-    duration: '1:30',
-    studentEmail: '',
-    room: '301',
-    maxStudents: '',
-    repeat: 'none',
-  });
+  const [formData, setFormData] = useState<FormDataType>(INITIAL_FORM_DATA);
+
+  const [createClub] = useMutation(CREATE_CLUB_WITH_SCHEDULE);
 
   const today = useMemo(() => {
     const d = new Date();
@@ -115,8 +80,33 @@ export const CreateClubCenter = () => {
     return days;
   }, [currentMonth, selectedDates, today, toggleDate]);
 
-  const onFormSubmit = () => {
-    alert(JSON.stringify(formData));
+  const getMutationVariables = () => ({
+    input: {
+      name: formData.name,
+      description: formData.goal,
+      type: 'mentor',
+      teacherId: formData.teacher,
+      minMember: getMinMax(formData.minStudents),
+      maxMember: getMinMax(formData.maxStudents),
+    },
+    startDate: selectedDates[0].toISOString().split('T')[0],
+    classroom: formData.room,
+    startTime: formData.time,
+    duration: calculateTotalMinutes(formData.duration),
+    frequency: getFrequency(formData.repeat),
+    selectedDays: getDayNames(selectedDates),
+  });
+
+  const onFormSubmit = async () => {
+    try {
+      await createClub({
+        variables: getMutationVariables(),
+        onCompleted: () => alert('Клуб амжилттай үүслээ!'),
+        onError: (err) => alert(`Алдаа гарлаа: ${err.message}`),
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -125,26 +115,26 @@ export const CreateClubCenter = () => {
         title="Клуб Нээх"
         subtitle="Шинэ клуб нээх хүсэлт болон хуваарь илгээх."
       />
-     <div className='flex gap-20'>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <ClubForm
-          formData={formData}
-          setFormData={setFormData}
-          selectedDates={selectedDates}
-          setSelectedDates={setSelectedDates}
-          currentMonth={currentMonth}
-          handleMonthChange={handleMonthChange}
-          renderCalendarDays={renderCalendarDays}
-          handleSubmit={onFormSubmit}
+      <div className="flex gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <ClubForm
+            formData={formData}
+            setFormData={setFormData}
+            selectedDates={selectedDates}
+            setSelectedDates={setSelectedDates}
+            currentMonth={currentMonth}
+            handleMonthChange={handleMonthChange}
+            renderCalendarDays={renderCalendarDays}
+            handleSubmit={onFormSubmit}
+          // loading={loading} // ClubForm дотор товчлуурыг disable болгоход хэрэгтэй
           />
+        </div>
+        <div className="lg:col-span-5 space-y-8">
+          <MyClubsList />
+          <RequestHistory />
+          <SystemTip />
+        </div>
       </div>
-      <div className="lg:col-span-5 space-y-8">
-         <MyClubsList />
-         <RequestHistory />
-         <SystemTip />
-      </div>
-    </div>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { MockedProvider } from '@apollo/client/testing/react';
 import { CreateClubCenter } from '../../components/create-club/CreateClubCenter';
 
 describe('Calendar Interaction Suite', () => {
@@ -13,14 +14,18 @@ describe('Calendar Interaction Suite', () => {
   });
 
   it('toggles date selection on and off (CreateClubCenter line 74)', () => {
-    render(<CreateClubCenter />);
+    render(
+      <MockedProvider>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
 
     // Fill Step 1
     fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
       target: { value: 'Coding Club', name: 'name' },
     });
     fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'bat', name: 'teacher' },
+      target: { value: '1', name: 'teacher' },
     });
     fireEvent.change(screen.getByPlaceholderText(/Зорилго.../i), {
       target: { value: 'Learn to code', name: 'goal' },
@@ -38,13 +43,17 @@ describe('Calendar Interaction Suite', () => {
   });
 
   it('navigates months and renders empty slots', () => {
-    render(<CreateClubCenter />);
+    render(
+      <MockedProvider>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
     // Fill Step 1
     fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
       target: { value: 'Coding Club', name: 'name' },
     });
     fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'bat', name: 'teacher' },
+      target: { value: '1', name: 'teacher' },
     });
     fireEvent.change(screen.getByPlaceholderText(/Зорилго.../i), {
       target: { value: 'Learn to code', name: 'goal' },
@@ -56,13 +65,17 @@ describe('Calendar Interaction Suite', () => {
   });
 
   it('handles sorting and date removal via icon', () => {
-    render(<CreateClubCenter />);
+    render(
+      <MockedProvider>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
     // Fill Step 1
     fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
       target: { value: 'Coding Club', name: 'name' },
     });
     fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'bat', name: 'teacher' },
+      target: { value: '1', name: 'teacher' },
     });
     fireEvent.change(screen.getByPlaceholderText(/Зорилго.../i), {
       target: { value: 'Learn to code', name: 'goal' },
