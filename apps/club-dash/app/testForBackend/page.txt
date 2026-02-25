@@ -26,7 +26,64 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import {
   GET_ALL_APPROVED_CLUBS,
   GET_ALL_PENDING_CLUBS,
-} from '../../libs/clubQueries';
+} from 'apps/club-dash/libs/club-queries';
+
+export interface PendingClubData {
+  getAllPendingClubs: GetAllPendingClub[];
+}
+
+export interface GetAllPendingClub {
+  __typename: string;
+  id: string;
+  name: string;
+  description: string;
+  creatorId: any;
+  teacherId: any;
+  type: string;
+  status: string;
+  preferredTeachers: string[];
+  minMember: number;
+  maxMember: number;
+  timetables: PendingClubTimetable[];
+}
+
+export interface PendingClubTimetable {
+  __typename: string;
+  id: string;
+  clubId: string;
+  date: string;
+  room: string;
+  clubStartTime: string;
+  duration: number;
+}
+
+export type ApprovedClubData = {
+  getAllApprovedClubs: GetAllApprovedClub[];
+};
+
+export interface GetAllApprovedClub {
+  __typename: string;
+  id: string;
+  name: string;
+  description: string;
+  creatorId: any;
+  teacherId: string;
+  type: string;
+  status: string;
+  minMember: number;
+  maxMember: number;
+  timetables: ApprovedClubTimetable[];
+}
+
+export interface ApprovedClubTimetable {
+  __typename: string;
+  id: string;
+  clubId: string;
+  date: string;
+  room: string;
+  clubStartTime: string;
+  duration: number;
+}
 
 export type Data = {
   getAllClubs: GetAllClub[];
@@ -53,6 +110,25 @@ export type Timetable = {
   clubStartTime: string;
   duration: number;
 };
+
+// Мутациас буцаж ирэх өгөгдлийн бүтэц
+interface UpdateClubData {
+  updateClub: {
+    id: string;
+    status: 'pending' | 'approved' | 'declined';
+    teacherId?: string;
+  };
+}
+
+// Мутаци руу илгээх утгуудын бүтэц
+interface UpdateClubVariables {
+  input: {
+    id: string;
+    status?: 'pending' | 'approved' | 'declined';
+    teacherId?: string;
+  };
+}
+
 export const GET_ALL_CLUBS = gql`
   query GetAllClubs {
     getAllClubs {
@@ -126,6 +202,16 @@ const UPDATE_TIMETABLE = gql`
   }
 `;
 
+const UPDATE_CLUB = gql`
+  mutation UpdateClub($input: UpdateClubInput!) {
+    updateClub(input: $input) {
+      id
+      status
+      teacherId
+    }
+  }
+`;
+
 // --- MOCK DATA ---
 const mockTeachers = [
   { id: '1', name: 'Erdenetsogt' },
@@ -192,6 +278,10 @@ export default function CreateClubPage() {
   const [editingTimetable, setEditingTimetable] = useState<Timetable | null>(
     null
   );
+  console.log({ editingTimetable });
+  const [selectedTeacherForApprove, setSelectedTeacherForApprove] = useState<
+    Record<string, string>
+  >({});
   console.log({ clubName });
   console.log({ teacherId });
   console.log({ clubDesc });
@@ -232,6 +322,20 @@ export default function CreateClubPage() {
     }
   );
 
+  const [updateClub, { loading: isStatusChanging }] = useMutation<
+    UpdateClubData,
+    UpdateClubVariables
+  >(UPDATE_CLUB, {
+    refetchQueries: [
+      { query: GET_ALL_PENDING_CLUBS },
+      { query: GET_ALL_APPROVED_CLUBS },
+    ],
+    onCompleted: (data) => {
+      const status = data.updateClub.status;
+      alert(status === 'approved' ? 'Клуб батлагдлаа.' : 'Клуб цуцлагдлаа.');
+    },
+  });
+
   const {
     loading: isLoading,
     error: err,
@@ -242,13 +346,13 @@ export default function CreateClubPage() {
     loading: isLoadingApproved,
     error: errClubApproved,
     data: clubDataApproved,
-  } = useQuery<Data>(GET_ALL_APPROVED_CLUBS);
+  } = useQuery<ApprovedClubData>(GET_ALL_APPROVED_CLUBS);
 
   const {
     loading: isLoadingPending,
     error: errClubPending,
     data: clubDataPending,
-  } = useQuery<Data>(GET_ALL_PENDING_CLUBS);
+  } = useQuery<PendingClubData>(GET_ALL_PENDING_CLUBS);
 
   console.log({ data });
   console.log({ clubDataApproved });
@@ -313,39 +417,97 @@ export default function CreateClubPage() {
     }
   };
 
-  const handleTimetableEditClick = (schedule: Timetable) => {
-    setEditingTimetable(schedule);
-    // Энд Calendar болон цагийн Input-үүдээ тухайн schedule-ийн утгаар дүүргэнэ
-    setClubStartDate(new Date(schedule.date));
-    setClubClassRoom(schedule.room);
-    setClubStartTime(schedule.clubStartTime);
-    const hours = Math.floor(schedule.duration / 60);
-    const minutes = schedule.duration % 60;
-    setClubDuration(`${hours}:${minutes === 0 ? '00' : minutes}`);
+  // --- Туслах функц: "2026-02-25" гэсэн String-ийг локал Date объект болгох ---
+  const parseDateString = (dateStr: string) => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    // JS Date-ийн сар 0-оос эхэлдэг (0=January) тул 1-ийг хасна
+    return new Date(year, month - 1, day);
   };
 
+  // --- Туслах функц: Date объектыг "2026-02-25" String болгох (Mutation-д зориулав) ---
+  const getFormattedDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleTimetableEditClick = (schedule: Timetable) => {
+    // 1. Одоо засаж буй хуваарийг хадгалах
+    setEditingTimetable(schedule);
+
+    // 2. Calendar-т зориулж огноог Date объект болгож тохируулах
+    if (schedule.date) {
+      const targetDate = parseDateString(schedule.date);
+      setClubStartDate(targetDate);
+    }
+
+    // 3. Өрөө болон эхлэх цагийг оноох
+    setClubClassRoom(schedule.room);
+    setClubStartTime(schedule.clubStartTime);
+
+    // 4. Үргэлжлэх хугацааг минутаас "1:30" хэлбэрт шилжүүлж оноох
+    const hours = Math.floor(schedule.duration / 60);
+    const minutes = schedule.duration % 60;
+    const formattedDuration = `${hours}:${minutes === 0 ? '00' : minutes}`;
+    setClubDuration(formattedDuration);
+  };
+
+  // --- Шинэчлэх функц дотор ашиглах жишээ ---
   const onUpdateTimetable = async () => {
-    if (!editingTimetable) return;
+    if (!editingTimetable || !clubStartDate) return;
 
     try {
       await updateTimetable({
         variables: {
           input: {
             id: editingTimetable.id,
-            date: clubStartDate
-              ? clubStartDate.toISOString().split('T')[0]
-              : editingTimetable.date,
+            date: getFormattedDate(clubStartDate), // Энд ашиглана
             room: clubClassRoom,
             clubStartTime: clubStartTime,
             duration: durationInMinutes(clubDuration),
           },
         },
       });
-      alert('Хуваарь амжилттай шинэчлэгдлээ!');
+      alert('Амжилттай шинэчлэгдлээ!');
       setEditingTimetable(null);
     } catch (error) {
       console.error(error);
-      alert('Засахад алдаа гарлаа');
+    }
+  };
+
+  // Approve товчлуур дарах үед
+
+  const handleApprove = async (clubId: string) => {
+    const teacherId = selectedTeacherForApprove[clubId];
+
+    if (!teacherId) {
+      return alert('Клубыг батлахын тулд багш заавал сонгоно уу!');
+    }
+
+    await updateClub({
+      variables: {
+        input: {
+          id: clubId,
+          teacherId: teacherId, // Сонгосон багш
+          status: 'approved',
+        },
+      },
+    });
+  };
+
+  // Reject товчлуур дарах үед
+  const handleReject = async (clubId: string) => {
+    if (window.confirm('Энэ клубын хүсэлтийг цуцлах уу?')) {
+      await updateClub({
+        variables: {
+          input: {
+            id: clubId,
+            status: 'declined',
+            // teacherId-г энд илгээхгүй
+          },
+        },
+      });
     }
   };
 
@@ -575,15 +737,171 @@ export default function CreateClubPage() {
         </DialogContent>
       </Dialog>
 
+      {/* --- PENDING CLUBS DIALOG FULL VERSION --- */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant={'outline'} className="w-fit">
+            Pending Clubs ({clubDataPending?.getAllPendingClubs.length || 0})
+          </Button>
+        </DialogTrigger>
+
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white">
+          <DialogHeader>
+            <DialogTitle>Хүлээгдэж буй клубүүд</DialogTitle>
+            <DialogDescription>
+              Эдгээр клубүүд зөвшөөрөл хүлээж байна. Санал болгосон багш нараас
+              сонгож баталгаажуулна уу.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-6 py-4">
+            {clubDataPending?.getAllPendingClubs.length === 0 ? (
+              <p className="text-center text-gray-500">
+                Одоогоор хүлээгдэж буй клуб байхгүй байна.
+              </p>
+            ) : (
+              clubDataPending?.getAllPendingClubs.map((club) => (
+                <div
+                  className="border rounded-lg p-4 shadow-sm space-y-4"
+                  key={club.id}
+                >
+                  {/* Клубын үндсэн мэдээлэл */}
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p>
+                        <strong>Нэр:</strong> {club.name}
+                      </p>
+                      <p>
+                        <strong>Төлөв:</strong>{' '}
+                        <span className="text-yellow-600 font-medium">
+                          {club.status}
+                        </span>
+                      </p>
+                    </div>
+                    <div>
+                      <p>
+                        <strong>Гишүүд:</strong> {club.minMember} -{' '}
+                        {club.maxMember}
+                      </p>
+                      <p className="text-blue-600">
+                        <strong>Санал болгосон багш нар:</strong>{' '}
+                        {/* ID-гаар нь нэрийг нь олж харуулах */}
+                        {club.preferredTeachers
+                          ?.map(
+                            (id) => mockTeachers.find((t) => t.id === id)?.name
+                          )
+                          .join(', ') || 'Байхгүй'}
+                      </p>
+                    </div>
+                    <p className="col-span-2">
+                      <strong>Тайлбар:</strong> {club.description}
+                    </p>
+                  </div>
+
+                  {/* Хуваарийн хэсэг */}
+                  <div className="bg-gray-50 p-3 rounded-md">
+                    <p className="text-[10px] font-bold mb-2 uppercase text-gray-400 tracking-wider">
+                      Хуваарь (Timetables)
+                    </p>
+                    <div className="grid grid-cols-1 gap-2">
+                      {club.timetables.map((schedule) => (
+                        <div
+                          key={schedule.id}
+                          className="text-xs border-b pb-1 last:border-0 border-gray-200 flex justify-between"
+                        >
+                          <span>
+                            📅 {schedule.date} | 📍 Room: {schedule.room}
+                          </span>
+                          <span className="font-mono">
+                            ⏰ {schedule.clubStartTime} ({schedule.duration}{' '}
+                            мин)
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Approve/Reject хэсэг */}
+                  <div className="flex items-end justify-between gap-4 pt-2 border-t">
+                    <div className="flex-1 space-y-2">
+                      <Label className="text-xs font-bold text-gray-700">
+                        Хариуцах багшийг томилох (Required):
+                      </Label>
+                      <Select
+                        value={selectedTeacherForApprove[club.id] || ''}
+                        onValueChange={(val) =>
+                          setSelectedTeacherForApprove((prev) => ({
+                            ...prev,
+                            [club.id]: val,
+                          }))
+                        }
+                      >
+                        <SelectTrigger className="h-10 border-blue-200 focus:ring-blue-500">
+                          <SelectValue placeholder="Багш сонгох" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          {/* Клубын preferredTeachers жагсаалтад байгаа ID-нуудаар шүүх */}
+                          {club.preferredTeachers &&
+                          club.preferredTeachers.length > 0
+                            ? mockTeachers
+                                .filter((t) =>
+                                  club.preferredTeachers.includes(t.id)
+                                )
+                                .map((t) => (
+                                  <SelectItem key={t.id} value={t.id}>
+                                    {t.name} (Санал болгосон)
+                                  </SelectItem>
+                                ))
+                            : // Хэрэв санал болгосон багш байхгүй бол бүх багшийг харуулна
+                              mockTeachers.map((t) => (
+                                <SelectItem key={t.id} value={t.id}>
+                                  {t.name}
+                                </SelectItem>
+                              ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 border-red-200 hover:bg-red-50"
+                        disabled={isStatusChanging}
+                        onClick={() => handleReject(club.id)}
+                      >
+                        {isStatusChanging ? 'Processing...' : 'Reject Club'}
+                      </Button>
+                      <Button
+                        type="button"
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                        size="sm"
+                        disabled={
+                          isStatusChanging ||
+                          !selectedTeacherForApprove[club.id]
+                        }
+                        onClick={() => handleApprove(club.id)}
+                      >
+                        {isStatusChanging ? 'Processing...' : 'Approve Club'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="flex flex-col gap-8">
-        {data?.getAllClubs.map((club) => (
+        {clubDataApproved?.getAllApprovedClubs.map((club) => (
           <div className="border rounded-md p-6" key={club.id}>
             <div>{club.id}</div>
             <div>{club.name}</div>
             <div>{club.description}</div>
             <div>{club.creatorId}</div>
             <div>{club.teacherId}</div>
-            <div>{club.preferredTeachers}</div>
             <div>{club.type}</div>
             <div>{club.status}</div>
             <div>{club.minMember}</div>
