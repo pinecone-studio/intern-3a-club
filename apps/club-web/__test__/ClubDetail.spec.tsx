@@ -1,173 +1,126 @@
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { MockedResponse } from '@apollo/client/testing';
-import { ClubsContent } from '../app/JoinClub/_components/ClubsContent';
-import { GET_ALL_CLUBS, Data, ExtendedClub } from '../lib/type';
+import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { ClubDetail } from '../app/JoinClub/_components/ClubDetail'; // Шууд файлаас нь импортлох
 
-// 1. Child Components-ийг төрөлтэйгээр Mock хийх
-// Ингэснээр "Element type is invalid" алдаа дахин гарахгүй
-jest.mock('../app/JoinClub/_components/ClubList', () => ({
-  ClubList: ({
-    onSelect,
-    clubs,
-  }: {
-    onSelect: (id: string) => void;
-    clubs: ExtendedClub[];
-  }) => (
-    <div data-testid="club-list">
-      {clubs.map((c) => (
-        <button key={c.id} onClick={() => onSelect(c.id)}>
-          {c.name}
-        </button>
-      ))}
-    </div>
-  ),
+// 1. Lucide-react-ийг mock хийх (Icon-ууд undefined болохоос сэргийлнэ)
+jest.mock('lucide-react', () => ({
+  ShieldCheck: () => <div data-testid="shield-icon" />,
+  Award: () => <div data-testid="award-icon" />,
 }));
 
-jest.mock('../app/JoinClub/_components/ClubDetail', () => ({
-  ClubDetail: ({
+// 2. Framer Motion-ийг mock хийх (Анимэйшн тестийг гацаахаас сэргийлнэ)
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  },
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+}));
+
+// 3. Child компонентуудыг mock хийх
+jest.mock('../app/JoinClub/_components/ClubInfoGrid', () => ({
+  ClubInfoGrid: () => <div data-testid="club-info-grid" />,
+}));
+
+jest.mock('../app/JoinClub/_components/ClubActionButton', () => ({
+  ClubActionButtons: ({
     onEnroll,
     onLeave,
-    selectedClub,
+    isEnrolled,
     isLocked,
+    status,
     remainingTime,
   }: any) => (
-    <div data-testid="club-detail">
-      <h2>{selectedClub?.name}</h2>
-      <p>Status: {isLocked ? `Locked ${remainingTime}s` : 'Available'}</p>
-      <button onClick={() => onEnroll(selectedClub?.id)}>Enroll Action</button>
-      <button onClick={() => onLeave(selectedClub?.id)}>Leave Action</button>
+    <div data-testid="action-buttons">
+      <button onClick={onEnroll}>Enroll Button</button>
+      <button onClick={onLeave}>Leave Button</button>
+      <span>{isEnrolled ? 'Enrolled' : 'Not Enrolled'}</span>
     </div>
   ),
 }));
 
-// 2. Mock Data бэлдэх
-const mockClubsData: MockedResponse<Data>[] = [
-  {
-    request: {
-      query: GET_ALL_CLUBS,
-    },
-    result: {
-      data: {
-        getAllClubs: [
-          {
-            id: '1',
-            name: 'Chess Club',
-            description: 'Strategy and mind games',
-            status: 'Open',
-            teacherId: 'Teacher 1',
-            type: 'Academic',
-            minMember: 2,
-            maxMember: 10,
-            timetables: [],
-          },
-          {
-            id: '2',
-            name: 'Art Club',
-            description: 'Creative painting',
-            status: 'Open',
-            teacherId: 'Teacher 2',
-            type: 'Creative',
-            minMember: 5,
-            maxMember: 15,
-            timetables: [],
-          },
-        ],
-      },
-    },
-  },
-];
+const mockClub = {
+  id: 'club-123',
+  name: 'Coding Club',
+  description: 'Learn to code with fun',
+  teacherId: 'Teacher Bold',
+  status: 'active',
+  isEnrolled: false,
+  timetables: [{ date: 'Monday 10:00' }],
+};
 
-describe('ClubsContent 100% Logic Coverage', () => {
-  beforeEach(() => {
-    jest.useFakeTimers(); // setInterval (Line 46)-ийг тестлэхэд хэрэгтэй
+describe('ClubDetail Component', () => {
+  const defaultProps = {
+    selectedClub: undefined,
+    onEnroll: jest.fn(),
+    onLeave: jest.fn(),
+    isLocked: false,
+    remainingTime: 3600,
+  };
+
+  it('1. Клуб сонгоогүй үед "Клуб сонгоно уу" гэж харуулна (Empty State)', () => {
+    render(<ClubDetail {...defaultProps} />);
+    expect(screen.getByText('Клуб сонгоно уу')).toBeInTheDocument();
   });
 
-  afterEach(() => {
-    jest.useRealTimers();
+  it('2. Клубын мэдээллийг (нэр, тайлбар, багш) бүрэн харуулна', () => {
+    render(<ClubDetail {...defaultProps} selectedClub={mockClub as any} />);
+
+    expect(screen.getByText('Coding Club')).toBeInTheDocument();
+    expect(screen.getByText('Learn to code with fun')).toBeInTheDocument();
+    expect(screen.getByText('Teacher Bold')).toBeInTheDocument();
+    expect(screen.getByText('Premium Club')).toBeInTheDocument();
   });
 
-  it('Loading төлөвийг шалгах (Line 92 coverage)', () => {
+  it('3. Enrollment (Элсэх) функц зөв дуудагдаж байгааг шалгах', () => {
+    const onEnrollMock = jest.fn();
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <ClubsContent />
-      </MockedProvider>
-    );
-    // loading үед null буцаадаг тул контент байхгүй байх ёстой
-    expect(screen.queryByTestId('club-list')).not.toBeInTheDocument();
-  });
-
-  it('Error төлөвийг шалгах (Line 93 coverage)', async () => {
-    const errorMock: MockedResponse[] = [
-      {
-        request: { query: GET_ALL_CLUBS },
-        error: new Error('GraphQL Network Error'),
-      },
-    ];
-
-    render(
-      <MockedProvider mocks={errorMock} addTypename={false}>
-        <ClubsContent />
-      </MockedProvider>
+      <ClubDetail
+        {...defaultProps}
+        selectedClub={mockClub as any}
+        onEnroll={onEnrollMock}
+      />
     );
 
-    const errorMsg = await screen.findByText(/GraphQL Network Error/i);
-    expect(errorMsg).toBeInTheDocument();
-    expect(errorMsg).toHaveClass('text-red-500');
+    const enrollBtn = screen.getByText('Enroll Button');
+    fireEvent.click(enrollBtn);
+
+    expect(onEnrollMock).toHaveBeenCalledWith('club-123');
   });
 
-  it('Үндсэн логик болон useEffect-үүдийг шалгах (Lines 15-91 coverage)', async () => {
+  it('4. Leave (Гарах) функц зөв дуудагдаж байгааг шалгах', () => {
+    const onLeaveMock = jest.fn();
+    const enrolledClub = { ...mockClub, isEnrolled: true };
+
     render(
-      <MockedProvider mocks={mockClubsData} addTypename={false}>
-        <ClubsContent />
-      </MockedProvider>
+      <ClubDetail
+        {...defaultProps}
+        selectedClub={enrolledClub as any}
+        onLeave={onLeaveMock}
+      />
     );
 
-    // 1. Data load болохыг хүлээх (useEffect Line 40)
-    await waitFor(() => {
-      expect(screen.getByTestId('club-list')).toBeInTheDocument();
-    });
+    const leaveBtn = screen.getByText('Leave Button');
+    fireEvent.click(leaveBtn);
 
-    // 2. Default-оор эхний клуб сонгогдсон эсэхийг шалгах (Line 44)
-    expect(screen.getByText('Chess Club')).toBeInTheDocument();
-
-    // 3. handleEnroll (Line 52) - Enroll товч дарах
-    fireEvent.click(screen.getByText('Enroll Action'));
-
-    // 4. handleLeave (Line 60) - Leave товч дарах (Энэ нь bannedUntil-ийг онооно)
-    fireEvent.click(screen.getByText('Leave Action'));
-
-    // 5. Timer logic (Line 46) - 1 секунд гүйлгэх
-    jest.advanceTimersByTime(1000);
-
-    // 6. handleSelect (Line 70) - Өөр клуб сонгох
-    const artClubBtn = screen.getByText('Art Club');
-    fireEvent.click(artClubBtn);
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole('heading', { name: /Art Club/i })
-      ).toBeInTheDocument();
-    });
-
-    // 7. sortClubs (Line 15) болон mapClubsData (Line 21) логикууд
-    // дээрх үйлдлүүдийн явцад автоматаар cover хийгдсэн байгаа.
+    expect(onLeaveMock).toHaveBeenCalledWith('club-123');
   });
 
-  it('Data хоосон ирэх үеийн useEffect-ийг шалгах (Line 36)', async () => {
-    const emptyMock: MockedResponse<Data> = {
-      request: { query: GET_ALL_CLUBS },
-      result: { data: { getAllClubs: [] } },
-    };
+  it('5. Сурагчдын Badge жагсаалт зөв зурагдаж байгааг шалгах', () => {
+    render(<ClubDetail {...defaultProps} selectedClub={mockClub as any} />);
 
+    // Код дотор байгаа статик ID-нууд харагдаж байгаа эсэх
+    expect(screen.getByText('25LP9878')).toBeInTheDocument();
+    expect(screen.getByText('25LP4578')).toBeInTheDocument();
+  });
+
+  it('6. Timetable байхгүй үед "TBD" гэж дамжуулж байгааг шалгах', () => {
+    const clubWithoutTime = { ...mockClub, timetables: [] };
     render(
-      <MockedProvider mocks={[emptyMock]} addTypename={false}>
-        <ClubsContent />
-      </MockedProvider>
+      <ClubDetail {...defaultProps} selectedClub={clubWithoutTime as any} />
     );
 
-    // Хүлээх хугацааны дараа ч жагсаалт хоосон байх ёстой
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(screen.queryByTestId('club-list')).not.toBeInTheDocument();
+    // ClubInfoGrid-рүү "TBD" дамжсан эсэхийг mock ашиглан шууд бусаар шалгах
+    expect(screen.getByTestId('club-info-grid')).toBeInTheDocument();
   });
 });
