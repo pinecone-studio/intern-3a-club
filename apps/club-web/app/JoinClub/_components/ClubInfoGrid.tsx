@@ -4,15 +4,17 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Users } from 'lucide-react';
 
+import { ExtendedClub } from '../../../lib/type';
+
 interface InfoGridProps {
   schedule: string;
-  className: string;
-  current: number;
-  max: number;
+  club: ExtendedClub;
 }
 
-export const ClubInfoGrid = ({ schedule, className, current, max }: InfoGridProps) => {
-  const percent = Math.round((current / max) * 100);
+export const ClubInfoGrid = ({ schedule, club }: InfoGridProps) => {
+  const maxMember = club.maxMember;
+  const minMember = club.minMember;
+  const percent = (Math.round((minMember / maxMember) * 100), 100);
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -27,7 +29,10 @@ export const ClubInfoGrid = ({ schedule, className, current, max }: InfoGridProp
           </div>
           <div className="flex justify-between">
             <span className="text-white/40">Анги</span>
-            <span className="font-semibold text-white">{className}</span>
+            <span className="font-semibold text-white">
+              {' '}
+              {club.timetables?.[0]?.room ?? 'uruu todorhoigui'}
+            </span>
           </div>
         </div>
       </div>
@@ -37,7 +42,9 @@ export const ClubInfoGrid = ({ schedule, className, current, max }: InfoGridProp
           <h4 className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-white/30">
             <Users className="h-3.5 w-3.5" /> Гишүүд
           </h4>
-          <span className="text-xs font-bold text-white/60">{current}/{max}</span>
+          <span className="text-xs font-bold text-white/60">
+            {minMember}/{club.maxMember}
+          </span>
         </div>
         <div className="space-y-2">
           <div className="h-1.5 w-full rounded-full bg-white overflow-hidden">
@@ -48,7 +55,9 @@ export const ClubInfoGrid = ({ schedule, className, current, max }: InfoGridProp
             />
           </div>
           <div className="flex justify-end">
-            <span className="text-[10px] font-bold text-blue-400">{percent}% дүүрсэн</span>
+            <span className="text-[10px] font-bold text-blue-400">
+              {percent}% дүүрсэн
+            </span>
           </div>
         </div>
       </div>

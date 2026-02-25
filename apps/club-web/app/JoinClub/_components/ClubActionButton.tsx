@@ -50,9 +50,8 @@ export const ClubActionButtons = (props: ActionProps) => {
       <CustomButton
         variant="destructive"
         onClick={onLeave}
-        // Зураг дээрх шиг гүн улаан, тунгалаг эффект
         className={cn(
-          "w-full py-5 text-sm border border-red-500/20 bg-red-500/10 hover:bg-red-500 transition-all duration-300",
+          'w-full py-5 text-sm border border-red-500/20 bg-red-500/10 hover:bg-red-500 transition-all duration-300',
           className
         )}
       >
@@ -67,10 +66,10 @@ export const ClubActionButtons = (props: ActionProps) => {
         disabled={status === 'Full' || isLocked}
         onClick={onEnroll}
         className={cn(
-          "w-full py-5 text-sm transition-all duration-300 shadow-xl",
+          'w-full py-5 text-sm transition-all duration-300 shadow-xl',
           isLocked || status === 'Full'
-            ? "bg-white/5 text-white/20 border-white/5 cursor-not-allowed opacity-50"
-            : "bg-blue-600 text-white/90 hover:bg-blue-500 border-blue-400/30 shadow-blue-600/20",
+            ? 'bg-white/5 text-white/20 border-white/5 cursor-not-allowed opacity-50'
+            : 'bg-blue-600 text-white/90 hover:bg-blue-500 border-blue-400/30 shadow-blue-600/20',
           className
         )}
       >
@@ -85,7 +84,6 @@ export const ClubActionButtons = (props: ActionProps) => {
     </div>
   );
 };
-// Жижиг мессежийг тусад нь гаргах нь complexity-г нэмэхгүй
 const LockedMessage = () => (
   <p className="text-center text-[10px] font-bold uppercase text-red-500 animate-pulse">
     Түр хүлээх шаардлагатай!
