@@ -1,47 +1,70 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { ShieldCheck } from 'lucide-react';
 
-import { requests } from '../../../../libs/mockdata';
 import { ClubCard } from '../approved/clubcard/ClubCard';
 import { PendingModal } from '../pending/PendingModal';
 import { Club } from '../../../../libs/types';
+import {
+  useAdminClubsData,
+  removeClub,
+  getIsLoading,
+  getIsError,
+  getErrorMessage,
+} from './use-admin-clubs-data';
 import CreateClub from '../../../createClub/page';
 
-export const AdminClubsView = () => {
-  const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [openModal, setOpenModal] = useState(false);
+function renderLoading() {
+  return <div className="p-10 text-foreground max-w-6xl mx-auto">...</div>;
+}
 
-  const [pending, setPending] = useState<Club[]>(
-    requests.filter((r) => r.status === 'pending')
+function renderError(message: string) {
+  return (
+    <div className="p-10 text-foreground max-w-6xl mx-auto">
+      Алдаа гарлаа: {message}
+    </div>
   );
+}
 
-  const [approved, setApproved] = useState<Club[]>(
-    requests.filter((r) => r.status === 'approved')
-  );
-
-  const handleApprove = (club: Club) => {
-    setPending((prev) => removeClub(prev, club.id));
-    setApproved((prev) => [...prev, { ...club, status: 'approved' }]);
-  };
-
-  const handleReject = (club: Club) => {
-    setPending((prev) => removeClub(prev, club.id));
-  };
-
-  const handleDelete = (club: Club) => {
-    setApproved((prev) => removeClub(prev, club.id));
-  };
-
-  const openModalHandler = () => setOpenModal(true);
-
-  useEffect(() => {
-    if (pending.length === 0) setOpenModal(false);
-  }, [pending]);
+function getAdminContent(
+  isLoading: boolean,
+  isError: boolean,
+  errorMessage: string,
+  main: ReactNode
+): ReactNode {
+  if (isLoading) return renderLoading();
+  if (isError) return renderError(errorMessage);
+  return main;
+}
+interface AdminClubsMainContentProps {
+  approved: Club[];
+  pending: Club[];
+  expandedId: string | null;
+  setExpandedId: (_id: string | null) => void;
+  openModal: boolean;
+  setOpenModal: (_v: boolean) => void;
+  onApprove: (_club: Club) => void;
+  onReject: (_club: Club) => void;
+  onDelete: (_club: Club) => void;
+  onOpenModal: () => void;
+}
+const AdminClubsMainContent = ({
+  approved,
+  pending,
+  expandedId,
+  setExpandedId,
+  openModal,
+  setOpenModal,
+  onApprove,
+  onReject,
+  onDelete,
+  onOpenModal,
+}: AdminClubsMainContentProps) => {
+  const pendingCount = pending.length;
+  const showBadge = pendingCount > 0;
 
   return (
     <div className="p-10 text-foreground max-w-6xl mx-auto">
-      {/* HEADER */}
       <div className="flex items-center justify-between mb-12">
         <div>
           <h2 className="text-4xl font-black uppercase flex gap-3">
@@ -51,52 +74,86 @@ export const AdminClubsView = () => {
             Шинээр үүсгэх хүсэлтүүдийг хянах хэсэг.
           </p>
         </div>
-
         <div className="flex justify-between items-center gap-4">
           <CreateClub />
           <button
-            onClick={openModalHandler}
+            onClick={onOpenModal}
             className="relative bg-secondary border border-border px-6 py-3 rounded-2xl"
           >
             <span className="text-xs font-black uppercase">Хүсэлт</span>
-
-            {pending.length > 0 && (
+            {showBadge && (
               <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-foreground text-background text-[11px] font-black flex items-center justify-center">
-                {pending.length}
+                {pendingCount}
               </span>
             )}
           </button>
         </div>
       </div>
-
       <div className="space-y-4">
-        {approved.map((req) => {
-          const isPrimary = req.id <= 3;
-          const isExpanded = expandedId === req.id;
-
-          return (
-            <ClubCard
-              key={req.id}
-              req={req}
-              isPrimary={isPrimary}
-              isExpanded={isExpanded}
-              setExpandedId={setExpandedId}
-              onDelete={handleDelete}
-            />
-          );
-        })}
+        {approved.map((req, index) => (
+          <ClubCard
+            key={req.id}
+            req={req}
+            isPrimary={index <= 2}
+            isExpanded={expandedId === req.id}
+            setExpandedId={setExpandedId}
+            onDelete={onDelete}
+          />
+        ))}
       </div>
-
       {openModal && (
         <PendingModal
           pending={pending}
           setOpenModal={setOpenModal}
-          onApprove={handleApprove}
-          onReject={handleReject}
+          onApprove={onApprove}
+          onReject={onReject}
         />
       )}
     </div>
   );
 };
+export const AdminClubsView = () => {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [openModal, setOpenModal] = useState(false);
+  const data = useAdminClubsData();
+  const isLoading = getIsLoading(data);
+  const isError = getIsError(data);
+  const errorMessage = getErrorMessage(data);
+  const handleApprove = (club: Club) => {
+    data.setPending((prev) => removeClub(prev, club.id));
+    data.setApproved((prev) => [...prev, { ...club, status: 'approved' }]);
+  };
+  const handleReject = (club: Club) => {
+    data.setPending((prev) => removeClub(prev, club.id));
+  };
+  const handleDelete = (club: Club) => {
+    data.setApproved((prev) => removeClub(prev, club.id));
+  };
+  const openModalHandler = () => setOpenModal(true);
 
-const removeClub = (arr: Club[], id: number) => arr.filter((c) => c.id !== id);
+  useEffect(() => {
+    if (data.pending.length === 0) setOpenModal(false);
+  }, [data.pending.length]);
+
+  return (
+    <>
+      {getAdminContent(
+        isLoading,
+        isError,
+        errorMessage,
+        <AdminClubsMainContent
+          approved={data.approved}
+          pending={data.pending}
+          expandedId={expandedId}
+          setExpandedId={setExpandedId}
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+          onApprove={handleApprove}
+          onReject={handleReject}
+          onDelete={handleDelete}
+          onOpenModal={openModalHandler}
+        />
+      )}
+    </>
+  );
+};

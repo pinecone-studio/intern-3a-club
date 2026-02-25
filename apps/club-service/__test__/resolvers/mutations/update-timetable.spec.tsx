@@ -1,18 +1,15 @@
 import { DB } from 'db/drizzle';
 import { timetable } from 'db/schema';
-import { GraphQLError } from 'graphql';
 import { updateTimetable } from 'graphql-gql/resolvers/mutations/timetable';
 
-// 1. DB-г Mock хийх
+// 1. Mock-ийг гадна талд зарлаж өгснөөр nesting багасна
+const mockReturning = jest.fn();
+const mockWhere = jest.fn(() => ({ returning: mockReturning }));
+const mockSet = jest.fn(() => ({ where: mockWhere }));
+
 jest.mock('db/drizzle', () => ({
   DB: {
-    update: jest.fn(() => ({
-      set: jest.fn(() => ({
-        where: jest.fn(() => ({
-          returning: jest.fn(),
-        })),
-      })),
-    })),
+    update: jest.fn(() => ({ set: mockSet })),
   },
 }));
 
@@ -27,32 +24,17 @@ describe('updateTimetable Full Coverage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Тест ажиллах үед терминал дээр илүүц log гаргахгүй байх,
-    // мөн дуудлагыг нь хянах зорилгоор mock хийнэ.
     jest.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   it('амжилттай зассан үед шинэчлэгдсэн өгөгдлийг буцаах ёстой (Success)', async () => {
     const mockUpdated = { ...mockInput };
-    const returningMock = jest.fn().mockResolvedValue([mockUpdated]);
-
-    // DB update chain-ийг тохируулах
-    (DB.update as jest.Mock).mockReturnValue({
-      set: jest.fn(() => ({
-        where: jest.fn(() => ({
-          returning: returningMock,
-        })),
-      })),
-    });
+    mockReturning.mockResolvedValue([mockUpdated]);
 
     const result = await updateTimetable(null, { input: mockInput });
 
-    // Шалгалтууд
     expect(DB.update).toHaveBeenCalledWith(timetable);
     expect(result).toEqual(mockUpdated);
-
-    // АЛДАА ЗАССАН ХЭСЭГ:
-    // console.log-ийн 2 дахь дуудлага (SUCCESS) нь 2 аргументтай: (Текст, Объект)
     expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining('SUCCESS:'),
       expect.objectContaining(mockUpdated)
@@ -60,23 +42,13 @@ describe('updateTimetable Full Coverage', () => {
   });
 
   it('засах хуваарь олдсонгүй үед Error шидэх ёстой', async () => {
-    const returningMock = jest.fn().mockResolvedValue([]); // Хоосон массив буцаах
+    mockReturning.mockResolvedValue([]);
 
-    (DB.update as jest.Mock).mockReturnValue({
-      set: jest.fn(() => ({
-        where: jest.fn(() => ({
-          returning: returningMock,
-        })),
-      })),
-    });
-
-    // handleMutationError нь алдааг барьж аваад GraphQLError болгож шиддэг гэж үзвэл:
     await expect(updateTimetable(null, { input: mockInput })).rejects.toThrow();
   });
 
   it('DB-ээс алдаа ирэх үед handleMutationError ажиллах ёстой', async () => {
-    // DB.update шууд алдаа шидэх үеийг дуурайх
-    (DB.update as jest.Mock).mockImplementation(() => {
+    (DB.update as jest.Mock).mockImplementationOnce(() => {
       throw new Error('Update Failed');
     });
 
@@ -85,8 +57,8 @@ describe('updateTimetable Full Coverage', () => {
     );
   });
 
-  it('Error биш зүйл (string) алдаанд ирэх үед Unknown error гэж шидэх ёстой', async () => {
-    (DB.update as jest.Mock).mockImplementation(() => {
+  it('Error биш зүйл ирэх үед Unknown error гэж шидэх ёстой', async () => {
+    (DB.update as jest.Mock).mockImplementationOnce(() => {
       throw 'Fatal DB Error';
     });
 

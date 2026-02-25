@@ -25,6 +25,25 @@ jest.mock('@intern-3a-club/shadcn', () => {
         </div>
       )
     ),
+    SelectTrigger: ({ children }: { children?: ReactNode }) => (
+      <div data-testid="mock-select-trigger">{children}</div>
+    ),
+    SelectValue: ({ placeholder }: { placeholder?: string }) => (
+      <span>{placeholder}</span>
+    ),
+    SelectContent: ({ children }: { children?: ReactNode }) => (
+      <div>{children}</div>
+    ),
+    SelectGroup: ({ children }: { children?: ReactNode }) => (
+      <div>{children}</div>
+    ),
+    SelectItem: ({
+      children,
+      value,
+    }: {
+      children?: ReactNode;
+      value?: string;
+    }) => <div data-value={value}>{children}</div>,
   };
 });
 
