@@ -26,7 +26,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import {
   GET_ALL_APPROVED_CLUBS,
   GET_ALL_PENDING_CLUBS,
-} from '../../libs/clubQueries';
+} from 'apps/club-dash/libs/club-queries';
 
 export type Data = {
   getAllClubs: GetAllClub[];
@@ -313,39 +313,62 @@ export default function CreateClubPage() {
     }
   };
 
-  const handleTimetableEditClick = (schedule: Timetable) => {
-    setEditingTimetable(schedule);
-    // Энд Calendar болон цагийн Input-үүдээ тухайн schedule-ийн утгаар дүүргэнэ
-    setClubStartDate(new Date(schedule.date));
-    setClubClassRoom(schedule.room);
-    setClubStartTime(schedule.clubStartTime);
-    const hours = Math.floor(schedule.duration / 60);
-    const minutes = schedule.duration % 60;
-    setClubDuration(`${hours}:${minutes === 0 ? '00' : minutes}`);
+  // --- Туслах функц: "2026-02-25" гэсэн String-ийг локал Date объект болгох ---
+  const parseDateString = (dateStr: string) => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    // JS Date-ийн сар 0-оос эхэлдэг (0=January) тул 1-ийг хасна
+    return new Date(year, month - 1, day);
   };
 
+  // --- Туслах функц: Date объектыг "2026-02-25" String болгох (Mutation-д зориулав) ---
+  const getFormattedDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleTimetableEditClick = (schedule: Timetable) => {
+    // 1. Одоо засаж буй хуваарийг хадгалах
+    setEditingTimetable(schedule);
+
+    // 2. Calendar-т зориулж огноог Date объект болгож тохируулах
+    if (schedule.date) {
+      const targetDate = parseDateString(schedule.date);
+      setClubStartDate(targetDate);
+    }
+
+    // 3. Өрөө болон эхлэх цагийг оноох
+    setClubClassRoom(schedule.room);
+    setClubStartTime(schedule.clubStartTime);
+
+    // 4. Үргэлжлэх хугацааг минутаас "1:30" хэлбэрт шилжүүлж оноох
+    const hours = Math.floor(schedule.duration / 60);
+    const minutes = schedule.duration % 60;
+    const formattedDuration = `${hours}:${minutes === 0 ? '00' : minutes}`;
+    setClubDuration(formattedDuration);
+  };
+
+  // --- Шинэчлэх функц дотор ашиглах жишээ ---
   const onUpdateTimetable = async () => {
-    if (!editingTimetable) return;
+    if (!editingTimetable || !clubStartDate) return;
 
     try {
       await updateTimetable({
         variables: {
           input: {
             id: editingTimetable.id,
-            date: clubStartDate
-              ? clubStartDate.toISOString().split('T')[0]
-              : editingTimetable.date,
+            date: getFormattedDate(clubStartDate), // Энд ашиглана
             room: clubClassRoom,
             clubStartTime: clubStartTime,
             duration: durationInMinutes(clubDuration),
           },
         },
       });
-      alert('Хуваарь амжилттай шинэчлэгдлээ!');
+      alert('Амжилттай шинэчлэгдлээ!');
       setEditingTimetable(null);
     } catch (error) {
       console.error(error);
-      alert('Засахад алдаа гарлаа');
     }
   };
 
