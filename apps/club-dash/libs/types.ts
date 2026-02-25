@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 
 export type ClassTeacherType = {
   id: string;
@@ -73,13 +73,14 @@ export type CreateClubState = {
   teacherName: string;
   clubMinStudent: string;
   clubMaxStudent: string;
-  clubStartDate: Date | undefined;
+  clubStartDate: Date[] | undefined;
   clubClassRoom: string;
   clubStartTime: string;
   clubDuration: string;
   clubFrequency: string;
-  selectedDays: string[];
+  selectedDays?: string[];
   selectedFreqId: string;
+  clubTerm: string;
 };
 
 export type Data = {
@@ -98,21 +99,47 @@ export type GetAllClub = {
   id: string;
   name: string;
   description: string;
-  creatorId: string | null; // Changed from any
+  creatorId: string | null;
   teacherId: string;
   type: string;
   status: string;
-  preferredTeachers: string[] | null; // Changed from any
+  preferredTeachers: string[] | null;
   minMember: number;
   maxMember: number;
   timetables: Timetable[];
+  frequency?: string;
+  termMonths?: number;
 };
 
 export type Timetable = {
   id: string;
   clubId: string;
+  endDate?: string;
   date: string;
   room: string;
   clubStartTime: string;
   duration: number;
+};
+
+export type CreateClubSetters = {
+  setTeacherName: Dispatch<SetStateAction<string>>;
+  setClubStartDate: Dispatch<SetStateAction<Date[] | undefined>>;
+  setSelectedFreqId: Dispatch<SetStateAction<string>>;
+  setClubTerm: Dispatch<SetStateAction<string>>;
+  setClubClassRoom: Dispatch<SetStateAction<string>>;
+  setClubStartTime: Dispatch<SetStateAction<string>>;
+  setClubDuration: Dispatch<SetStateAction<string>>;
+  setClubFrequency: Dispatch<SetStateAction<string>>;
+};
+
+export type CreateClubHandlers = {
+  handleName: (
+    _e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
+  handleDesc: (
+    _e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
+  handleMax: (
+    _e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
 };

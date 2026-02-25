@@ -14,6 +14,7 @@ module.exports = {
     'layout.tsx',
     'types.ts',
     'type.ts',
+    'utils.ts',
     '.d.ts',
   ],
   collectCoverageFrom: [
@@ -49,6 +50,7 @@ module.exports = {
     '!**/.vercel',
     '!**/.vercel/output/**/*.json',
     '!**/.vercel/output/**/*.js',
+    '!**/*utils.ts',
   ],
   coverageThreshold: {
     global: {
