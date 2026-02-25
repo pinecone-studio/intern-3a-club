@@ -43,7 +43,6 @@ export const useCreateClubState = () => {
     (current: Date[], term: string) => {
       const generated = clubDates(current, term);
       const hasChanged = JSON.stringify(generated) !== JSON.stringify(current);
-      /* istanbul ignore else */
       if (hasChanged) {
         setClubStartDate(generated);
       }
