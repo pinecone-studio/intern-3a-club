@@ -6,6 +6,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { MockedProvider } from '@apollo/client/testing/react';
 import { CreateClubCenter } from '../../components/create-club/CreateClubCenter';
 
 describe('Recurrence & Logistics Logic', () => {
@@ -27,13 +28,17 @@ describe('Recurrence & Logistics Logic', () => {
       target: { value: 'Learn to code', name: 'goal' },
     });
     fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'bat', name: 'teacher' },
+      target: { value: '1', name: 'teacher' },
     });
     fireEvent.click(screen.getByText(/Үргэлжлүүлэх/i));
   };
 
   it('triggers useEffect for recurrence updates (LogisticsSection Line 58)', async () => {
-    render(<CreateClubCenter />);
+    render(
+      <MockedProvider>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
     goToStep2();
 
     const repeatSelect = screen.getByDisplayValue(/Зөвхөн сонгосон өдрүүдэд/i);
@@ -56,7 +61,11 @@ describe('Recurrence & Logistics Logic', () => {
   });
 
   it('handles reset and switching to none', async () => {
-    render(<CreateClubCenter />);
+    render(
+      <MockedProvider>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
     goToStep2();
 
     const repeatSelect = screen.getByDisplayValue(/Зөвхөн сонгосон өдрүүдэд/i);
@@ -71,7 +80,11 @@ describe('Recurrence & Logistics Logic', () => {
   });
 
   it('covers none recurrence mode branch (LogisticsSection line 22)', () => {
-    render(<CreateClubCenter />);
+    render(
+      <MockedProvider>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
     goToStep2();
 
     const repeatSelect = screen.getByDisplayValue(/Зөвхөн сонгосон өдрүүдэд/i);
