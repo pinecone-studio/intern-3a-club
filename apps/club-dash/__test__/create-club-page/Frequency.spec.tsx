@@ -105,7 +105,8 @@ describe('Frequency Component Coverage', () => {
 
   it('calls setClubTerm when duration is changed', () => {
     render(<Frequency {...defaultProps} selectedFreqId="2" />);
-    fireEvent.click(screen.getByTestId('trigger-term'));
+    const termTriggers = screen.getAllByTestId('trigger-term');
+    fireEvent.click(termTriggers[1]);
     expect(mockSetClubTerm).toHaveBeenCalledWith('3');
   });
 });
