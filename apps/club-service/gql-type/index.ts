@@ -20,3 +20,13 @@ export interface CreateClubWithSchedulesArgs {
   frequency: string;
   selectedDays?: string[];
 }
+
+export type UpdateTimetableArgs = {
+  input: {
+    id: string;
+    date: string;
+    room: string;
+    clubStartTime: string;
+    duration: number;
+  };
+};
