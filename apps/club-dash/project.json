@@ -64,6 +64,12 @@
           "!apps/club-dash/jest.config.ts"
         ]
       }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "export $(cat apps/club-dash/.env | xargs) && npx graphql-codegen --config ./graphql-codegen.yml"
+      }
     }
   },
   "tags": ["type:app"]
