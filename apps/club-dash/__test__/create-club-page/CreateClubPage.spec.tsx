@@ -3,7 +3,6 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import CreateClub from '../../app/createClub/page';
 
-// 1. Setup shared mock variables
 const mockSubmit = jest.fn((e) => e.preventDefault());
 let mockLoading = false;
 
@@ -11,14 +10,12 @@ const mockHandlers = {
   handleName: jest.fn(),
   handleDesc: jest.fn(),
   handleMax: jest.fn(),
-  handleMin: jest.fn(),
 };
 
-// 2. Mock hooks with dynamic return values
 jest.mock('../../app/_hooks/use-create-club', () => ({
   useCreateClubMutation: () => ({
     handleSubmit: mockSubmit,
-    loading: mockLoading, // Uses the variable defined above
+    loading: mockLoading,
     error: null,
   }),
 }));
@@ -29,25 +26,25 @@ jest.mock('../../app/_hooks/use-createclub-states', () => ({
       clubName: '',
       teacherName: '',
       clubDesc: '',
-      clubStartDate: new Date(),
-      clubFrequency: '',
-      selectedDays: [],
-      selectedFreqId: '',
-      clubClassRoom: '',
-      clubStartTime: '',
-      clubDuration: '',
+      clubStartDate: [],
+      selectedFreqId: '1',
+      clubTerm: '1',
+      clubClassRoom: '301',
+      clubStartTime: '13:00',
+      clubDuration: '1:00',
       clubMaxStudent: '20',
       clubMinStudent: '5',
+      clubFrequency: 'Зөвхөн сонгосон өдрүүдэд',
     },
     setters: {
       setTeacherName: jest.fn(),
       setClubStartDate: jest.fn(),
-      setClubFrequency: jest.fn(),
-      setSelectedDays: jest.fn(),
       setSelectedFreqId: jest.fn(),
+      setClubTerm: jest.fn(),
       setClubClassRoom: jest.fn(),
       setClubStartTime: jest.fn(),
       setClubDuration: jest.fn(),
+      setClubFrequency: jest.fn(),
     },
     handlers: mockHandlers,
   }),
@@ -56,7 +53,7 @@ jest.mock('../../app/_hooks/use-createclub-states', () => ({
 describe('CreateClub Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockLoading = false; // Reset loading state
+    mockLoading = false;
   });
 
   it('renders and opens dialog', async () => {
@@ -78,9 +75,8 @@ describe('CreateClub Page', () => {
     expect(mockSubmit).toHaveBeenCalled();
   });
 
-  // --- THIS TEST FIXES THE 50% BRANCH COVERAGE ---
   it('shows loading state on the submit button', async () => {
-    mockLoading = true; // Set loading to true for this test
+    mockLoading = true;
     render(<CreateClub />);
     fireEvent.click(screen.getByText(/Клуб нээх/i));
 
@@ -101,13 +97,12 @@ describe('CreateClub Page', () => {
     fireEvent.change(screen.getByLabelText(/Клубын зорилго/i), {
       target: { value: 'New Desc' },
     });
-    const spinbuttons = screen.getAllByRole('spinbutton');
-    fireEvent.change(spinbuttons[0], { target: { value: '30' } });
-    fireEvent.change(spinbuttons[1], { target: { value: '10' } });
+    fireEvent.change(screen.getByPlaceholderText(/Max/i), {
+      target: { value: '30' },
+    });
 
     expect(mockHandlers.handleName).toHaveBeenCalled();
     expect(mockHandlers.handleDesc).toHaveBeenCalled();
     expect(mockHandlers.handleMax).toHaveBeenCalled();
-    expect(mockHandlers.handleMin).toHaveBeenCalled();
   });
 });

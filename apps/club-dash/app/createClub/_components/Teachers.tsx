@@ -23,7 +23,7 @@ const mockTeachers: ClassTeacherType[] = [
 
 export const Teachers = ({ teacherName, setTeacherName }: TeachersProps) => {
   return (
-    <div className="flex flex-col w-full gap-3">
+    <div className="flex flex-col w-60 gap-3">
       <Label htmlFor="teacher-select" className="text-sm font-semibold">
         Хариуцсан багш
       </Label>

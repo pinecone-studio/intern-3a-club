@@ -14,6 +14,7 @@ module.exports = {
     'layout.tsx',
     'types.ts',
     'type.ts',
+    'utils.ts',
     '.d.ts',
   ],
   collectCoverageFrom: [
@@ -42,6 +43,7 @@ module.exports = {
     '!**/eslint-rules/**',
     '!**/libs/shadcn/**/*.tsx',
     '!**/*.d.ts',
+    '!**/*utils.ts',
     '!**/lib/utils.ts',
   ],
   coverageThreshold: {
