@@ -5,6 +5,7 @@ out/
 temp/
 tmp/
 .next/
+.vercel/
 
 # Ignore coverage reports
 coverage/

@@ -1,5 +1,5 @@
 // api/club/ban-status/route.ts
-import { redis } from 'apps/club-web/lib/redis';
+import { redis } from '../../../../lib/redis';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
@@ -12,7 +12,8 @@ export async function GET(req: Request) {
   }
 
   const key = `club:ban:${clubId}:${userId}`;
-  const ttl = await redis.ttl(key); // seconds
+  const ttl = await redis.ttl(key);
+  const remainingTime = Math.max(ttl, 0);
 
-  return NextResponse.json({ remainingTime: ttl > 0 ? ttl : 0 });
+  return NextResponse.json({ remainingTime });
 }

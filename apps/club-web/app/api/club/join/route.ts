@@ -1,4 +1,4 @@
-import { redis } from 'apps/club-web/lib/redis';
+import { redis } from '../../../../lib/redis';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {

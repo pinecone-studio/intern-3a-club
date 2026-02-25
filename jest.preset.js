@@ -24,6 +24,7 @@ module.exports = {
     '!**/.next/**',
     '!**/jest.config.ts',
     '!**/eslint-rules/**',
+    '!**/workspace-plugin/**',
     '!**/drizzle.config.ts/**',
     '!**/cors.ts/**',
     '!**/responses.ts/**',
@@ -43,6 +44,10 @@ module.exports = {
     '!**/libs/shadcn/**/*.tsx',
     '!**/*.d.ts',
     '!**/lib/utils.ts',
+    '!**/graphql-codegen.yml',
+    '!**/.vercel',
+    '!**/.vercel/output/**/*.json',
+    '!**/.vercel/output/**/*.js',
   ],
   coverageThreshold: {
     global: {
