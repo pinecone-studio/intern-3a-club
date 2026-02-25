@@ -1,0 +1,12 @@
+{
+  "runtime": "edge",
+  "name": "api/graphql",
+  "deploymentTarget": "v8-worker",
+  "entrypoint": "index.js",
+  "assets": [],
+  "framework": {
+    "slug": "nextjs",
+    "version": "14.0.4"
+  },
+  "environment": {}
+}

@@ -1,0 +1,196 @@
+{
+  "timestamp": 1771993569396,
+  "outputDir": ".vercel/output/static/_worker.js",
+  "versions": {
+    "@cloudflare/next-on-pages": "1.13.16"
+  },
+  "buildFiles": {
+    "functions": {
+      "invalid": [],
+      "middleware": [],
+      "edge": [
+        {
+          "relativePath": "/api/graphql.func",
+          "config": {
+            "runtime": "edge",
+            "name": "api/graphql",
+            "deploymentTarget": "v8-worker",
+            "entrypoint": "index.js",
+            "assets": [],
+            "framework": {
+              "slug": "nextjs",
+              "version": "14.0.4"
+            },
+            "environment": {}
+          },
+          "route": {
+            "path": "/api/graphql",
+            "overrides": []
+          },
+          "outputPath": "__next-on-pages-dist__/functions/api/graphql.func.js",
+          "outputByteSize": 366556
+        }
+      ],
+      "prerendered": [],
+      "ignored": []
+    },
+    "staticAssets": [
+      "/.gitkeep",
+      "/404.html",
+      "/500.html",
+      "/_next/static/1k1EEq7rF5pFy0ZJqmin7/_buildManifest.js",
+      "/_next/static/1k1EEq7rF5pFy0ZJqmin7/_ssgManifest.js",
+      "/_next/static/chunks/framework-d74ea6507a232020.js",
+      "/_next/static/chunks/main-c087ebe72cbcfd48.js",
+      "/_next/static/chunks/pages/_app-242856cd295206b2.js",
+      "/_next/static/chunks/pages/_error-2b99707deae6d133.js",
+      "/_next/static/chunks/pages/index-1567b1eef1579ac7.js",
+      "/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js",
+      "/_next/static/chunks/webpack-4e7214a60fad8e88.js",
+      "/_next/static/not-found.txt",
+      "/favicon.ico",
+      "/index.html"
+    ],
+    "identifiers": {
+      "wasm": {},
+      "manifest": {},
+      "webpack": {
+        "67": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 55,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "70": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 1787,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "78": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 1747,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "87": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 8388,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "89": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 311662,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "109": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 4854,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "156": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 522,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "195": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 50,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "430": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 2371,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "459": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 4342,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "523": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 50,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "581": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 6,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "636": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 87,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "855": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 24461,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        },
+        "878": {
+          "consumers": 1,
+          "groupedPath": "f2309cd39501f6846b45c6138339ed8b",
+          "inlined": true,
+          "byteLength": 379,
+          "consumersList": [
+            "/api/graphql.func/index.js"
+          ]
+        }
+      }
+    }
+  }
+}
