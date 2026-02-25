@@ -1,5 +1,5 @@
 {
-  "timestamp": 1771993569396,
+  "timestamp": 1771995597136,
   "outputDir": ".vercel/output/static/_worker.js",
   "versions": {
     "@cloudflare/next-on-pages": "1.13.16"
@@ -38,8 +38,6 @@
       "/.gitkeep",
       "/404.html",
       "/500.html",
-      "/_next/static/1k1EEq7rF5pFy0ZJqmin7/_buildManifest.js",
-      "/_next/static/1k1EEq7rF5pFy0ZJqmin7/_ssgManifest.js",
       "/_next/static/chunks/framework-d74ea6507a232020.js",
       "/_next/static/chunks/main-c087ebe72cbcfd48.js",
       "/_next/static/chunks/pages/_app-242856cd295206b2.js",
@@ -47,6 +45,8 @@
       "/_next/static/chunks/pages/index-1567b1eef1579ac7.js",
       "/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js",
       "/_next/static/chunks/webpack-4e7214a60fad8e88.js",
+      "/_next/static/ifkXY9ZoCguxFvq4nLO7R/_buildManifest.js",
+      "/_next/static/ifkXY9ZoCguxFvq4nLO7R/_ssgManifest.js",
       "/_next/static/not-found.txt",
       "/favicon.ico",
       "/index.html"

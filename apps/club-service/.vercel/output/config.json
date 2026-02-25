@@ -70,7 +70,7 @@
       "handle": "hit"
     },
     {
-      "src": "/_next/static/(?:[^/]+/pages|pages|chunks|runtime|css|image|media|1k1EEq7rF5pFy0ZJqmin7)/.+",
+      "src": "/_next/static/(?:[^/]+/pages|pages|chunks|runtime|css|image|media|ifkXY9ZoCguxFvq4nLO7R)/.+",
       "headers": {
         "cache-control": "public,max-age=31536000,immutable"
       },
