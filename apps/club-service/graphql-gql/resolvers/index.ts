@@ -8,6 +8,7 @@ import {
   getAllPendingClubs,
 } from './queries';
 import { createClubWithSchedules, deleteClub } from './mutations';
+import { updateTimetable } from './mutations/timetable';
 
 export type Club = InferSelectModel<typeof clubs>;
 // interface GetClubByIdArgs {
@@ -24,6 +25,7 @@ export const resolvers = {
   Mutation: {
     createClubWithSchedules,
     deleteClub,
+    updateTimetable,
   },
   // Relationship (Холболт) хэсэг:
   Club: {

@@ -1,0 +1,162 @@
+'use client';
+import { useGetAllClubsQuery } from './generated';
+
+export type GetAllClub = {
+  id: string;
+  name: string;
+  description: string;
+  creatorId: any;
+  teacherId: string;
+  type: string;
+  status: string;
+  preferredTeachers: any;
+  minMember: number;
+  maxMember: number;
+  timetables: Timetable[];
+};
+export type Timetable = {
+  id: string;
+  clubId: string;
+  date: string;
+  room: string;
+  clubStartTime: string;
+  duration: number;
+};
+
+export default function CreateClubPage() {
+  const { data, loading, error } = useGetAllClubsQuery();
+
+  if (loading) return <div>Уншиж байна...</div>;
+  if (error) return <div>Алдаа гарлаа: {error.message}</div>;
+
+  return (
+    <div className="flex flex-col gap-10 p-10">
+      <div className="flex flex-col gap-8">
+        {data?.getAllClubs.map((club: any) => (
+          <div className="border rounded-md p-6" key={club.id}>
+            <div>{club.id}</div>
+            <div>{club.name}</div>
+            <div>{club.description}</div>
+            <div>{club.creatorId}</div>
+            <div>{club.teacherId}</div>
+            <div>{club.preferredTeachers}</div>
+            <div>{club.type}</div>
+            <div>{club.status}</div>
+            <div>{club.minMember}</div>
+            <div>{club.maxMember}</div>
+            <div className="flex flex-col gap-2 p-4">
+              {club.timetables.map((schedule: any) => (
+                <div key={schedule.id} className="bg-red-50">
+                  <div>TimeTableId:{schedule.id}</div>
+                  <div>ClubId:{schedule.clubId}</div>
+                  <div>Date:{schedule.date}</div>
+                  <div>Room:{schedule.room}</div>
+                  <div>StartTime:{schedule.clubStartTime}</div>
+                  <div>Duration:{schedule.duration}</div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        onClick={() => handleTimetableEditClick(schedule)}
+                      >
+                        Edit TimeTable
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-white max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Хуваарь засах</DialogTitle>
+                      </DialogHeader>
+
+                      <div className="grid gap-4 py-4">
+                        {/* Огноо засах */}
+                        <div className="flex flex-col gap-2">
+                          <Label>Өдөр сонгох</Label>
+                          <Calendar
+                            mode="single"
+                            selected={clubStartDate}
+                            onSelect={setClubStartDate}
+                            className="rounded-lg border shadow-sm mx-auto"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Өрөө</Label>
+                            <Select
+                              onValueChange={setClubClassRoom}
+                              value={clubClassRoom}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-white">
+                                {mockClassroom.map((c) => (
+                                  <SelectItem key={c.id} value={c.classRoom}>
+                                    {c.classRoom}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Эхлэх цаг</Label>
+                            <Select
+                              onValueChange={setClubStartTime}
+                              value={clubStartTime}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-white">
+                                {mockStartTime.map((s) => (
+                                  <SelectItem key={s.id} value={s.startTime}>
+                                    {s.startTime}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Үргэлжлэх хугацаа</Label>
+                          <Select
+                            onValueChange={setClubDuration}
+                            value={clubDuration}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                              {mockDuration.map((d) => (
+                                <SelectItem key={d.id} value={d.duration}>
+                                  {d.duration} цаг
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <DialogFooter>
+                        <Button
+                          onClick={onUpdateTimetable}
+                          disabled={isUpdatingTimetable}
+                          className="w-full bg-blue-600 text-white"
+                        >
+                          {isUpdatingTimetable
+                            ? 'Хадгалж байна...'
+                            : 'Шинэчлэх'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
