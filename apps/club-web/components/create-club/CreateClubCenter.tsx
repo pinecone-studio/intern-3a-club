@@ -1,39 +1,44 @@
 'use client';
 import { useState, useCallback, useMemo } from 'react';
-import { useMutation } from '@apollo/client/react';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { ClubForm } from './ClubForm';
 import { HeaderSection } from './HeaderSection';
-import { FormDataType, INITIAL_FORM_DATA } from './types';
+import { FormDataType, INITIAL_FORM_DATA, GetAllTeacher } from './types';
+import { GET_ALL_CLUBS, GET_ALL_TEACHERS } from '../../lib/type';
 import { MyClubsList } from '../club-add/PersonalClubs';
 import { RequestHistory } from '../club-add/RequestHistory';
 import { SystemTip } from '../club-add/SystemTip';
 import { CREATE_CLUB_WITH_SCHEDULE } from '../../graphql/mutations';
+import { toast } from 'sonner';
 import { CalendarDay } from './CalendarDay';
 import {
   calculateTotalMinutes,
   getDayNames,
   getFrequency,
   getMinMax,
+  formatDate,
 } from './create-club-helpers';
 export const CreateClubCenter = () => {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [formData, setFormData] = useState<FormDataType>(INITIAL_FORM_DATA);
+  const [createClub] = useMutation(CREATE_CLUB_WITH_SCHEDULE, {
+    refetchQueries: [{ query: GET_ALL_CLUBS }],
+  });
 
-  const [createClub] = useMutation(CREATE_CLUB_WITH_SCHEDULE);
-
+  const { data: teacherData } = useQuery<{
+    getAllTeachers: GetAllTeacher[];
+  }>(GET_ALL_TEACHERS);
   const today = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
-
   const handleMonthChange = useCallback((offset: number) => {
     setCurrentMonth(
       (prev) => new Date(prev.getFullYear(), prev.getMonth() + offset, 1)
     );
   }, []);
-
   const toggleDate = useCallback((date: Date) => {
     const dateStr = date.toDateString();
     setSelectedDates((prev) => {
@@ -44,13 +49,11 @@ export const CreateClubCenter = () => {
       return [...prev, date].sort((a, b) => a.getTime() - b.getTime());
     });
   }, []);
-
   const renderCalendarDays = useCallback(() => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
     const daysInMonthCount = new Date(year, month + 1, 0).getDate();
     const firstDayOfMonth = new Date(year, month, 1).getDay();
-
     const days = [];
 
     for (let i = 0; i < firstDayOfMonth; i++) {
@@ -85,11 +88,11 @@ export const CreateClubCenter = () => {
       name: formData.name,
       description: formData.goal,
       type: 'mentor',
-      teacherId: formData.teacher,
+      teacherId: formData.teacher === 'student' ? null : formData.teacher,
       minMember: getMinMax(formData.minStudents),
       maxMember: getMinMax(formData.maxStudents),
     },
-    startDate: selectedDates[0].toISOString().split('T')[0],
+    startDate: selectedDates[0] ? formatDate(selectedDates[0]) : '',
     classroom: formData.room,
     startTime: formData.time,
     duration: calculateTotalMinutes(formData.duration),
@@ -98,11 +101,22 @@ export const CreateClubCenter = () => {
   });
 
   const onFormSubmit = async () => {
+    const variables = getMutationVariables();
+    if (selectedDates.length === 0) {
+      toast.error('Огноо сонгоно уу');
+      return;
+    }
+
     try {
       await createClub({
-        variables: getMutationVariables(),
-        onCompleted: () => alert('Клуб амжилттай үүслээ!'),
-        onError: (err) => alert(`Алдаа гарлаа: ${err.message}`),
+        variables,
+        onCompleted: () => {
+          toast.success('Клуб амжилттай үүслээ');
+          setFormData(INITIAL_FORM_DATA);
+          setSelectedDates([]);
+          setCurrentMonth(new Date());
+        },
+        onError: (err) => toast.error(`Алдаа гарлаа: ${err.message}`),
       });
     } catch (e) {
       console.error(e);
@@ -127,7 +141,7 @@ export const CreateClubCenter = () => {
             handleMonthChange={handleMonthChange}
             renderCalendarDays={renderCalendarDays}
             handleSubmit={onFormSubmit}
-            // loading={loading} // ClubForm дотор товчлуурыг disable болгоход хэрэгтэй
+            teachers={teacherData?.getAllTeachers || []}
           />
         </div>
         <div className="lg:col-span-5 space-y-8">

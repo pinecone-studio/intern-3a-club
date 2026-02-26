@@ -16,7 +16,7 @@ const ProgressBar = ({ step }: { step: number }) => (
 );
 
 export const ClubForm = (props: ClubFormProps) => {
-  const { formData, handleSubmit, selectedDates } = props;
+  const { formData, handleSubmit, teachers } = props;
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -34,13 +34,11 @@ export const ClubForm = (props: ClubFormProps) => {
 
   const getStep2Errors = useCallback(() => {
     const errs: Record<string, string> = {};
-    const hasNoDates = selectedDates.length === 0;
 
     if (!formData.room) errs.room = 'Заавал';
-    if (hasNoDates) errs.dates = 'Заавал';
 
     return errs;
-  }, [formData.room, selectedDates]);
+  }, [formData.room]);
 
   const onNext = useCallback(() => {
     const e = getStep1Errors();
@@ -82,7 +80,7 @@ export const ClubForm = (props: ClubFormProps) => {
 
           {isStep1 ? (
             <div className="animate-in fade-in duration-500">
-              <Step1 {...props} errors={errors} />
+              <Step1 {...props} teachers={teachers} errors={errors} />
               <button
                 type="button"
                 onClick={onNext}
