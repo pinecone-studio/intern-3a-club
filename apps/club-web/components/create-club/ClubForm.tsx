@@ -59,10 +59,26 @@ export const ClubForm = (props: ClubFormProps) => {
   const isStep1 = step === 1;
 
   return (
-    <div className="lg:col-span-7 space-y-8 ">
-      <div className="rounded-[3rem] border border-white/10 bg-white/5 p-10 backdrop-blur-3xl shadow-2xl bg-zinc-700">
-        <div className="space-y-10">
-          <ProgressBar step={step} />
+    <div className="lg:col-span-7">
+      <div className="rounded-2xl border border-blue-900/20 bg-gradient-to-br from-slate-900/80 via-blue-900/60 to-blue-800/50 p-6 lg:p-8 backdrop-blur-sm shadow-lg">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-lg font-extrabold text-white">
+                Клуб бүртгүүлэх
+              </h4>
+              <p className="text-sm text-blue-200/80">
+                Шинэ клуб нээх хүсэлт болон хуваарь илгээх.
+              </p>
+            </div>
+            <div className="hidden sm:block w-48">
+              <ProgressBar step={step} />
+            </div>
+          </div>
+
+          <div className="sm:hidden">
+            <ProgressBar step={step} />
+          </div>
 
           {isStep1 ? (
             <div className="animate-in fade-in duration-500">
@@ -70,7 +86,7 @@ export const ClubForm = (props: ClubFormProps) => {
               <button
                 type="button"
                 onClick={onNext}
-                className="w-full h-16 mt-8 rounded-2xl bg-white/10 text-white font-bold hover:bg-primary transition-all"
+                className="w-full h-12 mt-4 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold shadow-md hover:opacity-95 transition"
               >
                 Үргэлжлүүлэх
               </button>
@@ -78,18 +94,18 @@ export const ClubForm = (props: ClubFormProps) => {
           ) : (
             <div className="animate-in fade-in duration-500">
               <LogisticsSection {...props} />
-              <div className="flex gap-4 pt-8">
+              <div className="flex flex-col sm:flex-row gap-3 pt-6">
                 <button
                   type="button"
                   onClick={onBack}
-                  className="flex-1 h-20 rounded-3xl border border-white/10 text-white/60 font-bold"
+                  className="flex-1 h-11 rounded-lg border border-blue-700/40 text-blue-100 font-medium bg-transparent hover:bg-blue-900/20 transition"
                 >
                   Буцах
                 </button>
                 <button
                   type="button"
                   onClick={onSubmit}
-                  className="flex-[2] h-20 rounded-3xl bg-primary text-xl font-black uppercase tracking-widest shadow-2xl"
+                  className="flex-1 h-11 rounded-lg bg-blue-600 text-white font-bold uppercase tracking-wide shadow-lg hover:brightness-95 transition"
                 >
                   Хүсэлт илгээх
                 </button>
