@@ -14,8 +14,14 @@ export const students = sqliteTable('students', {
   firstName: text('firstName'),
   lastName: text('lastName'),
   phoneNumber: text('phoneNumber'),
-  activeStatus: text('activeStatus').default('PENDING').notNull(),
-  gender: text('gender').default('OTHER'),
+  activeStatus: text('activeStatus', {
+    enum: ['ACTIVE', 'ARCHIVED', 'PENDING', 'DROPOUT'],
+  })
+    .default('ACTIVE')
+    .notNull(),
+  gender: text('gender', { enum: ['FEMALE', 'MALE', 'OTHER'] }).default(
+    'OTHER'
+  ),
   profileProgress: real('profileProgress'),
   isGraduated: integer('isGraduated').default(0),
   isAdvocator: integer('isAdvocator').default(0),
@@ -25,14 +31,17 @@ export const students = sqliteTable('students', {
   isInternational: integer('isInternational').default(0),
   dateOfBirth: text('dateOfBirth'),
   graduatedDate: text('graduatedDate'),
-  jobSeekingStatus: text('jobSeekingStatus'),
+  jobSeekingStatus: text('jobSeekingStatus', {
+    enum: ['READY', 'OPEN_TO_OFFER', 'UNAVAILABLE'],
+  }),
   hasAgreedTerms: integer('hasAgreedTerms').default(0),
   createdAt: text('createdAt')
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),
   updatedAt: text('updatedAt')
     .default(sql`(CURRENT_TIMESTAMP)`)
-    .notNull(),
+    .notNull()
+    .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
 });
 
 // --- CLASSES TABLE ---
@@ -57,18 +66,24 @@ export const classes = sqliteTable('classes', {
 // --- TEACHERS TABLE ---
 export const teachers = sqliteTable('teachers', {
   id: text('id').primaryKey(),
-  email: text('email').notNull(),
-  name: text('name').notNull(),
-  phoneNumber: text('phoneNumber'),
+  authUserId: text('authUserId'),
+  azureEmail: text('azureEmail').notNull(),
+  personalEmail: text('personalEmail'),
   profilePicture: text('profilePicture'),
-  gender: text('gender'),
+  firstName: text('firstName'),
+  lastName: text('lastName'),
+  phoneNumber: text('phoneNumber'),
+  gender: text('gender', { enum: ['FEMALE', 'MALE', 'OTHER'] }).default(
+    'OTHER'
+  ),
   isActive: integer('isActive').default(1),
   createdAt: text('createdAt')
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),
   updatedAt: text('updatedAt')
     .default(sql`(CURRENT_TIMESTAMP)`)
-    .notNull(),
+    .notNull()
+    .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
 });
 
 // --- CLUBS TABLE ---
