@@ -8,11 +8,13 @@ export const CREATE_CLUB_WITH_SCHEDULE = gql`
     $input: CreateClubInput!
     $schedules: [ScheduleInput!]!
     $frequency: String!
+    $clubTerm: String!
   ) {
     createClubWithSchedules(
       input: $input
       schedules: $schedules
       frequency: $frequency
+      clubTerm: $clubTerm
     ) {
       id
       name
@@ -20,78 +22,84 @@ export const CREATE_CLUB_WITH_SCHEDULE = gql`
   }
 `;
 
-export const parseDuration = (val: string): number => {
-  const parts = val.split(':').map(Number);
-  return (parts[0] || 0) * 60 + (parts[1] || 0);
+export const parseDuration = (chosenDuration: string): number => {
+  const durationMin = chosenDuration.split(':').map(Number);
+  return (durationMin[0] || 0) * 60 + (durationMin[1] || 0);
 };
 
-export const toFormattedDate = (d: Date): string => format(d, 'yyyy-MM-dd');
+export const toFormattedDate = (date: Date): string =>
+  format(date, 'yyyy-MM-dd');
 
 export const byAscendingDate = (a: Date, b: Date): number =>
   a.getTime() - b.getTime();
 
 export const getClassroom = (
-  override: ScheduleChange | undefined,
-  s: CreateClubState
-) => override?.room ?? s.clubClassRoom;
+  change: ScheduleChange | undefined,
+  initialSchedule: CreateClubState
+) => change?.room ?? initialSchedule.clubClassRoom;
 
 export const getStartTime = (
-  override: ScheduleChange | undefined,
-  s: CreateClubState
-) => override?.startTime ?? s.clubStartTime;
+  change: ScheduleChange | undefined,
+  initialSchedule: CreateClubState
+) => change?.startTime ?? initialSchedule.clubStartTime;
 
 export const getDuration = (
-  override: ScheduleChange | undefined,
-  s: CreateClubState
-) => parseDuration(override?.duration ?? s.clubDuration);
+  change: ScheduleChange | undefined,
+  initialSchedule: CreateClubState
+) => parseDuration(change?.duration ?? initialSchedule.clubDuration);
 
-export const buildSingleSchedule = (date: string, s: CreateClubState) => {
-  const override: ScheduleChange | undefined = s.scheduleChange?.[date];
+export const changeSingleSchedule = (
+  date: string,
+  initialSchedule: CreateClubState
+) => {
+  const change: ScheduleChange | undefined =
+    initialSchedule.scheduleChange?.[date];
   return {
     date,
-    classroom: getClassroom(override, s),
-    startTime: getStartTime(override, s),
-    duration: getDuration(override, s),
+    classroom: getClassroom(change, initialSchedule),
+    startTime: getStartTime(change, initialSchedule),
+    duration: getDuration(change, initialSchedule),
   };
 };
 
-export function buildScheduleForState(s: CreateClubState) {
+export function changeScheduleForState(initialSchedule: CreateClubState) {
   return function (date: string) {
-    return buildSingleSchedule(date, s);
+    return changeSingleSchedule(date, initialSchedule);
   };
 }
 
-export function buildSchedules(s: CreateClubState) {
-  const dates = s.clubStartDate || [];
+export function updateSchedules(initialSchedule: CreateClubState) {
+  const dates = initialSchedule.clubStartDate || [];
   const sorted = [...dates].sort(byAscendingDate);
   const formatted = sorted.map(toFormattedDate);
-  return formatted.map(buildScheduleForState(s));
+  return formatted.map(changeScheduleForState(initialSchedule));
 }
 
-export const getVariables = (s: CreateClubState) => {
-  const schedules = buildSchedules(s);
+export const getValues = (initialSchedule: CreateClubState) => {
+  const schedules = updateSchedules(initialSchedule);
   console.log({ clubSchedule: schedules });
   return {
     input: {
-      name: s.clubName,
-      description: s.clubDesc,
-      teacherId: s.teacherId,
+      name: initialSchedule.clubName,
+      description: initialSchedule.clubDesc,
+      teacherId: initialSchedule.teacherId,
       type: 'mentor',
-      minMember: parseInt(s.clubMinStudent, 10) || 0,
-      maxMember: parseInt(s.clubMaxStudent, 10) || 0,
+      minMember: parseInt(initialSchedule.clubMinStudent, 10) || 0,
+      maxMember: parseInt(initialSchedule.clubMaxStudent, 10) || 0,
     },
     schedules,
-    frequency: s.clubFrequency,
+    frequency: initialSchedule.clubFrequency,
+    clubTerm: initialSchedule.clubTerm,
   };
 };
 
-export const performMutation = async (
+export const createClubDash = async (
   state: CreateClubState,
   createClub: (_opts: {
-    variables: ReturnType<typeof getVariables>;
+    variables: ReturnType<typeof getValues>;
   }) => Promise<unknown>
 ) => {
-  const variables = getVariables(state);
+  const variables = getValues(state);
   try {
     console.log('Club Data', variables);
     await createClub({ variables });
@@ -142,7 +150,7 @@ export const useCreateClubMutation = (state: CreateClubState) => {
       alert('Огноо сонгоно уу');
       return;
     }
-    performMutation(state, createClub);
+    createClubDash(state, createClub);
   };
 
   return { handleSubmit, loading };
