@@ -1,7 +1,14 @@
 'use client';
 
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from '@clerk/nextjs';
 import { getInitialTheme } from '../../../libs/theme/get-initial-theme';
-import { Bell, Moon, Sun, User } from 'lucide-react';
+import { Bell, Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export const DashboardHeader = () => {
@@ -58,9 +65,20 @@ export const DashboardHeader = () => {
           )}
         </button>
         {/* Profile */}
-        <button className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-muted-foreground hover:text-foreground">
+        {/* <button className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-muted-foreground hover:text-foreground">
           <User className="h-5 w-5" />
-        </button>
+        </button> */}
+        <SignedOut>
+          <SignInButton />
+          <SignUpButton>
+            <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
+              Sign Up
+            </button>
+          </SignUpButton>
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </div>
     </header>
   );

@@ -1,7 +1,25 @@
+import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { act } from '@testing-library/react';
 import { DashboardHeader } from '../../app/_components/main/Header';
 import { getInitialTheme } from '../../libs/theme/get-initial-theme';
+
+jest.mock('@clerk/nextjs', () => ({
+  useAuth: () => ({ getToken: jest.fn().mockResolvedValue('mock-token') }),
+  useUser: () => ({ user: { firstName: 'Test' } }),
+  SignedIn: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SignedOut: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SignInButton: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  SignUpButton: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  UserButton: () => <div>UserButton</div>,
+  ClerkProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+}));
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

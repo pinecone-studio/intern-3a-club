@@ -2,7 +2,24 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import Page from '../../app/page';
 import { ViewRender } from '../../app/_components/main/ViewRender';
-import { Providers } from '../../libs/apollo/Providers';
+import { Providers } from '../../libs/apollo/providers';
+
+jest.mock('@clerk/nextjs', () => ({
+  useAuth: () => ({ getToken: jest.fn().mockResolvedValue('mock-token') }),
+  useUser: () => ({ user: { firstName: 'Test' } }),
+  SignedIn: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SignedOut: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SignInButton: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  SignUpButton: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  UserButton: () => <div>UserButton</div>,
+  ClerkProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+}));
 
 jest.mock('../../app/_components/teacher/main/use-admin-clubs-data', () => ({
   useAdminClubsData: () => ({

@@ -7,6 +7,7 @@
     "@apollo/client": "^4.1.4",
     "@apollo/server": "^5.4.0",
     "@as-integrations/next": "^4.1.0",
+    "@clerk/nextjs": "^6.38.2",
     "@cloudflare/next-on-pages": "^1.13.16",
     "@graphql-tools/executor": "^1.5.1",
     "@graphql-tools/merge": "^9.1.7",
