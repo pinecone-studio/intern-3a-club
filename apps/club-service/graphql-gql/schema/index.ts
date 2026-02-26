@@ -2,6 +2,7 @@ import { mergeTypeDefs } from '@graphql-tools/merge';
 import { gql } from 'graphql-tag';
 import { clubTypeDefs } from './club.schema';
 import { timetableTypeDefs } from './timetable.schema';
+import { teacherTypeDefs } from './teacher.schema';
 
 // Суурь Query болон Mutation (бусад схемүүд үүнийг extend хийнэ)
 const baseTypeDefs = gql`
@@ -18,4 +19,5 @@ export const typeDefs = mergeTypeDefs([
   baseTypeDefs,
   clubTypeDefs,
   timetableTypeDefs,
+  teacherTypeDefs,
 ]);
