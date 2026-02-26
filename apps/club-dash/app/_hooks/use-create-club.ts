@@ -74,7 +74,10 @@ export function updateSchedules(initialSchedule: CreateClubState) {
   const formatted = sorted.map(toFormattedDate);
   return formatted.map(changeScheduleForState(initialSchedule));
 }
-
+export const getClubTerm = (initialSchedule: CreateClubState): string => {
+  const isWeekly = initialSchedule.clubFrequency === 'WEEKLY';
+  return isWeekly ? initialSchedule.clubTerm : '0';
+};
 export const getValues = (initialSchedule: CreateClubState) => {
   const schedules = updateSchedules(initialSchedule);
   console.log({ clubSchedule: schedules });
@@ -89,7 +92,7 @@ export const getValues = (initialSchedule: CreateClubState) => {
     },
     schedules,
     frequency: initialSchedule.clubFrequency,
-    clubTerm: initialSchedule.clubTerm,
+    clubTerm: getClubTerm(initialSchedule),
   };
 };
 
