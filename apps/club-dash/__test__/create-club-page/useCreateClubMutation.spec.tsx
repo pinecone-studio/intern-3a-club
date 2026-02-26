@@ -3,8 +3,8 @@ import { useMutation } from '@apollo/client/react';
 import {
   useCreateClubMutation,
   parseDuration,
-  getVariables,
-  performMutation,
+  getValues,
+  createClubDash,
   getOverrideRoom,
   getOverrideStartTime,
   getOverrideDuration,
@@ -28,7 +28,7 @@ describe('useCreateClubMutation', () => {
   const validState: CreateClubState = {
     clubName: 'Coding',
     clubDesc: 'Desc',
-    teacherName: 'T1',
+    teacherId: 'T1',
     clubMinStudent: '5',
     clubMaxStudent: '20',
     clubStartDate: [new Date('2026-03-01')],
@@ -146,14 +146,14 @@ describe('useCreateClubMutation', () => {
     });
   });
 
-  describe('getVariables', () => {
+  describe('getValues', () => {
     it('formats and sorts multiple dates, computes duration, and calls console.log', () => {
       const multiDateState: CreateClubState = {
         ...validState,
         clubStartDate: [new Date('2026-06-15'), new Date('2026-01-10')],
       };
 
-      const result = getVariables(multiDateState);
+      const result = getValues(multiDateState);
 
       expect(result.schedules[0].date).toBe('2026-01-10');
       expect(result.schedules[1].date).toBe('2026-06-15');
@@ -163,7 +163,7 @@ describe('useCreateClubMutation', () => {
     });
 
     it('handles undefined clubStartDate', () => {
-      const result = getVariables({
+      const result = getValues({
         ...validState,
         clubStartDate: undefined,
       } as unknown as CreateClubState);
@@ -171,28 +171,29 @@ describe('useCreateClubMutation', () => {
     });
   });
 
-  describe('performMutation', () => {
+  describe('createClubDash', () => {
     it('calls mutate and alerts success', async () => {
       mockMutate.mockResolvedValue({
         data: { createClubWithSchedules: { id: '1' } },
       });
-      await performMutation(validState, mockMutate);
+      await createClubDash(validState, mockMutate);
       expect(mockMutate).toHaveBeenCalled();
       expect(alertMock).toHaveBeenCalledWith('Амжилттай үүсгэлээ!');
     });
 
     it('handles error and alerts failure', async () => {
       mockMutate.mockRejectedValue(new Error('GraphQL Error'));
-      await performMutation(validState, mockMutate);
+      await createClubDash(validState, mockMutate);
       expect(consoleErrorMock).toHaveBeenCalled();
       expect(alertMock).toHaveBeenCalledWith('Алдаа гарлаа');
     });
+
     it('logs club data before mutating', async () => {
       mockMutate.mockResolvedValue({
         data: { createClubWithSchedules: { id: '1' } },
       });
 
-      await performMutation(validState, mockMutate);
+      await createClubDash(validState, mockMutate);
 
       expect(consoleLogMock).toHaveBeenCalledWith(
         'Club Data',
