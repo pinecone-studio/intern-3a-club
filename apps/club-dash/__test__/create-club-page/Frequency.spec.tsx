@@ -81,7 +81,7 @@ describe('Frequency Component Coverage', () => {
     fireEvent.click(screen.getByTestId('mock-select-wrapper'));
 
     expect(mockSetSelectedFreqId).toHaveBeenCalledWith('2');
-    expect(mockSetClubFrequency).toHaveBeenCalledWith('Долоо хоног бүр');
+    expect(mockSetClubFrequency).toHaveBeenCalledWith('WEEKLY');
   });
 
   it('handles the fallback case when frequency ID is not found (Coverage for Line 40)', () => {
@@ -103,11 +103,6 @@ describe('Frequency Component Coverage', () => {
     expect(screen.getByText(/Үргэлжлэх Хугацаа/i)).toBeInTheDocument();
   });
 
-  // it('calls setClubTerm when duration is changed', () => {
-  //   render(<Frequency {...defaultProps} selectedFreqId="2" />);
-  //   fireEvent.click(screen.getByTestId('trigger-term'));
-  //   expect(mockSetClubTerm).toHaveBeenCalledWith('3');
-  // });
   it('calls setClubTerm when duration is changed', () => {
     render(<Frequency {...defaultProps} selectedFreqId="2" />);
 
