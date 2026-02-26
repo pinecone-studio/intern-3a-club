@@ -62,14 +62,17 @@ export const useClubAction = ({
   }, [remainingTime]);
 
   // helper function (Complexity: 2)
-  const processJoinResult = (status: number, time: number) => {
-    if (status === 403 || time > 0) {
-      setRemainingTime(time);
-      setBanned(true);
-      return;
-    }
-    onEnrollSuccess();
-  };
+  const processJoinResult = useCallback(
+    (status: number, time: number) => {
+      if (status === 403 || time > 0) {
+        setRemainingTime(time);
+        setBanned(true);
+        return;
+      }
+      onEnrollSuccess();
+    },
+    [onEnrollSuccess] // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   // handleEnroll (Complexity: 3)
   const handleEnroll = useCallback(async () => {
@@ -89,7 +92,7 @@ export const useClubAction = ({
     } finally {
       setLoading(false);
     }
-  }, [userid, clubid, onEnrollSuccess]);
+  }, [userid, clubid, onEnrollSuccess, processJoinResult]); // eslint-disable-line react-hooks/exhaustive-deps
   const handleLeave = useCallback(async () => {
     if (!window.confirm('Та клубээс гарахдаа итгэлтэй байна уу?')) return;
 

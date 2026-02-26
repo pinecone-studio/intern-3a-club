@@ -5,6 +5,13 @@ export interface SelectOption {
   v: string;
 }
 
+export interface GetAllTeacher {
+  id: string;
+  firstName: string;
+  lastName?: string;
+  profilePicture?: string;
+}
+
 export interface CalendarSelectFieldProps {
   label: string;
   icon: ReactNode;
@@ -22,6 +29,7 @@ export interface ClubFormProps {
   currentMonth: Date;
   handleMonthChange: (_offset: number) => void;
   renderCalendarDays: () => React.ReactNode;
+  teachers?: GetAllTeacher[];
 }
 
 export type FormDataType = {
@@ -51,6 +59,7 @@ export interface LogisticsSectionProps {
 export interface Step1Props {
   formData: FormDataType;
   setFormData: (_data: FormDataType) => void;
+  teachers?: GetAllTeacher[];
 }
 export interface CalendarDayProps {
   day: number;

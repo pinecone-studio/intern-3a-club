@@ -1,9 +1,9 @@
-import { Globe2, MoveDownIcon, UserCheck, Goal, Mail } from 'lucide-react';
+import { Globe2, UserCheck, Goal, Mail } from 'lucide-react';
 import React, { ChangeEvent } from 'react';
 import { Step1Props } from './types';
 import { cn } from 'lib/utils';
+import { TeacherSelect } from './TeacherSelect';
 
-// Алдаа 1: Inline types-ийг interface болгож салгав
 interface InputFieldBaseProps {
   label: string;
   icon?: React.ReactNode;
@@ -11,9 +11,18 @@ interface InputFieldBaseProps {
   error?: string;
 }
 
-const InputField = ({ label, icon, children, error, id }: InputFieldBaseProps & { id?: string }) => (
+const InputField = ({
+  label,
+  icon,
+  children,
+  error,
+  id,
+}: InputFieldBaseProps & { id?: string }) => (
   <div className="space-y-3 text-white">
-    <label htmlFor={id} className="text-[10px] font-black  text-primary flex items-center gap-2">
+    <label
+      htmlFor={id}
+      className="text-[10px] font-black  text-primary flex items-center gap-2"
+    >
       {icon} {label}
     </label>
     {children}
@@ -24,6 +33,7 @@ const InputField = ({ label, icon, children, error, id }: InputFieldBaseProps & 
 export const Step1 = ({
   formData,
   setFormData,
+  teachers,
   errors = {},
 }: Step1Props & { errors?: Record<string, string> }) => {
   if (!formData) return null;
@@ -32,6 +42,10 @@ export const Step1 = ({
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleTeacherChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    handleInputChange(e);
   };
 
   const inputClass = (hasError: boolean) =>
@@ -65,21 +79,12 @@ export const Step1 = ({
           error={errors.teacher}
           id="teacher-select"
         >
-          <div className="relative">
-            <select
-              id="teacher-select"
-              name="teacher"
-              value={formData.teacher}
-              onChange={handleInputChange}
-              className={inputClass(!!errors.teacher)}
-            >
-              <option value="">Сонгох...</option>
-              <option value="1">Эрдэнэцогт</option>
-              <option value="2">Наранцацралт</option>
-              <option value="student">Сурагч</option>
-            </select>
-            <MoveDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
-          </div>
+          <TeacherSelect
+            value={formData.teacher}
+            onChange={handleTeacherChange}
+            teachers={teachers}
+            className={inputClass(!!errors.teacher)}
+          />
         </InputField>
       </div>
 

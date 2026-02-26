@@ -21,7 +21,6 @@
 //   isEnrolled?: boolean;
 // }
 
-
 export interface ExtendedClub extends GetAllClub {
   isEnrolled: boolean;
   bannedUntil: number;
@@ -49,6 +48,17 @@ export const GET_ALL_CLUBS = gql`
         clubStartTime
         duration
       }
+    }
+  }
+`;
+
+export const GET_ALL_TEACHERS = gql`
+  query GetAllTeachers {
+    getAllTeachers {
+      id
+      firstName
+      lastName
+      profilePicture
     }
   }
 `;
