@@ -28,6 +28,17 @@ import {
   GET_ALL_PENDING_CLUBS,
 } from 'apps/club-dash/libs/club-queries';
 
+export interface TeacherData {
+  getAllTeachers: GetAllTeacher[];
+}
+
+export interface GetAllTeacher {
+  id: string;
+  firstName: string;
+  lastName: string;
+  profilePicture: string;
+}
+
 export interface PendingClubData {
   getAllPendingClubs: GetAllPendingClub[];
 }
@@ -368,7 +379,7 @@ export default function CreateClubPage() {
     loading: isLoadingTeacher,
     error: errTeacherData,
     data: teacherData,
-  } = useQuery(GET_ALL_TEACHERS);
+  } = useQuery<TeacherData>(GET_ALL_TEACHERS);
 
   console.log({ teacherData });
   console.log({ data });
@@ -580,9 +591,9 @@ export default function CreateClubPage() {
                     <SelectValue placeholder="Сонгох" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {mockTeachers.map((t) => (
+                    {teacherData?.getAllTeachers.map((t) => (
                       <SelectItem key={t.id} value={t.id}>
-                        {t.name}
+                        {t.firstName}
                       </SelectItem>
                     ))}
                   </SelectContent>
