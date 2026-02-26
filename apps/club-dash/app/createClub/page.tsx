@@ -52,8 +52,8 @@ const CreateClub = () => {
                 />
               </div>
               <Teachers
-                teacherName={state.teacherName}
-                setTeacherName={setters.setTeacherName}
+                teacherId={state.teacherId}
+                setTeacherId={setters.setTeacherId}
               />
             </div>
 

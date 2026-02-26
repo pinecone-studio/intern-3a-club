@@ -13,7 +13,7 @@ import { buildOverride } from './use-create-club';
 
 export const useCreateClubState = () => {
   const [clubName, setClubName] = useState<string>('');
-  const [teacherName, setTeacherName] = useState<string>('');
+  const [teacherId, setTeacherId] = useState<string>('');
   const [clubDesc, setClubDesc] = useState<string>('');
   const [clubStartDate, setClubStartDate] = useState<Date[] | undefined>([]);
   const [selectedFreqId, setSelectedFreqId] = useState<string>('1');
@@ -23,9 +23,7 @@ export const useCreateClubState = () => {
   const [clubDuration, setClubDuration] = useState<string>('1:00');
   const [clubMaxStudent, setClubMaxStudent] = useState<string>('20');
   const [clubMinStudent] = useState<string>('0');
-  const [clubFrequency, setClubFrequency] = useState<string>(
-    'Зөвхөн сонгосон өдрүүдэд'
-  );
+  const [clubFrequency, setClubFrequency] = useState<string>('ONCE');
   const [scheduleChange, setScheduleChange] = useState<
     Record<string, ScheduleChange>
   >({});
@@ -98,7 +96,7 @@ export const useCreateClubState = () => {
   const handleEmptyFields = () => {
     setClubClassRoom('301');
     setClubDuration('1:00');
-    setClubFrequency('Зөвхөн сонгосон өдрүүдэд');
+    setClubFrequency('ONCE');
     setClubStartDate([]);
     setClubStartTime('13:00');
     setClubTerm('1');
@@ -109,7 +107,8 @@ export const useCreateClubState = () => {
   return {
     state: {
       clubName,
-      teacherName,
+      // teacherName,
+      teacherId,
       clubDesc,
       clubStartDate,
       selectedFreqId,
@@ -123,7 +122,8 @@ export const useCreateClubState = () => {
       scheduleChange,
     },
     setters: {
-      setTeacherName,
+      // setTeacherName,
+      setTeacherId,
       setClubStartDate,
       setSelectedFreqId,
       setClubTerm,

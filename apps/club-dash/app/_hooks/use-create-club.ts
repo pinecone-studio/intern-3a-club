@@ -75,7 +75,7 @@ export const getVariables = (s: CreateClubState) => {
     input: {
       name: s.clubName,
       description: s.clubDesc,
-      teacherId: s.teacherName,
+      teacherId: s.teacherId,
       type: 'mentor',
       minMember: parseInt(s.clubMinStudent, 10) || 0,
       maxMember: parseInt(s.clubMaxStudent, 10) || 0,
