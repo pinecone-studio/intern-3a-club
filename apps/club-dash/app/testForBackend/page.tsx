@@ -212,6 +212,16 @@ const UPDATE_CLUB = gql`
   }
 `;
 
+export const GET_ALL_TEACHERS = gql`
+  query GetAllTeachers {
+    getAllTeachers {
+      id
+      firstName
+      lastName
+      profilePicture
+    }
+  }
+`;
 // --- MOCK DATA ---
 const mockTeachers = [
   { id: '1', name: 'Erdenetsogt' },
@@ -354,6 +364,13 @@ export default function CreateClubPage() {
     data: clubDataPending,
   } = useQuery<PendingClubData>(GET_ALL_PENDING_CLUBS);
 
+  const {
+    loading: isLoadingTeacher,
+    error: errTeacherData,
+    data: teacherData,
+  } = useQuery(GET_ALL_TEACHERS);
+
+  console.log({ teacherData });
   console.log({ data });
   console.log({ clubDataApproved });
   console.log({ clubDataPending });
@@ -513,11 +530,16 @@ export default function CreateClubPage() {
 
   if (isLoading) return <div>Уншиж байна...</div>;
   if (err) return <div>Алдаа гарлаа: {err.message}</div>;
+
   if (isLoadingApproved) return <div>Уншиж байна...</div>;
   if (errClubApproved)
     return <div>Алдаа гарлаа: {errClubApproved.message}</div>;
+
   if (isLoadingPending) return <div>Уншиж байна...</div>;
   if (errClubPending) return <div>Алдаа гарлаа: {errClubPending.message}</div>;
+
+  if (isLoadingTeacher) return <div>Уншиж байна...</div>;
+  if (errTeacherData) return <div>Алдаа гарлаа: {errTeacherData.message}</div>;
 
   return (
     <div className="flex flex-col gap-10 p-10">

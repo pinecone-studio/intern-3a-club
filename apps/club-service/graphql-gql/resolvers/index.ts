@@ -6,9 +6,14 @@ import {
   getAllApprovedClubs,
   getAllClubs,
   getAllPendingClubs,
+  getAllTeachers,
 } from './queries';
-import { createClubWithSchedules, deleteClub, updateClub } from './mutations';
-import { updateTimetable } from './mutations/timetable';
+import {
+  createClubWithSchedules,
+  deleteClub,
+  updateClub,
+  updateTimetable,
+} from './mutations';
 
 export type Club = InferSelectModel<typeof clubs>;
 // interface GetClubByIdArgs {
@@ -21,6 +26,7 @@ export const resolvers = {
     //   await getClubById(_, args),
     getAllApprovedClubs,
     getAllPendingClubs,
+    getAllTeachers,
   },
   Mutation: {
     createClubWithSchedules,
