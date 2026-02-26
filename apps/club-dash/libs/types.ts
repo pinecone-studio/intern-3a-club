@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, ReactNode } from 'react';
 
 export type ClassTeacherType = {
   id: string;
@@ -11,7 +11,7 @@ export interface ChildItem {
 
 export interface NavItem {
   label: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   children?: ChildItem[];
 }
 
@@ -67,6 +67,12 @@ export interface Props {
   setExpandedId: (_id: string | null) => void;
 }
 
+export type ScheduleChange = {
+  room: string;
+  startTime: string;
+  duration: string;
+};
+
 export type CreateClubState = {
   clubName: string;
   clubDesc: string;
@@ -81,6 +87,7 @@ export type CreateClubState = {
   selectedDays?: string[];
   selectedFreqId: string;
   clubTerm: string;
+  scheduleChange: Record<string, ScheduleChange>;
 };
 
 export type Data = {
@@ -130,16 +137,22 @@ export type CreateClubSetters = {
   setClubStartTime: Dispatch<SetStateAction<string>>;
   setClubDuration: Dispatch<SetStateAction<string>>;
   setClubFrequency: Dispatch<SetStateAction<string>>;
+  setScheduleChange: Dispatch<SetStateAction<Record<string, ScheduleChange>>>;
 };
 
+export type InputChangeEvent = ChangeEvent<
+  HTMLInputElement | HTMLTextAreaElement
+>;
+
 export type CreateClubHandlers = {
-  handleName: (
-    _e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  handleName: (_e: InputChangeEvent) => void;
+  handleDesc: (_e: InputChangeEvent) => void;
+  handleMax: (_e: InputChangeEvent) => void;
+  handleUpdateChange: (
+    _key: string,
+    _field: keyof ScheduleChange,
+    _value: string
   ) => void;
-  handleDesc: (
-    _e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
-  handleMax: (
-    _e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
+  handleDeleteDate: (_day: Date) => void;
+  handleEmptyFields: () => void;
 };

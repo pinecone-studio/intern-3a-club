@@ -5,3 +5,4 @@ export * from './StartTime';
 export * from './Teachers';
 // export * from './ClubInfoComp';
 export * from './CreatedTimetable';
+export * from './ScheduleCard';

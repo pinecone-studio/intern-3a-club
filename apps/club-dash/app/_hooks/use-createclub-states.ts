@@ -7,7 +7,9 @@ import {
   useCallback,
   useRef,
 } from 'react';
-import { addMonths, eachDayOfInterval, getDay } from 'date-fns';
+import { addMonths, eachDayOfInterval, getDay, format } from 'date-fns';
+import { CreateClubState, ScheduleChange } from '../../../club-dash/libs/types';
+import { buildOverride } from './use-create-club';
 
 export const useCreateClubState = () => {
   const [clubName, setClubName] = useState<string>('');
@@ -20,10 +22,13 @@ export const useCreateClubState = () => {
   const [clubStartTime, setClubStartTime] = useState<string>('13:00');
   const [clubDuration, setClubDuration] = useState<string>('1:00');
   const [clubMaxStudent, setClubMaxStudent] = useState<string>('20');
-  const [clubMinStudent] = useState<string>('5');
+  const [clubMinStudent] = useState<string>('0');
   const [clubFrequency, setClubFrequency] = useState<string>(
     'Зөвхөн сонгосон өдрүүдэд'
   );
+  const [scheduleChange, setScheduleChange] = useState<
+    Record<string, ScheduleChange>
+  >({});
 
   const clubStartDateRef = useRef(clubStartDate);
   clubStartDateRef.current = clubStartDate;
@@ -35,34 +40,71 @@ export const useCreateClubState = () => {
       start: sorted[0],
       end: addMonths(sorted[0], parseInt(term, 10)),
     };
-
     return eachDayOfInterval(range).filter((d) => days.includes(getDay(d)));
   }, []);
 
-  const syncGeneratedDates = useCallback(
+  const syncChangedDates = useCallback(
     (current: Date[], term: string) => {
       const generated = clubDates(current, term);
       const hasChanged = JSON.stringify(generated) !== JSON.stringify(current);
-      /* istanbul ignore else */
       if (hasChanged) {
         setClubStartDate(generated);
       }
     },
     [clubDates]
   );
+
   useEffect(() => {
     const isWeekly = selectedFreqId === '2';
     const hasDates = !!clubStartDateRef.current?.length;
-
     if (isWeekly && hasDates) {
-      syncGeneratedDates(clubStartDateRef.current as Date[], clubTerm);
+      syncChangedDates(clubStartDateRef.current as Date[], clubTerm);
     }
-  }, [selectedFreqId, clubTerm, syncGeneratedDates]);
+  }, [selectedFreqId, clubTerm, syncChangedDates]);
 
   const handleChange =
     (set: Dispatch<SetStateAction<string>>) =>
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       set(e.target.value);
+
+  const handleUpdateChange = (
+    key: string,
+    field: keyof ScheduleChange,
+    value: string
+  ) => {
+    setScheduleChange((schedule) => ({
+      ...schedule,
+      [key]: buildOverride(schedule, key, field, value, {
+        clubClassRoom,
+        clubStartTime,
+        clubDuration,
+        scheduleChange,
+      } as CreateClubState),
+    }));
+  };
+
+  const handleDeleteDate = (day: Date) => {
+    const chosenDate = format(day, 'yyyy-MM-dd');
+    setClubStartDate((dates) =>
+      (dates ?? []).filter((d) => d.getTime() !== day.getTime())
+    );
+    setScheduleChange((dates) => {
+      const next = { ...dates };
+      delete next[chosenDate];
+      return next;
+    });
+  };
+
+  const handleEmptyFields = () => {
+    setClubClassRoom('301');
+    setClubDuration('1:00');
+    setClubFrequency('Зөвхөн сонгосон өдрүүдэд');
+    setClubStartDate([]);
+    setClubStartTime('13:00');
+    setClubTerm('1');
+    setSelectedFreqId('1');
+    setScheduleChange({});
+  };
 
   return {
     state: {
@@ -78,6 +120,7 @@ export const useCreateClubState = () => {
       clubMaxStudent,
       clubMinStudent,
       clubFrequency,
+      scheduleChange,
     },
     setters: {
       setTeacherName,
@@ -88,11 +131,15 @@ export const useCreateClubState = () => {
       setClubStartTime,
       setClubDuration,
       setClubFrequency,
+      setScheduleChange,
     },
     handlers: {
       handleName: handleChange(setClubName),
       handleDesc: handleChange(setClubDesc),
       handleMax: handleChange(setClubMaxStudent),
+      handleUpdateChange,
+      handleDeleteDate,
+      handleEmptyFields,
     },
   };
 };

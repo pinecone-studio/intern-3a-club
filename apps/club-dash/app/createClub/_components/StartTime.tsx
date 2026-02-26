@@ -49,7 +49,7 @@ export const StartTime = ({
   };
   return (
     <Select onValueChange={handleSelectedStarttime}>
-      <div className="flex flex-col w-full gap-3">
+      <div className="flex flex-col w-20 gap-3">
         <Label
           htmlFor="startTime"
           className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

@@ -19,10 +19,6 @@ const mockDuration = [
   },
   {
     id: '2',
-    duration: '1:30',
-  },
-  {
-    id: '3',
     duration: '2:00',
   },
 ];
@@ -38,7 +34,7 @@ export const Duration = ({ clubDuration, setClubDuration }: DurationProps) => {
   };
   return (
     <Select onValueChange={handleSelectedDuration}>
-      <div className="flex flex-col w-full mt-2 gap-3">
+      <div className="flex flex-col w-70 mt-2 gap-3">
         <Label
           htmlFor="duration"
           className="text-sm font-semibold leading-none w-[140px] peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

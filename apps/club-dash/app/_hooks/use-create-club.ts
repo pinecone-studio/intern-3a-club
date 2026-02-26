@@ -1,23 +1,17 @@
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/client/react';
-import { CreateClubState } from '../../../club-dash/libs/types';
+import { CreateClubState, ScheduleChange } from '../../../club-dash/libs/types';
 import { format } from 'date-fns';
 
 export const CREATE_CLUB_WITH_SCHEDULE = gql`
   mutation CreateClubWithSchedules(
     $input: CreateClubInput!
-    $startDate: [String!]!
-    $classroom: String!
-    $startTime: String!
-    $duration: Int!
+    $schedules: [ScheduleInput!]!
     $frequency: String!
   ) {
     createClubWithSchedules(
       input: $input
-      startDate: $startDate
-      classroom: $classroom
-      startTime: $startTime
-      duration: $duration
+      schedules: $schedules
       frequency: $frequency
     ) {
       id
@@ -31,58 +25,64 @@ export const parseDuration = (val: string): number => {
   return (parts[0] || 0) * 60 + (parts[1] || 0);
 };
 
-export const detailedSchedule = (
-  dates: string[],
-  room: string,
-  time: string,
-  duration: number
-) => {
-  return dates.map((date, index) => ({
-    club: index + 1,
+export const toFormattedDate = (d: Date): string => format(d, 'yyyy-MM-dd');
+
+export const byAscendingDate = (a: Date, b: Date): number =>
+  a.getTime() - b.getTime();
+
+export const getClassroom = (
+  override: ScheduleChange | undefined,
+  s: CreateClubState
+) => override?.room ?? s.clubClassRoom;
+
+export const getStartTime = (
+  override: ScheduleChange | undefined,
+  s: CreateClubState
+) => override?.startTime ?? s.clubStartTime;
+
+export const getDuration = (
+  override: ScheduleChange | undefined,
+  s: CreateClubState
+) => parseDuration(override?.duration ?? s.clubDuration);
+
+export const buildSingleSchedule = (date: string, s: CreateClubState) => {
+  const override: ScheduleChange | undefined = s.scheduleChange?.[date];
+  return {
     date,
-    room,
-    startTime: time,
-    durationMinutes: duration,
-  }));
+    classroom: getClassroom(override, s),
+    startTime: getStartTime(override, s),
+    duration: getDuration(override, s),
+  };
 };
 
-export const clubDatas = (
-  s: CreateClubState,
-  formattedDates: string[],
-  durationMins: number
-) => ({
-  input: {
-    name: s.clubName,
-    description: s.clubDesc,
-    teacherId: s.teacherName,
-    type: 'mentor',
-    minMember: parseInt(s.clubMinStudent, 10) || 0,
-    maxMember: parseInt(s.clubMaxStudent, 10) || 0,
-  },
-  startDate: formattedDates,
-  classroom: s.clubClassRoom,
-  startTime: s.clubStartTime,
-  duration: durationMins,
-  frequency: s.clubFrequency,
-});
+export function buildScheduleForState(s: CreateClubState) {
+  return function (date: string) {
+    return buildSingleSchedule(date, s);
+  };
+}
+
+export function buildSchedules(s: CreateClubState) {
+  const dates = s.clubStartDate || [];
+  const sorted = [...dates].sort(byAscendingDate);
+  const formatted = sorted.map(toFormattedDate);
+  return formatted.map(buildScheduleForState(s));
+}
 
 export const getVariables = (s: CreateClubState) => {
-  const formattedDates = [...(s.clubStartDate || [])]
-    .sort((a, b) => a.getTime() - b.getTime())
-    .map((d) => format(d, 'yyyy-MM-dd'));
-
-  const durationMins = parseDuration(s.clubDuration);
-
-  console.log({
-    clubSchedule: detailedSchedule(
-      formattedDates,
-      s.clubClassRoom,
-      s.clubStartTime,
-      durationMins
-    ),
-  });
-
-  return clubDatas(s, formattedDates, durationMins);
+  const schedules = buildSchedules(s);
+  console.log({ clubSchedule: schedules });
+  return {
+    input: {
+      name: s.clubName,
+      description: s.clubDesc,
+      teacherId: s.teacherName,
+      type: 'mentor',
+      minMember: parseInt(s.clubMinStudent, 10) || 0,
+      maxMember: parseInt(s.clubMaxStudent, 10) || 0,
+    },
+    schedules,
+    frequency: s.clubFrequency,
+  };
 };
 
 export const performMutation = async (
@@ -101,6 +101,37 @@ export const performMutation = async (
     alert('Алдаа гарлаа');
   }
 };
+
+export const getOverrideRoom = (
+  schedule: Record<string, ScheduleChange>,
+  key: string,
+  s: CreateClubState
+) => schedule[key]?.room ?? s.clubClassRoom;
+
+export const getOverrideStartTime = (
+  schedule: Record<string, ScheduleChange>,
+  key: string,
+  s: CreateClubState
+) => schedule[key]?.startTime ?? s.clubStartTime;
+
+export const getOverrideDuration = (
+  schedule: Record<string, ScheduleChange>,
+  key: string,
+  s: CreateClubState
+) => schedule[key]?.duration ?? s.clubDuration;
+
+export const buildOverride = (
+  schedule: Record<string, ScheduleChange>,
+  key: string,
+  field: keyof ScheduleChange,
+  value: string,
+  s: CreateClubState
+): ScheduleChange => ({
+  room: getOverrideRoom(schedule, key, s),
+  startTime: getOverrideStartTime(schedule, key, s),
+  duration: getOverrideDuration(schedule, key, s),
+  [field]: value,
+});
 
 export const useCreateClubMutation = (state: CreateClubState) => {
   const [createClub, { loading }] = useMutation(CREATE_CLUB_WITH_SCHEDULE);
