@@ -103,10 +103,18 @@ describe('Frequency Component Coverage', () => {
     expect(screen.getByText(/Үргэлжлэх Хугацаа/i)).toBeInTheDocument();
   });
 
+  // it('calls setClubTerm when duration is changed', () => {
+  //   render(<Frequency {...defaultProps} selectedFreqId="2" />);
+  //   fireEvent.click(screen.getByTestId('trigger-term'));
+  //   expect(mockSetClubTerm).toHaveBeenCalledWith('3');
+  // });
   it('calls setClubTerm when duration is changed', () => {
     render(<Frequency {...defaultProps} selectedFreqId="2" />);
-    const termTriggers = screen.getAllByTestId('trigger-term');
-    fireEvent.click(termTriggers[1]);
+
+    // 2 ширхэг trigger-term байгаа тул index-ээр сонгоно (duration талынх нь 2 дахь)
+    const triggers = screen.getAllByTestId('trigger-term');
+    fireEvent.click(triggers[1]);
+
     expect(mockSetClubTerm).toHaveBeenCalledWith('3');
   });
 });

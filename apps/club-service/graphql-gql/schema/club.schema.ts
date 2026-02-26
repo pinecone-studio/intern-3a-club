@@ -38,10 +38,7 @@ export const clubTypeDefs = gql`
   input UpdateClubInput {
     id: ID!
     status: ClubStatus
-    type: String
     teacherId: String
-    minMember: Int
-    maxMember: Int
   }
 
   extend type Query {

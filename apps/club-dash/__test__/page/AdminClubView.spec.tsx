@@ -15,6 +15,12 @@ jest.mock('../../app/createClub/page', () => ({
   default: () => <div>CreateClub</div>,
 }));
 
+jest.mock('@apollo/client/react', () => ({
+  ...jest.requireActual('@apollo/client/react'),
+  useQuery: () => ({ data: { getAllClubs: [] }, loading: false, error: null }),
+  useMutation: () => [mockMutate, { loading: false, data: null, error: null }],
+}));
+
 const mockClub: Club = {
   id: '1',
   name: 'Test Club',

@@ -110,13 +110,14 @@ export const CreateClubCenter = () => {
   };
 
   return (
-    <div className="max-w-[1400px] mx-auto p-6 lg:p-10 relative z-10 h-full">
+    <div className="max-w-[1400px] mx-auto p-6 lg:p-10 relative z-10 min-h-screen">
       <HeaderSection
         title="Клуб Нээх"
         subtitle="Шинэ клуб нээх хүсэлт болон хуваарь илгээх."
       />
-      <div className="flex gap-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6 items-start">
+        <div className="lg:col-span-7">
           <ClubForm
             formData={formData}
             setFormData={setFormData}
@@ -126,7 +127,7 @@ export const CreateClubCenter = () => {
             handleMonthChange={handleMonthChange}
             renderCalendarDays={renderCalendarDays}
             handleSubmit={onFormSubmit}
-          // loading={loading} // ClubForm дотор товчлуурыг disable болгоход хэрэгтэй
+            // loading={loading} // ClubForm дотор товчлуурыг disable болгоход хэрэгтэй
           />
         </div>
         <div className="lg:col-span-5 space-y-8">

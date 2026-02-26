@@ -56,24 +56,20 @@
         "lintFilePatterns": ["apps/club-service/**/*.{ts,tsx,js,jsx}"]
       }
     },
-   "build-worker": {
-  "executor": "nx:run-commands",
-  "options": {
-    "cwd": "apps/club-service",
-     "command": "../../node_modules/.bin/opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion"
-       
-  },
-  "outputs": ["{projectRoot}/.open-next"],
-  "dependsOn": ["build"]
-}
-,
-
+    "build-worker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/club-service",
+        "command": "../../node_modules/.bin/next-on-pages"
+      },
+      "outputs": ["{projectRoot}/.vercel/output/static"],
+      "dependsOn": ["build"]
+    },
     "deploy-worker": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "wrangler deploy"
-        ]
+        "cwd": "apps/club-service",
+        "commands": ["wrangler deploy"]
       },
       "dependsOn": ["build-worker"]
     }
