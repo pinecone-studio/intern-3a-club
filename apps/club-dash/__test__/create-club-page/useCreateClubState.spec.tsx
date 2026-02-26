@@ -2,6 +2,18 @@ import { renderHook, act } from '@testing-library/react';
 import { useCreateClubState } from '../../app/_hooks/use-createclub-states';
 import { ChangeEvent } from 'react';
 
+jest.mock('../../app/_hooks/use-create-club', () => ({
+  buildOverride: (
+    schedule: Record<string, unknown>,
+    key: string,
+    field: string,
+    value: string
+  ) => ({
+    ...(schedule[key] ?? {}),
+    [field]: value,
+  }),
+}));
+
 describe('useCreateClubState', () => {
   it('updates state via handlers', () => {
     const { result } = renderHook(() => useCreateClubState());
@@ -33,7 +45,7 @@ describe('useCreateClubState', () => {
     expect(result.current.state.clubStartTime).toBe('13:00');
     expect(result.current.state.clubTerm).toBe('1');
     expect(result.current.state.selectedFreqId).toBe('1');
-    expect(result.current.state.clubFrequency).toBe('Зөвхөн сонгосон өдрүүдэд');
+    expect(result.current.state.clubFrequency).toBe('ONCE');
     expect(result.current.state.clubStartDate).toEqual([]);
   });
 
@@ -181,7 +193,7 @@ describe('useCreateClubState', () => {
     expect(result.current.state.clubStartDate).toEqual([]);
     expect(result.current.state.clubTerm).toBe('1');
     expect(result.current.state.selectedFreqId).toBe('1');
-    expect(result.current.state.clubFrequency).toBe('Зөвхөн сонгосон өдрүүдэд');
+    expect(result.current.state.clubFrequency).toBe('ONCE');
     expect(result.current.state.scheduleChange).toEqual({});
   });
 });

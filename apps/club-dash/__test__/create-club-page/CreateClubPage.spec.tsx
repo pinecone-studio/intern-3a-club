@@ -12,6 +12,36 @@ const mockHandlers = {
   handleMax: jest.fn(),
 };
 
+jest.mock('@clerk/nextjs', () => ({
+  useAuth: () => ({ getToken: jest.fn().mockResolvedValue('mock-token') }),
+  useUser: () => ({ user: { firstName: 'Test' } }),
+  SignedIn: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SignedOut: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SignInButton: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  SignUpButton: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  UserButton: () => <div>UserButton</div>,
+  ClerkProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+}));
+
+jest.mock('../../app/_hooks/use-get-teachers', () => ({
+  useGetTeachers: () => ({
+    loading: false,
+    error: undefined,
+    data: {
+      getAllTeachers: [
+        { id: '1', firstName: 'Erdenetsogt', lastName: '' },
+        { id: '2', firstName: 'Narantsatsralt', lastName: '' },
+      ],
+    },
+  }),
+}));
+
 jest.mock('../../app/_hooks/use-create-club', () => ({
   useCreateClubMutation: () => ({
     handleSubmit: mockSubmit,
@@ -24,7 +54,7 @@ jest.mock('../../app/_hooks/use-createclub-states', () => ({
   useCreateClubState: () => ({
     state: {
       clubName: '',
-      teacherName: '',
+      teacherId: '',
       clubDesc: '',
       clubStartDate: [],
       selectedFreqId: '1',
@@ -35,9 +65,10 @@ jest.mock('../../app/_hooks/use-createclub-states', () => ({
       clubMaxStudent: '20',
       clubMinStudent: '5',
       clubFrequency: 'Зөвхөн сонгосон өдрүүдэд',
+      scheduleChange: {},
     },
     setters: {
-      setTeacherName: jest.fn(),
+      setTeacherId: jest.fn(),
       setClubStartDate: jest.fn(),
       setSelectedFreqId: jest.fn(),
       setClubTerm: jest.fn(),
@@ -100,9 +131,6 @@ describe('CreateClub Page', () => {
     fireEvent.change(screen.getByPlaceholderText(/Max/i), {
       target: { value: '30' },
     });
-    // fireEvent.change(screen.getByLabelText(/Сурагчдын тоо/i), {
-    //   target: { value: '30' },
-    // });
 
     expect(mockHandlers.handleName).toHaveBeenCalled();
     expect(mockHandlers.handleDesc).toHaveBeenCalled();
