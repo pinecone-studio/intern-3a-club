@@ -3,12 +3,14 @@ import { useMutation } from '@apollo/client/react';
 import {
   useCreateClubMutation,
   parseDuration,
-  detailedSchedule,
-  clubDatas,
   getVariables,
   performMutation,
+  getOverrideRoom,
+  getOverrideStartTime,
+  getOverrideDuration,
+  buildOverride,
 } from '../../app/_hooks/use-create-club';
-import { CreateClubState } from '../../libs/types';
+import { CreateClubState, ScheduleChange } from '../../libs/types';
 import React from 'react';
 
 jest.mock('@apollo/client/react', () => ({
@@ -36,6 +38,7 @@ describe('useCreateClubMutation', () => {
     clubFrequency: 'Weekly',
     selectedFreqId: '2',
     clubTerm: '1',
+    scheduleChange: {},
   };
 
   const mockEvent = {
@@ -75,43 +78,71 @@ describe('useCreateClubMutation', () => {
     });
   });
 
-  describe('detailedSchedule', () => {
-    it('maps dates to schedule objects', () => {
-      const result = detailedSchedule(
-        ['2026-03-01', '2026-03-08'],
-        '301',
-        '14:00',
-        60
-      );
-      expect(result).toHaveLength(2);
-      expect(result[0]).toEqual({
-        club: 1,
-        date: '2026-03-01',
-        room: '301',
-        startTime: '14:00',
-        durationMinutes: 60,
-      });
-      expect(result[1].club).toBe(2);
+  describe('getOverrideRoom', () => {
+    it('returns override room when present', () => {
+      const schedule: Record<string, ScheduleChange> = {
+        '2026-03-01': { room: '202', startTime: '10:00', duration: '1:00' },
+      };
+      expect(getOverrideRoom(schedule, '2026-03-01', validState)).toBe('202');
+    });
+
+    it('falls back to state room when key missing', () => {
+      expect(getOverrideRoom({}, '2026-03-01', validState)).toBe('301');
     });
   });
 
-  describe('clubDatas', () => {
-    it('builds variables correctly with valid numbers', () => {
-      const result = clubDatas(validState, ['2026-03-01'], 60);
-      expect(result.input.minMember).toBe(5);
-      expect(result.input.maxMember).toBe(20);
-      expect(result.startDate).toEqual(['2026-03-01']);
-      expect(result.duration).toBe(60);
+  describe('getOverrideStartTime', () => {
+    it('returns override startTime when present', () => {
+      const schedule: Record<string, ScheduleChange> = {
+        '2026-03-01': { room: '301', startTime: '09:00', duration: '1:00' },
+      };
+      expect(getOverrideStartTime(schedule, '2026-03-01', validState)).toBe(
+        '09:00'
+      );
     });
 
-    it('falls back to 0 when student fields are empty strings', () => {
-      const result = clubDatas(
-        { ...validState, clubMinStudent: '', clubMaxStudent: '' },
-        [],
-        0
+    it('falls back to state startTime when key missing', () => {
+      expect(getOverrideStartTime({}, '2026-03-01', validState)).toBe('14:00');
+    });
+  });
+
+  describe('getOverrideDuration', () => {
+    it('returns override duration when present', () => {
+      const schedule: Record<string, ScheduleChange> = {
+        '2026-03-01': { room: '301', startTime: '14:00', duration: '2:00' },
+      };
+      expect(getOverrideDuration(schedule, '2026-03-01', validState)).toBe(
+        '2:00'
       );
-      expect(result.input.minMember).toBe(0);
-      expect(result.input.maxMember).toBe(0);
+    });
+
+    it('falls back to state duration when key missing', () => {
+      expect(getOverrideDuration({}, '2026-03-01', validState)).toBe('1:00');
+    });
+  });
+
+  describe('buildOverride', () => {
+    it('builds override with field overridden', () => {
+      const result = buildOverride({}, '2026-03-01', 'room', '404', validState);
+      expect(result.room).toBe('404');
+      expect(result.startTime).toBe('14:00');
+      expect(result.duration).toBe('1:00');
+    });
+
+    it('merges existing override values', () => {
+      const schedule: Record<string, ScheduleChange> = {
+        '2026-03-01': { room: '202', startTime: '09:00', duration: '2:00' },
+      };
+      const result = buildOverride(
+        schedule,
+        '2026-03-01',
+        'room',
+        '505',
+        validState
+      );
+      expect(result.room).toBe('505');
+      expect(result.startTime).toBe('09:00');
+      expect(result.duration).toBe('2:00');
     });
   });
 
@@ -124,8 +155,8 @@ describe('useCreateClubMutation', () => {
 
       const result = getVariables(multiDateState);
 
-      expect(result.startDate).toEqual(['2026-01-10', '2026-06-15']);
-      expect(result.duration).toBe(60);
+      expect(result.schedules[0].date).toBe('2026-01-10');
+      expect(result.schedules[1].date).toBe('2026-06-15');
       expect(consoleLogMock).toHaveBeenCalledWith(
         expect.objectContaining({ clubSchedule: expect.any(Array) })
       );
@@ -136,7 +167,7 @@ describe('useCreateClubMutation', () => {
         ...validState,
         clubStartDate: undefined,
       } as unknown as CreateClubState);
-      expect(result.startDate).toEqual([]);
+      expect(result.schedules).toEqual([]);
     });
   });
 
@@ -155,6 +186,25 @@ describe('useCreateClubMutation', () => {
       await performMutation(validState, mockMutate);
       expect(consoleErrorMock).toHaveBeenCalled();
       expect(alertMock).toHaveBeenCalledWith('Алдаа гарлаа');
+    });
+    it('logs club data before mutating', async () => {
+      mockMutate.mockResolvedValue({
+        data: { createClubWithSchedules: { id: '1' } },
+      });
+
+      await performMutation(validState, mockMutate);
+
+      expect(consoleLogMock).toHaveBeenCalledWith(
+        'Club Data',
+        expect.any(Object)
+      );
+      expect(mockMutate).toHaveBeenCalledWith({
+        variables: expect.objectContaining({
+          input: expect.objectContaining({ name: 'Coding' }),
+          schedules: expect.any(Array),
+          frequency: 'Weekly',
+        }),
+      });
     });
   });
 

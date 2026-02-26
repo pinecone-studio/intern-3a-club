@@ -20,12 +20,16 @@ const mockSetters: CreateClubSetters = {
   setClubStartTime: jest.fn(),
   setClubDuration: jest.fn(),
   setClubFrequency: jest.fn(),
+  setScheduleChange: jest.fn(),
 };
 
 const mockHandlers: CreateClubHandlers = {
   handleMax: jest.fn(),
   handleName: jest.fn(),
   handleDesc: jest.fn(),
+  handleUpdateChange: jest.fn(),
+  handleDeleteDate: jest.fn(),
+  handleEmptyFields: jest.fn(),
 };
 
 const baseState: CreateClubState = {
@@ -35,12 +39,13 @@ const baseState: CreateClubState = {
   clubStartDate: [],
   selectedFreqId: '1',
   clubTerm: '1',
-  clubClassRoom: 'Room 101',
-  clubStartTime: '10:00',
-  clubDuration: '2.5',
+  clubClassRoom: '301',
+  clubStartTime: '13:00',
+  clubDuration: '1:00',
   clubMaxStudent: '20',
   clubMinStudent: '5',
   clubFrequency: 'Weekly',
+  scheduleChange: {},
 };
 
 describe('compareByTime', () => {
@@ -98,12 +103,12 @@ describe('CreatedTimetable', () => {
     expect(cards).toHaveLength(2);
     expect(cards[0]).toHaveTextContent('2026-01-10');
     expect(cards[1]).toHaveTextContent('2026-06-15');
-    expect(cards[0]).toHaveTextContent('Room 101');
-    expect(cards[0]).toHaveTextContent('10:00');
-    expect(cards[0]).toHaveTextContent('2.5ц');
+    expect(cards[0]).toHaveTextContent('301');
+    expect(cards[0]).toHaveTextContent('13:00');
+    expect(cards[0]).toHaveTextContent('1 цаг');
   });
 
-  it('calls all setters with default values when reset button is clicked', () => {
+  it('calls handleEmptyFields when reset button is clicked', () => {
     render(
       <CreatedTimetable
         state={baseState}
@@ -114,14 +119,20 @@ describe('CreatedTimetable', () => {
 
     fireEvent.click(screen.getByText('Хоослох'));
 
-    expect(mockSetters.setClubClassRoom).toHaveBeenCalledWith('301');
-    expect(mockSetters.setClubDuration).toHaveBeenCalledWith('1:00');
-    expect(mockSetters.setClubFrequency).toHaveBeenCalledWith(
-      'Зөвхөн сонгосон өдрүүдэд'
+    expect(mockHandlers.handleEmptyFields).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows correct date count label', () => {
+    const dates = [new Date('2026-01-10'), new Date('2026-06-15')];
+
+    render(
+      <CreatedTimetable
+        state={{ ...baseState, clubStartDate: dates }}
+        setters={mockSetters}
+        handlers={mockHandlers}
+      />
     );
-    expect(mockSetters.setClubStartDate).toHaveBeenCalledWith([]);
-    expect(mockSetters.setClubStartTime).toHaveBeenCalledWith('13:00');
-    expect(mockSetters.setClubTerm).toHaveBeenCalledWith('1');
-    expect(mockSetters.setSelectedFreqId).toHaveBeenCalledWith('1');
+
+    expect(screen.getByText(/Сонгогдсон хуваарь \(2\)/i)).toBeInTheDocument();
   });
 });

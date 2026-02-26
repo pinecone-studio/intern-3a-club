@@ -1,19 +1,19 @@
 import { Calendar, Input, Label } from '@intern-3a-club/shadcn';
 import React from 'react';
 import { format } from 'date-fns';
-import { History, Pin, Timer } from 'lucide-react';
-import { Frequency, ClassRoom, Duration, StartTime } from '../_components';
+import { History } from 'lucide-react';
+import {
+  Frequency,
+  ClassRoom,
+  Duration,
+  StartTime,
+  ScheduleCard,
+} from '../_components';
 import {
   CreateClubHandlers,
   CreateClubSetters,
   CreateClubState,
 } from '../../../../club-dash/libs/types';
-
-type TimetableProps = {
-  state: CreateClubState;
-  setters: CreateClubSetters;
-  handlers: CreateClubHandlers;
-};
 
 export const compareByTime = (a: Date, b: Date): number => {
   const aTime = a.getTime();
@@ -23,23 +23,19 @@ export const compareByTime = (a: Date, b: Date): number => {
   return 0;
 };
 
+type TimetableProps = {
+  state: CreateClubState;
+  setters: CreateClubSetters;
+  handlers: CreateClubHandlers;
+};
+
 export const CreatedTimetable = ({
   state,
   setters,
   handlers,
 }: TimetableProps) => {
   const datesArray = state.clubStartDate || [];
-  const sorted = [...datesArray].sort(compareByTime);
-
-  const handleEmptyFields = () => {
-    setters.setClubClassRoom('301');
-    setters.setClubDuration('1:00');
-    setters.setClubFrequency('Зөвхөн сонгосон өдрүүдэд');
-    setters.setClubStartDate([]);
-    setters.setClubStartTime('13:00');
-    setters.setClubTerm('1');
-    setters.setSelectedFreqId('1');
-  };
+  const chosen = [...datesArray].sort(compareByTime);
 
   return (
     <div className="space-y-6">
@@ -57,13 +53,12 @@ export const CreatedTimetable = ({
           <div className="flex justify-end">
             <div
               className="px-2 py-1 rounded-md bg-gray-100 hover:bg-gray-200 flex gap-2 justify-center items-center hover:cursor-pointer"
-              onClick={handleEmptyFields}
+              onClick={handlers.handleEmptyFields}
             >
               <History size={20} />
               <p className="text-sm font-semibold">Хоослох</p>
             </div>
           </div>
-
           <Frequency
             selectedFreqId={state.selectedFreqId}
             setSelectedFreqId={setters.setSelectedFreqId}
@@ -71,20 +66,10 @@ export const CreatedTimetable = ({
             setClubTerm={setters.setClubTerm}
             setClubFrequency={setters.setClubFrequency}
           />
-          <div className="flex justify-between gap-5">
+          <div className="flex items-end justify-between gap-5">
             <ClassRoom
               clubClassRoom={state.clubClassRoom}
               setClubClassRoom={setters.setClubClassRoom}
-            />
-            <StartTime
-              clubStartTime={state.clubStartTime}
-              setClubStartTime={setters.setClubStartTime}
-            />
-          </div>
-          <div className="flex gap-5 justify-between items-center">
-            <Duration
-              clubDuration={state.clubDuration}
-              setClubDuration={setters.setClubDuration}
             />
             <div className="space-y-2">
               <Label className="text-sm font-semibold">Сурагчдын тоо</Label>
@@ -96,47 +81,42 @@ export const CreatedTimetable = ({
               />
             </div>
           </div>
+          <div className="flex gap-5 justify-between items-end">
+            <Duration
+              clubDuration={state.clubDuration}
+              setClubDuration={setters.setClubDuration}
+            />
+            <StartTime
+              clubStartTime={state.clubStartTime}
+              setClubStartTime={setters.setClubStartTime}
+            />
+          </div>
         </div>
       </div>
-
       <div className="space-y-3">
         <Label className="text-sm font-semibold text-gray-700">
           Сонгогдсон хуваарь ({datesArray.length})
         </Label>
         <div className="border rounded-xl p-3 bg-gray-50/50 max-h-[300px] overflow-y-auto space-y-2">
-          {sorted.length === 0 ? (
+          {chosen.length === 0 ? (
             <div className="py-12 text-center text-gray-400 text-sm">
               Календар дээр өдрүүдээ сонгоно уу...
             </div>
           ) : (
-            sorted.map((d, i) => (
-              <div
-                key={`${d.getTime()}-${i}`}
-                data-testid="schedule-card"
-                className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-100 shadow-sm"
-              >
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[11px] font-bold text-gray-800">
-                    {format(d, 'yyyy-MM-dd')}
-                  </span>
-                  <span className="text-[10px] text-gray-400 uppercase tracking-tighter">
-                    {format(d, 'EEEE')}
-                  </span>
-                </div>
-                <div className="flex items-center gap-4 text-[11px] text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <Pin size={14} />
-                    <span>{state.clubClassRoom}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Timer size={14} />
-                    <span>{state.clubStartTime}</span>
-                  </div>
-                  <div className="flex items-center gap-1 font-medium text-gray-400">
-                    <span>{state.clubDuration}ц</span>
-                  </div>
-                </div>
-              </div>
+            chosen.map((selectedDays, i) => (
+              <ScheduleCard
+                key={`${selectedDays.getTime()}-${i}`}
+                selectedDays={selectedDays}
+                i={i}
+                changeSchedule={
+                  state.scheduleChange?.[format(selectedDays, 'yyyy-MM-dd')]
+                }
+                defaultRoom={state.clubClassRoom}
+                defaultStartTime={state.clubStartTime}
+                defaultDuration={state.clubDuration}
+                onUpdateChange={handlers.handleUpdateChange}
+                onDelete={handlers.handleDeleteDate}
+              />
             ))
           )}
         </div>
