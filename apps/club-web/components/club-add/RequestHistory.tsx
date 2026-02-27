@@ -1,6 +1,7 @@
 import { History } from 'lucide-react';
-import { cn } from '../../lib/utils';
+
 import { useQuery } from '@apollo/client/react';
+import { cn } from 'lib/utils';
 import { GET_ALL_CLUBS } from '../../lib/type';
 
 const getStatusClasses = (
@@ -24,7 +25,7 @@ const RequestRow: React.FC<{
   const statusText = req.status ?? 'unknown';
 
   return (
-    <div className="flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all group/item">
+    <div className="flex items-center justify-between p-5 rounded-[2rem] border-primary/20 backdrop-blur-xl border-blue-900/20 bg-gradient-to-br from-slate-900/80 via-blue-900/60 lg:p-8d">
       <div className="flex items-center gap-4">
         <div
           className={cn('h-2 w-2 rounded-full shadow-[0_0_8px]', statusClass)}
@@ -59,27 +60,27 @@ export const RequestHistory = () => {
 
   return (
     <section className="space-y-4">
-      <h3 className="flex items-center gap-3 text-xs font-black uppercase tracking-[0.3em] text-white/40">
+      <h3 className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-white">
         <History size={16} /> Илгээсэн хүсэлтүүд
       </h3>
-      <div className="space-y-3 max-h-[260px] lg:max-h-[360px] overflow-y-auto pr-2 scrollbar-hide">
+      <div className="space-y-3 max-h-[260px] lg:max-h-[360px] overflow-y-auto pr-2 scrollbar-hide rounded-[2.5rem] border border-white/5 p-3 backdrop-blur-3xl">
         {loading
           ? Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              data-testid="loading-skeleton"
-              className="flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/5 transition-all group/item animate-pulse"
-            >
-              <div className="flex items-center gap-4">
-                <div className="h-2 w-2 rounded-full bg-white/10" />
-                <div className="space-y-1">
-                  <div className="h-4 w-40 rounded bg-white/10" />
-                  <div className="h-3 w-24 rounded bg-white/5" />
+              <div
+                key={i}
+                data-testid="loading-skeleton"
+                className="flex items-center justify-between p-5 rounded-2xl bg-white/5/10 border border-white/10 transition-all group/item animate-pulse"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="h-2 w-2 rounded-full bg-white/10" />
+                  <div className="space-y-1">
+                    <div className="h-4 w-40 rounded bg-white/10" />
+                    <div className="h-3 w-24 rounded bg-white/5" />
+                  </div>
                 </div>
+                <div className="h-6 w-16 rounded bg-white/10" />
               </div>
-              <div className="h-6 w-16 rounded bg-white/10" />
-            </div>
-          ))
+            ))
           : requests.map((req) => <RequestRow key={req.id} req={req} />)}
       </div>
     </section>
