@@ -17,6 +17,7 @@ type ScheduleCardProps = {
     _value: string
   ) => void;
   onDelete: (_d: Date) => void;
+  hasOverlap: boolean;
 };
 
 type SetterValue = string | ((_prev: string) => string);
@@ -42,6 +43,7 @@ export const ScheduleCard = ({
   defaultDuration,
   onUpdateChange,
   onDelete,
+  hasOverlap,
 }: ScheduleCardProps) => {
   const key = format(selectedDays, 'yyyy-MM-dd');
 
@@ -59,12 +61,21 @@ export const ScheduleCard = ({
 
   const handleDelete = () => onDelete(selectedDays);
 
+  console.log({ hasOverlap });
+
   return (
     <div
       key={`${selectedDays.getTime()}-${i}`}
       data-testid="schedule-card"
-      className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm"
+      className={`bg-white p-3 rounded-lg border  shadow-sm ${
+        hasOverlap ? 'border-red-400 bg-red-100' : 'border-gray-100'
+      }`}
     >
+      {hasOverlap && (
+        <p className="text-xs text-red-500 font-semibold mb-2">
+          Хуваарь давхцаж байна
+        </p>
+      )}
       <div className="flex items-center gap-4 flex-wrap">
         <div className="flex flex-col gap-0.5 min-w-[90px]">
           <span className="text-[11px] font-bold text-gray-800">{key}</span>
