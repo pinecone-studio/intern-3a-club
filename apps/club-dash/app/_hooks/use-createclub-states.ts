@@ -60,6 +60,14 @@ export const useCreateClubState = () => {
     }
   }, [selectedFreqId, clubTerm, syncChangedDates]);
 
+  useEffect(() => {
+    const isWeekly = selectedFreqId === '2';
+    const hasDates = !!clubStartDate?.length;
+    if (isWeekly && hasDates) {
+      syncChangedDates(clubStartDate as Date[], clubTerm);
+    }
+  }, [clubStartDate]);
+
   const handleChange =
     (set: Dispatch<SetStateAction<string>>) =>
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
