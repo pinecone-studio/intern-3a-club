@@ -23,15 +23,16 @@ jest.mock('gql-utils', () => ({
   resolveMaxMember: jest.fn(),
   resolveFrequency: jest.fn(),
   resolveTerm: jest.fn(),
-  handleMutationError: jest.fn((err) => {
+  handleMutationError: jest.fn((err: unknown) => {
     throw err;
   }),
 }));
 
-// 3. Crypto-г гараараа тодорхойлох (randomUUID алдааг засна)
+// 3. Crypto Mock - Type-safe байдлаар
+const mockUUID = 'mock-uuid';
 Object.defineProperty(global, 'crypto', {
   value: {
-    randomUUID: jest.fn().mockReturnValue('mock-uuid'),
+    randomUUID: jest.fn().mockReturnValue(mockUUID),
   },
   configurable: true,
 });
@@ -63,9 +64,8 @@ describe('createClubWithSchedules Final Coverage Fix', () => {
     jest.clearAllMocks();
   });
 
-  // SUCCESS PATH (Covers getClubValues, getTimetableValues, insertSchedules)
   it('should successfully create club and schedules', async () => {
-    const mockNewClub = { id: 'mock-uuid', name: 'Test Club' };
+    const mockNewClub = { id: mockUUID, name: 'Test Club' };
     const returningMock = jest.fn().mockResolvedValue([mockNewClub]);
 
     (DB.insert as jest.Mock).mockReturnValue({
@@ -74,46 +74,47 @@ describe('createClubWithSchedules Final Coverage Fix', () => {
 
     const result = await createClubWithSchedules(null, mockArgs);
 
-    expect(DB.insert).toHaveBeenCalledTimes(2); // 1. Club, 2. Timetable
+    expect(DB.insert).toHaveBeenCalledTimes(2);
     expect(result).toEqual(mockNewClub);
   });
 
-  // MINIMAL INPUT (Covers undefined branches in insertSchedules)
   it('should handle minimal input and skip schedules', async () => {
-    const mockNewClub = { id: 'mock-uuid', name: 'Min' };
+    const mockNewClub = { id: mockUUID, name: 'Min' };
     (DB.insert as jest.Mock).mockReturnValue({
       values: jest.fn(() => ({
         returning: jest.fn().mockResolvedValue([mockNewClub]),
       })),
     });
 
+    // 'any' ашиглахгүйгээр төрлийг нь CreateClubArgs-д тааруулж 'as' ашиглах
     const minimalArgs = {
       input: { name: 'Min' },
       frequency: 'ONCE',
-      schedules: undefined, // undefined schedules branch-ийг уншуулна
-    } as any;
+      schedules: undefined,
+    } as unknown as CreateClubArgs;
 
     await createClubWithSchedules(null, minimalArgs);
 
-    // schedules байхгүй үед insert 1 л удаа дуудагдана
     expect(DB.insert).toHaveBeenCalledTimes(1);
   });
 
   it('should skip schedules if array is empty', async () => {
-    const mockNewClub = { id: 'mock-uuid', name: 'Empty' };
+    const mockNewClub = { id: mockUUID, name: 'Empty' };
     (DB.insert as jest.Mock).mockReturnValue({
       values: jest.fn(() => ({
         returning: jest.fn().mockResolvedValue([mockNewClub]),
       })),
     });
 
-    const argsWithEmptySchedules = { ...mockArgs, schedules: [] }; // empty array branch
+    const argsWithEmptySchedules: CreateClubArgs = {
+      ...mockArgs,
+      schedules: [],
+    };
     await createClubWithSchedules(null, argsWithEmptySchedules);
 
     expect(DB.insert).toHaveBeenCalledTimes(1);
   });
 
-  // ERROR BRANCH (Covers "if (!newClub)" check)
   it('should throw error if club creation returns empty array', async () => {
     (DB.insert as jest.Mock).mockReturnValue({
       values: jest.fn(() => ({
@@ -126,7 +127,6 @@ describe('createClubWithSchedules Final Coverage Fix', () => {
     );
   });
 
-  // CATCH BLOCK
   it('should trigger handleMutationError on catch', async () => {
     const dbError = new Error('SQL Error');
     (DB.insert as jest.Mock).mockImplementation(() => {
