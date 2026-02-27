@@ -42,6 +42,14 @@ jest.mock('../../app/_hooks/use-get-teachers', () => ({
   }),
 }));
 
+jest.mock('../../app/_hooks/use-get-clubs', () => ({
+  useGetClubs: () => ({
+    loading: false,
+    error: undefined,
+    data: { getAllClubs: [] },
+  }),
+}));
+
 jest.mock('../../app/_hooks/use-create-club', () => ({
   useCreateClubMutation: () => ({
     handleSubmit: mockSubmit,

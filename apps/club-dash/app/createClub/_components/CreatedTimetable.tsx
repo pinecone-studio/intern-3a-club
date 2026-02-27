@@ -14,6 +14,8 @@ import {
   CreateClubSetters,
   CreateClubState,
 } from '../../../../club-dash/libs/types';
+import { useGetClubs } from '../../_hooks/use-get-clubs';
+import { scheduleOverlapped } from '../../../../club-dash/libs/utils';
 
 export const compareByTime = (a: Date, b: Date): number => {
   const aTime = a.getTime();
@@ -34,8 +36,22 @@ export const CreatedTimetable = ({
   setters,
   handlers,
 }: TimetableProps) => {
+  const { data: allClubsData } = useGetClubs();
   const datesArray = state.clubStartDate || [];
   const chosen = [...datesArray].sort(compareByTime);
+
+  const formatDate = (day: Date) => format(day, 'yyyy-MM-dd');
+  const changeRoom = (day: Date) =>
+    state.scheduleChange?.[formatDate(day)]?.room ?? state.clubClassRoom;
+  const changeStartTime = (day: Date) =>
+    state.scheduleChange?.[formatDate(day)]?.startTime ?? state.clubStartTime;
+  const scheduleOverlap = (day: Date) =>
+    scheduleOverlapped(
+      allClubsData,
+      day,
+      changeRoom(day),
+      changeStartTime(day)
+    );
 
   return (
     <div className="space-y-6">
@@ -116,6 +132,7 @@ export const CreatedTimetable = ({
                 defaultDuration={state.clubDuration}
                 onUpdateChange={handlers.handleUpdateChange}
                 onDelete={handlers.handleDeleteDate}
+                hasOverlap={scheduleOverlap(selectedDays)}
               />
             ))
           )}
