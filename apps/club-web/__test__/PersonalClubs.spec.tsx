@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { MyClubsList } from './PersonalClubs';
+import { MyClubsList } from '../components/club-add/PersonalClubs';
 
 // Mock framer-motion to avoid errors in test environment and simplify testing
 jest.mock('framer-motion', () => {
@@ -8,7 +8,7 @@ jest.mock('framer-motion', () => {
     ...actual,
     motion: {
       ...actual.motion,
-      // Render a simple div instead of a motion component for tests
+
       div: ({ children, ...rest }: { children: React.ReactNode }) => (
         <div {...rest}>{children}</div>
       ),

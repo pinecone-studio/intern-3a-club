@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { SystemTip } from './SystemTip';
+import { SystemTip } from '../components/club-add/SystemTip';
 
 // Mock lucide-react icons for simplicity and to isolate the component test
 jest.mock('lucide-react', () => ({
