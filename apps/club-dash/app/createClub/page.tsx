@@ -30,7 +30,10 @@ const CreateClub = () => {
           Клуб нээх
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent
+        className="max-w-2xl block overscroll-y-auto"
+        style={{ scrollbarWidth: 'none' }}
+      >
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Шинэ клуб нээх</DialogTitle>
