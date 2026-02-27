@@ -11,13 +11,13 @@ export const updateTimetable = async (
   console.log('UPDATE TIMETABLE START:', args.input);
 
   try {
-    const { id, date, room, clubStartTime, duration } = args.input;
+    const { id, date, classroom, startTime, duration } = args.input;
 
     const [updatedSchedule] = await DB.update(timetable)
       .set({
         date: date,
-        room: room,
-        clubStartTime: clubStartTime,
+        classroom: classroom,
+        startTime: startTime,
         duration: duration,
       })
       .where(eq(timetable.id, id))

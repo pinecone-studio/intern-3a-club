@@ -1,7 +1,28 @@
 import { sqliteTable, text, real, integer } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
-// --- STUDENTS TABLE ---
+export const teachers = sqliteTable('teachers', {
+  id: text('id').primaryKey(),
+  authUserId: text('authUserId'),
+  azureEmail: text('azureEmail').notNull(),
+  personalEmail: text('personalEmail'),
+  profilePicture: text('profilePicture'),
+  firstName: text('firstName'),
+  lastName: text('lastName'),
+  phoneNumber: text('phoneNumber'),
+  gender: text('gender', { enum: ['FEMALE', 'MALE', 'OTHER'] }).default(
+    'OTHER'
+  ),
+  isActive: integer('isActive').default(1),
+  createdAt: text('createdAt')
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull(),
+  updatedAt: text('updatedAt')
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull()
+    .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+});
+
 export const students = sqliteTable('students', {
   id: text('id').primaryKey(),
   authUserId: text('authUserId'),
@@ -44,7 +65,65 @@ export const students = sqliteTable('students', {
     .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
 });
 
-// --- CLASSES TABLE ---
+export const clubs = sqliteTable('clubs', {
+  id: text('id').primaryKey(),
+  creatorId: text('creatorId'),
+  name: text('name').notNull(),
+  description: text('description'),
+  teacherId: text('teacherId').references(() => teachers.id),
+  minMember: integer('minMember').notNull(),
+  maxMember: integer('maxMember').notNull(),
+  type: text('type').notNull(),
+  preferredTeachers: text('preferredTeachers', { mode: 'json' }).$type<
+    string[]
+  >(),
+  status: text('status').notNull(),
+  frequency: text('frequency').notNull(),
+  clubTerm: text('clubTerm'),
+  createdAt: text('createdAt')
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull(),
+  updatedAt: text('updatedAt')
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull()
+    .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+});
+
+export const timetable = sqliteTable('timetable', {
+  id: text('id').primaryKey(),
+  date: text('date').notNull(),
+  classroom: text('classroom').notNull(),
+  startTime: text('startTime').notNull(),
+  duration: integer('duration'),
+  clubId: text('clubId')
+    .notNull()
+    .references(() => clubs.id, { onDelete: 'cascade' }),
+  createdAt: text('createdAt')
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull(),
+  updatedAt: text('updatedAt')
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull()
+    .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+});
+
+export const clubMembers = sqliteTable('club_members', {
+  id: text('id').primaryKey(),
+  clubId: text('clubId')
+    .notNull()
+    .references(() => clubs.id, { onDelete: 'cascade' }),
+  studentId: text('studentId')
+    .notNull()
+    .references(() => students.id, { onDelete: 'cascade' }),
+  joinedAt: text('joinedAt')
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull(),
+  updatedAt: text('updatedAt')
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull()
+    .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+});
+
 export const classes = sqliteTable('classes', {
   id: text('id').primaryKey(),
   classNumber: text('classNumber').notNull(),
@@ -63,52 +142,6 @@ export const classes = sqliteTable('classes', {
   isFinished: integer('isFinished').default(0),
 });
 
-// --- TEACHERS TABLE ---
-export const teachers = sqliteTable('teachers', {
-  id: text('id').primaryKey(),
-  authUserId: text('authUserId'),
-  azureEmail: text('azureEmail').notNull(),
-  personalEmail: text('personalEmail'),
-  profilePicture: text('profilePicture'),
-  firstName: text('firstName'),
-  lastName: text('lastName'),
-  phoneNumber: text('phoneNumber'),
-  gender: text('gender', { enum: ['FEMALE', 'MALE', 'OTHER'] }).default(
-    'OTHER'
-  ),
-  isActive: integer('isActive').default(1),
-  createdAt: text('createdAt')
-    .default(sql`(CURRENT_TIMESTAMP)`)
-    .notNull(),
-  updatedAt: text('updatedAt')
-    .default(sql`(CURRENT_TIMESTAMP)`)
-    .notNull()
-    .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
-});
-
-// --- CLUBS TABLE ---
-export const clubs = sqliteTable('clubs', {
-  id: text('id').primaryKey(),
-  creatorId: text('creatorId'),
-  name: text('name').notNull(),
-  description: text('description'),
-  teacherId: text('teacherId').references(() => teachers.id),
-  minMember: integer('minMember').notNull(),
-  maxMember: integer('maxMember').notNull(),
-  type: text('type').notNull(),
-  preferredTeachers: text('preferredTeachers', { mode: 'json' }).$type<
-    string[]
-  >(),
-  status: text('status').notNull(),
-  createdAt: text('createdAt')
-    .default(sql`(CURRENT_TIMESTAMP)`)
-    .notNull(),
-  updatedAt: text('updatedAt')
-    .default(sql`(CURRENT_TIMESTAMP)`)
-    .notNull(),
-});
-
-// --- INTERMEDIATE TABLES (JOINS) ---
 export const classTeachers = sqliteTable('class_teachers', {
   id: text('id').primaryKey(),
   classId: text('classId')
@@ -118,38 +151,6 @@ export const classTeachers = sqliteTable('class_teachers', {
     .notNull()
     .references(() => teachers.id, { onDelete: 'cascade' }),
   assignedAt: text('assignedAt')
-    .default(sql`(CURRENT_TIMESTAMP)`)
-    .notNull(),
-});
-
-// --- CLUB MEMBERS TABLE ---
-export const clubMembers = sqliteTable('club_members', {
-  id: text('id').primaryKey(),
-  clubId: text('clubId')
-    .notNull()
-    .references(() => clubs.id, { onDelete: 'cascade' }),
-  studentId: text('studentId')
-    .notNull()
-    .references(() => students.id, { onDelete: 'cascade' }),
-  joinedAt: text('joinedAt')
-    .default(sql`(CURRENT_TIMESTAMP)`)
-    .notNull(),
-});
-
-// --- CLUB TIMETABLE TABLE ---
-export const timetable = sqliteTable('timetable', {
-  id: text('id').primaryKey(),
-  date: text('date').notNull(),
-  room: text('room').notNull(),
-  clubStartTime: text('clubStartTime').notNull(),
-  duration: integer('duration'),
-  clubId: text('clubId')
-    .notNull()
-    .references(() => clubs.id, { onDelete: 'cascade' }),
-  createdAt: text('createdAt')
-    .default(sql`(CURRENT_TIMESTAMP)`)
-    .notNull(),
-  updatedAt: text('updatedAt')
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),
 });

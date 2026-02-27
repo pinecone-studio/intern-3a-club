@@ -4,8 +4,8 @@ export const timetableTypeDefs = gql`
   type Timetable {
     id: ID!
     date: String!
-    room: String!
-    clubStartTime: String!
+    classroom: String!
+    startTime: String!
     duration: Int!
     clubId: String!
     club: Club
@@ -13,10 +13,17 @@ export const timetableTypeDefs = gql`
     updatedAt: String!
   }
 
+  input ScheduleInput {
+    date: String!
+    classroom: String!
+    startTime: String!
+    duration: Int!
+  }
+
   input CreateTimetableInput {
     date: String!
-    room: String!
-    clubStartTime: String!
+    classroom: String!
+    startTime: String!
     duration: Int!
     clubId: String!
   }
@@ -24,8 +31,8 @@ export const timetableTypeDefs = gql`
   input UpdateTimetableInput {
     id: ID!
     date: String
-    room: String
-    clubStartTime: String
+    classroom: String
+    startTime: String
     duration: Int
   }
 

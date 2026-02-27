@@ -7,17 +7,29 @@ export const clubTypeDefs = gql`
     declined
   }
 
+  enum ClubType {
+    mentor
+    self
+  }
+
+  enum ClubFrequency {
+    ONCE
+    WEEKLY
+  }
+
   type Club {
     id: ID!
     name: String!
     description: String
     status: ClubStatus!
-    type: String!
+    type: ClubType!
     creatorId: String
     teacherId: String
     preferredTeachers: [String]
     minMember: Int!
     maxMember: Int!
+    frequency: ClubFrequency!
+    clubTerm: String
     createdAt: String!
     updatedAt: String!
     timetables: [Timetable]
@@ -51,12 +63,9 @@ export const clubTypeDefs = gql`
   extend type Mutation {
     createClubWithSchedules(
       input: CreateClubInput!
-      startDate: String!
-      classroom: String!
-      startTime: String!
-      duration: Int!
+      schedules: [ScheduleInput!]!
       frequency: String!
-      selectedDays: [String!]
+      clubTerm: String
     ): Club
 
     createClub(input: CreateClubInput!): Club
