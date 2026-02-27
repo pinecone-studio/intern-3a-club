@@ -13,19 +13,21 @@ export interface CreateClubInput {
 }
 export interface CreateClubWithSchedulesArgs {
   input: CreateClubInput;
-  startDate: string;
-  classroom: string;
-  startTime: string;
-  duration: number;
+  schedules: {
+    date: string;
+    classroom: string;
+    startTime: string;
+    duration: number;
+  }[];
   frequency: string;
-  selectedDays?: string[];
+  clubTerm?: string;
 }
 
 export type UpdateTimetableArgs = {
   input: {
     id: string;
     date: string;
-    room: string;
+    classroom: string;
     clubStartTime: string;
     duration: number;
   };

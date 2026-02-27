@@ -1,575 +1,44 @@
 {
-  "id": "00000000-0000-0000-0000-000000000000",
-  "prevId": "",
   "version": "6",
   "dialect": "sqlite",
+  "id": "cdebce0b-d57f-4e76-a97f-bb019495446b",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "students": {
-      "name": "students",
-      "columns": {
-        "id": {
-          "autoincrement": false,
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": false
-        },
-        "authUserId": {
-          "autoincrement": false,
-          "name": "authUserId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "classId": {
-          "autoincrement": false,
-          "name": "classId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "studentCode": {
-          "autoincrement": false,
-          "name": "studentCode",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "azureEmail": {
-          "autoincrement": false,
-          "name": "azureEmail",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "registerNumber": {
-          "autoincrement": false,
-          "name": "registerNumber",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "personalEmail": {
-          "autoincrement": false,
-          "name": "personalEmail",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "profilePicture": {
-          "autoincrement": false,
-          "name": "profilePicture",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "firstName": {
-          "autoincrement": false,
-          "name": "firstName",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "lastName": {
-          "autoincrement": false,
-          "name": "lastName",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "phoneNumber": {
-          "autoincrement": false,
-          "name": "phoneNumber",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "activeStatus": {
-          "default": "'PENDING'",
-          "autoincrement": false,
-          "name": "activeStatus",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "gender": {
-          "default": "'OTHER'",
-          "autoincrement": false,
-          "name": "gender",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "profileProgress": {
-          "default": 0,
-          "autoincrement": false,
-          "name": "profileProgress",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "isGraduated": {
-          "default": 0,
-          "autoincrement": false,
-          "name": "isGraduated",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "isAdvocator": {
-          "default": 0,
-          "autoincrement": false,
-          "name": "isAdvocator",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "isProfileVisible": {
-          "default": 0,
-          "autoincrement": false,
-          "name": "isProfileVisible",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "profileVisibledDate": {
-          "autoincrement": false,
-          "name": "profileVisibledDate",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "isProfileStaged": {
-          "default": 0,
-          "autoincrement": false,
-          "name": "isProfileStaged",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "isInternational": {
-          "default": 0,
-          "autoincrement": false,
-          "name": "isInternational",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "dateOfBirth": {
-          "autoincrement": false,
-          "name": "dateOfBirth",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "graduatedDate": {
-          "autoincrement": false,
-          "name": "graduatedDate",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "jobSeekingStatus": {
-          "autoincrement": false,
-          "name": "jobSeekingStatus",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "hasAgreedTerms": {
-          "default": 0,
-          "autoincrement": false,
-          "name": "hasAgreedTerms",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "createdAt": {
-          "default": "(CURRENT_TIMESTAMP)",
-          "autoincrement": false,
-          "name": "createdAt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "updatedAt": {
-          "default": "(CURRENT_TIMESTAMP)",
-          "autoincrement": false,
-          "name": "updatedAt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "compositePrimaryKeys": {},
-      "indexes": {
-        "student_code_idx": {
-          "name": "student_code_idx",
-          "columns": [
-            "studentCode"
-          ],
-          "isUnique": false
-        },
-        "student_phone_number_idx": {
-          "name": "student_phone_number_idx",
-          "columns": [
-            "phoneNumber"
-          ],
-          "isUnique": false
-        },
-        "students_first_name_idx": {
-          "name": "students_first_name_idx",
-          "columns": [
-            "firstName"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {
-        "students_check_1": {
-          "name": "students_check_1",
-          "value": "activeStatus IN ('ACTIVE', 'ARCHIVED', 'PENDING', 'DROPOUT'"
-        },
-        "students_check_2": {
-          "name": "students_check_2",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
-        },
-        "students_check_3": {
-          "name": "students_check_3",
-          "value": "jobSeekingStatus IN ('READY', 'OPEN_TO_OFFER', 'UNAVAILABLE'"
-        },
-        "classes_check_4": {
-          "name": "classes_check_4",
-          "value": "course IN ('CODING', 'DESIGN'"
-        },
-        "teachers_check_5": {
-          "name": "teachers_check_5",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
-        },
-        "clubs_check_6": {
-          "name": "clubs_check_6",
-          "value": "type IN ('self', 'mentor'"
-        },
-        "clubs_check_7": {
-          "name": "clubs_check_7",
-          "value": "status IN ('pending', 'approved', 'declined'"
-        }
-      }
-    },
-    "classes": {
-      "name": "classes",
-      "columns": {
-        "id": {
-          "autoincrement": false,
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": false
-        },
-        "classNumber": {
-          "autoincrement": false,
-          "name": "classNumber",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "className": {
-          "autoincrement": false,
-          "name": "className",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "classStartDate": {
-          "default": "(CURRENT_TIMESTAMP)",
-          "autoincrement": false,
-          "name": "classStartDate",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "classEndDate": {
-          "autoincrement": false,
-          "name": "classEndDate",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "classStartTime": {
-          "autoincrement": false,
-          "name": "classStartTime",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "classEndTime": {
-          "autoincrement": false,
-          "name": "classEndTime",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "course": {
-          "default": "'CODING'",
-          "autoincrement": false,
-          "name": "course",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "teachers": {
-          "default": "(json_array())",
-          "autoincrement": false,
-          "name": "teachers",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "academicYearId": {
-          "autoincrement": false,
-          "name": "academicYearId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "isFinished": {
-          "default": 0,
-          "autoincrement": false,
-          "name": "isFinished",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "compositePrimaryKeys": {},
-      "indexes": {
-        "class_course_idx": {
-          "name": "class_course_idx",
-          "columns": [
-            "course"
-          ],
-          "isUnique": false
-        },
-        "class_number_idx": {
-          "name": "class_number_idx",
-          "columns": [
-            "classNumber"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {
-        "students_check_1": {
-          "name": "students_check_1",
-          "value": "activeStatus IN ('ACTIVE', 'ARCHIVED', 'PENDING', 'DROPOUT'"
-        },
-        "students_check_2": {
-          "name": "students_check_2",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
-        },
-        "students_check_3": {
-          "name": "students_check_3",
-          "value": "jobSeekingStatus IN ('READY', 'OPEN_TO_OFFER', 'UNAVAILABLE'"
-        },
-        "classes_check_4": {
-          "name": "classes_check_4",
-          "value": "course IN ('CODING', 'DESIGN'"
-        },
-        "teachers_check_5": {
-          "name": "teachers_check_5",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
-        },
-        "clubs_check_6": {
-          "name": "clubs_check_6",
-          "value": "type IN ('self', 'mentor'"
-        },
-        "clubs_check_7": {
-          "name": "clubs_check_7",
-          "value": "status IN ('pending', 'approved', 'declined'"
-        }
-      }
-    },
-    "teachers": {
-      "name": "teachers",
-      "columns": {
-        "id": {
-          "autoincrement": false,
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": false
-        },
-        "email": {
-          "autoincrement": false,
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "autoincrement": false,
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "phoneNumber": {
-          "autoincrement": false,
-          "name": "phoneNumber",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "profilePicture": {
-          "autoincrement": false,
-          "name": "profilePicture",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "gender": {
-          "autoincrement": false,
-          "name": "gender",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "isActive": {
-          "default": 1,
-          "autoincrement": false,
-          "name": "isActive",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "createdAt": {
-          "default": "(CURRENT_TIMESTAMP)",
-          "autoincrement": false,
-          "name": "createdAt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "updatedAt": {
-          "default": "(CURRENT_TIMESTAMP)",
-          "autoincrement": false,
-          "name": "updatedAt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "compositePrimaryKeys": {},
-      "indexes": {
-        "teacher_email_idx": {
-          "name": "teacher_email_idx",
-          "columns": [
-            "email"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {
-        "students_check_1": {
-          "name": "students_check_1",
-          "value": "activeStatus IN ('ACTIVE', 'ARCHIVED', 'PENDING', 'DROPOUT'"
-        },
-        "students_check_2": {
-          "name": "students_check_2",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
-        },
-        "students_check_3": {
-          "name": "students_check_3",
-          "value": "jobSeekingStatus IN ('READY', 'OPEN_TO_OFFER', 'UNAVAILABLE'"
-        },
-        "classes_check_4": {
-          "name": "classes_check_4",
-          "value": "course IN ('CODING', 'DESIGN'"
-        },
-        "teachers_check_5": {
-          "name": "teachers_check_5",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
-        },
-        "clubs_check_6": {
-          "name": "clubs_check_6",
-          "value": "type IN ('self', 'mentor'"
-        },
-        "clubs_check_7": {
-          "name": "clubs_check_7",
-          "value": "status IN ('pending', 'approved', 'declined'"
-        }
-      }
-    },
     "class_teachers": {
       "name": "class_teachers",
       "columns": {
         "id": {
-          "autoincrement": false,
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": false
+          "notNull": true,
+          "autoincrement": false
         },
         "classId": {
-          "autoincrement": false,
           "name": "classId",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "teacherId": {
-          "autoincrement": false,
           "name": "teacherId",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "assignedAt": {
-          "default": "(CURRENT_TIMESTAMP)",
-          "autoincrement": false,
           "name": "assignedAt",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
         }
       },
-      "compositePrimaryKeys": {},
-      "indexes": {
-        "class_teacher_teacher_idx": {
-          "name": "class_teacher_teacher_idx",
-          "columns": [
-            "teacherId"
-          ],
-          "isUnique": false
-        },
-        "class_teacher_class_idx": {
-          "name": "class_teacher_class_idx",
-          "columns": [
-            "classId"
-          ],
-          "isUnique": false
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
-        "class_teachers_teacherId_teachers_id_fk": {
-          "name": "class_teachers_teacherId_teachers_id_fk",
-          "tableFrom": "class_teachers",
-          "tableTo": "teachers",
-          "columnsFrom": [
-            "teacherId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
         "class_teachers_classId_classes_id_fk": {
           "name": "class_teachers_classId_classes_id_fk",
           "tableFrom": "class_teachers",
@@ -582,252 +51,159 @@
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {
-        "students_check_1": {
-          "name": "students_check_1",
-          "value": "activeStatus IN ('ACTIVE', 'ARCHIVED', 'PENDING', 'DROPOUT'"
         },
-        "students_check_2": {
-          "name": "students_check_2",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
-        },
-        "students_check_3": {
-          "name": "students_check_3",
-          "value": "jobSeekingStatus IN ('READY', 'OPEN_TO_OFFER', 'UNAVAILABLE'"
-        },
-        "classes_check_4": {
-          "name": "classes_check_4",
-          "value": "course IN ('CODING', 'DESIGN'"
-        },
-        "teachers_check_5": {
-          "name": "teachers_check_5",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
-        },
-        "clubs_check_6": {
-          "name": "clubs_check_6",
-          "value": "type IN ('self', 'mentor'"
-        },
-        "clubs_check_7": {
-          "name": "clubs_check_7",
-          "value": "status IN ('pending', 'approved', 'declined'"
-        }
-      }
-    },
-    "clubs": {
-      "name": "clubs",
-      "columns": {
-        "id": {
-          "autoincrement": false,
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": false
-        },
-        "creatorId": {
-          "autoincrement": false,
-          "name": "creatorId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "name": {
-          "autoincrement": false,
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "autoincrement": false,
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "teacherId": {
-          "autoincrement": false,
-          "name": "teacherId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "minMember": {
-          "autoincrement": false,
-          "name": "minMember",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "maxMember": {
-          "autoincrement": false,
-          "name": "maxMember",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "type": {
-          "autoincrement": false,
-          "name": "type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "preferredTeacher": {
-          "autoincrement": false,
-          "name": "preferredTeacher",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "status": {
-          "default": "'pending'",
-          "autoincrement": false,
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "createdAt": {
-          "default": "(CURRENT_TIMESTAMP)",
-          "autoincrement": false,
-          "name": "createdAt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "updatedAt": {
-          "default": "(CURRENT_TIMESTAMP)",
-          "autoincrement": false,
-          "name": "updatedAt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "compositePrimaryKeys": {},
-      "indexes": {
-        "club_teacher_idx": {
-          "name": "club_teacher_idx",
-          "columns": [
-            "teacherId"
-          ],
-          "isUnique": false
-        },
-        "club_type_idx": {
-          "name": "club_type_idx",
-          "columns": [
-            "type"
-          ],
-          "isUnique": false
-        },
-        "club_status_idx": {
-          "name": "club_status_idx",
-          "columns": [
-            "status"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {
-        "students_check_1": {
-          "name": "students_check_1",
-          "value": "activeStatus IN ('ACTIVE', 'ARCHIVED', 'PENDING', 'DROPOUT'"
-        },
-        "students_check_2": {
-          "name": "students_check_2",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
-        },
-        "students_check_3": {
-          "name": "students_check_3",
-          "value": "jobSeekingStatus IN ('READY', 'OPEN_TO_OFFER', 'UNAVAILABLE'"
-        },
-        "classes_check_4": {
-          "name": "classes_check_4",
-          "value": "course IN ('CODING', 'DESIGN'"
-        },
-        "teachers_check_5": {
-          "name": "teachers_check_5",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
-        },
-        "clubs_check_6": {
-          "name": "clubs_check_6",
-          "value": "type IN ('self', 'mentor'"
-        },
-        "clubs_check_7": {
-          "name": "clubs_check_7",
-          "value": "status IN ('pending', 'approved', 'declined'"
-        }
-      }
-    },
-    "club_members": {
-      "name": "club_members",
-      "columns": {
-        "id": {
-          "autoincrement": false,
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": false
-        },
-        "clubId": {
-          "autoincrement": false,
-          "name": "clubId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "studentId": {
-          "autoincrement": false,
-          "name": "studentId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "joinedAt": {
-          "default": "(CURRENT_TIMESTAMP)",
-          "autoincrement": false,
-          "name": "joinedAt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "compositePrimaryKeys": {},
-      "indexes": {
-        "club_members_student_idx": {
-          "name": "club_members_student_idx",
-          "columns": [
-            "studentId"
-          ],
-          "isUnique": false
-        },
-        "club_members_club_idx": {
-          "name": "club_members_club_idx",
-          "columns": [
-            "clubId"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "club_members_studentId_students_id_fk": {
-          "name": "club_members_studentId_students_id_fk",
-          "tableFrom": "club_members",
-          "tableTo": "students",
+        "class_teachers_teacherId_teachers_id_fk": {
+          "name": "class_teachers_teacherId_teachers_id_fk",
+          "tableFrom": "class_teachers",
+          "tableTo": "teachers",
           "columnsFrom": [
-            "studentId"
+            "teacherId"
           ],
           "columnsTo": [
             "id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "classes": {
+      "name": "classes",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
         },
+        "classNumber": {
+          "name": "classNumber",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "className": {
+          "name": "className",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "classStartDate": {
+          "name": "classStartDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
+        },
+        "classEndDate": {
+          "name": "classEndDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "classStartTime": {
+          "name": "classStartTime",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "classEndTime": {
+          "name": "classEndTime",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "course": {
+          "name": "course",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'CODING'"
+        },
+        "teachers": {
+          "name": "teachers",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(json_array())"
+        },
+        "academicYearId": {
+          "name": "academicYearId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "isFinished": {
+          "name": "isFinished",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "club_members": {
+      "name": "club_members",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "clubId": {
+          "name": "clubId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "studentId": {
+          "name": "studentId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "joinedAt": {
+          "name": "joinedAt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
         "club_members_clubId_clubs_id_fk": {
           "name": "club_members_clubId_clubs_id_fk",
           "tableFrom": "club_members",
@@ -840,126 +216,512 @@
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
+        },
+        "club_members_studentId_students_id_fk": {
+          "name": "club_members_studentId_students_id_fk",
+          "tableFrom": "club_members",
+          "tableTo": "students",
+          "columnsFrom": [
+            "studentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "checkConstraints": {
-        "students_check_1": {
-          "name": "students_check_1",
-          "value": "activeStatus IN ('ACTIVE', 'ARCHIVED', 'PENDING', 'DROPOUT'"
+      "checkConstraints": {}
+    },
+    "clubs": {
+      "name": "clubs",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
         },
-        "students_check_2": {
-          "name": "students_check_2",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
+        "creatorId": {
+          "name": "creatorId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
-        "students_check_3": {
-          "name": "students_check_3",
-          "value": "jobSeekingStatus IN ('READY', 'OPEN_TO_OFFER', 'UNAVAILABLE'"
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         },
-        "classes_check_4": {
-          "name": "classes_check_4",
-          "value": "course IN ('CODING', 'DESIGN'"
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
-        "teachers_check_5": {
-          "name": "teachers_check_5",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
+        "teacherId": {
+          "name": "teacherId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
-        "clubs_check_6": {
-          "name": "clubs_check_6",
-          "value": "type IN ('self', 'mentor'"
+        "minMember": {
+          "name": "minMember",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         },
-        "clubs_check_7": {
-          "name": "clubs_check_7",
-          "value": "status IN ('pending', 'approved', 'declined'"
+        "maxMember": {
+          "name": "maxMember",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "preferredTeachers": {
+          "name": "preferredTeachers",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "frequency": {
+          "name": "frequency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "clubTerm": {
+          "name": "clubTerm",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
         }
-      }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "clubs_teacherId_teachers_id_fk": {
+          "name": "clubs_teacherId_teachers_id_fk",
+          "tableFrom": "clubs",
+          "tableTo": "teachers",
+          "columnsFrom": [
+            "teacherId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "students": {
+      "name": "students",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "authUserId": {
+          "name": "authUserId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "classId": {
+          "name": "classId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "studentCode": {
+          "name": "studentCode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "azureEmail": {
+          "name": "azureEmail",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "registerNumber": {
+          "name": "registerNumber",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "personalEmail": {
+          "name": "personalEmail",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "profilePicture": {
+          "name": "profilePicture",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "firstName": {
+          "name": "firstName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "lastName": {
+          "name": "lastName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "phoneNumber": {
+          "name": "phoneNumber",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "activeStatus": {
+          "name": "activeStatus",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'ACTIVE'"
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'OTHER'"
+        },
+        "profileProgress": {
+          "name": "profileProgress",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "isGraduated": {
+          "name": "isGraduated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "isAdvocator": {
+          "name": "isAdvocator",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "isProfileVisible": {
+          "name": "isProfileVisible",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "profileVisibledDate": {
+          "name": "profileVisibledDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "isProfileStaged": {
+          "name": "isProfileStaged",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "isInternational": {
+          "name": "isInternational",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "dateOfBirth": {
+          "name": "dateOfBirth",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "graduatedDate": {
+          "name": "graduatedDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "jobSeekingStatus": {
+          "name": "jobSeekingStatus",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "hasAgreedTerms": {
+          "name": "hasAgreedTerms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "teachers": {
+      "name": "teachers",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "authUserId": {
+          "name": "authUserId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "azureEmail": {
+          "name": "azureEmail",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "personalEmail": {
+          "name": "personalEmail",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "profilePicture": {
+          "name": "profilePicture",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "firstName": {
+          "name": "firstName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "lastName": {
+          "name": "lastName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "phoneNumber": {
+          "name": "phoneNumber",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'OTHER'"
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 1
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "timetable": {
       "name": "timetable",
       "columns": {
         "id": {
-          "autoincrement": false,
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": false
+          "notNull": true,
+          "autoincrement": false
         },
         "date": {
-          "autoincrement": false,
           "name": "date",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
+        },
+        "room": {
+          "name": "room",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         },
         "clubStartTime": {
-          "autoincrement": false,
           "name": "clubStartTime",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
-        },
-        "clubEndTime": {
-          "autoincrement": false,
-          "name": "clubEndTime",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "room": {
-          "autoincrement": false,
-          "name": "room",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "autoincrement": false
         },
         "duration": {
-          "autoincrement": false,
           "name": "duration",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "clubId": {
-          "autoincrement": false,
           "name": "clubId",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
-          "default": "(CURRENT_TIMESTAMP)",
-          "autoincrement": false,
           "name": "createdAt",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
         },
         "updatedAt": {
-          "default": "(CURRENT_TIMESTAMP)",
-          "autoincrement": false,
           "name": "updatedAt",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
         }
       },
-      "compositePrimaryKeys": {},
-      "indexes": {
-        "timetable_date_idx": {
-          "name": "timetable_date_idx",
-          "columns": [
-            "date"
-          ],
-          "isUnique": false
-        },
-        "timetable_club_idx": {
-          "name": "timetable_club_idx",
-          "columns": [
-            "clubId"
-          ],
-          "isUnique": false
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "timetable_clubId_clubs_id_fk": {
           "name": "timetable_clubId_clubs_id_fk",
@@ -975,37 +737,9 @@
           "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "checkConstraints": {
-        "students_check_1": {
-          "name": "students_check_1",
-          "value": "activeStatus IN ('ACTIVE', 'ARCHIVED', 'PENDING', 'DROPOUT'"
-        },
-        "students_check_2": {
-          "name": "students_check_2",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
-        },
-        "students_check_3": {
-          "name": "students_check_3",
-          "value": "jobSeekingStatus IN ('READY', 'OPEN_TO_OFFER', 'UNAVAILABLE'"
-        },
-        "classes_check_4": {
-          "name": "classes_check_4",
-          "value": "course IN ('CODING', 'DESIGN'"
-        },
-        "teachers_check_5": {
-          "name": "teachers_check_5",
-          "value": "gender IN ('FEMALE', 'MALE', 'OTHER'"
-        },
-        "clubs_check_6": {
-          "name": "clubs_check_6",
-          "value": "type IN ('self', 'mentor'"
-        },
-        "clubs_check_7": {
-          "name": "clubs_check_7",
-          "value": "status IN ('pending', 'approved', 'declined'"
-        }
-      }
+      "checkConstraints": {}
     }
   },
   "views": {},
@@ -1014,5 +748,8 @@
     "schemas": {},
     "tables": {},
     "columns": {}
+  },
+  "internal": {
+    "indexes": {}
   }
 }
