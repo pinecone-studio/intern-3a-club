@@ -14,6 +14,8 @@ export const GET_ALL_APPROVED_CLUBS = gql`
       status
       minMember
       maxMember
+      frequency
+      clubTerm
       timetables {
         id
         clubId
@@ -39,6 +41,8 @@ export const GET_ALL_PENDING_CLUBS = gql`
       preferredTeachers
       minMember
       maxMember
+      frequency
+      clubTerm
       timetables {
         id
         clubId
@@ -50,4 +54,3 @@ export const GET_ALL_PENDING_CLUBS = gql`
     }
   }
 `;
-

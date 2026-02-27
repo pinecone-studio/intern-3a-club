@@ -15,6 +15,8 @@ export const GET_ALL_CLUBS = gql`
       preferredTeachers
       minMember
       maxMember
+      frequency
+      clubTerm
       timetables {
         id
         clubId

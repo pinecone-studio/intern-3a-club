@@ -39,8 +39,8 @@ const getTimetableValues = (
     id: crypto.randomUUID(),
     clubId,
     date: s.date,
-    room: s.classroom,
-    clubStartTime: s.startTime,
+    room: s.room,
+    clubStartTime: s.clubStartTime,
     duration: s.duration,
   }));
 
