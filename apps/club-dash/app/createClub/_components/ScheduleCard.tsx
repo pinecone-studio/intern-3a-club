@@ -6,7 +6,6 @@ import { Trash } from 'lucide-react';
 
 type ScheduleCardProps = {
   selectedDays: Date;
-  i: number;
   changeSchedule: ScheduleChange | undefined;
   defaultRoom: string;
   defaultStartTime: string;
@@ -36,7 +35,6 @@ export const getDuration = (c: ScheduleChange | undefined, d: string) =>
 
 export const ScheduleCard = ({
   selectedDays,
-  i,
   changeSchedule,
   defaultRoom,
   defaultStartTime,
@@ -52,22 +50,16 @@ export const ScheduleCard = ({
   const duration = getDuration(changeSchedule, defaultDuration);
 
   const handleSetRoom = (v: string) => onUpdateChange(key, 'room', v);
-
   const handleSetStartTime = (v: SetterValue) =>
     onUpdateChange(key, 'startTime', resolveValue(v, startTime));
-
   const handleSetDuration = (v: SetterValue) =>
     onUpdateChange(key, 'duration', resolveValue(v, duration));
-
   const handleDelete = () => onDelete(selectedDays);
-
-  console.log({ hasOverlap });
 
   return (
     <div
-      key={`${selectedDays.getTime()}-${i}`}
       data-testid="schedule-card"
-      className={`bg-white p-3 rounded-lg border  shadow-sm ${
+      className={`bg-white p-3 rounded-lg border shadow-sm ${
         hasOverlap ? 'border-red-400 bg-red-100' : 'border-gray-100'
       }`}
     >

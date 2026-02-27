@@ -1,5 +1,5 @@
 import { Calendar, Input, Label } from '@intern-3a-club/shadcn';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { format } from 'date-fns';
 import { History } from 'lucide-react';
 import {
@@ -37,8 +37,11 @@ export const CreatedTimetable = ({
   handlers,
 }: TimetableProps) => {
   const { data: allClubsData } = useGetClubs();
-  const datesArray = state.clubStartDate || [];
-  const chosen = [...datesArray].sort(compareByTime);
+
+  const chosen = useMemo(
+    () => [...(state.clubStartDate || [])].sort(compareByTime),
+    [state.clubStartDate]
+  );
 
   const formatDate = (day: Date) => format(day, 'yyyy-MM-dd');
   const changeRoom = (day: Date) =>
@@ -111,30 +114,33 @@ export const CreatedTimetable = ({
       </div>
       <div className="space-y-3">
         <Label className="text-sm font-semibold text-gray-700">
-          Сонгогдсон хуваарь ({datesArray.length})
+          Сонгогдсон хуваарь ({state.clubStartDate?.length || 0})
         </Label>
-        <div className="border rounded-xl p-3 bg-gray-50/50 max-h-[300px] overflow-y-auto space-y-2">
+        <div
+          className="border rounded-xl p-3 bg-gray-50/50 overflow-y-auto space-y-2 h-58"
+          style={{ scrollbarWidth: 'none' }}
+        >
           {chosen.length === 0 ? (
             <div className="py-12 text-center text-gray-400 text-sm">
               Календар дээр өдрүүдээ сонгоно уу...
             </div>
           ) : (
-            chosen.map((selectedDays, i) => (
-              <ScheduleCard
-                key={`${selectedDays.getTime()}-${i}`}
-                selectedDays={selectedDays}
-                i={i}
-                changeSchedule={
-                  state.scheduleChange?.[format(selectedDays, 'yyyy-MM-dd')]
-                }
-                defaultRoom={state.clubClassRoom}
-                defaultStartTime={state.clubStartTime}
-                defaultDuration={state.clubDuration}
-                onUpdateChange={handlers.handleUpdateChange}
-                onDelete={handlers.handleDeleteDate}
-                hasOverlap={scheduleOverlap(selectedDays)}
-              />
-            ))
+            chosen.map((selectedDays) => {
+              const dateKey = format(selectedDays, 'yyyy-MM-dd');
+              return (
+                <ScheduleCard
+                  key={dateKey}
+                  selectedDays={selectedDays}
+                  changeSchedule={state.scheduleChange?.[dateKey]}
+                  defaultRoom={state.clubClassRoom}
+                  defaultStartTime={state.clubStartTime}
+                  defaultDuration={state.clubDuration}
+                  onUpdateChange={handlers.handleUpdateChange}
+                  onDelete={handlers.handleDeleteDate}
+                  hasOverlap={scheduleOverlap(selectedDays)}
+                />
+              );
+            })
           )}
         </div>
       </div>
