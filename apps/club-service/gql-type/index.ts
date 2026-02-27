@@ -28,7 +28,7 @@ export type UpdateTimetableArgs = {
     id: string;
     date: string;
     classroom: string;
-    startTime: string;
+    clubStartTime: string;
     duration: number;
   };
 };

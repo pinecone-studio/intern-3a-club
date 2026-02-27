@@ -92,8 +92,8 @@ export const clubs = sqliteTable('clubs', {
 export const timetable = sqliteTable('timetable', {
   id: text('id').primaryKey(),
   date: text('date').notNull(),
-  classroom: text('classroom').notNull(),
-  startTime: text('startTime').notNull(),
+  room: text('room').notNull(),
+  clubStartTime: text('clubStartTime').notNull(),
   duration: integer('duration'),
   clubId: text('clubId')
     .notNull()

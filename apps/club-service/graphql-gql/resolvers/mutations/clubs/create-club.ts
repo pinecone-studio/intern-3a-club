@@ -39,10 +39,20 @@ const getTimetableValues = (
     id: crypto.randomUUID(),
     clubId,
     date: s.date,
-    classroom: s.classroom, // 'room' байсныг 'classroom' болгов
-    startTime: s.startTime, // 'clubStartTime' байсныг 'startTime' болгов
+    room: s.classroom,
+    clubStartTime: s.startTime,
     duration: s.duration,
   }));
+
+const insertSchedules = async (
+  clubId: string,
+  schedules?: CreateClubWithSchedulesArgs['schedules']
+) => {
+  if (!schedules || schedules.length === 0) return;
+
+  const timetableData = getTimetableValues(clubId, schedules);
+  await DB.insert(timetable).values(timetableData);
+};
 
 export const createClubWithSchedules = async (
   _: unknown,
@@ -51,26 +61,19 @@ export const createClubWithSchedules = async (
   try {
     const clubId = crypto.randomUUID();
 
-    // Transaction ашиглах нь өгөгдлийн бүрэн бүтэн байдалд чухал
-    return await DB.transaction(async (tx) => {
-      // 1. Клуб үүсгэх
-      const [newClub] = await tx
-        .insert(clubs)
-        .values(getClubValues(clubId, args))
-        .returning();
+    // 1. Клуб үүсгэх
+    const [newClub] = await DB.insert(clubs)
+      .values(getClubValues(clubId, args))
+      .returning();
 
-      if (!newClub) {
-        throw new Error('Клуб үүсгэж чадсангүй.');
-      }
+    if (!newClub) {
+      throw new Error('Клуб үүсгэж чадсангүй.');
+    }
 
-      // 2. Хуваарийг хадгалах
-      if (args.schedules && args.schedules.length > 0) {
-        const timetableData = getTimetableValues(clubId, args.schedules);
-        await tx.insert(timetable).values(timetableData);
-      }
+    // 2. Хуваарийг хадгалах
+    await insertSchedules(clubId, args.schedules);
 
-      return newClub;
-    });
+    return newClub;
   } catch (error) {
     handleMutationError(error);
   }
