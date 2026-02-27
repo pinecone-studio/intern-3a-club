@@ -26,28 +26,22 @@ export const parseDuration = (chosenDuration: string): number => {
   const durationMin = chosenDuration.split(':').map(Number);
   return (durationMin[0] || 0) * 60 + (durationMin[1] || 0);
 };
-
 export const toFormattedDate = (date: Date): string =>
   format(date, 'yyyy-MM-dd');
-
 export const byAscendingDate = (a: Date, b: Date): number =>
   a.getTime() - b.getTime();
-
 export const getClassroom = (
   change: ScheduleChange | undefined,
   initialSchedule: CreateClubState
 ) => change?.room ?? initialSchedule.clubClassRoom;
-
 export const getStartTime = (
   change: ScheduleChange | undefined,
   initialSchedule: CreateClubState
 ) => change?.startTime ?? initialSchedule.clubStartTime;
-
 export const getDuration = (
   change: ScheduleChange | undefined,
   initialSchedule: CreateClubState
 ) => parseDuration(change?.duration ?? initialSchedule.clubDuration);
-
 export const changeSingleSchedule = (
   date: string,
   initialSchedule: CreateClubState
@@ -56,12 +50,11 @@ export const changeSingleSchedule = (
     initialSchedule.scheduleChange?.[date];
   return {
     date,
-    classroom: getClassroom(change, initialSchedule),
-    startTime: getStartTime(change, initialSchedule),
+    room: getClassroom(change, initialSchedule),
+    clubStartTime: getStartTime(change, initialSchedule),
     duration: getDuration(change, initialSchedule),
   };
 };
-
 export function changeScheduleForState(initialSchedule: CreateClubState) {
   return function (date: string) {
     return changeSingleSchedule(date, initialSchedule);
@@ -102,6 +95,7 @@ export const createClubDash = async (
     variables: ReturnType<typeof getValues>;
   }) => Promise<unknown>
 ) => {
+  console.log({ state });
   const variables = getValues(state);
   try {
     console.log('Club Data', variables);
@@ -146,15 +140,14 @@ export const buildOverride = (
 
 export const useCreateClubMutation = (state: CreateClubState) => {
   const [createClub, { loading }] = useMutation(CREATE_CLUB_WITH_SCHEDULE);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!state.clubStartDate?.length) {
       alert('Огноо сонгоно уу');
       return;
     }
+
     createClubDash(state, createClub);
   };
-
   return { handleSubmit, loading };
 };
