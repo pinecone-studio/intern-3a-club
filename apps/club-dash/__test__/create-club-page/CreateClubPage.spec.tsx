@@ -4,12 +4,14 @@ import React from 'react';
 import CreateClub from '../../app/createClub/page';
 
 const mockSubmit = jest.fn((e) => e.preventDefault());
+const mockHandleEmptyFields = jest.fn();
 let mockLoading = false;
 
 const mockHandlers = {
   handleName: jest.fn(),
   handleDesc: jest.fn(),
   handleMax: jest.fn(),
+  handleEmptyFields: mockHandleEmptyFields,
 };
 
 jest.mock('@clerk/nextjs', () => ({
@@ -51,8 +53,12 @@ jest.mock('../../app/_hooks/use-get-clubs', () => ({
 }));
 
 jest.mock('../../app/_hooks/use-create-club', () => ({
-  useCreateClubMutation: () => ({
-    handleSubmit: mockSubmit,
+  useCreateClubMutation: (_state: unknown, onSuccess: () => void) => ({
+    handleSubmit: (e: React.FormEvent) => {
+      e.preventDefault();
+      mockSubmit(e);
+      onSuccess();
+    },
     loading: mockLoading,
     error: null,
   }),
@@ -104,7 +110,7 @@ describe('CreateClub Page', () => {
     ).toBeInTheDocument();
   });
 
-  it('calls handleSubmit when form is submitted', async () => {
+  it('calls handleSubmit and onSuccess callback which closes dialog and resets fields', async () => {
     render(<CreateClub />);
     fireEvent.click(screen.getByText(/Клуб нээх/i));
 
@@ -112,6 +118,7 @@ describe('CreateClub Page', () => {
     fireEvent.submit(submitBtn);
 
     expect(mockSubmit).toHaveBeenCalled();
+    expect(mockHandleEmptyFields).toHaveBeenCalled();
   });
 
   it('shows loading state on the submit button', async () => {
