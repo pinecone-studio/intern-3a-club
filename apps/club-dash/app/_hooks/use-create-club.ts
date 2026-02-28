@@ -93,7 +93,8 @@ export const createClubDash = async (
   state: CreateClubState,
   createClub: (_opts: {
     variables: ReturnType<typeof getValues>;
-  }) => Promise<unknown>
+  }) => Promise<unknown>,
+  onSuccess?: () => void
 ) => {
   console.log({ state });
   const variables = getValues(state);
@@ -101,6 +102,7 @@ export const createClubDash = async (
     console.log('Club Data', variables);
     await createClub({ variables });
     alert('Амжилттай үүсгэлээ!');
+    onSuccess?.();
   } catch (error) {
     console.error('Mutation failed:', error);
     alert('Алдаа гарлаа');
@@ -138,7 +140,10 @@ export const buildOverride = (
   [field]: value,
 });
 
-export const useCreateClubMutation = (state: CreateClubState) => {
+export const useCreateClubMutation = (
+  state: CreateClubState,
+  onSuccess?: () => void
+) => {
   const [createClub, { loading }] = useMutation(CREATE_CLUB_WITH_SCHEDULE);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,7 +152,7 @@ export const useCreateClubMutation = (state: CreateClubState) => {
       return;
     }
 
-    createClubDash(state, createClub);
+    createClubDash(state, createClub, onSuccess);
   };
   return { handleSubmit, loading };
 };

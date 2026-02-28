@@ -12,16 +12,20 @@ import {
   Label,
   Button,
 } from '@intern-3a-club/shadcn';
-import React from 'react';
+import React, { useState } from 'react';
 import { Teachers, CreatedTimetable } from './_components';
 import { useCreateClubState } from '../_hooks/use-createclub-states';
 import { useCreateClubMutation } from '../_hooks/use-create-club';
 
 const CreateClub = () => {
+  const [open, setOpen] = useState<boolean>(false);
   const { state, setters, handlers } = useCreateClubState();
-  const { handleSubmit, loading } = useCreateClubMutation(state);
+  const { handleSubmit, loading } = useCreateClubMutation(state, () => {
+    setOpen(false);
+    handlers.handleEmptyFields();
+  });
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           variant="outline"
