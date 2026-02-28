@@ -7,8 +7,11 @@ VERCEL_BIN="$ROOT/apps/club-dash/node_modules/.bin:$BIN"
 
 DASH_PROJECT="cloudflare-club-dash"
 WEB_PROJECT="cloudflare-club-web"
-DASH_BRANCH="${DASH_BRANCH:-main}"
-WEB_BRANCH="${WEB_BRANCH:-main}"
+SERVICE_PROJECT="cloudflare-pine-club"
+
+DASH_BRANCH="${DASH_BRANCH:-176-branch-change-for-office}"
+WEB_BRANCH="${WEB_BRANCH:-176-branch-change-for-office}"
+SERVICE_BRANCH="${SERVICE_BRANCH:-105-ochko-need-new-branch}"
 
 deploy_dash() {
   cd "$ROOT/apps/club-dash"
@@ -52,9 +55,11 @@ deploy_service() {
 
   cd "$ROOT/apps/club-service"
   ../../node_modules/.bin/wrangler pages deploy .vercel/output/static \
-    --project-name cloudflare-pine-club \
-    --branch 105-ochko-need-new-branch
+    --project-name="$SERVICE_PROJECT" \
+    --branch="$SERVICE_BRANCH" \
+    --commit-dirty=true
 }
+
 case "${1:-all}" in
   dash) deploy_dash ;;
   web) deploy_web ;;

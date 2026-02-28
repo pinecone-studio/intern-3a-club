@@ -3,8 +3,8 @@ import { CreateClubCenter } from '../components/create-club/CreateClubCenter';
 
 const Home = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="fixed inset-0 z-[-1] bg-[url('/pinebaatar.png')] bg-cover bg-center bg-no-repeat" />
+    <div className="min-h-screen bg-[url('/pinebaatar.png')] bg-cover bg-center bg-no-repeat flex items-center justify-center">
+     
       <CreateClubCenter />
     </div>
   );
