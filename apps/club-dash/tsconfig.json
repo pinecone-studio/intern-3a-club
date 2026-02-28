@@ -28,7 +28,8 @@
     "**/*.jsx",
     "next-env.d.ts",
     ".next/types/**/*.ts",
-    "../../apps/club-dash/.next/types/**/*.ts"
+    "../../apps/club-dash/.next/types/**/*.ts",
+    "../../dist/apps/club-dash/.next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

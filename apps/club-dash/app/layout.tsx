@@ -1,4 +1,4 @@
-import { Providers } from '../libs/apollo/providers';
+import { Providers } from '../libs/apollo/Providers';
 import './global.css';
 import { ClerkProvider } from '@clerk/nextjs';
 
