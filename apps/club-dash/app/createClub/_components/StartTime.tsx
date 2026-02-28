@@ -48,7 +48,10 @@ export const StartTime = ({
     }
   };
   return (
-    <Select onValueChange={handleSelectedStarttime}>
+    <Select
+      onValueChange={handleSelectedStarttime}
+      value={mockStartTime.find((time) => time.startTime === clubStartTime)?.id}
+    >
       <div className="flex flex-col w-20 gap-3">
         <Label
           htmlFor="startTime"

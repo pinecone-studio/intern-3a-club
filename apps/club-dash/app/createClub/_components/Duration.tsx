@@ -33,7 +33,12 @@ export const Duration = ({ clubDuration, setClubDuration }: DurationProps) => {
     }
   };
   return (
-    <Select onValueChange={handleSelectedDuration}>
+    <Select
+      onValueChange={handleSelectedDuration}
+      value={
+        mockDuration.find((duration) => duration.duration === clubDuration)?.id
+      }
+    >
       <div className="flex flex-col w-70 mt-2 gap-3">
         <Label
           htmlFor="duration"
