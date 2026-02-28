@@ -9,4 +9,7 @@ export default {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/club-web',
+  testPathIgnorePatterns: ['<rootDir>/.vercel/'],
+modulePathIgnorePatterns: ['<rootDir>/.vercel/'],
+
 };
