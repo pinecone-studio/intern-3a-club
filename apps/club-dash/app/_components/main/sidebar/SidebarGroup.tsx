@@ -1,7 +1,8 @@
 'use client';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '../../../../libs/utils';
-import { SidebarGroupProps } from '@/libs/types';
+import { SidebarGroupProps } from 'apps/club-dash/libs/types';
+
 
 export const SidebarGroup = ({
   item,

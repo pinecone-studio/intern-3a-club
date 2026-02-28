@@ -53,10 +53,14 @@ const Calendar = ({
         hidden: 'invisible',
         ...classNames,
       }}
-      components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="w-4 h-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="w-4 h-4" />,
-      }}
+ components={{
+  Chevron: ({ orientation }) =>
+    orientation === "left" ? (
+      <ChevronLeft className="h-4 w-4" />
+    ) : (
+      <ChevronRight className="h-4 w-4" />
+    ),
+}}
       {...props}
     />
   );
