@@ -2,29 +2,34 @@ import { DB } from 'db/drizzle';
 import { teachers, students } from 'db/schema';
 import { syncUser } from 'graphql-gql/resolvers/mutations';
 
-// DB-г илүү нарийвчлалтай mock хийх
-jest.mock('db/drizzle', () => {
-  const mockChain = {
-    from: jest.fn().mockReturnThis(),
-    where: jest.fn().mockReturnThis(),
-    get: jest.fn(),
-    set: jest.fn().mockReturnThis(),
-    returning: jest.fn().mockReturnThis(), // returning-ийг энд тодорхойлж өгнө
-  };
+// Mock бүтцийг тодорхойлох
+const mockChain = {
+  from: jest.fn().mockReturnThis(),
+  where: jest.fn().mockReturnThis(),
+  get: jest.fn(),
+  set: jest.fn().mockReturnThis(),
+  returning: jest.fn().mockReturnThis(),
+};
 
-  return {
-    DB: {
-      select: jest.fn(() => mockChain),
-      update: jest.fn(() => mockChain),
-      // Хэрэв шууд DB.update(...).set(...) гэж дуудаж байгаа бол:
-      ...mockChain,
-    },
-  };
-});
+jest.mock('db/drizzle', () => ({
+  DB: {
+    select: jest.fn(() => mockChain),
+    update: jest.fn(() => mockChain),
+  },
+}));
 
-// TypeScript-ийн "Property 'returning' does not exist" алдаанаас зайлсхийхийн тулд
-// DB-г 'any' төрөлд шилжүүлж ашиглана
-const mockDB = DB as any;
+interface MockDB {
+  select: jest.Mock;
+  update: jest.Mock;
+}
+
+interface MockChain {
+  get: jest.Mock;
+  returning: jest.Mock;
+}
+
+const db = DB as unknown as MockDB;
+const chain = mockChain as unknown as MockChain;
 
 describe('syncUser Tests', () => {
   const mockContext = {
@@ -36,7 +41,7 @@ describe('syncUser Tests', () => {
     jest.clearAllMocks();
   });
 
-  it('Багшийн мэдээллийг шинэчилж Teacher төрлийг буцаах', async () => {
+  it('Багшийн мэдээллийг шинэчилж Teacher төрлийг буцаах ёстой', async () => {
     const mockTeacher = { id: 1, azureEmail: 'test@example.com' };
     const updatedTeacher = {
       id: 1,
@@ -44,17 +49,16 @@ describe('syncUser Tests', () => {
       authUserId: 'user_123',
     };
 
-    // mockDB ашиглан утгуудыг оноох
-    mockDB.get.mockResolvedValueOnce(mockTeacher);
-    mockDB.returning.mockResolvedValueOnce([updatedTeacher]);
+    chain.get.mockResolvedValueOnce(mockTeacher);
+    chain.returning.mockResolvedValueOnce([updatedTeacher]);
 
     const result = await syncUser({}, {}, mockContext);
 
     expect(result).toEqual({ ...updatedTeacher, __typename: 'Teacher' });
-    expect(mockDB.update).toHaveBeenCalledWith(teachers);
+    expect(db.update).toHaveBeenCalledWith(teachers);
   });
 
-  it('Багш байхгүй үед сурагчийг хайж шинэчлэх', async () => {
+  it('Багш байхгүй үед сурагчийг хайж шинэчлэх ёстой', async () => {
     const mockStudent = { id: 10, azureEmail: 'test@example.com' };
     const updatedStudent = {
       id: 10,
@@ -62,15 +66,32 @@ describe('syncUser Tests', () => {
       authUserId: 'user_123',
     };
 
-    mockDB.get
-      .mockResolvedValueOnce(null) // Эхний select (teachers)
-      .mockResolvedValueOnce(mockStudent); // Дараагийн select (students)
-
-    mockDB.returning.mockResolvedValueOnce([updatedStudent]);
+    chain.get.mockResolvedValueOnce(null).mockResolvedValueOnce(mockStudent);
+    chain.returning.mockResolvedValueOnce([updatedStudent]);
 
     const result = await syncUser({}, {}, mockContext);
 
     expect(result).toEqual({ ...updatedStudent, __typename: 'Student' });
-    expect(mockDB.update).toHaveBeenCalledWith(students);
+    expect(db.update).toHaveBeenCalledWith(students);
+  });
+
+  it('Хэрэглэгч бүртгэлгүй бол алдаа заах ёстой', async () => {
+    chain.get.mockResolvedValue(null);
+
+    await expect(syncUser({}, {}, mockContext)).rejects.toThrow(
+      'Бүртгэлгүй хэрэглэгч байна.'
+    );
+  });
+
+  it('Context-ийн утга дутуу байвал алдаа заах ёстой', async () => {
+    const incompleteContext = { clerkId: 'user_123' };
+
+    await expect(
+      syncUser(
+        {},
+        {},
+        incompleteContext as unknown as { email?: string; clerkId?: string }
+      )
+    ).rejects.toThrow('Authentication context missing');
   });
 });

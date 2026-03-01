@@ -25,7 +25,7 @@ const schema = makeExecutableSchema({
   resolvers,
 });
 
-const handler = async (req: NextRequest) => {
+export const handler = async (req: NextRequest) => {
   let res: Response;
 
   if (req.method !== 'POST') {
@@ -59,7 +59,7 @@ const graphqlHandler = async (req: NextRequest): Promise<Response> => {
       source: query,
       variableValues: variables,
       operationName: operationName,
-      contextValue: contextValue, // <--- Энийг заавал дамжуула
+      contextValue: contextValue,
     });
 
     return jsonResponse(response);

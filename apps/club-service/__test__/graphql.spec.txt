@@ -1,0 +1,148 @@
+/**
+ * @jest-environment node
+ */
+
+import {
+  TextEncoder as NodeTextEncoder,
+  TextDecoder as NodeTextDecoder,
+} from 'util';
+
+// 1. Төрлийн зөрчлийг арилгаж глобал болгох
+(global as any).TextEncoder = NodeTextEncoder;
+(global as any).TextDecoder = NodeTextDecoder;
+
+// 2. Next.js-ийн Edge primitives-ийг дуудах
+import {
+  Request as EdgeRequest,
+  Response as EdgeResponse,
+  Headers as EdgeHeaders,
+} from 'next/dist/compiled/@edge-runtime/primitives';
+
+if (!global.Request) {
+  (global as any).Request = EdgeRequest;
+  (global as any).Response = EdgeResponse;
+  (global as any).Headers = EdgeHeaders;
+}
+
+// 2. Бусад стандарт import-ууд
+import handler from '../pages/api/graphql';
+import * as GraphQL from 'graphql';
+import { NextRequest, NextResponse } from 'next/server';
+import { createContext } from '../apollo/context';
+
+// --- Mocking хэсэг ---
+jest.mock('graphql', () => ({
+  ...jest.requireActual('graphql'),
+  graphql: jest.fn(),
+}));
+
+jest.mock('../apollo/context', () => ({
+  createContext: jest.fn(),
+}));
+
+jest.mock('graphql-gql/schema', () => ({ typeDefs: '' }));
+jest.mock('graphql-gql/resolvers', () => ({ resolvers: {} }));
+
+// Корс болон Response-ийг mock хийхдээ замаа зөв эсэхийг шалгаарай
+jest.mock('../../utils/cors', () => ({
+  cors: jest.fn((req, res) => res),
+}));
+
+jest.mock('../../utils/responses', () => ({
+  jsonResponse: jest.fn(
+    (data) =>
+      new Response(JSON.stringify(data), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+  ),
+  errorResponse: jest.fn(
+    (status, msg) =>
+      new Response(msg, {
+        status,
+        headers: { 'Content-Type': 'application/json' },
+      })
+  ),
+}));
+
+describe('GraphQL API Handler Full Coverage Test', () => {
+  const mockUrl = 'http://localhost:3000/api/graphql';
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Console.error-ийг mock хийж тест цэвэрхэн харагдуулна
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    (console.error as jest.Mock).mockRestore();
+  });
+
+  // 1. GET Request (Redirect logic) - Line 31-36 coverage
+  it('should redirect to Apollo Sandbox for GET requests', async () => {
+    const req = new NextRequest(mockUrl, { method: 'GET' });
+
+    const redirectSpy = jest
+      .spyOn(NextResponse, 'redirect')
+      .mockReturnValue(new Response(null, { status: 302 }) as any);
+
+    const res = await handler(req);
+    expect(res.status).toBe(302);
+    expect(redirectSpy).toHaveBeenCalled();
+  });
+
+  // 2. Successful POST Request (Happy Path) - Line 45-54 coverage
+  it('should handle successful GraphQL POST requests', async () => {
+    const mockData = { data: { testQuery: 'success' } };
+    (GraphQL.graphql as jest.Mock).mockResolvedValue(mockData);
+    (createContext as jest.Mock).mockResolvedValue({ user: 'mock-user' });
+
+    const req = new NextRequest(mockUrl, {
+      method: 'POST',
+      body: JSON.stringify({
+        query: '{ testQuery }',
+        variables: {},
+        operationName: 'Test',
+      }),
+    });
+
+    const res = await handler(req);
+    const result = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(result).toEqual(mockData);
+  });
+
+  // 3. Context Error Test - Line 51-53 coverage
+  it('should handle context creation error and continue', async () => {
+    (createContext as jest.Mock).mockRejectedValue(new Error('Context fail'));
+    (GraphQL.graphql as jest.Mock).mockResolvedValue({ data: {} });
+
+    const req = new NextRequest(mockUrl, {
+      method: 'POST',
+      body: JSON.stringify({ query: '{ test }' }),
+    });
+
+    const res = await handler(req);
+    expect(res.status).toBe(200);
+    expect(console.error).toHaveBeenCalledWith(
+      'Context Creation Error:',
+      expect.any(Error)
+    );
+  });
+
+  // 4. General Error Test (Invalid JSON) - Line 65-68 coverage
+  it('should return 400 errorResponse when request body is invalid', async () => {
+    const req = new NextRequest(mockUrl, {
+      method: 'POST',
+      body: 'invalid-body',
+    });
+
+    const res = await handler(req);
+    expect(res.status).toBe(400);
+    expect(console.error).toHaveBeenCalledWith(
+      'General GraphQL Error:',
+      expect.any(Error)
+    );
+  });
+});
