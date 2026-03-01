@@ -17,12 +17,7 @@ import {
   CreateClubWithSchedulesResponse,
 } from '../../components/create-club/types';
 
-jest.mock('alert', () => ({
-  alert: {
-    success: jest.fn(),
-    error: jest.fn(),
-  },
-}));
+// Global window.alert is mocked in jest.setup.ts
 
 describe('CreateClubCenter Helpers', () => {
   test('calculateTotalMinutes', () => {
