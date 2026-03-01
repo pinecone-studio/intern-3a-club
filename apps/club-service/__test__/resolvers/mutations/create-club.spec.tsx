@@ -28,7 +28,8 @@ jest.mock('db/drizzle', () => ({
   DB: {
     select: jest.fn(() => mockChain),
     insert: jest.fn(() => mockChain),
-    transaction: jest.fn(async (cb: (tx: any) => Promise<any>) => {
+    // 1. ESLint засах: 'any' оронд 'unknown' ашиглаж, ашиглаагүй бол '_tx' гэж нэрлэх
+    transaction: jest.fn(async (cb: (_tx: unknown) => Promise<unknown>) => {
       return cb({
         insert: jest.fn(() => mockChain),
       });
@@ -80,7 +81,6 @@ describe('createClubWithSchedules Full Coverage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Тестийн үеэр гарч буй console.error-уудыг нуух (Гаралтыг цэвэр байлгах)
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
@@ -102,8 +102,8 @@ describe('createClubWithSchedules Full Coverage', () => {
 
   it('Сурагч клуб үүсгэхэд амжилттай ажиллах (Student Path)', async () => {
     mockChain.get
-      .mockResolvedValueOnce(null) // Багш биш
-      .mockResolvedValueOnce({ id: 'student-id-1' }); // Сурагч мөн
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ id: 'student-id-1' });
 
     mockChain.returning.mockResolvedValueOnce([{ id: mockUUID }]);
 
@@ -116,7 +116,12 @@ describe('createClubWithSchedules Full Coverage', () => {
     const unauthContext = { clerkId: undefined };
 
     await expect(
-      createClubWithSchedules(null, mockArgs, unauthContext as any)
+      // 2. ESLint засах: 'any' оронд 'unknown' ашиглаж safe-cast хийх
+      createClubWithSchedules(
+        null,
+        mockArgs,
+        unauthContext as unknown as typeof mockContext
+      )
     ).rejects.toThrow();
   });
 
@@ -130,9 +135,8 @@ describe('createClubWithSchedules Full Coverage', () => {
 
   it('Клуб үүсгэсэн боловч өгөгдөл эргэж ирэхгүй бол алдаа шидэх', async () => {
     mockChain.get.mockResolvedValue({ id: 'any-id' });
-    mockChain.returning.mockResolvedValueOnce([]); // Хоосон массив буцаах нөхцөл
+    mockChain.returning.mockResolvedValueOnce([]);
 
-    // Текст зөрөхөөс сэргийлж toThrow() доторх утгыг хоосон орхив
     await expect(
       createClubWithSchedules(null, mockArgs, mockContext)
     ).rejects.toThrow();
