@@ -1,7 +1,7 @@
 import { gql } from 'graphql-tag';
 
-export const teacherTypeDefs = gql`
-  type Teacher {
+export const studentTypeDefs = gql`
+  type Student {
     id: ID!
     authUserId: String
     azureEmail: String!
@@ -9,18 +9,14 @@ export const teacherTypeDefs = gql`
     profilePicture: String
     firstName: String
     lastName: String
+    classId: String
+    studentCode: String
     createdAt: String
     updatedAt: String
   }
 
-  union SyncResponse = Teacher | Student
-
   extend type Query {
-    getAllTeachers: [Teacher!]!
-    getTeacherById(id: ID!): Teacher
-  }
-
-  extend type Mutation {
-    syncUser: SyncResponse!
+    getAllStudents: [Student!]!
+    getStudentById(id: ID!): Student
   }
 `;

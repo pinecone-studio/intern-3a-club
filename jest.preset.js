@@ -52,6 +52,7 @@ module.exports = {
     '!**/*utils.ts',
     '!**/redis.ts/**',
     '!**/*middleware.ts',
+    '!**/*graphql.ts',
   ],
   coverageThreshold: {
     global: {

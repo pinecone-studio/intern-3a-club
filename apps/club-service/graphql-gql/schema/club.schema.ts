@@ -40,7 +40,6 @@ export const clubTypeDefs = gql`
     description: String
     status: ClubStatus
     type: String!
-    creatorId: String
     teacherId: String
     preferredTeachers: [String]
     minMember: Int!
