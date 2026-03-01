@@ -11,9 +11,7 @@ const httpLink = new HttpLink({
 });
 
 const authLink = new SetContextLink(async (prevContext) => {
-  const token = await (window as any).Clerk?.session?.getToken({
-    template: 'pineclub',
-  });
+  const token = await (window as any).Clerk?.session?.getToken();
 
   return {
     ...prevContext,

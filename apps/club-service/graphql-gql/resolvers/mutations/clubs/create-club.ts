@@ -1,5 +1,6 @@
 import { DB } from 'db/drizzle';
-import { clubs, timetable } from 'db/schema';
+import { clubs, students, teachers, timetable } from 'db/schema';
+import { eq } from 'drizzle-orm';
 import { CreateClubWithSchedulesArgs } from 'gql-type';
 import {
   handleMutationError,
@@ -17,7 +18,6 @@ const getClubValues = (clubId: string, args: CreateClubWithSchedulesArgs) => ({
   id: clubId,
   name: args.input.name,
   description: args.input.description,
-  creatorId: args.input.creatorId,
   teacherId: resolveTeacherId(args.input.teacherId),
   status: resolveStatus(args.input.teacherId),
   type: resolveType(args.input.type, args.input.teacherId),
@@ -56,21 +56,54 @@ const insertSchedules = async (
 
 export const createClubWithSchedules = async (
   _: unknown,
-  args: CreateClubWithSchedulesArgs
+  args: CreateClubWithSchedulesArgs,
+  context: any
 ) => {
   try {
+    const { clerkId } = context;
+    if (!clerkId) throw new Error('Нэвтрээгүй байна.');
+
+    let creatorId: string | null = null;
+
+    // багш мөн эсэхийг шалгах
+    const teacher = await DB.select()
+      .from(teachers)
+      .where(eq(teachers.authUserId, clerkId))
+      .get();
+
+    if (teacher) {
+      creatorId = teacher.id;
+    } else {
+      // Багш биш бол сурагч мөн эсэхийг шалгах
+      const student = await DB.select()
+        .from(students)
+        .where(eq(students.authUserId, clerkId))
+        .get();
+
+      if (student) {
+        creatorId = student.id;
+      }
+    }
+
+    // Хэрэв аль алин дээр нь байхгүй бол (Синхрончлол хийгдээгүй гэсэн үг)
+    if (!creatorId) {
+      throw new Error(
+        'Хэрэглэгчийн бүртгэл олдсонгүй. Системтэй дахин синхрончлоорой.'
+      );
+    }
+
     const clubId = crypto.randomUUID();
 
-    // 1. Клуб үүсгэх
+    //Клуб үүсгэх
     const [newClub] = await DB.insert(clubs)
-      .values(getClubValues(clubId, args))
+      .values({ ...getClubValues(clubId, args), creatorId: creatorId })
       .returning();
 
     if (!newClub) {
       throw new Error('Клуб үүсгэж чадсангүй.');
     }
 
-    // 2. Хуваарийг хадгалах
+    //Хуваарийг хадгалах
     await insertSchedules(clubId, args.schedules);
 
     return newClub;
