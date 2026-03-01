@@ -1,19 +1,15 @@
 import { execute, gql, ApolloClient } from '@apollo/client';
-import { apolloClient } from 'apps/club-dash/libs/apollo/apollo-client';
+import { apolloClient } from '../../libs/apollo/apollo-client';
 
-// 1. Window интерфейсийг "any" ашиглахгүйгээр өргөтгөх
 interface MockClerk {
   session: {
     getToken: jest.Mock<Promise<string | null>, [{ template: string }]>;
   };
 }
 
-// 2. ApolloClient-ийн төрлийг generic-гүйгээр авах
-type ClientInstance = InstanceType<typeof ApolloClient>;
+type ClientInstance = ApolloClient;
 
-describe('Apollo Client Auth Link & Instance', () => {
-  const mockToken = 'test-clerk-token';
-
+describe('Apollo Client Auth Link', () => {
   beforeEach(() => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
@@ -21,19 +17,16 @@ describe('Apollo Client Auth Link & Instance', () => {
   afterEach(() => {
     jest.clearAllMocks();
     (console.error as jest.Mock).mockRestore();
-    // @ts-ignore: Цэвэрлэгээ хийхэд unsafe delete ашиглахаас өөр аргагүй
-    delete (window as Record<string, unknown>).Clerk;
+    (window as unknown as Record<string, unknown>)['Clerk'] = undefined;
   });
 
-  it('should include the authorization header when Clerk token exists', async () => {
-    // 3. Mock Clerk-ийг тодорхойлох
+  it('Clerk токен байгаа үед Authorization header-ийг зөв дамжуулах ёстой', async () => {
     const mockClerk: MockClerk = {
       session: {
-        getToken: jest.fn().mockResolvedValue(mockToken),
+        getToken: jest.fn().mockResolvedValue('test-token'),
       },
     };
 
-    // Window-д Clerk-ийг safe байдлаар нэмэх
     Object.defineProperty(window, 'Clerk', {
       value: mockClerk,
       configurable: true,
@@ -42,66 +35,55 @@ describe('Apollo Client Auth Link & Instance', () => {
 
     const query = gql`
       query Test {
-        foo
+        me {
+          id
+        }
       }
     `;
 
-    // 4. execute-ийг ажиллуулах (Generic алдааг ClientInstance-аар зассан)
     const observable = execute(
       apolloClient.link,
       { query },
-      {
-        client: apolloClient as ClientInstance,
-      }
+      { client: apolloClient as unknown as ClientInstance }
     );
 
     await new Promise<void>((resolve) => {
-      const subscription = observable.subscribe({
-        next: () => {
-          subscription.unsubscribe();
-          resolve();
-        },
-        error: () => {
-          subscription.unsubscribe();
-          resolve();
-        },
-        complete: () => {
-          resolve();
-        },
+      // 'subscription' хувьсагч зарлахгүйгээр шууд subscribe хийх
+      observable.subscribe({
+        next: () => resolve(),
+        error: () => resolve(),
+        complete: () => resolve(),
       });
-
       setTimeout(resolve, 100);
     });
 
-    // Line 24-28 coverage энд хангагдана
     expect(mockClerk.session.getToken).toHaveBeenCalledWith({
       template: 'pineclub',
     });
   });
 
-  it('should handle missing Clerk session gracefully', async () => {
+  it('Clerk session байхгүй үед алдаа заахгүй байх ёстой', async () => {
     Object.defineProperty(window, 'Clerk', {
       value: undefined,
       configurable: true,
       writable: true,
     });
-
     const query = gql`
-      query TestFallback {
-        bar
+      query Fallback {
+        me {
+          id
+        }
       }
     `;
 
     const observable = execute(
       apolloClient.link,
       { query },
-      {
-        client: apolloClient as ClientInstance,
-      }
+      { client: apolloClient as unknown as ClientInstance }
     );
 
     await new Promise<void>((resolve) => {
-      const subscription = observable.subscribe({
+      observable.subscribe({
         next: () => resolve(),
         error: () => resolve(),
         complete: () => resolve(),

@@ -1,8 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import SignInPage from 'apps/club-dash/app/sign-in/[[...sign-in]]/page';
+import SignInPage from '../../app/sign-in/[[...sign-in]]/page';
 
-// 1. Clerk-ийг mock хийх
-// Энэ нь жинхэнэ Clerk API-тай холбогдохоос сэргийлж, зөвхөн компонент харагдаж байгааг шалгана
 jest.mock('@clerk/nextjs', () => ({
   SignIn: () => <div data-testid="clerk-signin">Mocked SignIn Component</div>,
 }));
