@@ -35,12 +35,6 @@ const authLink = new SetContextLink(async (prevContext) => {
 });
 
 export const apolloClient = new ApolloClient({
-<<<<<<< HEAD
   link: ApolloLink.from([authLink, httpLink]),
-=======
-  link: new HttpLink({
-    uri: 'https://105-ochko-need-new-branch.cloudflare-pine-club.pages.dev/api/graphql',
-  }),
->>>>>>> c15eda3d299fdc582969ab8907432fc51ba87935
   cache: new InMemoryCache(),
 });
