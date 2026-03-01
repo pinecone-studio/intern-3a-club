@@ -18,8 +18,9 @@
       "@intern-3a-club/shadcn": ["libs/shadcn/src/index.ts"],
       "@intern-3a-club/shadcn/server": ["libs/shadcn/src/server.ts"],
       "@intern-3a-club/scripts/scripts": ["libs/scripts/scripts/src/index.ts"],
-      "@intern-3a-club/utils": ["apps/club-dash/libs/utils/index.ts"],
-      "@intern-3a-club/types": ["apps/club-dash/libs/types/index.ts"]
+     "@intern-3a-club/utils": ["apps/club-dash/libs/utils.ts"],
+"@intern-3a-club/types": ["apps/club-dash/libs/types.ts"]
+
     }
   },
   "exclude": ["node_modules", "tmp"]
