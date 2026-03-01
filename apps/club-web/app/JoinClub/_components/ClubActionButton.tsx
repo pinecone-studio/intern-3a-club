@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { LogOut, Timer } from 'lucide-react';
-import { cn } from 'lib/utils';
+import { cn } from '../../../lib/utils';
 import { CustomButton } from './CustomButton';
 
 interface ButtonContentProps {

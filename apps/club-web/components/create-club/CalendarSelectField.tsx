@@ -33,6 +33,7 @@ export const CalendarSelectField = ({
   onChange,
   options,
   id,
+  error,
 }: CalendarSelectFieldProps & { id?: string }) => {
   const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
     onChange(e.target.value);
@@ -63,6 +64,8 @@ export const CalendarSelectField = ({
         </select>
         <MoveDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 pointer-events-none" />
       </div>
+      {error && <p className="text-red-500 text-[10px] italic">{error}</p>}
     </div>
   );
 };
+

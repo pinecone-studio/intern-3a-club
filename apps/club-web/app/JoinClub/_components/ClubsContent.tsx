@@ -21,7 +21,7 @@ const mapClubsData = (clubs: GetAllClub[]): ExtendedClub[] => {
   return clubs.map((club) => ({
     ...club,
     isEnrolled: false,
-    bannedUntil: 0,
+    bannedUntil: club.bannedUntil ?? 0,
   }));
 };
 

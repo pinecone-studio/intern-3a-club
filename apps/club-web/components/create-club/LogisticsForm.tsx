@@ -10,12 +10,14 @@ interface LogisticsFormProps {
   formData: FormDataType;
   setFormData: (_data: FormDataType) => void;
   onRepeatChange: (_val: string) => void;
+  errors?: Record<string, string>;
 }
 
 export const LogisticsForm = ({
   formData,
   setFormData,
   onRepeatChange,
+  errors = {},
 }: LogisticsFormProps) => {
   const {
     isMinInvalid,
@@ -41,6 +43,7 @@ export const LogisticsForm = ({
           { l: 'Сар бүр', v: 'monthly' },
         ]}
         id="repeat-select"
+        error={errors.repeat}
       />
 
       <div className="grid grid-cols-2 gap-4">
@@ -51,6 +54,7 @@ export const LogisticsForm = ({
           onChange={bind('room')}
           options={['301', '302', '303']}
           id="room-select"
+          error={errors.room}
         />
         <CalendarSelectField
           label="Эхлэх цаг"
@@ -59,8 +63,10 @@ export const LogisticsForm = ({
           onChange={bind('time')}
           options={['13:00', '14:00', '15:00', '16:00']}
           id="time-select"
+          error={errors.time}
         />
       </div>
+
 
       <CalendarSelectField
         label="Үргэлжлэх"

@@ -16,6 +16,7 @@ export const clubs: Club[] = [
       { name: 'Bata', role: 'Coach', image: '/avatars/bata.png' },
     ],
     enrolledStudents: ['Anu', 'Bold', 'Sara'],
+    image: '/img1.jpg',
   },
   {
     id: 2,
@@ -31,6 +32,7 @@ export const clubs: Club[] = [
       { name: 'Enkhee', role: 'Lead', image: '/avatars/enkhee.png' },
     ],
     enrolledStudents: ['Tseren', 'Naraa', 'Tomi'],
+    image: '/img2.jpg',
   },
   {
     id: 3,
@@ -47,5 +49,6 @@ export const clubs: Club[] = [
       { name: 'Max', role: 'Engineer', image: '/avatars/max.png' },
     ],
     enrolledStudents: ['Oyun', 'Temuulen'],
+    image: '/img3.jpg',
   },
 ];
