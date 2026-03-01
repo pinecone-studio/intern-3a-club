@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import Page from '../../app/page';
 import { ViewRender } from '../../app/_components/main/ViewRender';
-import { Providers } from '../../libs/apollo/providers';
+import { Providers } from '../../libs/apollo/Providers';
 
 jest.mock('@clerk/nextjs', () => ({
   useAuth: () => ({ getToken: jest.fn().mockResolvedValue('mock-token') }),

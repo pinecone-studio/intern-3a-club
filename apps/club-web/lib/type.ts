@@ -81,6 +81,7 @@ export type GetAllClub = {
   status: string;
   minMember: number;
   maxMember: number;
+  bannedUntil?: number;
   timetables: Timetable[];
 };
 export type Timetable = {

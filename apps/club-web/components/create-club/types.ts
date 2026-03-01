@@ -1,5 +1,12 @@
 import { ReactNode } from 'react';
 
+export interface CreateClubWithSchedulesResponse {
+  createClubWithSchedules: {
+    id: string;
+    name: string;
+  } | null;
+}
+
 export interface SelectOption {
   l: string;
   v: string;
@@ -18,12 +25,13 @@ export interface CalendarSelectFieldProps {
   value: string | number;
   onChange: (_value: string) => void;
   options: (string | SelectOption)[];
+  error?: string;
 }
 
 export interface ClubFormProps {
   formData: FormDataType;
   setFormData: (_data: FormDataType) => void;
-  handleSubmit: () => void;
+  handleSubmit: () => Promise<{ success: boolean; message: string }>;
   selectedDates: Date[];
   setSelectedDates: (_dates: Date[]) => void;
   currentMonth: Date;
@@ -36,6 +44,7 @@ export type FormDataType = {
   name: string;
   goal: string;
   teacher: string;
+  preferredTeachers: string[];
   startDate: string;
   time: string;
   duration: string;
@@ -54,6 +63,7 @@ export interface LogisticsSectionProps {
   currentMonth: Date;
   handleMonthChange: (_offset: number) => void;
   renderCalendarDays: () => React.ReactNode;
+  errors?: Record<string, string>;
 }
 
 export interface Step1Props {
@@ -80,6 +90,7 @@ export const INITIAL_FORM_DATA: FormDataType = {
   name: '',
   goal: '',
   teacher: '',
+  preferredTeachers: [],
   startDate: '',
   time: '13:00',
   duration: '1:30',

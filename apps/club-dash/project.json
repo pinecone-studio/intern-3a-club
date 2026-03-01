@@ -71,6 +71,15 @@
         "command": "export $(cat apps/club-dash/.env | xargs) && npx graphql-codegen --config ./graphql-codegen.yml"
       }
     }
+    ,
+"pages-deploy": {
+  "executor": "@pinecone-monorepo/workspace-plugin:pages-deploy",
+  "dependsOn": ["build"],
+  "options": {
+    "projectName": "cloudflare-club-dash"
+  }
+}
+
   },
   "tags": ["type:app"]
 }

@@ -9,7 +9,7 @@ test('renders root page', async () => {
       <Page />
     </MockedProvider>
   );
-  await screen.findByText(/Клуб бүртгүүлэх/i);
+  await screen.findAllByText(/Клуб бүртгүүлэх/i);
   await screen.findByText(/Mock Club/i);
-  await screen.findByText(/Teacher One/i);
+  await screen.findAllByText(/Teacher One/i);
 });

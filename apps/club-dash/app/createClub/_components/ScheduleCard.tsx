@@ -60,7 +60,7 @@ export const ScheduleCard = ({
     <div
       data-testid="schedule-card"
       className={`bg-white p-3 rounded-lg border shadow-sm ${
-        hasOverlap ? 'border-red-400 bg-red-100' : 'border-gray-100'
+        hasOverlap ? 'border-red-300 bg-red-200/60' : 'border-gray-100'
       }`}
     >
       {hasOverlap && (

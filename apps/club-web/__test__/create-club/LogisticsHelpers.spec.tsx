@@ -24,6 +24,7 @@ describe('Logistics Helpers & Hook', () => {
             expect(checkMinGreater(10, 10)).toBe(true);
             expect(checkMinGreater(8, 10)).toBe(false);
             expect(checkMinGreater(10, 0)).toBe(false);
+            expect(checkMinGreater(0, 0)).toBe(false);
         });
 
         test('checkEmptyOrLarge', () => {
@@ -38,6 +39,7 @@ describe('Logistics Helpers & Hook', () => {
             expect(checkMaxSmaller(10, 10)).toBe(true);
             expect(checkMaxSmaller(10, 5)).toBe(false);
             expect(checkMaxSmaller(5, 0)).toBe(false);
+            expect(checkMaxSmaller(0, 0)).toBe(false);
         });
     });
 
@@ -82,6 +84,7 @@ describe('Logistics Helpers & Hook', () => {
             name: '',
             goal: '',
             teacher: '',
+            preferredTeachers: [],
             studentEmail: '',
             repeat: 'none',
             room: '301',
