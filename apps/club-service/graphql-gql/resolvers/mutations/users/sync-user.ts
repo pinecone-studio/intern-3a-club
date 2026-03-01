@@ -49,7 +49,11 @@ export const syncUser = async (
   __: unknown,
   context: AuthContext
 ) => {
-  const { clerkId, email } = validateContext(context.clerkId, context.email);
+  const { clerkId, email } = context;
+
+  if (!clerkId || !email) {
+    throw new Error('Authentication context missing');
+  }
 
   const result = await findAndUpdateUser(clerkId, email);
 
