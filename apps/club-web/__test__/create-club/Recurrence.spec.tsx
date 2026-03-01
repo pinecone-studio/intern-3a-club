@@ -40,9 +40,9 @@ describe('Recurrence & Logistics Logic', () => {
         <CreateClubCenter />
       </MockedProvider>
     );
-    await screen.findByText(/Клуб бүртгүүлэх/i);
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
     await screen.findByText(/Mock Club/i);
-    await screen.findByText(/Teacher One/i);
+    await screen.findAllByText(/Teacher One/i);
     goToStep2();
 
     const repeatSelect = screen.getByDisplayValue(/Зөвхөн сонгосон өдрүүдэд/i);
@@ -70,9 +70,9 @@ describe('Recurrence & Logistics Logic', () => {
         <CreateClubCenter />
       </MockedProvider>
     );
-    await screen.findByText(/Клуб бүртгүүлэх/i);
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
     await screen.findByText(/Mock Club/i);
-    await screen.findByText(/Teacher One/i);
+    await screen.findAllByText(/Teacher One/i);
     goToStep2();
 
     const repeatSelect = screen.getByDisplayValue(/Зөвхөн сонгосон өдрүүдэд/i);
@@ -92,9 +92,9 @@ describe('Recurrence & Logistics Logic', () => {
         <CreateClubCenter />
       </MockedProvider>
     );
-    await screen.findByText(/Клуб бүртгүүлэх/i);
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
     await screen.findByText(/Mock Club/i);
-    await screen.findByText(/Teacher One/i);
+    await screen.findAllByText(/Teacher One/i);
     goToStep2();
 
     const repeatSelect = screen.getByDisplayValue(/Зөвхөн сонгосон өдрүүдэд/i);

@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from 'lib/utils';
+import { cn } from '../../../lib/utils';
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -16,11 +16,11 @@ export const CustomButton = ({
   const variants = {
     primary:
       'bg-blue-600 hover:bg-blue-500 text-white border border-blue-400/30 shadow-[0_0_20px_rgba(59,130,246,0.15)] active:bg-blue-700',
-    
-    destructive: 
+
+    destructive:
       'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white active:bg-red-600',
-    
-    muted: 
+
+    muted:
       'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed shadow-none',
   };
 

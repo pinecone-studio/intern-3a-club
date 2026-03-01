@@ -15,6 +15,7 @@ export const LogisticsSection = (props: LogisticsSectionProps) => {
     selectedDates,
     setSelectedDates,
     currentMonth,
+    errors = {},
   } = props;
 
   const calculateRecurrence = useCallback(
@@ -123,6 +124,7 @@ export const LogisticsSection = (props: LogisticsSectionProps) => {
           formData={formData}
           setFormData={setFormData}
           onRepeatChange={handleRepeatChange}
+          errors={errors}
         />
       </div>
     </div>

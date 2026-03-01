@@ -20,9 +20,9 @@ describe('Calendar Interaction Suite', () => {
         <CreateClubCenter />
       </MockedProvider>
     );
-    await screen.findByText(/Клуб бүртгүүлэх/i);
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
     await screen.findByText(/Mock Club/i);
-    await screen.findByText(/Teacher One/i);
+    await screen.findAllByText(/Teacher One/i);
 
     // Fill Step 1
     fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
@@ -52,9 +52,9 @@ describe('Calendar Interaction Suite', () => {
         <CreateClubCenter />
       </MockedProvider>
     );
-    await screen.findByText(/Клуб бүртгүүлэх/i);
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
     await screen.findByText(/Mock Club/i);
-    await screen.findByText(/Teacher One/i);
+    await screen.findAllByText(/Teacher One/i);
     // Fill Step 1
     fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
       target: { value: 'Coding Club', name: 'name' },
@@ -77,9 +77,9 @@ describe('Calendar Interaction Suite', () => {
         <CreateClubCenter />
       </MockedProvider>
     );
-    await screen.findByText(/Клуб бүртгүүлэх/i);
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
     await screen.findByText(/Mock Club/i);
-    await screen.findByText(/Teacher One/i);
+    await screen.findAllByText(/Teacher One/i);
     // Fill Step 1
     fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
       target: { value: 'Coding Club', name: 'name' },

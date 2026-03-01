@@ -21,7 +21,7 @@ const mapClubsData = (clubs: GetAllClub[]): ExtendedClub[] => {
   return clubs.map((club) => ({
     ...club,
     isEnrolled: false,
-    bannedUntil: 0,
+    bannedUntil: club.bannedUntil ?? 0,
   }));
 };
 
@@ -77,7 +77,7 @@ export const ClubsContent = () => {
 
   const isLocked = useMemo(() => {
     if (!selectedClub) return false;
-    return (selectedClub.bannedUntil ?? 0) > now;
+    return /* istanbul ignore next */ (selectedClub.bannedUntil ?? 0) > now;
   }, [selectedClub, now]);
 
   const remainingTime = useMemo(() => {

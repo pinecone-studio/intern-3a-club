@@ -1,25 +1,25 @@
 // ----- Mock data ----
-export interface Instructor {
-  name: string;
-  role: string;
-  image: string;
-}
+// export interface Instructor {
+//   name: string;
+//   role: string;
+//   image: string;
+// }
 
-export interface Club {
-  id: number;
-  name: string;
-  description: string;
-  status: 'Open' | 'Full';
-  instructors: Instructor[];
-  currentMembers: number;
-  maxMembers: number;
-  schedule: string;
-  time: string;
-  class: string;
-  enrolledStudents: string[];
-  image?: string;
-  isEnrolled?: boolean;
-}
+// export interface Club {
+//   id: number;
+//   name: string;
+//   description: string;
+//   status: 'Open' | 'Full';
+//   instructors: Instructor[];
+//   currentMembers: number;
+//   maxMembers: number;
+//   schedule: string;
+//   time: string;
+//   class: string;
+//   enrolledStudents: string[];
+//   image: string;
+//   isEnrolled?: boolean;
+// }
 
 export interface ExtendedClub extends GetAllClub {
   isEnrolled: boolean;
@@ -81,6 +81,7 @@ export type GetAllClub = {
   status: string;
   minMember: number;
   maxMember: number;
+  bannedUntil?: number;
   timetables: Timetable[];
 };
 export type Timetable = {
