@@ -14,6 +14,37 @@ import {
   resolveType,
 } from 'gql-utils';
 
+interface MyContext {
+  clerkId?: string;
+}
+
+const getCreatorId = async (clerkId: string): Promise<string | null> => {
+  const teacher = await DB.select()
+    .from(teachers)
+    .where(eq(teachers.authUserId, clerkId))
+    .get();
+  if (teacher) return teacher.id;
+
+  const student = await DB.select()
+    .from(students)
+    .where(eq(students.authUserId, clerkId))
+    .get();
+  return student ? student.id : null;
+};
+
+const validateAndGetCreator = async (clerkId?: string): Promise<string> => {
+  if (!clerkId) throw new Error('Нэвтрээгүй байна.');
+
+  const creatorId = await getCreatorId(clerkId);
+  if (!creatorId) {
+    throw new Error(
+      'Хэрэглэгчийн бүртгэл олдсонгүй. Системтэй дахин синхрончлоорой.'
+    );
+  }
+
+  return creatorId;
+};
+
 const getClubValues = (clubId: string, args: CreateClubWithSchedulesArgs) => ({
   id: clubId,
   name: args.input.name,
@@ -57,40 +88,10 @@ const insertSchedules = async (
 export const createClubWithSchedules = async (
   _: unknown,
   args: CreateClubWithSchedulesArgs,
-  context: any
+  context: MyContext
 ) => {
   try {
-    const { clerkId } = context;
-    if (!clerkId) throw new Error('Нэвтрээгүй байна.');
-
-    let creatorId: string | null = null;
-
-    // багш мөн эсэхийг шалгах
-    const teacher = await DB.select()
-      .from(teachers)
-      .where(eq(teachers.authUserId, clerkId))
-      .get();
-
-    if (teacher) {
-      creatorId = teacher.id;
-    } else {
-      // Багш биш бол сурагч мөн эсэхийг шалгах
-      const student = await DB.select()
-        .from(students)
-        .where(eq(students.authUserId, clerkId))
-        .get();
-
-      if (student) {
-        creatorId = student.id;
-      }
-    }
-
-    // Хэрэв аль алин дээр нь байхгүй бол (Синхрончлол хийгдээгүй гэсэн үг)
-    if (!creatorId) {
-      throw new Error(
-        'Хэрэглэгчийн бүртгэл олдсонгүй. Системтэй дахин синхрончлоорой.'
-      );
-    }
+    const creatorId = await validateAndGetCreator(context.clerkId);
 
     const clubId = crypto.randomUUID();
 

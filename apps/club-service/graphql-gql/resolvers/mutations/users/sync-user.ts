@@ -2,13 +2,12 @@ import { DB } from 'db/drizzle';
 import { students, teachers } from 'db/schema';
 import { eq } from 'drizzle-orm';
 
-export const syncUser = async (_: unknown, __: unknown, context: any) => {
-  const { clerkId, email } = context;
-
-  if (!clerkId || !email) {
-    throw new Error('Authentication context missing');
-  }
-
+interface AuthContext {
+  clerkId?: string;
+  email?: string;
+}
+const findAndUpdateUser = async (clerkId: string, email: string) => {
+  // Багш мөн эсэхийг шалгаад шинэчлэх
   const teacher = await DB.select()
     .from(teachers)
     .where(eq(teachers.azureEmail, email))
@@ -21,6 +20,7 @@ export const syncUser = async (_: unknown, __: unknown, context: any) => {
     return { ...updated, __typename: 'Teacher' };
   }
 
+  // Сурагч мөн эсэхийг шалгаад шинэчлэх
   const student = await DB.select()
     .from(students)
     .where(eq(students.azureEmail, email))
@@ -33,5 +33,25 @@ export const syncUser = async (_: unknown, __: unknown, context: any) => {
     return { ...updated, __typename: 'Student' };
   }
 
-  throw new Error('Бүртгэлгүй хэрэглэгч байна.');
+  return null;
+};
+
+export const syncUser = async (
+  _: unknown,
+  __: unknown,
+  context: AuthContext
+) => {
+  const { clerkId, email } = context;
+
+  if (!clerkId || !email) {
+    throw new Error('Authentication context missing');
+  }
+
+  const result = await findAndUpdateUser(clerkId, email);
+
+  if (!result) {
+    throw new Error('Бүртгэлгүй хэрэглэгч байна.');
+  }
+
+  return result;
 };
