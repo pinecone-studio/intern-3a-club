@@ -43,6 +43,17 @@ const SYNC_USER_MUTATION = gql`
   }
 `;
 
+const isAbortError = (err: unknown): boolean => {
+  const error = err as { name?: string; message?: string };
+  return error.name === 'AbortError' || !!error.message?.includes('aborted');
+};
+
+const handleSyncSuccess = (data: SyncUserResponse | undefined) => {
+  if (data?.syncUser) {
+    console.log('Backend-тэй амжилттай синхрончилллоо:', data.syncUser);
+  }
+};
+
 export default function Dashboard() {
   const [activeView, setActiveView] = useState<string>('Join Club');
   const { isLoaded, userId } = useAuth();
@@ -59,12 +70,9 @@ export default function Dashboard() {
           },
         });
 
-        if (data?.syncUser) {
-          console.log('Backend-тэй амжилттай синхрончилллоо:', data.syncUser);
-        }
-      } catch (err: any) {
-        if (err.name === 'AbortError' || err.message?.includes('aborted'))
-          return;
+        handleSyncSuccess(data);
+      } catch (err: unknown) {
+        if (isAbortError(err)) return;
         console.error('Синхрончлолын алдаа:', err);
       }
     },
@@ -86,6 +94,25 @@ export default function Dashboard() {
     setActiveView(label);
   };
 
+  const statusContent = {
+    loading: (
+      <div className="flex items-center gap-2 p-4 bg-blue-50 rounded-lg">
+        <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full" />
+        <span className="text-sm text-blue-600 font-medium">
+          Системтэй холбогдож байна...
+        </span>
+      </div>
+    ),
+    error: (
+      <div className="text-sm text-red-500 bg-red-50 p-4 rounded-lg border border-red-100 shadow-sm">
+        <p className="font-bold">⚠️ Холболтын алдаа: {error?.message}</p>
+      </div>
+    ),
+    success: <ViewRender activeView={activeView} />,
+  };
+
+  const currentStatus = loading ? 'loading' : error ? 'error' : 'success';
+
   return (
     <div className="min-h-screen mx-auto bg-background">
       <DashboardSidebar
@@ -96,31 +123,7 @@ export default function Dashboard() {
       <div className="pl-64 flex flex-col min-h-screen">
         <DashboardHeader />
 
-        <main className="flex-1 p-6">
-          {loading && (
-            <div className="flex items-center gap-2 mb-4 p-4 bg-blue-50 rounded-lg">
-              <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-              <span className="text-sm text-blue-600 font-medium">
-                Системтэй холбогдож байна, түр хүлээнэ үү...
-              </span>
-            </div>
-          )}
-
-          {error && (
-            <div className="text-sm text-red-500 bg-red-50 p-4 rounded-lg border border-red-100 mb-4 shadow-sm">
-              <div className="font-bold flex items-center gap-2">
-                <span>⚠️ Холболтын алдаа:</span>
-              </div>
-              <p className="mt-1">{error.message}</p>
-              <p className="text-xs mt-2 text-red-400">
-                Зөвлөгөө: Та нэвтрэх эрхээ шалгах эсвэл хөтөчөө дахин ачаална
-                уу.
-              </p>
-            </div>
-          )}
-
-          {!loading && <ViewRender activeView={activeView} />}
-        </main>
+        <main className="flex-1 p-6">{statusContent[currentStatus]}</main>
       </div>
     </div>
   );
