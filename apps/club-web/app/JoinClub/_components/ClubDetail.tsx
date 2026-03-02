@@ -20,12 +20,10 @@ const getTeacherInfo = (teachers: GetAllTeacher[] = [], id?: string) => {
     return { name: 'Багш тодорхойгүй', initial: 'T' };
   }
 
-  const fullName = `${teacher.firstName} ${teacher.lastName}`;
-  const firstChar = teacher.firstName.charAt(0).toUpperCase();
-
+  const { firstName, lastName } = teacher;
   return {
-    name: fullName,
-    initial: firstChar || 'T',
+    name: `${firstName} ${lastName}`,
+    initial: firstName.charAt(0).toUpperCase() || 'T',
   };
 };
 
@@ -35,19 +33,17 @@ const EmptyState = () => (
   </div>
 );
 
-export const ClubDetail = ({
-  selectedClub,
-  userId,
-  allTeachers,
-  onEnrollSuccess,
-  onLeaveSuccess,
-}: ClubDetailProps) => {
-  const clubId = selectedClub?.id || '';
+export const ClubDetail = (props: ClubDetailProps) => {
+  const { selectedClub, userId, allTeachers, onEnrollSuccess, onLeaveSuccess } =
+    props;
+
+  // Complexity бууруулахын тулд props-оос ID-нуудыг салгаж авах
+  const clubId = selectedClub?.id;
   const teacherId = selectedClub?.teacherId;
 
   const actions = useClubAction({
     userid: userId,
-    clubid: clubId,
+    clubid: clubId || '',
     onEnrollSuccess,
     onLeaveSuccess,
   });
@@ -57,6 +53,7 @@ export const ClubDetail = ({
     [allTeachers, teacherId]
   );
 
+  // 'if' нөхцөлийг хамгийн сүүлд ганцхан удаа ашиглах
   if (!selectedClub) {
     return <EmptyState />;
   }
