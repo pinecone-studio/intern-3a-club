@@ -85,7 +85,6 @@ describe('ClubDetail Component', () => {
       render(
         <ClubDetail
           {...defaultProps}
-          // any ашиглахын оронд unknown-оор дамжуулж lint-ийг хангана
           allTeachers={undefined as unknown as GetAllTeacher[]}
           selectedClub={mockClub}
         />
@@ -124,8 +123,6 @@ describe('ClubDetail Component', () => {
       render(
         <ClubDetail
           {...defaultProps}
-          // any-ийн оронд lint-ийг идэвхгүй болгох тайлбар нэмж болно
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           selectedClub={{ ...mockClub, type: undefined as any }}
         />
       );
