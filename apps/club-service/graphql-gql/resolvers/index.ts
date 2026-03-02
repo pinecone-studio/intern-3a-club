@@ -5,6 +5,7 @@ import { clubs, timetable } from 'db/schema';
 import {
   getAllApprovedClubs,
   getAllClubs,
+  getAllClubsByCreatorId,
   getAllPendingClubs,
   getAllTeachers,
 } from './queries';
@@ -29,6 +30,7 @@ export const resolvers = {
     getAllApprovedClubs,
     getAllPendingClubs,
     getAllTeachers,
+    getAllClubsByCreatorId,
   },
   Mutation: {
     createClubWithSchedules,
