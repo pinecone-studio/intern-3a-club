@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 interface UseClubActionProps {
   userid: string;
-  clubid: number;
+  clubid: string;
   onEnrollSuccess: () => void;
   onLeaveSuccess: () => void;
 }
