@@ -1,59 +1,63 @@
 import React from 'react';
-import { render, screen, cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { useQuery } from '@apollo/client/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import JoinClubPage from '../app/JoinClub/page';
+import {
+  GET_ALL_APPROVED_CLUBS,
+  GET_ALL_TEACHERS,
+} from '../app/JoinClub/_components/club-query';
+import { MockedProvider } from '@apollo/client/testing/react';
 
-// 1. Apollo useQuery-г mock хийх
-jest.mock('@apollo/client/react', () => ({
-  useQuery: jest.fn(),
-}));
+const successMocks = [
+  {
+    request: { query: GET_ALL_APPROVED_CLUBS },
+    result: { data: { getAllApprovedClubs: [] } },
+  },
+  {
+    request: { query: GET_ALL_TEACHERS },
+    result: { data: { getAllTeachers: [] } },
+  },
+];
 
-const mockUseQuery = useQuery as unknown as jest.Mock;
+const errorMocks = [
+  {
+    request: { query: GET_ALL_APPROVED_CLUBS },
+    error: new Error('Network error'),
+  },
+  {
+    request: { query: GET_ALL_TEACHERS },
+    result: { data: { getAllTeachers: [] } },
+  },
+];
 
 describe('JoinClubPage', () => {
-  // Тест бүрийн дараа цэвэрлэх
-  afterEach(() => {
-    cleanup();
-    jest.clearAllMocks();
-  });
-
-  it('Уншиж байх үеийн төлөвийг зөв харуулдаг (Loading state)', () => {
-    mockUseQuery.mockReturnValue({
-      loading: true,
-      error: undefined,
-      data: undefined,
-    });
-
-    render(<JoinClubPage />);
+  it('loading үед "Уншиж байна..." харуулна', () => {
+    render(
+      <MockedProvider mocks={successMocks}>
+        <JoinClubPage />
+      </MockedProvider>
+    );
     expect(screen.getByText('Уншиж байна...')).toBeInTheDocument();
   });
 
-  it('Алдаа гарсан үеийн төлөвийг зөв харуулдаг (Error state)', () => {
-    mockUseQuery.mockReturnValue({
-      loading: false,
-      error: { message: 'Холболтын алдаа' },
-      data: undefined,
-    });
-
-    render(<JoinClubPage />);
-    expect(
-      screen.getByText(/Алдаа гарлаа: Холболтын алдаа/)
-    ).toBeInTheDocument();
+  it('амжилттай дата ирсэн үед "Клуб сонгоно уу" харуулна', async () => {
+    render(
+      <MockedProvider mocks={successMocks}>
+        <JoinClubPage />
+      </MockedProvider>
+    );
+    await waitFor(() =>
+      expect(screen.getByText('Клуб сонгоно уу')).toBeInTheDocument()
+    );
   });
 
-  it('Дата амжилттай ирсэн үед "hello" гэж харуулдаг (Success state)', () => {
-    mockUseQuery.mockReturnValue({
-      loading: false,
-      error: undefined,
-      data: {
-        getAllClubs: [{ id: '1', name: 'Test Club' }],
-      },
-    });
-
-    render(<JoinClubPage />);
-
-    // Таны код дээр одоогоор "hello" гэж байгаа тул:
-    expect(screen.getByText('hello')).toBeInTheDocument();
+  it('алдаа гарсан үед алдааны мессеж харуулна', async () => {
+    render(
+      <MockedProvider mocks={errorMocks}>
+        <JoinClubPage />
+      </MockedProvider>
+    );
+    await waitFor(() =>
+      expect(screen.getByText(/Алдаа гарлаа/)).toBeInTheDocument()
+    );
   });
 });

@@ -1,105 +1,92 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ClubCard } from '../app/JoinClub/_components/ClubCard';
-import { ClubCardProps } from '../lib/type';
-import React from 'react';
+import { ExtendedClub } from '../lib/type';
 
-const mockClub: ClubCardProps['club'] = {
-  id: '1',
-  name: 'React',
-  description: 'Энэ бол React клубын тайлбар',
-  teacherId: 'T01',
-  type: 'Technology',
-  status: 'Open',
-  minMember: 13,
-  maxMember: 20,
-  timetables: [
-    {
-      id: 't1',
-      clubId: '1',
-      date: 'Даваа, Лхагва',
-      room: '401-р өрөө',
-      clubStartTime: '18:00-20:00',
-      duration: 120,
-    },
-  ],
-  isEnrolled: true,
-  bannedUntil: 0,
+const mockTimetable = {
+  id: 'tt-1',
+  clubId: 'club-1',
+  date: 'Даваа, Лхагва',
+  room: '401-р өрөө',
+  clubStartTime: '18:00-20:00',
+  duration: 120,
 };
 
+const mockClub = {
+  id: 'club-1',
+  name: 'React',
+  description: 'desc',
+  type: 'Premium',
+  status: 'ACTIVE',
+  teacherId: 'teacher-1',
+  creatorId: 'creator-1',
+  frequency: 'WEEKLY',
+  clubTerm: 'FIRST',
+  minMember: 5,
+  maxMember: 20,
+  timetables: [mockTimetable],
+  isEnrolled: false,
+  bannedUntil: 0,
+} as ExtendedClub;
+
 describe('ClubCard', () => {
-  it('Хэрэглэгч бүртгүүлсэн үед "ИДЭВХТЭЙ" статус харагдах ёстой', () => {
+  it('клубын нэрийг харуулна', () => {
     render(<ClubCard club={mockClub} isSelected={false} onClick={jest.fn()} />);
-
-    const badge = screen.getByText(/ИДЭВХТЭЙ/i);
-    expect(badge).toBeInTheDocument();
+    expect(screen.getByText('React')).toBeInTheDocument();
   });
 
-  it('Клуб дүүрсэн үед "ДҮҮРСЭН" статус харагдах ёстой', () => {
-    // Logic inside ClubCard calculates isFull = minMember >= maxMember
-    const fullClub = {
-      ...mockClub,
-      isEnrolled: false,
-      status: 'Full' as const,
-      minMember: 20,
-      maxMember: 20,
-    };
-    render(<ClubCard club={fullClub} isSelected={false} onClick={jest.fn()} />);
-
-    const badge = screen.getByText(/ДҮҮРСЭН/i);
-    expect(badge).toBeInTheDocument();
-  });
-
-  it('Картан дээр дарахад onClick дуудагдах ёстой', () => {
-    const handleClick = jest.fn();
+  it('isEnrolled=true үед "Элссэн" badge харуулна', () => {
     render(
-      <ClubCard club={mockClub} isSelected={false} onClick={handleClick} />
+      <ClubCard
+        club={{ ...mockClub, isEnrolled: true }}
+        isSelected={false}
+        onClick={jest.fn()}
+      />
     );
-
-    // Using fireEvent on the container div since it has the onClick handler
-    // The component structure is a bit complex, let's target by text or container behavior
-    // Actually, look at the component implementation if needed.
-    // Assuming standard div with onClick.
-
-    // Check if we can find by name
-    const nameElement = screen.getByText(mockClub.name);
-    fireEvent.click(nameElement);
-
-    expect(handleClick).toHaveBeenCalledWith(mockClub.id);
+    expect(screen.getByText('Элссэн')).toBeInTheDocument();
   });
 
-  it('Клуб сонгогдсон үед "НЭЭЛТТЭЙ" статус болон selected загвар харагдах ёстой', () => {
-    // isEnrolled=false, isFull=false
-    const selectedClub = {
-      ...mockClub,
-      isEnrolled: false,
-      minMember: 10,
-      maxMember: 20,
-    };
-    render(
-      <ClubCard club={selectedClub} isSelected={true} onClick={jest.fn()} />
-    );
-
-    // Check if correct class/theme is applied?
-    // Usually theme changes background.
-    // 'bg-blue-500/10' is for selected.
-
-    // Just verify it renders without error and maybe check for text class if possible,
-    // but the main goal is to hit the branch.
-    expect(screen.getByText(/НЭЭЛТТЭЙ/i)).toBeInTheDocument();
+  it('isEnrolled=false үед badge харуулахгүй', () => {
+    render(<ClubCard club={mockClub} isSelected={false} onClick={jest.fn()} />);
+    expect(screen.queryByText('Элссэн')).not.toBeInTheDocument();
   });
 
-  it('Клуб энгийн үед (Default) "НЭЭЛТТЭЙ" статус харагдах ёстой', () => {
-    // isEnrolled=false, isFull=false, isSelected=false
-    const defaultClub = {
-      ...mockClub,
-      isEnrolled: false,
-      minMember: 10,
-      maxMember: 20,
-    };
-    render(
-      <ClubCard club={defaultClub} isSelected={false} onClick={jest.fn()} />
-    );
+  it('timetable байгаа үед хуваарь харуулна', () => {
+    render(<ClubCard club={mockClub} isSelected={false} onClick={jest.fn()} />);
+    expect(screen.getByText(/Даваа, Лхагва/)).toBeInTheDocument();
+    expect(screen.getByText('401-р өрөө')).toBeInTheDocument();
+  });
 
-    expect(screen.getByText(/НЭЭЛТТЭЙ/i)).toBeInTheDocument();
+  it('timetable байхгүй үед fallback текст харуулна', () => {
+    render(
+      <ClubCard
+        club={{ ...mockClub, timetables: [] }}
+        isSelected={false}
+        onClick={jest.fn()}
+      />
+    );
+    expect(screen.getByText('Хугацаа тодорхойгүй')).toBeInTheDocument();
+    expect(screen.getByText('Өрөө тодорхойгүй')).toBeInTheDocument();
+  });
+
+  it('isSelected=true үед border-blue-500 класс байна', () => {
+    const { container } = render(
+      <ClubCard club={mockClub} isSelected={true} onClick={jest.fn()} />
+    );
+    expect(container.firstChild).toHaveClass('border-blue-500');
+  });
+
+  it('isSelected=false үед border-white/5 класс байна', () => {
+    const { container } = render(
+      <ClubCard club={mockClub} isSelected={false} onClick={jest.fn()} />
+    );
+    expect(container.firstChild).toHaveClass('border-white/5');
+  });
+
+  it('карт дарахад onClick дуудагдана', () => {
+    const onClick = jest.fn();
+    render(<ClubCard club={mockClub} isSelected={false} onClick={onClick} />);
+    fireEvent.click(screen.getByText('React'));
+    expect(onClick).toHaveBeenCalledWith('club-1');
   });
 });
