@@ -39,13 +39,9 @@ export const ClubDetail = (props: ClubDetailProps) => {
   const { selectedClub, userId, allTeachers, onEnrollSuccess, onLeaveSuccess } =
     props;
 
-  // early return makes the rest of the logic confident that `selectedClub` exists
-  if (!selectedClub) {
-    return <EmptyState />;
-  }
-
-  const clubId = selectedClub.id;
-  const teacherId = selectedClub.teacherId;
+  // hooks must be called unconditionally; compute IDs even when no club is selected
+  const clubId = selectedClub?.id ?? '';
+  const teacherId = selectedClub?.teacherId;
 
   const actions = useClubAction({
     userid: userId,
@@ -58,6 +54,11 @@ export const ClubDetail = (props: ClubDetailProps) => {
     () => getTeacherInfo(allTeachers, teacherId),
     [allTeachers, teacherId]
   );
+
+  // early return when there's nothing to render
+  if (!selectedClub) {
+    return <EmptyState />;
+  }
 
   const { banned, loading, handleEnroll, handleLeave, remainingTime } = actions;
 
