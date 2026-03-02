@@ -15,13 +15,34 @@ interface ClubDetailProps {
   onLeaveSuccess: () => void;
 }
 
-const getTeacherInfo = (teachers: GetAllTeacher[], teacherId?: string) => {
+// TeacherData-ийн төрлийг тодорхой зааж өгснөөр TS алдаа арилна
+interface TeacherData {
+  initial: string;
+  name: string;
+}
+
+const getTeacherInfo = (
+  teachers: GetAllTeacher[] | undefined,
+  teacherId?: string
+): TeacherData => {
+  // 1. Teachers массив байхгүй эсвэл ирээгүй үед (Test coverage хамгаалалт)
+  if (!teachers || !Array.isArray(teachers)) {
+    return {
+      name: 'Багш тодорхойгүй',
+      initial: 'T',
+    };
+  }
+
   const teacher = teachers.find((t) => t.id === teacherId);
+
+  // 2. Буцаах объект нь заавал initial болон name гэсэн string талбартай байна
   return {
     name: teacher
       ? `${teacher.firstName} ${teacher.lastName}`
       : 'Багш тодорхойгүй',
-    initial: teacher?.firstName.charAt(0) || 'T',
+    initial: teacher?.firstName
+      ? teacher.firstName.charAt(0).toUpperCase()
+      : 'T',
   };
 };
 
@@ -73,7 +94,7 @@ const EmptyState = () => (
 
 interface ClubDetailViewProps {
   club: ExtendedClub;
-  teacherData: { initial: string; name: string };
+  teacherData: TeacherData; // teacherData-ийн төрлийг энд мөн зааж өгсөн
   banned: boolean;
   remainingTime: number | null | undefined;
   loading: boolean;
@@ -123,6 +144,7 @@ const ClubDetailView = ({
     </div>
   </div>
 );
+
 export const ClubDetail = ({
   selectedClub,
   userId,
@@ -133,6 +155,7 @@ export const ClubDetail = ({
   const club = selectedClub ?? null;
   const clubId = getClubId(club);
   const teacherId = getTeacherId(club);
+
   const { remainingTime, banned, loading, handleEnroll, handleLeave } =
     useClubAction({
       userid: userId,
@@ -140,11 +163,14 @@ export const ClubDetail = ({
       onEnrollSuccess,
       onLeaveSuccess,
     });
+
   const teacherData = useMemo(
     () => getTeacherInfo(allTeachers, teacherId),
     [allTeachers, teacherId]
   );
+
   if (!club) return <EmptyState />;
+
   return (
     <ClubDetailView
       club={club}
