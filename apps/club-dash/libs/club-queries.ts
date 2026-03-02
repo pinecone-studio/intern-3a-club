@@ -51,3 +51,21 @@ export const GET_ALL_PENDING_CLUBS = gql`
   }
 `;
 
+export const UPDATE_CLUB = gql`
+  mutation UpdateClub($input: UpdateClubInput!) {
+    updateClub(input: $input) {
+      id
+      status
+    }
+  }
+`;
+
+export const GET_ALL_DECLINED_CLUBS = gql`
+  query {
+    getAllClubs(status: declined) {
+      id
+      name
+      status
+    }
+  }
+`;

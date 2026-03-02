@@ -4,6 +4,10 @@ import Page from '../../app/page';
 import { ViewRender } from '../../app/_components/main/ViewRender';
 import { Providers } from '../../libs/apollo/Providers';
 
+jest.mock('../../app/_components/teacher/main/AdminClubView', () => ({
+  AdminClubsView: () => <div>Admin Clubs View</div>,
+}));
+
 jest.mock('../../app/_components/teacher/main/use-admin-clubs-data', () => ({
   useAdminClubsData: () => ({
     approved: [],

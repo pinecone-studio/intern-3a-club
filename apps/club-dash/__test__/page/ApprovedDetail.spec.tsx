@@ -1,12 +1,9 @@
 import { render, fireEvent, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { ApprovedClubDetail } from '../../app/_components/teacher/approved/Approved';
 import type { Club } from '../../libs/types';
 
 const mockMutate = jest.fn();
-jest.mock('@apollo/client/react', () => ({
-  ...jest.requireActual('@apollo/client/react'),
-  useMutation: () => [mockMutate, { loading: false, data: null, error: null }],
-}));
 
 jest.mock('@apollo/client/react', () => ({
   ...jest.requireActual('@apollo/client/react'),
@@ -35,10 +32,6 @@ const club: Club = {
 };
 
 describe('ApprovedClubDetail', () => {
-  const confirmSpy = jest
-    .spyOn(window, 'confirm')
-    .mockImplementation(() => true);
-
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -59,19 +52,20 @@ describe('ApprovedClubDetail', () => {
   it('calls delete mutation when Delete clicked and confirm true', async () => {
     mockMutate.mockResolvedValue({ data: { deleteClub: '1' } });
     render(
-      <ApprovedClubDetail club={club} onEdit={() => {}} onDelete={undefined} />
+      <ApprovedClubDetail club={club} onDelete={jest.fn()} />
     );
 
     fireEvent.click(screen.getByText(/delete/i));
-    expect(confirmSpy).toHaveBeenCalled();
-    await expect(mockMutate).toHaveBeenCalledWith({ variables: { id: '1' } });
+    fireEvent.click(screen.getByText('Устгах'));
+
+    expect(mockMutate).toHaveBeenCalledWith({ variables: { id: '1' } });
   });
 
   it('does not call delete when confirm false', () => {
-    confirmSpy.mockReturnValueOnce(false);
-    render(<ApprovedClubDetail club={club} onEdit={() => {}} />);
+    render(<ApprovedClubDetail club={club} onDelete={undefined} />);
 
     fireEvent.click(screen.getByText(/delete/i));
+    fireEvent.click(screen.getByText('Цуцлах'));
     expect(mockMutate).not.toHaveBeenCalled();
   });
 

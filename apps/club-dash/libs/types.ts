@@ -48,6 +48,7 @@ export interface Club {
   name: string;
   description: string | null;
   teacherId: string | null;
+  preferredTeachers?: string[] | null;
   minMember: number;
   maxMember: number;
   status: string;

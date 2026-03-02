@@ -25,15 +25,15 @@ const Calendar = ({
           'flex flex-col sm:flex-row gap-y-4 sm:gap-x-4 sm:gap-y-0 relative',
         month: 'space-y-4',
         caption: 'flex justify-center pt-1 relative items-center w-full',
-        caption_label: 'text-sm font-medium',
+        caption_label: 'text-sm font-medium flex justify-center',
         nav: 'flex items-center',
         button_previous: cn(
-          buttonVariants({ variant: 'outline' }),
-          'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute left-1 top-0 z-10'
+          buttonVariants({ variant: 'ghost' }),
+          'h-5 w-5 bg-transparent p-0 opacity-50 hover:opacity-100 absolute left-1 top-0 z-10'
         ),
         button_next: cn(
-          buttonVariants({ variant: 'outline' }),
-          'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-1 top-0 z-10'
+          buttonVariants({ variant: 'ghost' }),
+          'h-5 w-5 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-1 top-0 z-10'
         ),
         month_grid: 'w-full border-collapse space-y-1',
         weekdays: 'flex',
@@ -44,8 +44,7 @@ const Calendar = ({
           buttonVariants({ variant: 'ghost' }),
           'h-9 w-9 p-0 font-normal aria-selected:opacity-100 flex items-center justify-center'
         ),
-        selected:
-          'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
+        selected: 'bg-primary text-primary-foreground ring-2 ring-primary/40',
         today: 'bg-accent text-accent-foreground',
         outside:
           'day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
