@@ -21,6 +21,10 @@ jest.mock('@clerk/nextjs', () => ({
   ),
 }));
 
+jest.mock('../../app/_components/teacher/main/AdminClubView', () => ({
+  AdminClubsView: () => <div>Admin Clubs View</div>,
+}));
+
 jest.mock('../../app/_components/teacher/main/use-admin-clubs-data', () => ({
   useAdminClubsData: () => ({
     approved: [],
