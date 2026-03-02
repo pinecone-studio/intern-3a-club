@@ -2,61 +2,86 @@
 import React, { useState, useCallback } from 'react';
 import { LogisticsSection } from './LogisticsSection';
 import { Step1 } from './Step1';
-import { ClubFormProps } from './types';
-import { cn } from 'lib/utils';
+import { ClubFormProps, GetAllTeacher } from './types';
+import { ClubFormHelp } from './ClubFormHelp';
+import { getStep1Errors, getStep2Errors } from './create-club-helpers';
+import { ProgressBar } from './ProgressBar';
 
-const ProgressBar = ({ step }: { step: number }) => (
-  <div className="flex gap-4">
-    {step === 1 ? (
-      <div className={cn('h-5 flex-1 rounded-full text-white')}>Алхам 1</div>
-    ) : (
-      <div className={cn('h-5 flex-1 rounded-full text-white')}>Алхам 2</div>
+interface StepViewProps {
+  props: ClubFormProps;
+  onNext?: () => void;
+  onBack?: () => void;
+  onSubmit?: () => void;
+  status?: string;
+  teachers?: GetAllTeacher[];
+  errors?: Record<string, string>;
+}
+
+const Step1View = ({ props, teachers, errors, onNext }: StepViewProps) => (
+  <div className="animate-in fade-in duration-500">
+    <Step1 {...props} teachers={teachers} errors={errors} />
+    <button
+      type="button"
+      onClick={onNext}
+      className="w-full h-12 mt-4 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold shadow-md hover:opacity-95 transition"
+    >
+      Үргэлжлүүлэх
+    </button>
+  </div>
+);
+
+const Step2View = ({ props, onBack, onSubmit, status }: StepViewProps) => (
+  <div className="animate-in fade-in duration-500">
+    <LogisticsSection {...props} />
+    <div className="flex flex-col sm:flex-row gap-3 pt-6">
+      <button
+        type="button"
+        onClick={onBack}
+        className="flex-1 h-11 rounded-lg border border-blue-700/40 text-blue-100 font-medium bg-transparent hover:bg-blue-900/20 transition"
+      >
+        Буцах
+      </button>
+      <button
+        type="button"
+        onClick={onSubmit}
+        className="flex-1 h-11 rounded-lg bg-blue-600 text-white font-bold uppercase tracking-wide shadow-lg hover:brightness-95 transition"
+      >
+        Хүсэлт илгээх
+      </button>
+    </div>
+    {status && (
+      <div className="mt-3 text-sm text-center text-white/90">
+        {status}
+      </div>
     )}
   </div>
 );
 
 export const ClubForm = (props: ClubFormProps) => {
-  const { formData, handleSubmit, selectedDates } = props;
+  const { formData, handleSubmit, teachers } = props;
+  const [showHelp, setShowHelp] = useState(false);
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const getStep1Errors = useCallback(() => {
-    const { name, teacher, goal } = formData;
-    return [
-      { key: 'name', val: name?.trim() },
-      { key: 'teacher', val: teacher },
-      { key: 'goal', val: goal?.trim() },
-    ].reduce((acc, { key, val }) => {
-      if (!val) acc[key] = 'Заавал';
-      return acc;
-    }, {} as Record<string, string>);
-  }, [formData]);
-
-  const getStep2Errors = useCallback(() => {
-    const errs: Record<string, string> = {};
-    const hasNoDates = selectedDates.length === 0;
-
-    if (!formData.room) errs.room = 'Заавал';
-    if (hasNoDates) errs.dates = 'Заавал';
-
-    return errs;
-  }, [formData.room, selectedDates]);
+  const [submissionStatus, setSubmissionStatus] = useState('');
 
   const onNext = useCallback(() => {
-    const e = getStep1Errors();
+    const e = getStep1Errors(formData);
     setErrors(e);
     if (Object.keys(e).length === 0) setStep(2);
-  }, [getStep1Errors]);
+  }, [formData]);
 
-  const onSubmit = useCallback(() => {
-    const e = getStep2Errors();
+  const onSubmit = useCallback(async () => {
+    const e = getStep2Errors(formData);
     setErrors(e);
-    if (Object.keys(e).length === 0) handleSubmit();
-  }, [getStep2Errors, handleSubmit]);
+    if (Object.keys(e).length === 0) {
+      setSubmissionStatus('Илгээж байна...');
+      const result = await handleSubmit();
+      setSubmissionStatus(result.message);
+    }
+  }, [formData, handleSubmit]);
 
   const onBack = useCallback(() => setStep(1), []);
-
-  const isStep1 = step === 1;
+  const toggleHelp = useCallback(() => setShowHelp((s) => !s), []);
 
   return (
     <div className="lg:col-span-7">
@@ -64,53 +89,24 @@ export const ClubForm = (props: ClubFormProps) => {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-lg font-extrabold text-white">
-                Клуб бүртгүүлэх
-              </h4>
-              <p className="text-sm text-blue-200/80">
-                Шинэ клуб нээх хүсэлт болон хуваарь илгээх.
-              </p>
-            </div>
-            <div className="hidden sm:block w-48">
-              <ProgressBar step={step} />
-            </div>
-          </div>
-
-          <div className="sm:hidden">
-            <ProgressBar step={step} />
-          </div>
-
-          {isStep1 ? (
-            <div className="animate-in fade-in duration-500">
-              <Step1 {...props} errors={errors} />
-              <button
-                type="button"
-                onClick={onNext}
-                className="w-full h-12 mt-4 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold shadow-md hover:opacity-95 transition"
-              >
-                Үргэлжлүүлэх
-              </button>
-            </div>
-          ) : (
-            <div className="animate-in fade-in duration-500">
-              <LogisticsSection {...props} />
-              <div className="flex flex-col sm:flex-row gap-3 pt-6">
-                <button
-                  type="button"
-                  onClick={onBack}
-                  className="flex-1 h-11 rounded-lg border border-blue-700/40 text-blue-100 font-medium bg-transparent hover:bg-blue-900/20 transition"
-                >
-                  Буцах
-                </button>
-                <button
-                  type="button"
-                  onClick={onSubmit}
-                  className="flex-1 h-11 rounded-lg bg-blue-600 text-white font-bold uppercase tracking-wide shadow-lg hover:brightness-95 transition"
-                >
-                  Хүсэлт илгээх
-                </button>
+              <h4 className="text-lg font-extrabold text-white">Клуб бүртгүүлэх</h4>
+              <div className="text-sm text-blue-200/80">
+                <div className="flex items-center gap-3">
+                  <p className="m-0 text-white/90">Клуб нээх заавар</p>
+                  <button type="button" onClick={toggleHelp} className="text-xs px-2 py-1 bg-white/5 rounded-md hover:bg-white/10">
+                    {showHelp ? 'Хаах' : 'Тусламж'}
+                  </button>
+                </div>
+                <ClubFormHelp showHelp={showHelp} />
               </div>
             </div>
+            <div className="hidden sm:block w-48"><ProgressBar step={step} /></div>
+          </div>
+          <div className="sm:hidden"><ProgressBar step={step} /></div>
+          {step === 1 ? (
+            <Step1View props={props} teachers={teachers} errors={errors} onNext={onNext} />
+          ) : (
+            <Step2View props={props} onBack={onBack} onSubmit={onSubmit} status={submissionStatus} />
           )}
         </div>
       </div>

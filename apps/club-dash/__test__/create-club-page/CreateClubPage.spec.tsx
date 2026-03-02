@@ -4,17 +4,61 @@ import React from 'react';
 import CreateClub from '../../app/createClub/page';
 
 const mockSubmit = jest.fn((e) => e.preventDefault());
+const mockHandleEmptyFields = jest.fn();
 let mockLoading = false;
 
 const mockHandlers = {
   handleName: jest.fn(),
   handleDesc: jest.fn(),
   handleMax: jest.fn(),
+  handleEmptyFields: mockHandleEmptyFields,
 };
 
+jest.mock('@clerk/nextjs', () => ({
+  useAuth: () => ({ getToken: jest.fn().mockResolvedValue('mock-token') }),
+  useUser: () => ({ user: { firstName: 'Test' } }),
+  SignedIn: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SignedOut: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SignInButton: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  SignUpButton: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  UserButton: () => <div>UserButton</div>,
+  ClerkProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+}));
+
+jest.mock('../../app/_hooks/use-get-teachers', () => ({
+  useGetTeachers: () => ({
+    loading: false,
+    error: undefined,
+    data: {
+      getAllTeachers: [
+        { id: '1', firstName: 'Erdenetsogt', lastName: '' },
+        { id: '2', firstName: 'Narantsatsralt', lastName: '' },
+      ],
+    },
+  }),
+}));
+
+jest.mock('../../app/_hooks/use-get-clubs', () => ({
+  useGetClubs: () => ({
+    loading: false,
+    error: undefined,
+    data: { getAllClubs: [] },
+  }),
+}));
+
 jest.mock('../../app/_hooks/use-create-club', () => ({
-  useCreateClubMutation: () => ({
-    handleSubmit: mockSubmit,
+  useCreateClubMutation: (_state: unknown, onSuccess: () => void) => ({
+    handleSubmit: (e: React.FormEvent) => {
+      e.preventDefault();
+      mockSubmit(e);
+      onSuccess();
+    },
     loading: mockLoading,
     error: null,
   }),
@@ -24,7 +68,7 @@ jest.mock('../../app/_hooks/use-createclub-states', () => ({
   useCreateClubState: () => ({
     state: {
       clubName: '',
-      teacherName: '',
+      teacherId: '',
       clubDesc: '',
       clubStartDate: [],
       selectedFreqId: '1',
@@ -35,9 +79,10 @@ jest.mock('../../app/_hooks/use-createclub-states', () => ({
       clubMaxStudent: '20',
       clubMinStudent: '5',
       clubFrequency: 'Зөвхөн сонгосон өдрүүдэд',
+      scheduleChange: {},
     },
     setters: {
-      setTeacherName: jest.fn(),
+      setTeacherId: jest.fn(),
       setClubStartDate: jest.fn(),
       setSelectedFreqId: jest.fn(),
       setClubTerm: jest.fn(),
@@ -65,7 +110,7 @@ describe('CreateClub Page', () => {
     ).toBeInTheDocument();
   });
 
-  it('calls handleSubmit when form is submitted', async () => {
+  it('calls handleSubmit and onSuccess callback which closes dialog and resets fields', async () => {
     render(<CreateClub />);
     fireEvent.click(screen.getByText(/Клуб нээх/i));
 
@@ -73,6 +118,7 @@ describe('CreateClub Page', () => {
     fireEvent.submit(submitBtn);
 
     expect(mockSubmit).toHaveBeenCalled();
+    expect(mockHandleEmptyFields).toHaveBeenCalled();
   });
 
   it('shows loading state on the submit button', async () => {
@@ -100,9 +146,6 @@ describe('CreateClub Page', () => {
     fireEvent.change(screen.getByPlaceholderText(/Max/i), {
       target: { value: '30' },
     });
-    // fireEvent.change(screen.getByLabelText(/Сурагчдын тоо/i), {
-    //   target: { value: '30' },
-    // });
 
     expect(mockHandlers.handleName).toHaveBeenCalled();
     expect(mockHandlers.handleDesc).toHaveBeenCalled();

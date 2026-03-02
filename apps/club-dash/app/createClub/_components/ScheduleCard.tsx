@@ -6,7 +6,6 @@ import { Trash } from 'lucide-react';
 
 type ScheduleCardProps = {
   selectedDays: Date;
-  i: number;
   changeSchedule: ScheduleChange | undefined;
   defaultRoom: string;
   defaultStartTime: string;
@@ -17,6 +16,7 @@ type ScheduleCardProps = {
     _value: string
   ) => void;
   onDelete: (_d: Date) => void;
+  hasOverlap: boolean;
 };
 
 type SetterValue = string | ((_prev: string) => string);
@@ -35,13 +35,13 @@ export const getDuration = (c: ScheduleChange | undefined, d: string) =>
 
 export const ScheduleCard = ({
   selectedDays,
-  i,
   changeSchedule,
   defaultRoom,
   defaultStartTime,
   defaultDuration,
   onUpdateChange,
   onDelete,
+  hasOverlap,
 }: ScheduleCardProps) => {
   const key = format(selectedDays, 'yyyy-MM-dd');
 
@@ -50,21 +50,24 @@ export const ScheduleCard = ({
   const duration = getDuration(changeSchedule, defaultDuration);
 
   const handleSetRoom = (v: string) => onUpdateChange(key, 'room', v);
-
   const handleSetStartTime = (v: SetterValue) =>
     onUpdateChange(key, 'startTime', resolveValue(v, startTime));
-
   const handleSetDuration = (v: SetterValue) =>
     onUpdateChange(key, 'duration', resolveValue(v, duration));
-
   const handleDelete = () => onDelete(selectedDays);
 
   return (
     <div
-      key={`${selectedDays.getTime()}-${i}`}
       data-testid="schedule-card"
-      className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm"
+      className={`bg-white p-3 rounded-lg border shadow-sm ${
+        hasOverlap ? 'border-red-300 bg-red-200/60' : 'border-gray-100'
+      }`}
     >
+      {hasOverlap && (
+        <p className="text-xs text-red-500 font-semibold mb-2">
+          Хуваарь давхцаж байна
+        </p>
+      )}
       <div className="flex items-center gap-4 flex-wrap">
         <div className="flex flex-col gap-0.5 min-w-[90px]">
           <span className="text-[11px] font-bold text-gray-800">{key}</span>

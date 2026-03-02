@@ -11,6 +11,7 @@ import {
 import {
   createClubWithSchedules,
   deleteClub,
+  syncUser,
   updateClub,
   updateTimetable,
 } from './mutations';
@@ -33,6 +34,7 @@ export const resolvers = {
     deleteClub,
     updateTimetable,
     updateClub,
+    syncUser,
   },
   // Relationship (Холболт) хэсэг:
   Club: {

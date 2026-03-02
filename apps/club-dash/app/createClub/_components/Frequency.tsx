@@ -25,14 +25,14 @@ export const Frequency = ({
   setClubFrequency,
 }: FrequencyProps) => {
   const frequencies = [
-    { id: '1', label: 'Зөвхөн сонгосон өдрүүдэд' },
-    { id: '2', label: 'Долоо хоног бүр' },
+    { id: '1', label: 'Зөвхөн сонгосон өдрүүдэд', value: 'ONCE' },
+    { id: '2', label: 'Долоо хоног бүр', value: 'WEEKLY' },
   ];
 
   const handleValueChange = (val: string) => {
     setSelectedFreqId(val);
     const selected = frequencies.find((f) => f.id === val);
-    setClubFrequency(selected?.label || '');
+    setClubFrequency(selected?.value || '');
   };
 
   return (

@@ -13,6 +13,13 @@ export const timetableTypeDefs = gql`
     updatedAt: String!
   }
 
+  input ScheduleInput {
+    date: String!
+    room: String!
+    clubStartTime: String!
+    duration: Int!
+  }
+
   input CreateTimetableInput {
     date: String!
     room: String!

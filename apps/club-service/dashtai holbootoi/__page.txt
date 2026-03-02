@@ -1,0 +1,1066 @@
+'use client';
+
+import React, { useState } from 'react';
+import { gql } from '@apollo/client';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  Textarea,
+  Input,
+  Label,
+  Calendar,
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@intern-3a-club/shadcn';
+import { useMutation, useQuery } from '@apollo/client/react';
+import {
+  GET_ALL_APPROVED_CLUBS,
+  GET_ALL_PENDING_CLUBS,
+} from 'apps/club-dash/libs/club-queries';
+
+export interface TeacherData {
+  getAllTeachers: GetAllTeacher[];
+}
+
+export interface GetAllTeacher {
+  id: string;
+  firstName: string;
+  lastName: string;
+  profilePicture: string;
+}
+
+export interface PendingClubData {
+  getAllPendingClubs: GetAllPendingClub[];
+}
+
+export interface GetAllPendingClub {
+  __typename: string;
+  id: string;
+  name: string;
+  description: string;
+  creatorId: any;
+  teacherId: any;
+  type: string;
+  status: string;
+  preferredTeachers: string[];
+  minMember: number;
+  maxMember: number;
+  timetables: PendingClubTimetable[];
+}
+
+export interface PendingClubTimetable {
+  __typename: string;
+  id: string;
+  clubId: string;
+  date: string;
+  room: string;
+  clubStartTime: string;
+  duration: number;
+}
+
+export type ApprovedClubData = {
+  getAllApprovedClubs: GetAllApprovedClub[];
+};
+
+export interface GetAllApprovedClub {
+  __typename: string;
+  id: string;
+  name: string;
+  description: string;
+  creatorId: any;
+  teacherId: string;
+  type: string;
+  status: string;
+  minMember: number;
+  maxMember: number;
+  timetables: ApprovedClubTimetable[];
+}
+
+export interface ApprovedClubTimetable {
+  __typename: string;
+  id: string;
+  clubId: string;
+  date: string;
+  room: string;
+  clubStartTime: string;
+  duration: number;
+}
+
+export type Data = {
+  getAllClubs: GetAllClub[];
+};
+
+export type GetAllClub = {
+  id: string;
+  name: string;
+  description: string;
+  creatorId: any;
+  teacherId: string;
+  type: string;
+  status: string;
+  preferredTeachers: any;
+  minMember: number;
+  maxMember: number;
+  timetables: Timetable[];
+};
+export type Timetable = {
+  id: string;
+  clubId: string;
+  date: string;
+  room: string;
+  clubStartTime: string;
+  duration: number;
+};
+
+// Мутациас буцаж ирэх өгөгдлийн бүтэц
+interface UpdateClubData {
+  updateClub: {
+    id: string;
+    status: 'pending' | 'approved' | 'declined';
+    teacherId?: string;
+  };
+}
+
+// Мутаци руу илгээх утгуудын бүтэц
+interface UpdateClubVariables {
+  input: {
+    id: string;
+    status?: 'pending' | 'approved' | 'declined';
+    teacherId?: string;
+  };
+}
+
+export const GET_ALL_CLUBS = gql`
+  query GetAllClubs {
+    getAllClubs {
+      id
+      name
+      description
+      creatorId
+      teacherId
+      type
+      status
+      preferredTeachers
+      minMember
+      maxMember
+      timetables {
+        id
+        clubId
+        date
+        room
+        clubStartTime
+        duration
+      }
+    }
+  }
+`;
+
+type DeleteClubData = {
+  deleteClub: string;
+};
+
+// --- GRAPHQL MUTATION ---
+const CREATE_CLUB_WITH_SCHEDULE = gql`
+  mutation CreateClubWithSchedules(
+    $input: CreateClubInput!
+    $startDate: String!
+    $classroom: String!
+    $startTime: String!
+    $duration: Int!
+    $frequency: String!
+    $selectedDays: [String!]
+  ) {
+    createClubWithSchedules(
+      input: $input
+      startDate: $startDate
+      classroom: $classroom
+      startTime: $startTime
+      duration: $duration
+      frequency: $frequency
+      selectedDays: $selectedDays
+    ) {
+      id
+      name
+    }
+  }
+`;
+
+const DELETE_CLUB = gql`
+  mutation DeleteClub($id: ID!) {
+    deleteClub(id: $id)
+  }
+`;
+
+const UPDATE_TIMETABLE = gql`
+  mutation UpdateTimetable($input: UpdateTimetableInput!) {
+    updateTimetable(input: $input) {
+      id
+      date
+      room
+      clubStartTime
+      duration
+    }
+  }
+`;
+
+const UPDATE_CLUB = gql`
+  mutation UpdateClub($input: UpdateClubInput!) {
+    updateClub(input: $input) {
+      id
+      status
+      teacherId
+    }
+  }
+`;
+
+export const GET_ALL_TEACHERS = gql`
+  query GetAllTeachers {
+    getAllTeachers {
+      id
+      firstName
+      lastName
+      profilePicture
+    }
+  }
+`;
+// --- MOCK DATA ---
+const mockTeachers = [
+  { id: '1', name: 'Erdenetsogt' },
+  { id: '2', name: 'Narantsatsralt' },
+  { id: '3', name: 'Bilguundul' },
+  { id: '4', name: 'Elbeg' },
+];
+
+const mockFrequency = [
+  { id: '1', label: 'Зөвхөн сонгосон өдрүүдэд', value: 'ONCE' },
+  { id: '2', label: 'Долоо хоног бүр', value: 'WEEKLY' },
+  { id: '3', label: '2 долоо хоног тутам', value: 'BIWEEKLY' },
+  { id: '4', label: 'Сар бүр', value: 'MONTHLY' },
+];
+
+const mockWeekdays = [
+  { id: '1', day: 'M', value: 'MONDAY' },
+  { id: '2', day: 'T', value: 'TUESDAY' },
+  { id: '3', day: 'W', value: 'WEDNESDAY' },
+  { id: '4', day: 'T', value: 'THURSDAY' },
+  { id: '5', day: 'F', value: 'FRIDAY' },
+  { id: '6', day: 'S', value: 'SATURDAY' },
+  { id: '7', day: 'S', value: 'SUNDAY' },
+];
+
+const mockClassroom = [
+  { id: '1', classRoom: '301' },
+  { id: '2', classRoom: '302' },
+  { id: '3', classRoom: '303' },
+  { id: '4', classRoom: '304' },
+  { id: '5', classRoom: '305' },
+];
+
+const mockStartTime = [
+  { id: '1', startTime: '13:00' },
+  { id: '2', startTime: '14:00' },
+  { id: '3', startTime: '15:00' },
+  { id: '4', startTime: '16:00' },
+  { id: '5', startTime: '17:00' },
+];
+
+const mockDuration = [
+  { id: '1', duration: '1:00' },
+  { id: '2', duration: '1:30' },
+  { id: '3', duration: '2:00' },
+];
+
+// --- MAIN COMPONENT ---
+export default function CreateClubPage() {
+  const [clubName, setClubName] = useState('');
+  const [teacherId, setTeacherId] = useState('');
+  const [clubDesc, setClubDesc] = useState('');
+  const [clubStartDate, setClubStartDate] = useState<Date | undefined>(
+    new Date()
+  );
+  const [clubFrequency, setClubFrequency] = useState('ONCE');
+  const [selectedFreqId, setSelectedFreqId] = useState('1');
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [clubClassRoom, setClubClassRoom] = useState('301');
+  const [clubStartTime, setClubStartTime] = useState('13:00');
+  const [clubDuration, setClubDuration] = useState('1:00');
+  const [clubMaxStudent, setClubMaxStudent] = useState('20');
+  const [clubMinStudent, setClubMinStudent] = useState('5');
+  const [editingTimetable, setEditingTimetable] = useState<Timetable | null>(
+    null
+  );
+  console.log({ editingTimetable });
+  const [selectedTeacherForApprove, setSelectedTeacherForApprove] = useState<
+    Record<string, string>
+  >({});
+  console.log({ clubName });
+  console.log({ teacherId });
+  console.log({ clubDesc });
+  console.log({ clubStartDate });
+  console.log({ clubFrequency });
+  console.log({ selectedFreqId });
+  console.log({ selectedDays });
+  console.log({ clubClassRoom });
+  console.log({ clubStartTime });
+  console.log({ clubDuration });
+  console.log({ clubMaxStudent });
+  console.log({ clubMinStudent });
+
+  // APOLLO MUTATION
+  const [createClub, { loading: isCreating }] = useMutation(
+    CREATE_CLUB_WITH_SCHEDULE,
+    {
+      refetchQueries: [{ query: GET_ALL_CLUBS }],
+    }
+  );
+
+  const [deleteClub, { loading: isDeleting }] = useMutation<DeleteClubData>(
+    DELETE_CLUB,
+    {
+      refetchQueries: [{ query: GET_ALL_CLUBS }],
+      onCompleted: (data) => {
+        alert('Клуб амжилттай устгагдлаа.');
+        console.log('Устсан клубын ID:', data.deleteClub);
+      },
+      onError: (error) => alert(`Алдаа гарлаа: ${error.message}`),
+    }
+  );
+
+  const [updateTimetable, { loading: isUpdatingTimetable }] = useMutation(
+    UPDATE_TIMETABLE,
+    {
+      refetchQueries: [{ query: GET_ALL_CLUBS }],
+    }
+  );
+
+  const [updateClub, { loading: isStatusChanging }] = useMutation<
+    UpdateClubData,
+    UpdateClubVariables
+  >(UPDATE_CLUB, {
+    refetchQueries: [
+      { query: GET_ALL_PENDING_CLUBS },
+      { query: GET_ALL_APPROVED_CLUBS },
+    ],
+    onCompleted: (data) => {
+      const status = data.updateClub.status;
+      alert(status === 'approved' ? 'Клуб батлагдлаа.' : 'Клуб цуцлагдлаа.');
+    },
+  });
+
+  const {
+    loading: isLoading,
+    error: err,
+    data,
+  } = useQuery<Data>(GET_ALL_CLUBS);
+
+  const {
+    loading: isLoadingApproved,
+    error: errClubApproved,
+    data: clubDataApproved,
+  } = useQuery<ApprovedClubData>(GET_ALL_APPROVED_CLUBS);
+
+  const {
+    loading: isLoadingPending,
+    error: errClubPending,
+    data: clubDataPending,
+  } = useQuery<PendingClubData>(GET_ALL_PENDING_CLUBS);
+
+  const {
+    loading: isLoadingTeacher,
+    error: errTeacherData,
+    data: teacherData,
+  } = useQuery<TeacherData>(GET_ALL_TEACHERS);
+
+  console.log({ teacherData });
+  console.log({ data });
+  console.log({ clubDataApproved });
+  console.log({ clubDataPending });
+
+  const handleToggleDay = (id: string) => {
+    setSelectedDays((prev) =>
+      prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]
+    );
+  };
+
+  // --- Duration-ийг минут руу хөрвүүлэх helper (handleSubmit-ээс гадна гаргав) ---
+  const durationInMinutes = (val: string) => {
+    const [hours, minutes] = val.split(':').map(Number);
+    return hours * 60 + (minutes || 0);
+  };
+
+  // --- Минутыг буцаагаад "1:30" хэлбэрт оруулах helper ---
+  const formatDurationFromMinutes = (mins: number) => {
+    const hours = Math.floor(mins / 60);
+    const minutes = mins % 60;
+    return `${hours}:${minutes === 0 ? '00' : minutes}`;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!clubStartDate) return alert('Огноо сонгоно уу');
+
+    const formattedDays = selectedDays
+      .map((id) => mockWeekdays.find((d) => d.id === id)?.value)
+      .filter(Boolean);
+
+    try {
+      await createClub({
+        variables: {
+          input: {
+            name: clubName,
+            description: clubDesc,
+            teacherId: teacherId,
+            type: 'mentor',
+            minMember: parseInt(clubMinStudent),
+            maxMember: parseInt(clubMaxStudent),
+          },
+          startDate: clubStartDate.toISOString().split('T')[0],
+          classroom: clubClassRoom,
+          startTime: clubStartTime,
+          duration: durationInMinutes(clubDuration),
+          frequency: clubFrequency,
+          selectedDays: formattedDays,
+        },
+      });
+      alert('Амжилттай үүсгэлээ!');
+    } catch (error) {
+      console.error(error);
+      alert('Алдаа гарлаа');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Та энэ клубыг устгахдаа итгэлтэй байна уу?')) {
+      await deleteClub({ variables: { id } });
+    }
+  };
+
+  // --- Туслах функц: "2026-02-25" гэсэн String-ийг локал Date объект болгох ---
+  const parseDateString = (dateStr: string) => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    // JS Date-ийн сар 0-оос эхэлдэг (0=January) тул 1-ийг хасна
+    return new Date(year, month - 1, day);
+  };
+
+  // --- Туслах функц: Date объектыг "2026-02-25" String болгох (Mutation-д зориулав) ---
+  const getFormattedDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleTimetableEditClick = (schedule: Timetable) => {
+    // 1. Одоо засаж буй хуваарийг хадгалах
+    setEditingTimetable(schedule);
+
+    // 2. Calendar-т зориулж огноог Date объект болгож тохируулах
+    if (schedule.date) {
+      const targetDate = parseDateString(schedule.date);
+      setClubStartDate(targetDate);
+    }
+
+    // 3. Өрөө болон эхлэх цагийг оноох
+    setClubClassRoom(schedule.room);
+    setClubStartTime(schedule.clubStartTime);
+
+    // 4. Үргэлжлэх хугацааг минутаас "1:30" хэлбэрт шилжүүлж оноох
+    const hours = Math.floor(schedule.duration / 60);
+    const minutes = schedule.duration % 60;
+    const formattedDuration = `${hours}:${minutes === 0 ? '00' : minutes}`;
+    setClubDuration(formattedDuration);
+  };
+
+  // --- Шинэчлэх функц дотор ашиглах жишээ ---
+  const onUpdateTimetable = async () => {
+    if (!editingTimetable || !clubStartDate) return;
+
+    try {
+      await updateTimetable({
+        variables: {
+          input: {
+            id: editingTimetable.id,
+            date: getFormattedDate(clubStartDate), // Энд ашиглана
+            room: clubClassRoom,
+            clubStartTime: clubStartTime,
+            duration: durationInMinutes(clubDuration),
+          },
+        },
+      });
+      alert('Амжилттай шинэчлэгдлээ!');
+      setEditingTimetable(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Approve товчлуур дарах үед
+
+  const handleApprove = async (clubId: string) => {
+    const teacherId = selectedTeacherForApprove[clubId];
+
+    if (!teacherId) {
+      return alert('Клубыг батлахын тулд багш заавал сонгоно уу!');
+    }
+
+    await updateClub({
+      variables: {
+        input: {
+          id: clubId,
+          teacherId: teacherId, // Сонгосон багш
+          status: 'approved',
+        },
+      },
+    });
+  };
+
+  // Reject товчлуур дарах үед
+  const handleReject = async (clubId: string) => {
+    if (window.confirm('Энэ клубын хүсэлтийг цуцлах уу?')) {
+      await updateClub({
+        variables: {
+          input: {
+            id: clubId,
+            status: 'declined',
+            // teacherId-г энд илгээхгүй
+          },
+        },
+      });
+    }
+  };
+
+  if (isLoading) return <div>Уншиж байна...</div>;
+  if (err) return <div>Алдаа гарлаа: {err.message}</div>;
+
+  if (isLoadingApproved) return <div>Уншиж байна...</div>;
+  if (errClubApproved)
+    return <div>Алдаа гарлаа: {errClubApproved.message}</div>;
+
+  if (isLoadingPending) return <div>Уншиж байна...</div>;
+  if (errClubPending) return <div>Алдаа гарлаа: {errClubPending.message}</div>;
+
+  if (isLoadingTeacher) return <div>Уншиж байна...</div>;
+  if (errTeacherData) return <div>Алдаа гарлаа: {errTeacherData.message}</div>;
+
+  return (
+    <div className="flex flex-col gap-10 p-10">
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            className="bg-secondary border p-6 rounded-2xl text-xs font-black uppercase"
+          >
+            Клуб нээх
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl bg-white">
+          <form onSubmit={handleSubmit}>
+            <DialogHeader>
+              <DialogTitle>Шинэ клуб нээх</DialogTitle>
+              <DialogDescription className="sr-only">
+                Формыг бөглөнө үү.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-6 py-4">
+              {/* Клубын нэр */}
+              <div className="flex flex-col gap-2">
+                <Label>Клубын нэр</Label>
+                <Textarea
+                  placeholder="Клубын нэр"
+                  value={clubName}
+                  onChange={(e) => setClubName(e.target.value)}
+                />
+              </div>
+
+              {/* Багш сонгох */}
+              <div className="flex flex-col gap-2">
+                <Label>Хариуцсан багш</Label>
+                <Select onValueChange={setTeacherId} value={teacherId}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Сонгох" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    {teacherData?.getAllTeachers.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.firstName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Зорилго */}
+              <div className="flex flex-col gap-2">
+                <Label>Клубын зорилго</Label>
+                <Textarea
+                  placeholder="Зорилго"
+                  value={clubDesc}
+                  onChange={(e) => setClubDesc(e.target.value)}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Зүүн тал: Календарь ба Давтамж */}
+                <div className="flex flex-col gap-4">
+                  <Label className="font-semibold">Клубын хуваарь</Label>
+                  <Calendar
+                    mode="single"
+                    selected={clubStartDate}
+                    onSelect={setClubStartDate}
+                    className="rounded-lg border shadow-sm"
+                  />
+
+                  <div className="space-y-3">
+                    <Label>Давтамж</Label>
+                    <Select
+                      onValueChange={(id) => {
+                        setSelectedFreqId(id);
+                        const selected = mockFrequency.find((f) => f.id === id);
+                        if (selected) {
+                          setClubFrequency(selected.value);
+                        }
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Давтамж сонгох" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        {mockFrequency.map((f) => (
+                          <SelectItem key={f.id} value={f.id}>
+                            {f.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {selectedFreqId !== '1' && (
+                      <div className="flex gap-1 flex-wrap">
+                        {mockWeekdays.map((day) => (
+                          <Button
+                            type="button"
+                            key={day.id}
+                            onClick={() => handleToggleDay(day.id)}
+                            className={`w-9 h-9 rounded-full border ${
+                              selectedDays.includes(day.id)
+                                ? 'bg-black text-white'
+                                : 'bg-white text-black hover:bg-gray-100'
+                            }`}
+                          >
+                            {day.day}
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Баруун тал: Анги, Цаг, Оюутны тоо */}
+                <div className="flex flex-col gap-6">
+                  <div className="flex gap-4">
+                    <div className="flex-1 space-y-2">
+                      <Label>Орох Анги</Label>
+                      <Select
+                        onValueChange={setClubClassRoom}
+                        value={clubClassRoom}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          {mockClassroom.map((c) => (
+                            <SelectItem key={c.id} value={c.classRoom}>
+                              {c.classRoom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <Label>Эхлэх цаг</Label>
+                      <Select
+                        onValueChange={setClubStartTime}
+                        value={clubStartTime}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          {mockStartTime.map((s) => (
+                            <SelectItem key={s.id} value={s.startTime}>
+                              {s.startTime}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Үргэлжлэх хугацаа</Label>
+                    <Select
+                      onValueChange={setClubDuration}
+                      value={clubDuration}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        {mockDuration.map((d) => (
+                          <SelectItem key={d.id} value={d.duration}>
+                            {d.duration} цаг
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label>Сурагчдын тоо</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <span className="text-[10px] uppercase text-gray-500">
+                          Max
+                        </span>
+                        <Input
+
+
+
+
+
+                        
+                          type="number"
+                          value={clubMaxStudent}
+                          onChange={(e) => setClubMaxStudent(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[10px] uppercase text-gray-500">
+                          Min
+                        </span>
+                        <Input
+                          type="number"
+                          value={clubMinStudent}
+                          onChange={(e) => setClubMinStudent(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter className="mt-6">
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button
+                type="submit"
+                className="bg-black text-white px-8"
+                disabled={isCreating}
+              >
+                {isCreating ? 'Creating...' : 'Create Club'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- PENDING CLUBS DIALOG FULL VERSION --- */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant={'outline'} className="w-fit">
+            Pending Clubs ({clubDataPending?.getAllPendingClubs.length || 0})
+          </Button>
+        </DialogTrigger>
+
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white">
+          <DialogHeader>
+            <DialogTitle>Хүлээгдэж буй клубүүд</DialogTitle>
+            <DialogDescription>
+              Эдгээр клубүүд зөвшөөрөл хүлээж байна. Санал болгосон багш нараас
+              сонгож баталгаажуулна уу.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-6 py-4">
+            {clubDataPending?.getAllPendingClubs.length === 0 ? (
+              <p className="text-center text-gray-500">
+                Одоогоор хүлээгдэж буй клуб байхгүй байна.
+              </p>
+            ) : (
+              clubDataPending?.getAllPendingClubs.map((club) => (
+                <div
+                  className="border rounded-lg p-4 shadow-sm space-y-4"
+                  key={club.id}
+                >
+                  {/* Клубын үндсэн мэдээлэл */}
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p>
+                        <strong>Нэр:</strong> {club.name}
+                      </p>
+                      <p>
+                        <strong>Төлөв:</strong>{' '}
+                        <span className="text-yellow-600 font-medium">
+                          {club.status}
+                        </span>
+                      </p>
+                    </div>
+                    <div>
+                      <p>
+                        <strong>Гишүүд:</strong> {club.minMember} -{' '}
+                        {club.maxMember}
+                      </p>
+                      <p className="text-blue-600">
+                        <strong>Санал болгосон багш нар:</strong>{' '}
+                        {/* ID-гаар нь нэрийг нь олж харуулах */}
+                        {club.preferredTeachers
+                          ?.map(
+                            (id) => mockTeachers.find((t) => t.id === id)?.name
+                          )
+                          .join(', ') || 'Байхгүй'}
+                      </p>
+                    </div>
+                    <p className="col-span-2">
+                      <strong>Тайлбар:</strong> {club.description}
+                    </p>
+                  </div>
+
+                  {/* Хуваарийн хэсэг */}
+                  <div className="bg-gray-50 p-3 rounded-md">
+                    <p className="text-[10px] font-bold mb-2 uppercase text-gray-400 tracking-wider">
+                      Хуваарь (Timetables)
+                    </p>
+                    <div className="grid grid-cols-1 gap-2">
+                      {club.timetables.map((schedule) => (
+                        <div
+                          key={schedule.id}
+                          className="text-xs border-b pb-1 last:border-0 border-gray-200 flex justify-between"
+                        >
+                          <span>
+                            📅 {schedule.date} | 📍 Room: {schedule.room}
+                          </span>
+                          <span className="font-mono">
+                            ⏰ {schedule.clubStartTime} ({schedule.duration}{' '}
+                            мин)
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Approve/Reject хэсэг */}
+                  <div className="flex items-end justify-between gap-4 pt-2 border-t">
+                    <div className="flex-1 space-y-2">
+                      <Label className="text-xs font-bold text-gray-700">
+                        Хариуцах багшийг томилох (Required):
+                      </Label>
+                      <Select
+                        value={selectedTeacherForApprove[club.id] || ''}
+                        onValueChange={(val) =>
+                          setSelectedTeacherForApprove((prev) => ({
+                            ...prev,
+                            [club.id]: val,
+                          }))
+                        }
+                      >
+                        <SelectTrigger className="h-10 border-blue-200 focus:ring-blue-500">
+                          <SelectValue placeholder="Багш сонгох" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          {/* Клубын preferredTeachers жагсаалтад байгаа ID-нуудаар шүүх */}
+                          {club.preferredTeachers &&
+                          club.preferredTeachers.length > 0
+                            ? mockTeachers
+                                .filter((t) =>
+                                  club.preferredTeachers.includes(t.id)
+                                )
+                                .map((t) => (
+                                  <SelectItem key={t.id} value={t.id}>
+                                    {t.name} (Санал болгосон)
+                                  </SelectItem>
+                                ))
+                            : // Хэрэв санал болгосон багш байхгүй бол бүх багшийг харуулна
+                              mockTeachers.map((t) => (
+                                <SelectItem key={t.id} value={t.id}>
+                                  {t.name}
+                                </SelectItem>
+                              ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 border-red-200 hover:bg-red-50"
+                        disabled={isStatusChanging}
+                        onClick={() => handleReject(club.id)}
+                      >
+                        {isStatusChanging ? 'Processing...' : 'Reject Club'}
+                      </Button>
+                      <Button
+                        type="button"
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                        size="sm"
+                        disabled={
+                          isStatusChanging ||
+                          !selectedTeacherForApprove[club.id]
+                        }
+                        onClick={() => handleApprove(club.id)}
+                      >
+                        {isStatusChanging ? 'Processing...' : 'Approve Club'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <div className="flex flex-col gap-8">
+        {clubDataApproved?.getAllApprovedClubs.map((club) => (
+          <div className="border rounded-md p-6" key={club.id}>
+            <div>{club.id}</div>
+            <div>{club.name}</div>
+            <div>{club.description}</div>
+            <div>{club.creatorId}</div>
+            <div>{club.teacherId}</div>
+            <div>{club.type}</div>
+            <div>{club.status}</div>
+            <div>{club.minMember}</div>
+            <div>{club.maxMember}</div>
+            <div className="flex flex-col gap-2 p-4">
+              {club.timetables.map((schedule) => (
+                <div key={schedule.id} className="bg-red-50">
+                  <div>TimeTableId:{schedule.id}</div>
+                  <div>ClubId:{schedule.clubId}</div>
+                  <div>Date:{schedule.date}</div>
+                  <div>Room:{schedule.room}</div>
+                  <div>StartTime:{schedule.clubStartTime}</div>
+                  <div>Duration:{schedule.duration}</div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        onClick={() => handleTimetableEditClick(schedule)}
+                      >
+                        Edit TimeTable
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-white max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Хуваарь засах</DialogTitle>
+                      </DialogHeader>
+
+                      <div className="grid gap-4 py-4">
+                        {/* Огноо засах */}
+                        <div className="flex flex-col gap-2">
+                          <Label>Өдөр сонгох</Label>
+                          <Calendar
+                            mode="single"
+                            selected={clubStartDate}
+                            onSelect={setClubStartDate}
+                            className="rounded-lg border shadow-sm mx-auto"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Өрөө</Label>
+                            <Select
+                              onValueChange={setClubClassRoom}
+                              value={clubClassRoom}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-white">
+                                {mockClassroom.map((c) => (
+                                  <SelectItem key={c.id} value={c.classRoom}>
+                                    {c.classRoom}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Эхлэх цаг</Label>
+                            <Select
+                              onValueChange={setClubStartTime}
+                              value={clubStartTime}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-white">
+                                {mockStartTime.map((s) => (
+                                  <SelectItem key={s.id} value={s.startTime}>
+                                    {s.startTime}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Үргэлжлэх хугацаа</Label>
+                          <Select
+                            onValueChange={setClubDuration}
+                            value={clubDuration}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                              {mockDuration.map((d) => (
+                                <SelectItem key={d.id} value={d.duration}>
+                                  {d.duration} цаг
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <DialogFooter>
+                        <Button
+                          onClick={onUpdateTimetable}
+                          disabled={isUpdatingTimetable}
+                          className="w-full bg-blue-600 text-white"
+                        >
+                          {isUpdatingTimetable
+                            ? 'Хадгалж байна...'
+                            : 'Шинэчлэх'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              ))}
+            </div>
+            <Button onClick={() => handleDelete(club.id)} disabled={isDeleting}>
+              {isDeleting ? 'Deleting...' : 'Delete Club'}
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

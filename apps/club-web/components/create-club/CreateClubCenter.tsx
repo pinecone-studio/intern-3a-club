@@ -1,31 +1,37 @@
 'use client';
 import { useState, useCallback, useMemo } from 'react';
-import { useMutation } from '@apollo/client/react';
+import { useMutation, useQuery } from '@apollo/client/react';
+
 import { ClubForm } from './ClubForm';
 import { HeaderSection } from './HeaderSection';
-import { FormDataType, INITIAL_FORM_DATA } from './types';
-import { MyClubsList } from '../club-add/PersonalClubs';
-import { RequestHistory } from '../club-add/RequestHistory';
-import { SystemTip } from '../club-add/SystemTip';
-import { CREATE_CLUB_WITH_SCHEDULE } from '../../graphql/mutations';
+import { SideSection } from './SideSection';
 import { CalendarDay } from './CalendarDay';
+import { buildMutationVariables } from './create-club-helpers';
+import { GET_ALL_CLUBS, GET_ALL_TEACHERS } from '../../lib/type';
+import { CREATE_CLUB_WITH_SCHEDULE } from '../../graphql/mutations';
 import {
-  calculateTotalMinutes,
-  getDayNames,
-  getFrequency,
-  getMinMax,
-} from './create-club-helpers';
+  FormDataType,
+  INITIAL_FORM_DATA,
+  GetAllTeacher,
+  CreateClubWithSchedulesResponse,
+} from './types';
+import { handleMutationResult } from './create-club-helpers';
+
 export const CreateClubCenter = () => {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [formData, setFormData] = useState<FormDataType>(INITIAL_FORM_DATA);
-
-  const [createClub] = useMutation(CREATE_CLUB_WITH_SCHEDULE);
-
+  const [createClub] = useMutation<CreateClubWithSchedulesResponse>(
+    CREATE_CLUB_WITH_SCHEDULE,
+    { refetchQueries: [{ query: GET_ALL_CLUBS }], errorPolicy: 'all' }
+  );
+  const { data: teacherData } = useQuery<{ getAllTeachers: GetAllTeacher[] }>(
+    GET_ALL_TEACHERS
+  );
   const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    return date;
   }, []);
 
   const handleMonthChange = useCallback((offset: number) => {
@@ -38,9 +44,7 @@ export const CreateClubCenter = () => {
     const dateStr = date.toDateString();
     setSelectedDates((prev) => {
       const exists = prev.find((d) => d.toDateString() === dateStr);
-      if (exists) {
-        return prev.filter((d) => d.toDateString() !== dateStr);
-      }
+      if (exists) return prev.filter((d) => d.toDateString() !== dateStr);
       return [...prev, date].sort((a, b) => a.getTime() - b.getTime());
     });
   }, []);
@@ -48,74 +52,69 @@ export const CreateClubCenter = () => {
   const renderCalendarDays = useCallback(() => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
-    const daysInMonthCount = new Date(year, month + 1, 0).getDate();
-    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysCount = new Date(year, month + 1, 0).getDate();
+    const emptyDays = Array.from({ length: firstDay }, (_, i) => (
+      <div key={`empty-${i}`} className="h-10 w-10" />
+    ));
 
-    const days = [];
-
-    for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push(<div key={`empty-${i}`} className="h-10 w-10" />);
-    }
-
-    const todayStr = today.toDateString();
-
-    for (let d = 1; d <= daysInMonthCount; d++) {
-      const date = new Date(year, month, d);
-      const isSelected = selectedDates.some(
-        (sd) => sd.toDateString() === date.toDateString()
-      );
-
-      days.push(
-        <CalendarDay
-          key={d}
-          day={d}
-          date={date}
-          isPast={date < today}
-          isSelected={isSelected}
-          isToday={todayStr === date.toDateString()}
-          onToggle={toggleDate}
-        />
-      );
-    }
-    return days;
+    return [
+      ...emptyDays,
+      ...Array.from({ length: daysCount }, (_, i) => {
+        const date = new Date(year, month, i + 1);
+        const isSelected = selectedDates.some(
+          (sd) => sd.toDateString() === date.toDateString()
+        );
+        return (
+          <CalendarDay
+            key={i + 1}
+            day={i + 1}
+            date={date}
+            isPast={date < today}
+            isSelected={isSelected}
+            isToday={today.toDateString() === date.toDateString()}
+            onToggle={toggleDate}
+          />
+        );
+      }),
+    ];
   }, [currentMonth, selectedDates, today, toggleDate]);
 
-  const getMutationVariables = () => ({
-    input: {
-      name: formData.name,
-      description: formData.goal,
-      type: 'mentor',
-      teacherId: formData.teacher,
-      minMember: getMinMax(formData.minStudents),
-      maxMember: getMinMax(formData.maxStudents),
-    },
-    startDate: selectedDates[0].toISOString().split('T')[0],
-    classroom: formData.room,
-    startTime: formData.time,
-    duration: calculateTotalMinutes(formData.duration),
-    frequency: getFrequency(formData.repeat),
-    selectedDays: getDayNames(selectedDates),
-  });
-
-  const onFormSubmit = async () => {
+  const handleReset = useCallback(() => {
+    alert('Клуб амжилттай үүслээ');
+    setFormData(INITIAL_FORM_DATA);
+    setSelectedDates([]);
+    setCurrentMonth(new Date());
+  }, []);
+  const requestMutation = async () => {
+    const res = await createClub({
+      variables: buildMutationVariables(formData, selectedDates),
+    });
+    return handleMutationResult(res, handleReset);
+  };
+  const executeSubmission = async () => {
     try {
-      await createClub({
-        variables: getMutationVariables(),
-        onCompleted: () => alert('Клуб амжилттай үүслээ!'),
-        onError: (err) => alert(`Алдаа гарлаа: ${err.message}`),
-      });
-    } catch (e) {
-      console.error(e);
+      return await requestMutation();
+    } catch (err: unknown) {
+      const msg = (err as Error)?.message || 'Алдаа гарлаа';
+      alert(`Алдаа гарлаа: ${msg}`);
+      return { success: false, message: msg };
     }
   };
 
+  const onFormSubmit = async () => {
+    if (selectedDates.length === 0) {
+      alert('Огноо сонгоно уу');
+      return { success: false, message: 'Огноо сонгоно уу' };
+    }
+    return executeSubmission();
+  };
   return (
     <div className="max-w-[1400px] mx-auto p-6 lg:p-10 relative z-10 min-h-screen">
       <HeaderSection
         title="Клуб Нээх"
         subtitle="Шинэ клуб нээх хүсэлт болон хуваарь илгээх."
       />
-
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6 items-start">
         <div className="lg:col-span-7">
           <ClubForm
@@ -127,14 +126,10 @@ export const CreateClubCenter = () => {
             handleMonthChange={handleMonthChange}
             renderCalendarDays={renderCalendarDays}
             handleSubmit={onFormSubmit}
-            // loading={loading} // ClubForm дотор товчлуурыг disable болгоход хэрэгтэй
+            teachers={teacherData?.getAllTeachers || []}
           />
         </div>
-        <div className="lg:col-span-5 space-y-8">
-          <MyClubsList />
-          <RequestHistory />
-          <SystemTip />
-        </div>
+        <SideSection />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { Clock, MapPin } from 'lucide-react';
-import { cn } from 'lib/utils';
+import { cn } from '../../../lib/utils';
 import { ClubCardProps } from '../../../lib/type';
 
 const CARD_THEMES = {

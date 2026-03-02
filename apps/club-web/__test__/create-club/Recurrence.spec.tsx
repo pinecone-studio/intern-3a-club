@@ -8,6 +8,7 @@ import {
 import '@testing-library/jest-dom';
 import { MockedProvider } from '@apollo/client/testing/react';
 import { CreateClubCenter } from '../../components/create-club/CreateClubCenter';
+import { commonMocks } from '../common-mocks';
 
 describe('Recurrence & Logistics Logic', () => {
   beforeEach(() => {
@@ -35,10 +36,13 @@ describe('Recurrence & Logistics Logic', () => {
 
   it('triggers useEffect for recurrence updates (LogisticsSection Line 58)', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={commonMocks}>
         <CreateClubCenter />
       </MockedProvider>
     );
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
+    await screen.findByText(/Mock Club/i);
+    await screen.findAllByText(/Teacher One/i);
     goToStep2();
 
     const repeatSelect = screen.getByDisplayValue(/Зөвхөн сонгосон өдрүүдэд/i);
@@ -62,10 +66,13 @@ describe('Recurrence & Logistics Logic', () => {
 
   it('handles reset and switching to none', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={commonMocks}>
         <CreateClubCenter />
       </MockedProvider>
     );
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
+    await screen.findByText(/Mock Club/i);
+    await screen.findAllByText(/Teacher One/i);
     goToStep2();
 
     const repeatSelect = screen.getByDisplayValue(/Зөвхөн сонгосон өдрүүдэд/i);
@@ -79,12 +86,15 @@ describe('Recurrence & Logistics Logic', () => {
     });
   });
 
-  it('covers none recurrence mode branch (LogisticsSection line 22)', () => {
+  it('covers none recurrence mode branch (LogisticsSection line 22)', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={commonMocks}>
         <CreateClubCenter />
       </MockedProvider>
     );
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
+    await screen.findByText(/Mock Club/i);
+    await screen.findAllByText(/Teacher One/i);
     goToStep2();
 
     const repeatSelect = screen.getByDisplayValue(/Зөвхөн сонгосон өдрүүдэд/i);

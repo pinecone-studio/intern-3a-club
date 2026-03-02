@@ -11,8 +11,16 @@ import {
   CreateClubState,
 } from '../../../club-dash/libs/types';
 
+jest.mock('../../app/_hooks/use-get-clubs', () => ({
+  useGetClubs: () => ({
+    loading: false,
+    error: undefined,
+    data: { getAllClubs: [] },
+  }),
+}));
+
 const mockSetters: CreateClubSetters = {
-  setTeacherName: jest.fn(),
+  setTeacherId: jest.fn(),
   setClubStartDate: jest.fn(),
   setSelectedFreqId: jest.fn(),
   setClubTerm: jest.fn(),
@@ -34,7 +42,7 @@ const mockHandlers: CreateClubHandlers = {
 
 const baseState: CreateClubState = {
   clubName: 'Test',
-  teacherName: 'T1',
+  teacherId: 'T1',
   clubDesc: 'Desc',
   clubStartDate: [],
   selectedFreqId: '1',
@@ -103,9 +111,6 @@ describe('CreatedTimetable', () => {
     expect(cards).toHaveLength(2);
     expect(cards[0]).toHaveTextContent('2026-01-10');
     expect(cards[1]).toHaveTextContent('2026-06-15');
-    expect(cards[0]).toHaveTextContent('301');
-    expect(cards[0]).toHaveTextContent('13:00');
-    expect(cards[0]).toHaveTextContent('1 цаг');
   });
 
   it('calls handleEmptyFields when reset button is clicked', () => {

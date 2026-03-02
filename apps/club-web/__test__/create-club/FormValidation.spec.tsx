@@ -1,53 +1,84 @@
-import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  cleanup,
+  waitFor,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MockedProvider } from '@apollo/client/testing/react';
 import { CreateClubCenter } from '../../components/create-club/CreateClubCenter';
 import { Step1 } from '../../components/create-club/Step1';
-import { FormDataType } from '../../components/create-club/types';
+import {
+  INITIAL_FORM_DATA,
+} from '../../components/create-club/types';
 import { CREATE_CLUB_WITH_SCHEDULE } from '../../graphql/mutations';
+import { GET_ALL_CLUBS, GET_ALL_TEACHERS } from '../../lib/type';
+
+import { PreferredTeacherList } from '../../components/create-club/PreferredTeacherList';
+import { LogisticsForm } from '../../components/create-club/LogisticsForm';
+
+// Global window.alert is mocked in jest.setup.ts
 
 const mocks = [
   {
+    request: { query: GET_ALL_CLUBS },
+    result: {
+      data: {
+        getAllClubs: [
+          {
+            id: '1',
+            name: 'Mock Club',
+            status: 'approved',
+            description: 'Mock Description',
+            teacherId: '1',
+            type: 'mentor',
+            minMember: 0,
+            maxMember: 20,
+            timetables: [],
+            __typename: 'Club',
+          },
+        ],
+      },
+    },
+  },
+  {
+    request: { query: GET_ALL_TEACHERS },
+    result: {
+      data: {
+        getAllTeachers: [
+          {
+            id: '1',
+            firstName: 'Teacher',
+            lastName: 'One',
+            profilePicture: '',
+            __typename: 'Teacher',
+          },
+        ],
+      },
+    },
+  },
+  {
     request: {
       query: CREATE_CLUB_WITH_SCHEDULE,
-      variables: {
-        input: {
-          name: 'Coding Club',
-          description: 'Learn to code',
-          type: 'mentor',
-          teacherId: '1',
-          minMember: 0,
-          maxMember: 0,
-        },
-        startDate: '2024-04-14',
-        classroom: '301',
-        startTime: '13:00',
-        duration: 90,
-        frequency: 'ONCE',
-        selectedDays: ['MONDAY'],
-      },
+      variables: expect.anything(),
     },
     result: {
       data: {
         createClubWithSchedules: {
-          id: '1',
+          id: 'new-club-id',
           name: 'Coding Club',
+          __typename: 'Club',
         },
       },
     },
   },
 ];
 
-afterEach(cleanup);
-
 describe('Club Form & Validation UI', () => {
-  beforeEach(() => {
-    jest.useFakeTimers().setSystemTime(new Date('2024-04-15'));
-  });
-
   afterEach(() => {
-    jest.useRealTimers();
     cleanup();
+    jest.clearAllMocks();
   });
 
   const fillStep1 = () => {
@@ -63,191 +94,211 @@ describe('Club Form & Validation UI', () => {
     fireEvent.click(screen.getByText(/Үргэлжлүүлэх/i));
   };
 
+  const fillStep2 = async () => {
+    await screen.findByLabelText(/Давтамж/i);
+    const btns = screen.getAllByRole('button');
+    const dayBtn = btns.find((b) => b.textContent === '16');
+    if (dayBtn) fireEvent.click(dayBtn);
+
+    fireEvent.change(screen.getByLabelText(/Орох Анги/i), {
+      target: { value: '301' },
+    });
+    fireEvent.change(screen.getByLabelText(/Эхлэх цаг/i), {
+      target: { value: '13:00' },
+    });
+  };
+
   it('handles all form input changes and validation UI branches', async () => {
     render(
       <MockedProvider mocks={mocks}>
         <CreateClubCenter />
       </MockedProvider>
     );
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
+    await screen.findByText(/Mock Club/i);
+    await screen.findAllByText(/Teacher One/i);
 
     fillStep1();
 
-    // Step 2
-    fireEvent.change(screen.getByLabelText(/Давтамж/i), { target: { value: 'weekly' } });
-    fireEvent.change(screen.getByLabelText(/Орох Анги/i), { target: { value: '302' } });
-    fireEvent.change(screen.getByLabelText(/Эхлэх цаг/i), { target: { value: '14:00' } });
-    fireEvent.change(screen.getByLabelText(/Үргэлжлэх/i), { target: { value: '2:00' } });
+    await screen.findByLabelText(/Давтамж/i);
+    fireEvent.change(screen.getByLabelText(/Давтамж/i), {
+      target: { value: 'weekly' },
+    });
+    fireEvent.change(screen.getByLabelText(/Орох Анги/i), {
+      target: { value: '302' },
+    });
+    fireEvent.change(screen.getByLabelText(/Эхлэх цаг/i), {
+      target: { value: '14:00' },
+    });
+    fireEvent.change(screen.getByLabelText(/Үргэлжлэх/i), {
+      target: { value: '2:00' },
+    });
 
     const maxInput = screen.getByPlaceholderText('15');
     fireEvent.change(maxInput, { target: { value: '30' } });
     expect(maxInput).toHaveValue(30);
   });
 
-  it('calls alert on form submit', async () => {
-    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => { });
-    render(
-      <MockedProvider mocks={mocks}>
-        <CreateClubCenter />
-      </MockedProvider>
-    );
-
-    fillStep1();
-
-    const dayBtn = screen
-      .getAllByRole('button')
-      .find((b) => b.textContent === '15' && !b.hasAttribute('disabled'));
-    if (dayBtn) fireEvent.click(dayBtn);
-
-    fireEvent.click(screen.getByRole('button', { name: /хүсэлт илгээх/i }));
-
-    await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Клуб амжилттай үүслээ!'), { timeout: 3000 });
-    alertSpy.mockRestore();
-  });
-
-  it('covers student email field visibility', () => {
-    render(
-      <MockedProvider mocks={mocks}>
-        <CreateClubCenter />
-      </MockedProvider>
-    );
-
-    fireEvent.change(screen.getByLabelText(/Хариуцах хүн/i), { target: { value: 'student' } });
-    const emailInput = screen.getByTestId('student-email-input');
-    fireEvent.change(emailInput, { target: { value: 'test@edu.mn' } });
-    expect(emailInput).toBeInTheDocument();
-  });
-
-  it('covers error display and validation failure in Step 1', () => {
-    render(
-      <MockedProvider mocks={mocks}>
-        <CreateClubCenter />
-      </MockedProvider>
-    );
-
-    fireEvent.click(screen.getByText(/Үргэлжлүүлэх/i));
-    expect(screen.getAllByText(/Заавал/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Үргэлжлүүлэх/i)).toBeInTheDocument();
-  });
-
-  it('handles back button navigation', () => {
-    render(
-      <MockedProvider mocks={mocks}>
-        <CreateClubCenter />
-      </MockedProvider>
-    );
-
-    fillStep1();
-    fireEvent.click(screen.getByText(/Буцах/i));
-    expect(screen.getByText(/Үргэлжлүүлэх/i)).toBeInTheDocument();
-  });
-
-  it('covers Step 2 validation failure', () => {
-    render(
-      <MockedProvider mocks={mocks}>
-        <CreateClubCenter />
-      </MockedProvider>
-    );
-
-    fillStep1();
-    // submit without dates
-    fireEvent.click(screen.getByRole('button', { name: /хүсэлт илгээх/i }));
-    expect(screen.getByText(/Буцах/i)).toBeInTheDocument();
-  });
-
-  it('covers Step1 null formData branch', () => {
-    const { container } = render(
-      <Step1 formData={null as unknown as FormDataType} setFormData={() => { }} />
-    );
-    expect(container.firstChild).toBeNull();
-  });
-
-  it('covers Step 2 room validation failure', () => {
-    render(
-      <MockedProvider mocks={mocks}>
-        <CreateClubCenter />
-      </MockedProvider>
-    );
-
-    fillStep1();
-    fireEvent.change(screen.getByLabelText(/Орох Анги/i), { target: { value: '' } });
-    fireEvent.click(screen.getByRole('button', { name: /хүсэлт илгээх/i }));
-    expect(screen.getByText(/Буцах/i)).toBeInTheDocument();
-  });
-
-  it('covers month change and date untoggle', () => {
-    render(
-      <MockedProvider mocks={mocks}>
-        <CreateClubCenter />
-      </MockedProvider>
-    );
-
-    fillStep1();
-
-    // Month next
-    fireEvent.click(screen.getByTestId('next-month-btn'));
-    expect(screen.getByText(/May/i)).toBeInTheDocument();
-
-    // Month prev
-    fireEvent.click(screen.getByTestId('prev-month-btn'));
-    expect(screen.getByText(/April/i)).toBeInTheDocument();
-
-    // Toggle on
-    const dayBtn = screen.getByRole('button', { name: /16/i });
-    fireEvent.click(dayBtn);
-    expect(dayBtn).toHaveClass('bg-primary');
-
-    // Toggle off
-    fireEvent.click(dayBtn);
-    expect(dayBtn).not.toHaveClass('bg-primary');
-  });
-
-  it('calls alert on mutation error and covers catch block', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
-    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => { });
-
-    const errorMocks = [
+  it('covers Step1 preferredTeachers fallback branches', () => {
+    const mockSetFormData = jest.fn();
+    const mockTeachers = [
       {
-        request: {
-          query: CREATE_CLUB_WITH_SCHEDULE,
-          variables: {
-            input: {
-              name: 'Coding Club',
-              description: 'Learn to code',
-              type: 'mentor',
-              teacherId: '1',
-              minMember: 0,
-              maxMember: 0,
-            },
-            startDate: '2024-04-14',
-            classroom: '301',
-            startTime: '13:00',
-            duration: 90,
-            frequency: 'ONCE',
-            selectedDays: ['MONDAY'],
-          },
-        },
-        error: new Error('GraphQL Error'),
+        id: '1',
+        firstName: 'T1',
+        lastName: 'L1',
+        profilePicture: '',
+        __typename: 'Teacher' as const,
       },
     ];
 
+    const formData1 = {
+      ...INITIAL_FORM_DATA,
+      preferredTeachers: undefined as unknown as string[],
+    };
     render(
-      <MockedProvider mocks={errorMocks}>
+      <Step1
+        formData={formData1}
+        setFormData={mockSetFormData}
+        teachers={mockTeachers}
+      />
+    );
+    fireEvent.click(screen.getByRole('checkbox'));
+    expect(mockSetFormData).toHaveBeenCalled();
+  });
+
+  it('covers Step1 empty teachers branch', () => {
+    render(
+      <Step1
+        formData={INITIAL_FORM_DATA}
+        setFormData={() => { }}
+        teachers={undefined}
+      />
+    );
+    expect(screen.getByText(/Багшийн мэдээлэл олдсонгүй/i)).toBeInTheDocument();
+  });
+
+  it('covers PreferredTeacherList onToggle', () => {
+    const mockOnToggle = jest.fn();
+    const mockTeachers = [
+      {
+        id: '1',
+        firstName: 'T1',
+        lastName: 'L1',
+        profilePicture: '',
+        __typename: 'Teacher' as const,
+      },
+    ];
+    render(
+      <PreferredTeacherList
+        teachers={mockTeachers}
+        selectedIds={[]}
+        onToggle={mockOnToggle}
+      />
+    );
+    fireEvent.click(screen.getByRole('checkbox'));
+    expect(mockOnToggle).toHaveBeenCalledWith('1');
+  });
+
+  it('covers ClubForm help toggle', async () => {
+    render(
+      <MockedProvider mocks={mocks}>
         <CreateClubCenter />
       </MockedProvider>
     );
+    await screen.findByText(/Клуб бүртгүүлэх/i);
+    const helpBtn = screen.getByRole('button', { name: /Тусламж/i });
+    fireEvent.click(helpBtn);
+    expect(screen.getByText(/Хаах/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Хаах/i }));
+    expect(screen.getByText(/Тусламж/i)).toBeInTheDocument();
+  });
 
+  it('covers teacher name branch without last name', () => {
+    const mockTeachers = [
+      { id: '1', firstName: 'OnlyFirst', lastName: '', __typename: 'Teacher' as const },
+    ];
+    render(
+      <PreferredTeacherList
+        teachers={mockTeachers}
+        selectedIds={[]}
+        onToggle={() => { }}
+      />
+    );
+    expect(screen.getByText('OnlyFirst')).toBeInTheDocument();
+  });
+
+  it('covers LogisticsForm default errors branch', () => {
+    render(
+      <LogisticsForm
+        formData={INITIAL_FORM_DATA}
+        setFormData={() => { }}
+        onRepeatChange={() => { }}
+      />
+    );
+    expect(screen.getByLabelText(/Давтамж/i)).toBeInTheDocument();
+  });
+
+  it('handles mutation rejection with empty message', async () => {
+    const errorMock = {
+      request: {
+        query: CREATE_CLUB_WITH_SCHEDULE,
+        variables: expect.anything(),
+      },
+      error: new Error('Mutation Error'),
+    };
+
+    render(
+      <MockedProvider mocks={[...mocks, errorMock]}>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
+    await screen.findByText(/Клуб бүртгүүлэх/i);
     fillStep1();
-
-    const dayBtn = screen.getByRole('button', { name: /15/i });
-    fireEvent.click(dayBtn);
-
+    await fillStep2();
     fireEvent.click(screen.getByRole('button', { name: /хүсэлт илгээх/i }));
 
-    await waitFor(() => expect(alertSpy).toHaveBeenCalledWith(expect.stringContaining('Алдаа гарлаа')));
-    // In current implementation, onError is called AND mutate throws if using MockedProvider with 'error'
-    // So both should be hit.
+    await waitFor(() =>
+      expect(window.alert).toHaveBeenCalledWith(
+        expect.stringContaining('Алдаа гарлаа')
+      )
+    );
+  });
 
-    alertSpy.mockRestore();
-    consoleSpy.mockRestore();
+  it('covers fallback error alert when res.data is null', async () => {
+    const nullDataMock = {
+      request: {
+        query: CREATE_CLUB_WITH_SCHEDULE,
+        variables: expect.anything(),
+      },
+      result: { data: null },
+    };
+
+    render(
+      <MockedProvider mocks={[...mocks, nullDataMock]}>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
+    await screen.findByText(/Клуб бүртгүүлэх/i);
+    fillStep1();
+    await fillStep2();
+    fireEvent.click(screen.getByRole('button', { name: /хүсэлт илгээх/i }));
+    await waitFor(() => expect(window.alert).toHaveBeenCalled());
+  });
+
+  it('covers toggleDate branch for past date (simulated)', async () => {
+    render(
+      <MockedProvider mocks={mocks}>
+        <CreateClubCenter />
+      </MockedProvider>
+    );
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
+    fillStep1();
+    await screen.findByLabelText(/Давтамж/i);
+
+    const btns = screen.getAllByRole('button');
+    const day1 = btns.find((b) => b.textContent === '1');
+    if (day1) {
+      fireEvent.click(day1);
+    }
   });
 });

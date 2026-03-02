@@ -2,6 +2,7 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MockedProvider } from '@apollo/client/testing/react';
 import { CreateClubCenter } from '../../components/create-club/CreateClubCenter';
+import { commonMocks } from '../common-mocks';
 
 describe('Calendar Interaction Suite', () => {
   beforeEach(() => {
@@ -13,12 +14,15 @@ describe('Calendar Interaction Suite', () => {
     cleanup();
   });
 
-  it('toggles date selection on and off (CreateClubCenter line 74)', () => {
+  it('toggles date selection on and off (CreateClubCenter line 74)', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={commonMocks}>
         <CreateClubCenter />
       </MockedProvider>
     );
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
+    await screen.findByText(/Mock Club/i);
+    await screen.findAllByText(/Teacher One/i);
 
     // Fill Step 1
     fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
@@ -42,12 +46,15 @@ describe('Calendar Interaction Suite', () => {
     fireEvent.click(dayBtn); // Select again
   });
 
-  it('navigates months and renders empty slots', () => {
+  it('navigates months and renders empty slots', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={commonMocks}>
         <CreateClubCenter />
       </MockedProvider>
     );
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
+    await screen.findByText(/Mock Club/i);
+    await screen.findAllByText(/Teacher One/i);
     // Fill Step 1
     fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
       target: { value: 'Coding Club', name: 'name' },
@@ -64,12 +71,15 @@ describe('Calendar Interaction Suite', () => {
     fireEvent.click(screen.getByTestId('prev-month-btn'));
   });
 
-  it('handles sorting and date removal via icon', () => {
+  it('handles sorting and date removal via icon', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={commonMocks}>
         <CreateClubCenter />
       </MockedProvider>
     );
+    await screen.findAllByText(/Клуб бүртгүүлэх/i);
+    await screen.findByText(/Mock Club/i);
+    await screen.findAllByText(/Teacher One/i);
     // Fill Step 1
     fireEvent.change(screen.getByPlaceholderText(/Wizards Club.../i), {
       target: { value: 'Coding Club', name: 'name' },

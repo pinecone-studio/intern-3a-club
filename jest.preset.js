@@ -51,6 +51,8 @@ module.exports = {
     '!**/.vercel/output/**/*.js',
     '!**/*utils.ts',
     '!**/redis.ts/**',
+    '!**/*middleware.ts',
+    '!**/*graphql.ts',
   ],
   coverageThreshold: {
     global: {

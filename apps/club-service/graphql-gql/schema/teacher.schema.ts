@@ -9,15 +9,18 @@ export const teacherTypeDefs = gql`
     profilePicture: String
     firstName: String
     lastName: String
-    phoneNumber: String
-    gender: String
-    isActive: Boolean
     createdAt: String
     updatedAt: String
   }
 
+  union SyncResponse = Teacher | Student
+
   extend type Query {
     getAllTeachers: [Teacher!]!
     getTeacherById(id: ID!): Teacher
+  }
+
+  extend type Mutation {
+    syncUser: SyncResponse!
   }
 `;

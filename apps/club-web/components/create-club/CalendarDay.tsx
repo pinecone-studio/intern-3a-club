@@ -14,7 +14,6 @@ export const CalendarDay = ({
 
   return (
     <button
-      type="button"
       disabled={isPast}
       onClick={handleClick}
       className={cn(

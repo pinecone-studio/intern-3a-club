@@ -73,11 +73,10 @@ export type ScheduleChange = {
   startTime: string;
   duration: string;
 };
-
 export type CreateClubState = {
   clubName: string;
   clubDesc: string;
-  teacherName: string;
+  teacherId: string;
   clubMinStudent: string;
   clubMaxStudent: string;
   clubStartDate: Date[] | undefined;
@@ -90,19 +89,15 @@ export type CreateClubState = {
   clubTerm: string;
   scheduleChange: Record<string, ScheduleChange>;
 };
-
 export type Data = {
   getAllClubs: GetAllClub[];
 };
-
 export type ApprovedClubsData = {
   getAllApprovedClubs: GetAllClub[];
 };
-
 export type PendingClubsData = {
   getAllPendingClubs: GetAllClub[];
 };
-
 export type GetAllClub = {
   id: string;
   name: string;
@@ -118,7 +113,6 @@ export type GetAllClub = {
   frequency?: string;
   termMonths?: number;
 };
-
 export type Timetable = {
   id: string;
   clubId: string;
@@ -128,9 +122,8 @@ export type Timetable = {
   clubStartTime: string;
   duration: number;
 };
-
 export type CreateClubSetters = {
-  setTeacherName: Dispatch<SetStateAction<string>>;
+  setTeacherId: Dispatch<SetStateAction<string>>;
   setClubStartDate: Dispatch<SetStateAction<Date[] | undefined>>;
   setSelectedFreqId: Dispatch<SetStateAction<string>>;
   setClubTerm: Dispatch<SetStateAction<string>>;
@@ -140,11 +133,9 @@ export type CreateClubSetters = {
   setClubFrequency: Dispatch<SetStateAction<string>>;
   setScheduleChange: Dispatch<SetStateAction<Record<string, ScheduleChange>>>;
 };
-
 export type InputChangeEvent = ChangeEvent<
   HTMLInputElement | HTMLTextAreaElement
 >;
-
 export type CreateClubHandlers = {
   handleName: (_e: InputChangeEvent) => void;
   handleDesc: (_e: InputChangeEvent) => void;
@@ -156,4 +147,13 @@ export type CreateClubHandlers = {
   ) => void;
   handleDeleteDate: (_day: Date) => void;
   handleEmptyFields: () => void;
+};
+export type TeacherData = {
+  getAllTeachers: GetAllTeacher[];
+};
+export type GetAllTeacher = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  profilePicture: string;
 };

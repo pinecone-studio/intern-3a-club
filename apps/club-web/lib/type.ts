@@ -21,7 +21,6 @@
 //   isEnrolled?: boolean;
 // }
 
-
 export interface ExtendedClub extends GetAllClub {
   isEnrolled: boolean;
   bannedUntil: number;
@@ -52,6 +51,17 @@ export const GET_ALL_CLUBS = gql`
     }
   }
 `;
+
+export const GET_ALL_TEACHERS = gql`
+  query GetAllTeachers {
+    getAllTeachers {
+      id
+      firstName
+      lastName
+      profilePicture
+    }
+  }
+`;
 export type ClubCardProps = {
   club: GetAllClub & { isEnrolled?: boolean; bannedUntil?: number };
   isSelected: boolean;
@@ -71,6 +81,7 @@ export type GetAllClub = {
   status: string;
   minMember: number;
   maxMember: number;
+  bannedUntil?: number;
   timetables: Timetable[];
 };
 export type Timetable = {
