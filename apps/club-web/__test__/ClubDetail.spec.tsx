@@ -123,7 +123,7 @@ describe('ClubDetail Component', () => {
       render(
         <ClubDetail
           {...defaultProps}
-          selectedClub={{ ...mockClub, type: undefined as any }}
+          selectedClub={{ ...mockClub, type: undefined as unknown as string }}
         />
       );
       expect(screen.getByText('Premium')).toBeInTheDocument();
