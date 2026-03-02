@@ -50,16 +50,13 @@ describe('useClubAction', () => {
       await result.current.handleEnroll();
     });
 
-    // 91-р мөр: console.error('Join error:', err) дуудагдсан эсэхийг шалгах
     expect(console.error).toHaveBeenCalledWith(
       'Join error:',
       expect.any(Error)
     );
-    // Finally блок: setLoading(false) ажилласан эсэхийг шалгах
     expect(result.current.loading).toBe(false);
   });
 
-  // --- LINE 106-108 TEST (handleLeave error handling) ---
   it('should catch error in handleLeave (Lines 106-108 coverage)', async () => {
     (global.fetch as jest.Mock)
       .mockResolvedValueOnce({
