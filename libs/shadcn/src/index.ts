@@ -15,3 +15,7 @@ export * from './lib/ui/label';
 export * from './lib/ui/select';
 export { Toaster as Sonner } from './lib/ui/sonner'; // Renamed to avoid conflict with toaster
 export * from './lib/ui/textarea';
+export * from './lib/ui/alert-dialog';
+export * from './lib/ui/scroll-area';
+export * from './lib/ui/separator';
+export * from './lib/ui/badge';

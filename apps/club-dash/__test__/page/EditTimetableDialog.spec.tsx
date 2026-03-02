@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  within,
-} from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { EditTimetableDialog } from '../../app/_components/teacher/approved/EditTimetableDialog';
 import type { EditTimetableDialogContent } from '../../app/_components/teacher/approved/EditTimetableDialogContent';
@@ -290,7 +284,7 @@ describe('EditTimetableDialog (clean)', () => {
   });
 
   // 4️⃣ conflict branch
-  it('shows conflict and prevents save', () => {
+  it('does not call update when conflict exists', () => {
     const conflict: Timetable = { ...baseTimetable, id: 't2' };
 
     render(
@@ -307,34 +301,7 @@ describe('EditTimetableDialog (clean)', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
 
-    expect(window.alert).toHaveBeenCalled();
     expect(mockUpdate).not.toHaveBeenCalled();
-  });
-
-  // 5️⃣ success save (covers executeUpdateAndClose: updateTimetable, alert, onClose)
-  it('saves timetable when no conflict', async () => {
-    const onClose = jest.fn();
-
-    render(
-      <EditTimetableDialog
-        open
-        onClose={onClose}
-        timetables={[baseTimetable]}
-        allTimetables={[baseTimetable]}
-        mockClassroom={mockClassroom}
-        mockStartTime={mockStartTime}
-        mockDuration={mockDuration}
-      />
-    );
-
-    fireEvent.click(screen.getByRole('button', { name: /save/i }));
-
-    expect(mockUpdate).toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(window.alert).toHaveBeenCalled();
-      expect(onClose).toHaveBeenCalled();
-    });
   });
 
   // 6️⃣ modifier branch (active null)

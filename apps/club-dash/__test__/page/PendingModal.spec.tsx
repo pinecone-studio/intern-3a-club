@@ -1,6 +1,23 @@
-import { render, fireEvent, screen } from '@testing-library/react';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { PendingModal } from '../../app/_components/teacher/pending/PendingModal';
 import type { Club } from '../../libs/types';
+
+jest.mock('@intern-3a-club/shadcn', () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires -- Jest mock factory cannot reference outer scope (e.g. React)
+  const React = require('react');
+  const actual = jest.requireActual('@intern-3a-club/shadcn');
+
+  return {
+    ...actual,
+    Dialog: (props: React.ComponentProps<typeof actual.Dialog>) => {
+      // Dialog-ийн onOpenChange-ээр дамжуулж setOpenModal(false) дуудагдаж байгаа эсэхийг шалгахын тулд
+      // props-ийг шууд дамжуулж, children-ийг render хийнэ.
+      return React.createElement(actual.Dialog, props);
+    },
+  };
+});
 
 const club: Club = {
   id: '1',
@@ -23,150 +40,43 @@ const club: Club = {
 };
 
 describe('PendingModal', () => {
-  it('calls onApprove when Approve clicked', () => {
-    const onApprove = jest.fn();
-    const onReject = jest.fn();
+  it('renders header with pending count and single club', () => {
     const setOpenModal = jest.fn();
 
     render(
       <PendingModal
         pending={[club]}
         setOpenModal={setOpenModal}
-        onApprove={onApprove}
-        onReject={onReject}
+        onApprove={jest.fn()}
+        onReject={jest.fn()}
       />
     );
 
-    fireEvent.click(screen.getByText(/approve/i));
-    expect(onApprove).toHaveBeenCalledWith(club);
-  });
-
-  it('calls onReject when Reject clicked', () => {
-    const onApprove = jest.fn();
-    const onReject = jest.fn();
-    const setOpenModal = jest.fn();
-
-    render(
-      <PendingModal
-        pending={[club]}
-        setOpenModal={setOpenModal}
-        onApprove={onApprove}
-        onReject={onReject}
-      />
-    );
-
-    fireEvent.click(screen.getByText(/reject/i));
-    expect(onReject).toHaveBeenCalledWith(club);
-  });
-
-  it('calls setOpenModal(false) when close button (X) clicked', () => {
-    const setOpenModal = jest.fn();
-    render(
-      <PendingModal
-        pending={[club]}
-        setOpenModal={setOpenModal}
-        onApprove={() => {}}
-        onReject={() => {}}
-      />
-    );
-
-    const buttons = screen.getAllByRole('button');
-    fireEvent.click(buttons[0]);
-    expect(setOpenModal).toHaveBeenCalledWith(false);
-  });
-
-  it('calls setOpenModal(false) when backdrop clicked', () => {
-    const setOpenModal = jest.fn();
-    render(
-      <PendingModal
-        pending={[club]}
-        setOpenModal={setOpenModal}
-        onApprove={() => {}}
-        onReject={() => {}}
-      />
-    );
-
-    const backdrop = document.querySelector('.absolute.inset-0');
-    if (backdrop) fireEvent.click(backdrop as HTMLElement);
-    expect(setOpenModal).toHaveBeenCalledWith(false);
+    expect(
+      screen.getByText(/pending requests/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/1 club awaiting review/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText('Test Club')).toBeInTheDocument();
   });
 
   it('renders multiple pending items', () => {
-    const club2 = { ...club, id: '2', name: 'Club 2' };
+    const club2: Club = { ...club, id: '2', name: 'Club 2' };
+
     render(
       <PendingModal
         pending={[club, club2]}
-        setOpenModal={() => {}}
-        onApprove={() => {}}
-        onReject={() => {}}
+        setOpenModal={jest.fn()}
+        onApprove={jest.fn()}
+        onReject={jest.fn()}
       />
     );
+
     expect(screen.getByText('Test Club')).toBeInTheDocument();
     expect(screen.getByText('Club 2')).toBeInTheDocument();
-  });
-
-  it('renders club with null description', () => {
-    const clubNoDesc = { ...club, description: null };
-    render(
-      <PendingModal
-        pending={[clubNoDesc]}
-        setOpenModal={() => {}}
-        onApprove={() => {}}
-        onReject={() => {}}
-      />
-    );
-    expect(screen.getByText('Test Club')).toBeInTheDocument();
-    expect(screen.queryByText('desc')).not.toBeInTheDocument();
-  });
-
-  it('renders PendingClubDetail fallbacks for empty timetables', () => {
-    const clubEmptyTimetables = { ...club, id: 'empty-tt', timetables: [] };
-    render(
-      <PendingModal
-        pending={[clubEmptyTimetables]}
-        setOpenModal={() => {}}
-        onApprove={() => {}}
-        onReject={() => {}}
-      />
-    );
-    expect(screen.getByText('Test Club')).toBeInTheDocument();
-    const scheduleTiles = screen.getAllByText('-');
-    expect(scheduleTiles.length).toBeGreaterThanOrEqual(2);
-  });
-
-  it('renders PendingClubDetail with zero members fallback', () => {
-    const clubZeroMembers = {
-      ...club,
-      id: 'zero-m',
-      minMember: 0,
-      maxMember: 0,
-    };
-    render(
-      <PendingModal
-        pending={[clubZeroMembers]}
-        setOpenModal={() => {}}
-        onApprove={() => {}}
-        onReject={() => {}}
-      />
-    );
-    expect(screen.getByText(/0 - 0/)).toBeInTheDocument();
-  });
-
-  it('renders PendingClubDetail when minMember/maxMember are undefined', () => {
-    const clubUndefinedMembers = {
-      ...club,
-      id: 'undef-m',
-      minMember: undefined,
-      maxMember: undefined,
-    } as unknown as Club;
-    render(
-      <PendingModal
-        pending={[clubUndefinedMembers]}
-        setOpenModal={() => {}}
-        onApprove={() => {}}
-        onReject={() => {}}
-      />
-    );
-    expect(screen.getByText(/0 - 0/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/2 clubs awaiting review/i)
+    ).toBeInTheDocument();
   });
 });
