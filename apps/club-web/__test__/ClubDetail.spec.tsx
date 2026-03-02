@@ -4,7 +4,6 @@ import { useClubAction } from '../app/_hooks/use-redis-hook';
 import { ClubDetail } from '../app/JoinClub/_components/ClubDetail';
 import { ExtendedClub } from '../lib/type';
 
-// 1. External dependencies-ийг Mock хийх
 jest.mock('../app/_hooks/use-redis-hook');
 jest.mock('../app/JoinClub/_components/ClubActionButton', () => ({
   ClubActionButtons: jest.fn(({ remainingTime }) => (
@@ -20,7 +19,6 @@ jest.mock('lucide-react', () => ({
 
 const mockUseClubAction = jest.mocked(useClubAction);
 
-// 2. Mock Data бэлдэх
 const mockClub = {
   id: 'club-1',
   name: 'Test Club',
@@ -61,7 +59,6 @@ describe('ClubDetail Component', () => {
     mockUseClubAction.mockReturnValue(defaultHookReturn);
   });
 
-  // --- 39 болон 45-р мөрийн coverage-ийг хангах логик ---
   describe('Edge Case Logic (Coverage for Line 39 & 45)', () => {
     it('remainingTime нь null байх үед 0-ийг буцаана (Line 45)', () => {
       mockUseClubAction.mockReturnValue({
@@ -74,7 +71,6 @@ describe('ClubDetail Component', () => {
     });
 
     it('багш олдохгүй үед fallback утга ажиллана (Line 39)', () => {
-      // Клубын teacherId-тай таарах багш байхгүй үе
       render(
         <ClubDetail
           {...defaultProps}
@@ -97,7 +93,6 @@ describe('ClubDetail Component', () => {
     });
   });
 
-  // --- Бусад функциональ тестүүд ---
   describe('Rendering Logic', () => {
     it('клуб сонгоогүй үед заавар текст харуулна', () => {
       render(<ClubDetail {...defaultProps} selectedClub={undefined} />);
