@@ -4697,11 +4697,6 @@
     "@testing-library/dom" "^9.0.0"
     "@types/react-dom" "^18.0.0"
 
-"@testing-library/user-event@^14.6.1":
-  version "14.6.1"
-  resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-14.6.1.tgz#13e09a32d7a8b7060fe38304788ebf4197cd2149"
-  integrity sha512-vq7fv0rnt+QTXgPxr5Hjc210p6YKq2kmdziLgnsZGgLJ9e6VAShx1pACLuRjd/AS/sr7phAR58OIIpf0LlmQNw==
-
 "@theguild/federation-composition@^0.21.1":
   version "0.21.3"
   resolved "https://registry.yarnpkg.com/@theguild/federation-composition/-/federation-composition-0.21.3.tgz#29126aa594123f36789928955e66fd210fff76c0"
