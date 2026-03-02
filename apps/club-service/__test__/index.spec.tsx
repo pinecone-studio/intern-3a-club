@@ -7,7 +7,7 @@ describe('Home Page', () => {
     render(<Home />);
 
     // 2. <h1>Welcome!</h1> текст байгаа эсэхийг шалгах
-    const heading = screen.getByRole('heading', { name: /welcome!/i });
+    const heading = screen.getByRole('heading', { name: /welcome to/i });
 
     // 3. Баталгаажуулалт (Assertion)
     expect(heading).toBeInTheDocument();
