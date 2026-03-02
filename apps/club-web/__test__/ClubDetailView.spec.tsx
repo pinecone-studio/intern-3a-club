@@ -30,7 +30,7 @@ jest.mock('../app/JoinClub/_components/ClubActionButton', () => ({
     </div>
   ),
 }));
-
+// eslint-disable-next-line complexity
 const mockClub = {
   id: 'club-1',
   name: 'Test Club',
