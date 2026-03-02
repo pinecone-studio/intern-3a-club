@@ -1,0 +1,6 @@
+// import { DB } from 'db/drizzle';
+// import { timetable } from 'db/schema';
+
+// export const deleteTimetable = async (_: unknown, { id }: { id: string }) => {
+//   const deleteTimetable = await DB.select(timetable).;``
+// };
