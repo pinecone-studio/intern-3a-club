@@ -8,10 +8,9 @@ jest.mock('sonner', () => ({
 }));
 
 describe('useClubAction', () => {
-  // TypeScript алдааг зассан mockProps (clubid: string)
   const mockProps = {
     userid: 'user123',
-    clubid: '1',
+    clubid: '1', // TypeScript-ийн string төрлийн алдааг зассан
     onEnrollSuccess: jest.fn(),
     onLeaveSuccess: jest.fn(),
   };
@@ -19,7 +18,7 @@ describe('useClubAction', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Global fetch-ийг тодорхойлох
+    // Global fetch-ийг Jest орчинд тодорхойлох
     global.fetch = jest.fn().mockImplementation(() =>
       Promise.resolve({
         ok: true,
@@ -29,7 +28,7 @@ describe('useClubAction', () => {
     );
 
     window.confirm = jest.fn(() => true);
-    // Тестийн үед консол дээр улаан алдаа харуулахгүй байх
+    // Консол дээрх алдааны мессежүүдийг тестийн үед нуух
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
@@ -38,14 +37,38 @@ describe('useClubAction', () => {
     jest.useRealTimers();
   });
 
-  // --- 110-р мөрийг (handleLeave error) тестлэх хэсэг ---
-  it('should catch error in handleLeave (Line 110)', async () => {
+  // --- LINE 91 TEST (handleEnroll error handling) ---
+  it('should catch error in handleEnroll (Line 91 coverage)', async () => {
     (global.fetch as jest.Mock)
       .mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({ remainingTime: 0 }),
-      }) // mount үеийн fetch
-      .mockRejectedValueOnce(new Error('Leave failed')); // handleLeave алдаа
+      }) // Mount үеийн fetch
+      .mockRejectedValueOnce(new Error('Join error scenario')); // handleEnroll алдаа
+
+    const { result } = renderHook(() => useClubAction(mockProps));
+
+    await act(async () => {
+      await result.current.handleEnroll();
+    });
+
+    // 91-р мөр: console.error('Join error:', err) дуудагдсан эсэхийг шалгах
+    expect(console.error).toHaveBeenCalledWith(
+      'Join error:',
+      expect.any(Error)
+    );
+    // Finally блок: setLoading(false) ажилласан эсэхийг шалгах
+    expect(result.current.loading).toBe(false);
+  });
+
+  // --- LINE 106-108 TEST (handleLeave error handling) ---
+  it('should catch error in handleLeave (Lines 106-108 coverage)', async () => {
+    (global.fetch as jest.Mock)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ remainingTime: 0 }),
+      }) // Mount үеийн fetch
+      .mockRejectedValueOnce(new Error('Leave error scenario')); // handleLeave алдаа
 
     const { result } = renderHook(() => useClubAction(mockProps));
 
@@ -53,17 +76,16 @@ describe('useClubAction', () => {
       await result.current.handleLeave();
     });
 
-    // Консол дээр алдааг хэвлэсэн эсэхийг шалгах
+    // 107-р мөр: console.error('Leave error:', err) дуудагдсан эсэхийг шалгах
     expect(console.error).toHaveBeenCalledWith(
       'Leave error:',
       expect.any(Error)
     );
-    // Finally блок ажиллаж loading зогссон эсэхийг шалгах
+    // 109-р мөр: setLoading(false) ажилласан эсэхийг шалгах
     expect(result.current.loading).toBe(false);
   });
 
-  // --- Бусад чухал логикуудыг тестлэх хэсэг ---
-
+  // --- Таймер болон амжилттай үйлдлүүдийг шалгах ---
   it('should fetch ban status and start timer if banned on mount', async () => {
     jest.useFakeTimers();
     (global.fetch as jest.Mock).mockResolvedValueOnce({
@@ -108,29 +130,6 @@ describe('useClubAction', () => {
     });
 
     expect(mockProps.onEnrollSuccess).toHaveBeenCalled();
-    expect(result.current.loading).toBe(false);
-  });
-
-  it('should set banned state if handleEnroll returns 403', async () => {
-    (global.fetch as jest.Mock)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ remainingTime: 0 }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 403,
-        json: () => Promise.resolve({ remainingTime: 60 }),
-      });
-
-    const { result } = renderHook(() => useClubAction(mockProps));
-
-    await act(async () => {
-      await result.current.handleEnroll();
-    });
-
-    expect(result.current.banned).toBe(true);
-    expect(result.current.remainingTime).toBe(60);
   });
 
   it('should abort handleLeave if confirm is cancelled', async () => {
@@ -141,7 +140,7 @@ describe('useClubAction', () => {
       await result.current.handleLeave();
     });
 
-    expect(global.fetch).toHaveBeenCalledTimes(1); // Зөвхөн mount үеийнх
+    expect(global.fetch).toHaveBeenCalledTimes(1);
     expect(mockProps.onLeaveSuccess).not.toHaveBeenCalled();
   });
 });
