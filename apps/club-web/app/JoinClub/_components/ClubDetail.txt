@@ -37,13 +37,12 @@ export const ClubDetail = (props: ClubDetailProps) => {
   const { selectedClub, userId, allTeachers, onEnrollSuccess, onLeaveSuccess } =
     props;
 
-  // Complexity бууруулахын тулд props-оос ID-нуудыг салгаж авах
-  const clubId = selectedClub?.id;
+  const clubId = selectedClub?.id ?? '';
   const teacherId = selectedClub?.teacherId;
 
   const actions = useClubAction({
     userid: userId,
-    clubid: clubId || '',
+    clubid: clubId,
     onEnrollSuccess,
     onLeaveSuccess,
   });
@@ -53,20 +52,21 @@ export const ClubDetail = (props: ClubDetailProps) => {
     [allTeachers, teacherId]
   );
 
-  // 'if' нөхцөлийг хамгийн сүүлд ганцхан удаа ашиглах
   if (!selectedClub) {
     return <EmptyState />;
   }
+
+  const { banned, loading, handleEnroll, handleLeave, remainingTime } = actions;
 
   return (
     <ClubDetailView
       club={selectedClub}
       teacherData={teacherData}
-      banned={actions.banned}
-      remainingTime={actions.remainingTime || 0}
-      loading={actions.loading}
-      handleEnroll={actions.handleEnroll}
-      handleLeave={actions.handleLeave}
+      banned={banned}
+      remainingTime={remainingTime ?? 0}
+      loading={loading}
+      handleEnroll={handleEnroll}
+      handleLeave={handleLeave}
     />
   );
 };
