@@ -13,12 +13,14 @@ interface ClubDetailProps {
   onLeaveSuccess: () => void;
 }
 
-// Complexity-г багасгахын тулд логикийг маш энгийн болгов
 const getTeacherInfo = (teachers: GetAllTeacher[] = [], id?: string) => {
-  const t = teachers.find((i) => i.id === id);
+  const teacher = teachers.find((t) => t.id === id);
+  const firstName = teacher?.firstName || '';
+  const lastName = teacher?.lastName || '';
+
   return {
-    name: t ? `${t.firstName} ${t.lastName}` : 'Багш тодорхойгүй',
-    initial: t?.firstName?.[0] || 'T',
+    name: teacher ? `${firstName} ${lastName}` : 'Багш тодорхойгүй',
+    initial: firstName.charAt(0).toUpperCase() || 'T',
   };
 };
 
@@ -35,25 +37,29 @@ export const ClubDetail = ({
   onEnrollSuccess,
   onLeaveSuccess,
 }: ClubDetailProps) => {
-  const club = selectedClub ?? null;
+  const clubId = selectedClub?.id || '';
+  const teacherId = selectedClub?.teacherId;
+
   const { remainingTime, banned, loading, handleEnroll, handleLeave } =
     useClubAction({
       userid: userId,
-      clubid: club?.id || '',
+      clubid: clubId,
       onEnrollSuccess,
       onLeaveSuccess,
     });
 
   const teacherData = useMemo(
-    () => getTeacherInfo(allTeachers, club?.teacherId),
-    [allTeachers, club?.teacherId]
+    () => getTeacherInfo(allTeachers, teacherId),
+    [allTeachers, teacherId]
   );
 
-  if (!club) return <EmptyState />;
+  if (!selectedClub) {
+    return <EmptyState />;
+  }
 
   return (
     <ClubDetailView
-      club={club}
+      club={selectedClub}
       teacherData={teacherData}
       banned={banned}
       remainingTime={remainingTime || 0}
