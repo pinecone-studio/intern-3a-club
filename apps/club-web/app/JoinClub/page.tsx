@@ -13,7 +13,7 @@ const JoinClubPage = () => {
 
   return (
     <div className="min-h-screen bg-[url('/pinebaatar.png')] bg-cover bg-center bg-no-repeat">
-      <ClubsContent/>
+      <ClubsContent />
     </div>
   );
 };

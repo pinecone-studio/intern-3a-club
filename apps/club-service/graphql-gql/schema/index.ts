@@ -3,6 +3,7 @@ import { gql } from 'graphql-tag';
 import { clubTypeDefs } from './club.schema';
 import { timetableTypeDefs } from './timetable.schema';
 import { teacherTypeDefs } from './teacher.schema';
+import { studentTypeDefs } from './student.schema';
 
 // Суурь Query болон Mutation (бусад схемүүд үүнийг extend хийнэ)
 const baseTypeDefs = gql`
@@ -14,10 +15,12 @@ const baseTypeDefs = gql`
   }
 `;
 
+console.log('Student type definition:', studentTypeDefs); // Энэ undefined байвал импорт алдаатай байна
 // mergeTypeDefs массив дотор нэмж өгөх
 export const typeDefs = mergeTypeDefs([
   baseTypeDefs,
+  studentTypeDefs,
+  teacherTypeDefs,
   clubTypeDefs,
   timetableTypeDefs,
-  teacherTypeDefs,
 ]);
