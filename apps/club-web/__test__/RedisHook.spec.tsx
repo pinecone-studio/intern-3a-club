@@ -28,7 +28,6 @@ describe('useClubAction', () => {
     );
 
     window.confirm = jest.fn(() => true);
-    // Консол дээрх алдааны мессежүүдийг тестийн үед нуух
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
@@ -37,7 +36,6 @@ describe('useClubAction', () => {
     jest.useRealTimers();
   });
 
-  // --- LINE 91 TEST (handleEnroll error handling) ---
   it('should catch error in handleEnroll (Line 91 coverage)', async () => {
     (global.fetch as jest.Mock)
       .mockResolvedValueOnce({
