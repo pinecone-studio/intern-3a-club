@@ -2,7 +2,6 @@
 import React from 'react';
 import { Clock, MapPin } from 'lucide-react';
 import { cn } from 'lib/utils';
-// ApprovedClubTimetable-г нэмж импортлов
 import { ExtendedClub, ApprovedClubTimetable } from '../../../lib/type';
 
 interface ClubCardProps {
