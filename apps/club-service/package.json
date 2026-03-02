@@ -1,8 +1,23 @@
 {
   "scripts": {
-    "vercel-build": "next build"
+    "vercel-build": "next build",
+    "start": "next start"
   },
   "devDependencies": {
     "vercel": "^50.25.4"
+  },
+  "dependencies": {
+    "@clerk/backend": "2.33.0",
+    "@cloudflare/next-on-pages": "1.13.16",
+    "@graphql-tools/merge": "9.1.7",
+    "@graphql-tools/schema": "10.0.31",
+    "dotenv": "16.3.2",
+    "drizzle-orm": "0.45.1",
+    "graphql": "16.13.0",
+    "graphql-tag": "2.12.6",
+    "next": "14.0.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "typescript": "5.2.2"
   }
 }
