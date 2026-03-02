@@ -15,12 +15,17 @@ interface ClubDetailProps {
 
 const getTeacherInfo = (teachers: GetAllTeacher[] = [], id?: string) => {
   const teacher = teachers.find((t) => t.id === id);
-  const firstName = teacher?.firstName || '';
-  const lastName = teacher?.lastName || '';
+
+  if (!teacher) {
+    return { name: 'Багш тодорхойгүй', initial: 'T' };
+  }
+
+  const fullName = `${teacher.firstName} ${teacher.lastName}`;
+  const firstChar = teacher.firstName.charAt(0).toUpperCase();
 
   return {
-    name: teacher ? `${firstName} ${lastName}` : 'Багш тодорхойгүй',
-    initial: firstName.charAt(0).toUpperCase() || 'T',
+    name: fullName,
+    initial: firstChar || 'T',
   };
 };
 
@@ -40,13 +45,12 @@ export const ClubDetail = ({
   const clubId = selectedClub?.id || '';
   const teacherId = selectedClub?.teacherId;
 
-  const { remainingTime, banned, loading, handleEnroll, handleLeave } =
-    useClubAction({
-      userid: userId,
-      clubid: clubId,
-      onEnrollSuccess,
-      onLeaveSuccess,
-    });
+  const actions = useClubAction({
+    userid: userId,
+    clubid: clubId,
+    onEnrollSuccess,
+    onLeaveSuccess,
+  });
 
   const teacherData = useMemo(
     () => getTeacherInfo(allTeachers, teacherId),
@@ -61,11 +65,11 @@ export const ClubDetail = ({
     <ClubDetailView
       club={selectedClub}
       teacherData={teacherData}
-      banned={banned}
-      remainingTime={remainingTime || 0}
-      loading={loading}
-      handleEnroll={handleEnroll}
-      handleLeave={handleLeave}
+      banned={actions.banned}
+      remainingTime={actions.remainingTime || 0}
+      loading={actions.loading}
+      handleEnroll={actions.handleEnroll}
+      handleLeave={actions.handleLeave}
     />
   );
 };
