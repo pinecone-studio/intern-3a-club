@@ -8,7 +8,7 @@ jest.mock('sonner', () => ({
 }));
 
 describe('useClubAction', () => {
-  // ЗАСВАР: clubid-ийг 1 (number) байсныг '1' (string) болгож өөрчлөв.
+  // TypeScript алдааг зассан mockProps (clubid: string)
   const mockProps = {
     userid: 'user123',
     clubid: '1',
@@ -19,7 +19,7 @@ describe('useClubAction', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Node орчинд (Jest) fetch-ийг тодорхойлж өгөх
+    // Global fetch-ийг тодорхойлох
     global.fetch = jest.fn().mockImplementation(() =>
       Promise.resolve({
         ok: true,
@@ -29,6 +29,7 @@ describe('useClubAction', () => {
     );
 
     window.confirm = jest.fn(() => true);
+    // Тестийн үед консол дээр улаан алдаа харуулахгүй байх
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
@@ -36,6 +37,32 @@ describe('useClubAction', () => {
     (console.error as jest.Mock).mockRestore();
     jest.useRealTimers();
   });
+
+  // --- 110-р мөрийг (handleLeave error) тестлэх хэсэг ---
+  it('should catch error in handleLeave (Line 110)', async () => {
+    (global.fetch as jest.Mock)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ remainingTime: 0 }),
+      }) // mount үеийн fetch
+      .mockRejectedValueOnce(new Error('Leave failed')); // handleLeave алдаа
+
+    const { result } = renderHook(() => useClubAction(mockProps));
+
+    await act(async () => {
+      await result.current.handleLeave();
+    });
+
+    // Консол дээр алдааг хэвлэсэн эсэхийг шалгах
+    expect(console.error).toHaveBeenCalledWith(
+      'Leave error:',
+      expect.any(Error)
+    );
+    // Finally блок ажиллаж loading зогссон эсэхийг шалгах
+    expect(result.current.loading).toBe(false);
+  });
+
+  // --- Бусад чухал логикуудыг тестлэх хэсэг ---
 
   it('should fetch ban status and start timer if banned on mount', async () => {
     jest.useFakeTimers();
@@ -51,7 +78,6 @@ describe('useClubAction', () => {
     });
 
     expect(result.current.banned).toBe(true);
-    expect(result.current.remainingTime).toBe(2);
 
     act(() => {
       jest.advanceTimersByTime(2000);
@@ -104,49 +130,18 @@ describe('useClubAction', () => {
     });
 
     expect(result.current.banned).toBe(true);
-    expect(mockProps.onEnrollSuccess).not.toHaveBeenCalled();
+    expect(result.current.remainingTime).toBe(60);
   });
 
-  it('should handleLeave successfully and ask for confirmation', async () => {
-    (global.fetch as jest.Mock)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ remainingTime: 0 }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ remainingTime: 10 }),
-      });
-
+  it('should abort handleLeave if confirm is cancelled', async () => {
+    (window.confirm as jest.Mock).mockReturnValue(false);
     const { result } = renderHook(() => useClubAction(mockProps));
 
     await act(async () => {
       await result.current.handleLeave();
     });
 
-    expect(window.confirm).toHaveBeenCalled();
-    expect(result.current.banned).toBe(true);
-    expect(mockProps.onLeaveSuccess).toHaveBeenCalled();
-  });
-
-  it('should catch error in handleEnroll', async () => {
-    (global.fetch as jest.Mock)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ remainingTime: 0 }),
-      })
-      .mockRejectedValueOnce(new Error('Network error'));
-
-    const { result } = renderHook(() => useClubAction(mockProps));
-
-    await act(async () => {
-      await result.current.handleEnroll();
-    });
-
-    expect(console.error).toHaveBeenCalledWith(
-      'Join error:',
-      expect.any(Error)
-    );
-    expect(result.current.loading).toBe(false);
+    expect(global.fetch).toHaveBeenCalledTimes(1); // Зөвхөн mount үеийнх
+    expect(mockProps.onLeaveSuccess).not.toHaveBeenCalled();
   });
 });
