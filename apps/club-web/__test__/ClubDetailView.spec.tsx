@@ -54,7 +54,7 @@ describe('ClubDetailView', () => {
   it('Клубын мэдээллийг зөв харуулах ёстой', () => {
     render(<ClubDetailView {...defaultProps} />);
     expect(screen.getByText('Test Club')).toBeInTheDocument();
-    expect(screen.getByText('TEST TEACHER')).toBeInTheDocument();
+    expect(screen.getByText('Test Teacher')).toBeInTheDocument();
   });
 
   it('Элсэх товч дарахад функц дуудагдах ёстой', () => {
