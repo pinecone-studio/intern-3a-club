@@ -1,91 +1,60 @@
 'use client';
 
 import React from 'react';
-import { LogOut, Timer } from 'lucide-react';
-import { cn } from 'lib/utils';
-import { CustomButton } from './CustomButton';
+import { CustomButton } from './ui/CustomButton';
+import { LogOut } from 'lucide-react';
+import { JoinLabel } from './ClubJoinLabel';
 
-interface ButtonContentProps {
-  isLocked: boolean;
-  time: number;
-  status: string;
-}
-
-interface ActionProps {
-  isEnrolled: boolean;
+interface JoinActionProps {
   isLocked: boolean;
   status: string;
   remainingTime: number;
   onEnroll: () => void;
+  loading: boolean;
+}
+interface ActionProps extends JoinActionProps {
+  isEnrolled: boolean;
   onLeave: () => void;
-  className?: string;
 }
 
-const ButtonContent = ({ isLocked, time, status }: ButtonContentProps) => {
-  if (isLocked) {
-    return (
-      <span className="flex items-center justify-center">
-        <Timer className="h-5 w-5 animate-spin mr-2" />
-        {time}с хүлээх
-      </span>
-    );
-  }
-  return <span>{status === 'Open' ? 'Одоо нэгдэх' : 'Суудал дүүрсэн'}</span>;
+const getButtonStyles = (isLocked: boolean) => {
+  return isLocked ? 'bg-red-500/20 text-red-400' : 'bg-blue-600';
 };
 
-// eslint-disable-next-line complexity
-export const ClubActionButtons = (props: ActionProps) => {
-  const {
-    isEnrolled,
-    isLocked,
-    status,
-    remainingTime,
-    onEnroll,
-    onLeave,
-    className = '',
-  } = props;
+const JoinAction = (props: JoinActionProps) => {
+  const { isLocked, loading, status, onEnroll, remainingTime } = props;
 
-  if (isEnrolled) {
-    return (
-      <CustomButton
-        variant="destructive"
-        onClick={onLeave}
-        className={cn(
-          'w-full py-5 text-sm border border-red-500/20 bg-red-500/10 hover:bg-red-500 transition-all duration-300',
-          className
-        )}
-      >
-        <LogOut className="mr-2 h-5 w-5" /> Клубээс гарах
-      </CustomButton>
-    );
-  }
+  const isFull = status === 'Full';
+  const isBusy = isLocked || loading;
+  const isDisabled = isBusy || isFull;
 
   return (
-    <div className="space-y-4">
-      <CustomButton
-        disabled={status === 'Full' || isLocked}
-        onClick={onEnroll}
-        className={cn(
-          'w-full py-5 text-sm transition-all duration-300 shadow-xl',
-          isLocked || status === 'Full'
-            ? 'bg-white/5 text-white/20 border-white/5 cursor-not-allowed opacity-50'
-            : 'bg-blue-600 text-white/90 hover:bg-blue-500 border-blue-400/30 shadow-blue-600/20',
-          className
-        )}
-      >
-        <ButtonContent
-          isLocked={isLocked}
-          time={remainingTime}
-          status={status}
-        />
-      </CustomButton>
-
-      {isLocked && <LockedMessage />}
-    </div>
+    <CustomButton
+      disabled={isDisabled}
+      onClick={onEnroll}
+      className={`w-full py-4 font-bold transition-all ${getButtonStyles(
+        isLocked
+      )}`}
+    >
+      <JoinLabel loading={loading} isLocked={isLocked} time={remainingTime} />
+    </CustomButton>
   );
 };
-const LockedMessage = () => (
-  <p className="text-center text-[10px] font-bold uppercase text-red-500 animate-pulse">
-    Түр хүлээх шаардлагатай!
-  </p>
-);
+
+export const ClubActionButtons = (props: ActionProps) => {
+  const { isEnrolled, loading, onLeave } = props;
+
+  if (!isEnrolled) return <JoinAction {...props} />;
+
+  return (
+    <CustomButton
+      variant="destructive"
+      onClick={onLeave}
+      disabled={loading}
+      className="w-full py-4 flex items-center justify-center gap-2"
+    >
+      <LogOut size={20} />
+      {loading ? 'Уншиж байна...' : 'Клубээс гарах'}
+    </CustomButton>
+  );
+};

@@ -1,30 +1,49 @@
-// ----- Mock data ----
-export interface Instructor {
-  name: string;
-  role: string;
-  image: string;
-}
+export type ApprovedClubData = {
+  getAllApprovedClubs: GetAllApprovedClub[];
+};
 
-export interface Club {
-  id: number;
-  name: string;
-  description: string;
-  status: 'Open' | 'Full';
-  instructors: Instructor[];
-  currentMembers: number;
-  maxMembers: number;
-  schedule: string;
-  time: string;
-  class: string;
-  enrolledStudents: string[];
-  image?: string;
-  isEnrolled?: boolean;
-}
-
-export interface ExtendedClub extends GetAllClub {
+export interface ExtendedClub extends GetAllApprovedClub {
   isEnrolled: boolean;
   bannedUntil: number;
 }
+
+export interface GetAllApprovedClub {
+  __typename: string;
+  id: string;
+  name: string;
+  description: string;
+  creatorId: string;
+  teacherId: string;
+  frequency: string;
+  clubTerm: string;
+  type: string;
+  status: string;
+  minMember: number;
+  maxMember: number;
+  timetables: ApprovedClubTimetable[];
+}
+
+export interface ApprovedClubTimetable {
+  __typename: string;
+  id: string;
+  clubId: string;
+  date: string;
+  room: string;
+  clubStartTime: string;
+  duration: number;
+}
+
+export interface TeacherData {
+  getAllTeachers: GetAllTeacher[];
+}
+
+export interface GetAllTeacher {
+  id: string;
+  firstName: string;
+  lastName: string;
+  profilePicture: string;
+}
+
 
 // ---- data ----
 import { gql } from '@apollo/client';
@@ -62,11 +81,6 @@ export const GET_ALL_TEACHERS = gql`
     }
   }
 `;
-export type ClubCardProps = {
-  club: GetAllClub & { isEnrolled?: boolean; bannedUntil?: number };
-  isSelected: boolean;
-  onClick: (_id: string) => void;
-};
 
 export type Data = {
   getAllClubs: GetAllClub[];

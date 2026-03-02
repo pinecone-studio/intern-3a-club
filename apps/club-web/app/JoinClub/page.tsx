@@ -1,17 +1,19 @@
 'use client';
 import { useQuery } from '@apollo/client/react';
 
-import { Data, GET_ALL_CLUBS } from '../../lib/type';
+import { Data } from '../../lib/type';
+import { ClubsContent } from './_components/ClubsContent';
+import { GET_ALL_APPROVED_CLUBS } from './_components/club-query';
 
 const JoinClubPage = () => {
-  const { loading, error, data } = useQuery<Data>(GET_ALL_CLUBS);
+  const { loading, error, data } = useQuery<Data>(GET_ALL_APPROVED_CLUBS);
   console.log({ data });
   if (loading) return <div>Уншиж байна...</div>;
   if (error) return <div>Алдаа гарлаа: {error.message}</div>;
 
   return (
-    <div className="relative min-h-screen w-full bg-[#050a12] bg-[radial-gradient(circle_at_20%_30%,_rgba(29,78,216,0.25)_0%,_transparent_30%),_radial-gradient(circle_at_30%_10%,_rgba(100,116,139,0.15)_0%,_transparent_60%)] overflow-hidden">
-      hello
+    <div className="min-h-screen bg-[url('/pinebaatar.png')] bg-cover bg-center bg-no-repeat">
+      <ClubsContent/>
     </div>
   );
 };

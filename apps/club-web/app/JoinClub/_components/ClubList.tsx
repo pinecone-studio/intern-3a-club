@@ -3,12 +3,13 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClubCard } from './ClubCard';
-import { GetAllClub } from '../../../lib/type';
+import { ExtendedClub } from '../../../lib/type';
 
+// 1. Inline type-ийг interface болгож засав (jsx-no-inline-types алдаа)
 interface ClubListProps {
-  clubs: GetAllClub[];
   selectedClubId: string;
   onSelect: (_id: string) => void;
+  clubs: ExtendedClub[];
 }
 
 export const ClubList = ({

@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { CustomButton } from '../app/JoinClub/_components/CustomButton';
+import { CustomButton } from '../app/JoinClub/_components/ui/CustomButton';
 
 describe('CustomButton', () => {
   it('renders all variants for branch coverage', () => {
