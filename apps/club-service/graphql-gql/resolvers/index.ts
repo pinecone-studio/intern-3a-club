@@ -11,6 +11,7 @@ import {
 import {
   createClubWithSchedules,
   deleteClub,
+  deleteTimetable,
   syncUser,
   updateClub,
   updateTimetable,
@@ -35,6 +36,7 @@ export const resolvers = {
     updateTimetable,
     updateClub,
     syncUser,
+    deleteTimetable,
   },
   // Relationship (Холболт) хэсэг:
   Club: {
