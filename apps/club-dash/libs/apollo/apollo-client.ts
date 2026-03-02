@@ -17,7 +17,7 @@ declare global {
 }
 
 const httpLink = new HttpLink({
-  uri: 'http://localhost:4200/api/graphql',
+  uri: 'https://105-ochko-need-new-branch.cloudflare-pine-club.pages.dev/api/graphql',
 });
 
 const authLink = new SetContextLink(async (prevContext) => {
