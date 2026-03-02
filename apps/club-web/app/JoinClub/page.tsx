@@ -2,7 +2,7 @@
 import { useQuery } from '@apollo/client/react';
 
 import { Data, GET_ALL_CLUBS } from '../../lib/type';
-import { ClubDetail } from './_components';
+
 import { ClubsContent } from './_components/ClubsContent';
 
 const JoinClubPage = () => {

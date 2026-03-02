@@ -1,19 +1,16 @@
 overwrite: true
 schema:
-  - '${CLUB_SERVICE_ENDPOINT}'
+  - './apps/club-service/graphql-gql/schema/**/*.ts'
 
 documents:
-  - './apps/club-dash/app/testForBackend/**/*.graphql'
+  - './apps/club-dash/app/_hooks/graphql/**/*.graphql'
 
 generates:
-  ./apps/club-dash/app/testForBackend/generated/index.ts:
-    config:
-      reactApolloVersion: 3
-      withHooks: true
+  ./apps/club-dash/app/_hooks/generated/graphql.ts:
     plugins:
       - 'typescript'
       - 'typescript-operations'
-      - 'typescript-react-apollo'
+      - 'typed-document-node'
 config:
   reactApolloVersion: 3
   withHooks: true

@@ -1,19 +1,9 @@
-import { gql } from '@apollo/client';
 import type { Timetable } from '../../../../libs/types';
+import { UpdateTimetableDocument } from '../../../_hooks/generated/graphql';
 
 export type { Timetable };
 
-export const UPDATE_TIMETABLE = gql`
-  mutation UpdateTimetable($input: UpdateTimetableInput!) {
-    updateTimetable(input: $input) {
-      id
-      date
-      room
-      clubStartTime
-      duration
-    }
-  }
-`;
+export const UPDATE_TIMETABLE = UpdateTimetableDocument;
 
 export const parseDate = (d: string): Date => {
   const [y, m, day] = d.split('-').map(Number);

@@ -1,26 +1,13 @@
-import gql from 'graphql-tag';
 import { useMutation } from '@apollo/client/react';
 import { CreateClubState, ScheduleChange } from '../../../club-dash/libs/types';
 import { format } from 'date-fns';
+import {
+  CreateClubWithSchedulesDocument,
+  CreateClubWithSchedulesMutationVariables,
+} from './generated/graphql';
 
-export const CREATE_CLUB_WITH_SCHEDULE = gql`
-  mutation CreateClubWithSchedules(
-    $input: CreateClubInput!
-    $schedules: [ScheduleInput!]!
-    $frequency: String!
-    $clubTerm: String!
-  ) {
-    createClubWithSchedules(
-      input: $input
-      schedules: $schedules
-      frequency: $frequency
-      clubTerm: $clubTerm
-    ) {
-      id
-      name
-    }
-  }
-`;
+export const CREATE_CLUB_WITH_SCHEDULE = CreateClubWithSchedulesDocument;
+
 
 export const parseDuration = (chosenDuration: string): number => {
   const durationMin = chosenDuration.split(':').map(Number);
@@ -71,7 +58,9 @@ export const getClubTerm = (initialSchedule: CreateClubState): string => {
   const isWeekly = initialSchedule.clubFrequency === 'WEEKLY';
   return isWeekly ? initialSchedule.clubTerm : '0';
 };
-export const getValues = (initialSchedule: CreateClubState) => {
+export const getValues = (
+  initialSchedule: CreateClubState
+): CreateClubWithSchedulesMutationVariables => {
   const schedules = updateSchedules(initialSchedule);
   console.log({ clubSchedule: schedules });
   return {
@@ -92,7 +81,7 @@ export const getValues = (initialSchedule: CreateClubState) => {
 export const createClubDash = async (
   state: CreateClubState,
   createClub: (_opts: {
-    variables: ReturnType<typeof getValues>;
+    variables: CreateClubWithSchedulesMutationVariables;
   }) => Promise<unknown>,
   onSuccess?: () => void
 ) => {

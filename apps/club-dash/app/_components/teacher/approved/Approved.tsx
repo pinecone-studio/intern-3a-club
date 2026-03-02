@@ -1,9 +1,8 @@
 import { Calendar, DoorOpen, Users2, Clock } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { gql } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { DetailTile } from '../main/DetailTile';
-import { ApprovedClubDetailProps, Data } from '../../../../libs/types';
+import { ApprovedClubDetailProps, Timetable } from '../../../../libs/types';
 import { EditTimetableDialog } from './EditTimetableDialog';
 import {
   getDetailDisplay,
@@ -11,44 +10,36 @@ import {
   mockDuration,
   mockStartTime,
 } from './approved-utils';
+import {
+  DeleteClubMutation,
+  DeleteClubDocument,
+  GetAllClubsDocument,
+  GetAllClubsQuery,
+} from '../../../_hooks/generated/graphql';
 
-const DELETE_CLUB = gql`
-  mutation DeleteClub($id: ID!) {
-    deleteClub(id: $id)
-  }
-`;
+const DELETE_CLUB = DeleteClubDocument;
+export const GET_ALL_CLUBS = GetAllClubsDocument;
 
-type DeleteClubData = {
-  deleteClub: string;
-};
+type QueryTimetable = NonNullable<
+  NonNullable<GetAllClubsQuery['getAllClubs'][number]['timetables']>[number]
+>;
 
-export const GET_ALL_CLUBS = gql`
-  query GetAllClubs {
-    getAllClubs {
-      id
-      name
-      description
-      creatorId
-      teacherId
-      type
-      status
-      preferredTeachers
-      minMember
-      maxMember
-      timetables {
-        id
-        clubId
-        date
-        room
-        clubStartTime
-        duration
-      }
-    }
-  }
-`;
+const toTimetable = (t: QueryTimetable): Timetable => ({
+  id: t.id,
+  clubId: t.clubId,
+  date: t.date,
+  room: t.room,
+  clubStartTime: t.clubStartTime,
+  duration: t.duration,
+});
 
-function getAllTimetablesFromData(data: Data | undefined) {
-  return data?.getAllClubs?.flatMap((c) => c.timetables ?? []) ?? [];
+function getAllTimetablesFromData(data: GetAllClubsQuery | undefined): Timetable[] {
+  const clubs = data?.getAllClubs ?? [];
+  return clubs.flatMap((c) =>
+    (c.timetables ?? [])
+      .filter((t): t is QueryTimetable => t !== null)
+      .map(toTimetable)
+  );
 }
 
 export const ApprovedClubDetail = ({
@@ -56,12 +47,12 @@ export const ApprovedClubDetail = ({
   onDelete,
 }: ApprovedClubDetailProps) => {
   const display = getDetailDisplay(club);
-  const { data } = useQuery<Data>(GET_ALL_CLUBS);
+  const { data } = useQuery(GET_ALL_CLUBS);
   const allTimetables = useMemo(() => getAllTimetablesFromData(data), [data]);
   const [openEdit, setOpenEdit] = useState(false);
   const primaryTimetable = club.timetables?.[0] ?? null;
 
-  const [deleteClub, { loading: isDeleting }] = useMutation<DeleteClubData>(
+  const [deleteClub, { loading: isDeleting }] = useMutation<DeleteClubMutation>(
     DELETE_CLUB,
     {
       refetchQueries: [{ query: GET_ALL_CLUBS }],

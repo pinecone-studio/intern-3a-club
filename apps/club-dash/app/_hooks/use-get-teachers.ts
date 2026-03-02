@@ -1,27 +1,10 @@
 import { useQuery } from '@apollo/client/react';
 import { TeacherData } from '../../../club-dash/libs/types';
-import gql from 'graphql-tag';
+import { GetAllTeachersDocument } from './generated/graphql';
 
-export const GET_ALL_TEACHERS = gql`
-  query GetAllTeachers {
-    getAllTeachers {
-      id
-      firstName
-      lastName
-      profilePicture
-    }
-  }
-`;
+export const GET_ALL_TEACHERS = GetAllTeachersDocument;
 
 export const useGetTeachers = () => {
-  const {
-    loading: isLoadingTeacher,
-    error: errTeacherData,
-    data: teacherData,
-  } = useQuery<TeacherData>(GET_ALL_TEACHERS);
-  return {
-    loading: isLoadingTeacher,
-    error: errTeacherData,
-    data: teacherData,
-  };
+  const { loading, error, data } = useQuery(GET_ALL_TEACHERS);
+  return { loading, error, data: data as TeacherData | undefined };
 };

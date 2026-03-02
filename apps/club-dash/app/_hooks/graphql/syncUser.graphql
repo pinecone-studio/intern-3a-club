@@ -1,0 +1,20 @@
+mutation SyncUser {
+  syncUser {
+    __typename
+    ... on Teacher {
+      id
+      authUserId
+      azureEmail
+      firstName
+      lastName
+    }
+    ... on Student {
+      id
+      authUserId
+      azureEmail
+      firstName
+      lastName
+      classId
+    }
+  }
+}

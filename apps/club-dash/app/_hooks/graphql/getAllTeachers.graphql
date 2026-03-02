@@ -1,0 +1,8 @@
+query GetAllTeachers {
+  getAllTeachers {
+    id
+    firstName
+    lastName
+    profilePicture
+  }
+}

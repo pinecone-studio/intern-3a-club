@@ -1,0 +1,23 @@
+query GetAllApprovedClubs {
+  getAllApprovedClubs {
+    id
+    name
+    description
+    creatorId
+    teacherId
+    type
+    status
+    minMember
+    maxMember
+    frequency
+    clubTerm
+    timetables {
+      id
+      clubId
+      date
+      room
+      clubStartTime
+      duration
+    }
+  }
+}

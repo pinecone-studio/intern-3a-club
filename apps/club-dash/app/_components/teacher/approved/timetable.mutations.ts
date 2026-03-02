@@ -1,13 +1,3 @@
-import { gql } from '@apollo/client';
+import { UpdateTimetableDocument } from '../../../_hooks/generated/graphql';
 
-export const UPDATE_TIMETABLE = gql`
-  mutation UpdateTimetable($input: UpdateTimetableInput!) {
-    updateTimetable(input: $input) {
-      id
-      date
-      room
-      clubStartTime
-      duration
-    }
-  }
-`;
+export const UPDATE_TIMETABLE = UpdateTimetableDocument;

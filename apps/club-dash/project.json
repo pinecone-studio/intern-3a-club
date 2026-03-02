@@ -68,7 +68,7 @@
     "codegen": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "export $(cat apps/club-dash/.env | xargs) && npx graphql-codegen --config ./graphql-codegen.yml"
+        "command": "set -a; . apps/club-dash/.env; set +a; npx graphql-codegen --config ./graphql-codegen.yml"
       }
     }
     ,

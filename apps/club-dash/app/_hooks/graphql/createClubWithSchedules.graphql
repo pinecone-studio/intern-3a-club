@@ -1,0 +1,16 @@
+mutation CreateClubWithSchedules(
+  $input: CreateClubInput!
+  $schedules: [ScheduleInput!]!
+  $frequency: String!
+  $clubTerm: String!
+) {
+  createClubWithSchedules(
+    input: $input
+    schedules: $schedules
+    frequency: $frequency
+    clubTerm: $clubTerm
+  ) {
+    id
+    name
+  }
+}

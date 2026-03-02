@@ -1,0 +1,24 @@
+query GetAllClubs {
+  getAllClubs {
+    id
+    name
+    description
+    creatorId
+    teacherId
+    type
+    status
+    preferredTeachers
+    minMember
+    maxMember
+    frequency
+    clubTerm
+    timetables {
+      id
+      clubId
+      date
+      room
+      clubStartTime
+      duration
+    }
+  }
+}
