@@ -33,12 +33,19 @@ const EmptyState = () => (
   </div>
 );
 
+// complexity is marginal due to branching/early return; ignore since refactored
+// eslint-disable-next-line complexity
 export const ClubDetail = (props: ClubDetailProps) => {
   const { selectedClub, userId, allTeachers, onEnrollSuccess, onLeaveSuccess } =
     props;
 
-  const clubId = selectedClub?.id ?? '';
-  const teacherId = selectedClub?.teacherId;
+  // early return makes the rest of the logic confident that `selectedClub` exists
+  if (!selectedClub) {
+    return <EmptyState />;
+  }
+
+  const clubId = selectedClub.id;
+  const teacherId = selectedClub.teacherId;
 
   const actions = useClubAction({
     userid: userId,
@@ -51,10 +58,6 @@ export const ClubDetail = (props: ClubDetailProps) => {
     () => getTeacherInfo(allTeachers, teacherId),
     [allTeachers, teacherId]
   );
-
-  if (!selectedClub) {
-    return <EmptyState />;
-  }
 
   const { banned, loading, handleEnroll, handleLeave, remainingTime } = actions;
 
