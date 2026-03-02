@@ -8,11 +8,19 @@ export const deleteTimetable = async (_: unknown, { id }: { id: string }) => {
     .where(eq(timetable.id, id))
     .returning({ deletedId: timetable.id })
     .catch(() => {
-      throw new GraphQLError('Хуваарь устгахад алдаа гарлаа.');
+      // Өгөгдлийн сангийн алдаа
+      throw new GraphQLError('Хуваарь устгахад алдаа гарлаа.', {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' },
+      });
     });
 
   if (!deletedTimetable || deletedTimetable.length === 0) {
-    throw new GraphQLError('Устгах хуваарь олдсонгүй.');
+    // Хуваарь олдоогүй үеийн алдаа
+    throw new GraphQLError('Устгах хуваарь олдсонгүй.', {
+      extensions: {
+        code: 'NOT_FOUND', // Энийг нэмснээр чиний тест PASS болно
+      },
+    });
   }
 
   return true;

@@ -7,12 +7,12 @@ interface AuthContext {
   email?: string;
 }
 
-// const validateContext = (clerkId?: string, email?: string) => {
-//   if (!clerkId || !email) {
-//     throw new Error('Authentication context missing');
-//   }
-//   return { clerkId, email };
-// };
+const validateContext = (clerkId?: string, email?: string) => {
+  if (!clerkId || !email) {
+    throw new Error('Authentication context missing');
+  }
+  return { clerkId, email };
+};
 
 const findAndUpdateUser = async (clerkId: string, email: string) => {
   // Багш мөн эсэхийг шалгаад шинэчлэх
@@ -49,11 +49,7 @@ export const syncUser = async (
   __: unknown,
   context: AuthContext
 ) => {
-  const { clerkId, email } = context;
-
-  if (!clerkId || !email) {
-    throw new Error('Authentication context missing');
-  }
+  const { clerkId, email } = validateContext(context.clerkId, context.email);
 
   const result = await findAndUpdateUser(clerkId, email);
 
