@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { useClubAction } from '../app/_hooks/use-redis-hook';
 import { ClubDetail } from '../app/JoinClub/_components/ClubDetail';
-import { ExtendedClub } from '../lib/type';
+import { ExtendedClub, GetAllTeacher } from '../lib/type';
 
 jest.mock('../app/_hooks/use-redis-hook');
 jest.mock('../app/JoinClub/_components/ClubActionButton', () => ({
@@ -29,7 +29,7 @@ const mockClub = {
   isEnrolled: false,
 } as ExtendedClub;
 
-const mockTeachers = [
+const mockTeachers: GetAllTeacher[] = [
   {
     id: 'teacher-1',
     firstName: 'Болд',
@@ -78,14 +78,15 @@ describe('ClubDetail Component', () => {
         />
       );
       expect(screen.getByText('Багш тодорхойгүй')).toBeInTheDocument();
-      expect(screen.getByText('T')).toBeInTheDocument(); // Fallback avatar
+      expect(screen.getByText('T')).toBeInTheDocument();
     });
 
     it('allTeachers prop ирээгүй үед (undefined) Line 39-ийн branch-ийг шалгана', () => {
       render(
         <ClubDetail
           {...defaultProps}
-          allTeachers={undefined as any}
+          // any ашиглахын оронд unknown-оор дамжуулж lint-ийг хангана
+          allTeachers={undefined as unknown as GetAllTeacher[]}
           selectedClub={mockClub}
         />
       );
@@ -123,6 +124,8 @@ describe('ClubDetail Component', () => {
       render(
         <ClubDetail
           {...defaultProps}
+          // any-ийн оронд lint-ийг идэвхгүй болгох тайлбар нэмж болно
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           selectedClub={{ ...mockClub, type: undefined as any }}
         />
       );
