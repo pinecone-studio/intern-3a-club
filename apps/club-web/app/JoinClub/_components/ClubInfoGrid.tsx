@@ -3,7 +3,6 @@ import React from 'react';
 import { Calendar, Users } from 'lucide-react';
 import { ExtendedClub } from '../../../lib/type';
 
-// 1. Props-уудыг тусдаа interface болгон зарлах
 interface ScheduleInfoProps {
   frequency: string;
   club: ExtendedClub;
@@ -15,7 +14,6 @@ interface MemberProgressProps {
   percent: number;
 }
 
-// 2. Логикийг тооцоолдог туслах функц
 const getMemberStats = (min: number = 0, max: number = 1) => {
   const safeMax = max || 1;
   const percent = Math.min(Math.round((min / safeMax) * 100), 100);
@@ -27,7 +25,6 @@ const FREQUENCY_LABELS: Record<string, string> = {
   WEEKLY: 'Долоо хоног бүр',
 };
 
-// 3. Дэд компонентууд (Named interface ашиглав)
 const ScheduleInfo = ({ frequency, club }: ScheduleInfoProps) => {
   const displayFrequency = FREQUENCY_LABELS[frequency] || frequency;
 
@@ -40,20 +37,20 @@ const ScheduleInfo = ({ frequency, club }: ScheduleInfoProps) => {
         <Calendar size={14} /> Хуваарь
       </div>
       <div className="space-y-3">
-        <div className="flex justify-between text-sm">
-          <span className="text-white/40">Давтамж:</span>
-          <span className="text-white font-bold">{displayFrequency}</span>
+        <div className="flex items-center justify-between ">
+          <span className="text-xs text-white/40">Давтамж:</span>
+          <span className="text-sm text-white/80 font-bold">{displayFrequency}</span>
         </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-white/40">Эхлэх огноо:</span>
-          <span className="text-white font-bold">
+        <div className="flex justify-between items-center">
+          <span className="text-xs text-white/40">Эхлэх огноо:</span>
+          <span className="text-sm text-white/80 font-bold">
             {club.timetables[0]?.date}
           </span>
         </div>
         {Number(club.clubTerm) >= 1 && (
-          <div className="flex justify-between text-sm">
-            <span className="text-white/40">Үргэлжлэх хугацаа:</span>
-            <span className="text-white font-bold">{club.clubTerm} сар</span>
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-white/40">Үргэлжлэх хугацаа:</span>
+            <span className="text-sm text-white/80 font-bold">{club.clubTerm} сар</span>
           </div>
         )}
       </div>
@@ -67,7 +64,7 @@ const MemberProgress = ({ current, max, percent }: MemberProgressProps) => (
       <h4 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/20">
         <Users size={14} /> Гишүүдийн тоо
       </h4>
-      <span className="text-xs font-bold text-white">
+      <span className="text-xs font-bold text-white/80">
         {current} / {max}
       </span>
     </div>
@@ -81,7 +78,7 @@ const MemberProgress = ({ current, max, percent }: MemberProgressProps) => (
         </div>
         <div className="mt-3 flex justify-between text-right">
           <p className="text-xs text-white/40">Дүүргэлт :</p>
-          <p className=" font-bold text-white">{percent}%</p>
+          <p className="text-sm font-bold text-white/80">{percent}%</p>
         </div>
       </div>
     </div>

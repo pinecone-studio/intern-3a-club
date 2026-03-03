@@ -12,7 +12,7 @@ import {
 
 const DEFAULT_USER_ID = 'USER123';
 
-// 1. UI Components
+
 const LoadingState = () => (
   <div className="p-12 text-center text-white/50 animate-pulse uppercase text-[10px] font-bold tracking-widest">
     Уншиж байна...
@@ -25,13 +25,13 @@ const ErrorState = ({ msg }: { msg: string }) => (
   </div>
 );
 
-// 2. Sort helper
+
 const compareByEnrollment = (a: ExtendedClub, b: ExtendedClub): number => {
   if (a.isEnrolled === b.isEnrolled) return 0;
   return a.isEnrolled ? -1 : 1;
 };
 
-// 3. Custom Hook
+
 const useClubsLogic = () => {
   const {
     loading,
@@ -95,7 +95,7 @@ const useClubsLogic = () => {
   };
 };
 
-// 4. Layout компонент
+
 interface ClubsLayoutProps {
   userId?: string;
   logic: ReturnType<typeof useClubsLogic>;
@@ -124,7 +124,7 @@ const ClubsLayout = ({ userId = DEFAULT_USER_ID, logic }: ClubsLayoutProps) => (
   </div>
 );
 
-// 5. Үндсэн компонент
+
 interface ClubsContentProps {
   userId?: string;
 }

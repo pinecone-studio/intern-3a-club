@@ -22,7 +22,6 @@ jest.mock('../../app/JoinClub/_components/ClubCard',() => ({
   ),
 }));
 
-// ExtendedClub төрөлд тохируулан mock өгөгдөл бэлдэх
 const mockClubs: ExtendedClub[] = [
   {
     id: '1',
@@ -93,7 +92,7 @@ describe('ClubList Component', () => {
     );
 
     const selectedClub = screen.getByTestId('club-card-1');
-    // MockClubCard-д өгсөн style-ийг шалгах
+
     expect(selectedClub).toHaveStyle('border: 1px solid blue');
   });
 });
