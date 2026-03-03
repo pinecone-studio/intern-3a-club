@@ -1,5 +1,12 @@
 import Link from 'next/link';
 import { Flame, Star, Bell, RotateCcw, User } from 'lucide-react';
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from '@clerk/nextjs';
 
 export const Header = () => {
   return (
@@ -73,6 +80,17 @@ export const Header = () => {
           <button className="p-4 rounded-full bg-white/5 hover:bg-white/10 transition">
             <User size={18} className="text-white/60" />
           </button>
+          <SignedOut>
+            <SignInButton />
+            <SignUpButton>
+              <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
+                Sign Up
+              </button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
       </div>
     </header>

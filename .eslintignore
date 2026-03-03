@@ -59,6 +59,7 @@ vendor/
 **/generated.ts
 **/generated/index.ts
 **/esis.d.ts
+**/seed.ts
 
 # cypress
 
