@@ -1,7 +1,5 @@
 import * as clubUtils from 'gql-utils/club';
 
-// Дээд талын ерөнхий describe-ийг устгаснаар нэг түвшин чөлөөлөгдөнө
-
 describe('resolveStatus', () => {
   it('should return approved if teacherId is provided', () => {
     expect(clubUtils.resolveStatus('teacher-1')).toBe('approved');
