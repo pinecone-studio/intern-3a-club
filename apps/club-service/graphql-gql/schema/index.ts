@@ -15,7 +15,6 @@ const baseTypeDefs = gql`
   }
 `;
 
-console.log('Student type definition:', studentTypeDefs); // Энэ undefined байвал импорт алдаатай байна
 // mergeTypeDefs массив дотор нэмж өгөх
 export const typeDefs = mergeTypeDefs([
   baseTypeDefs,

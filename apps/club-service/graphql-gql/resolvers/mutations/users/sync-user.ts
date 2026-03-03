@@ -8,9 +8,6 @@ interface AuthContext {
 }
 
 const validateContext = (clerkId?: string, email?: string) => {
-  console.log("dbkdnfbjndfajkobndafkobnadkfbnakdfbnlkdfbkdfnldk")
-  console.log({clerkId},{email})
-  
   if (!clerkId || !email) {
     throw new Error('Authentication context missing');
   }

@@ -2,3 +2,7 @@ name = "cloudflare-club-web"
 compatibility_date = "2026-02-28"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
+
+[[kv_namespaces]]
+binding = "BAN_KV"
+preview_id = "91176e1ada894e589bc054c78ad6007c"
