@@ -1,7 +1,7 @@
-import { Providers } from '../libs/apollo/Providers';
 import './global.css';
-
+import { Providers } from '../libs/apollo/Providers';
 import { ClerkProvider } from '@clerk/nextjs';
+
 export default function RootLayout({
   children,
 }: {
