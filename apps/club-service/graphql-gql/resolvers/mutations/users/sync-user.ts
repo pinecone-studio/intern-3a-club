@@ -11,7 +11,7 @@ const validateContext = (clerkId?: string, email?: string) => {
   if (!clerkId || !email) {
     throw new Error('Authentication context missing');
   }
-  
+
   return { clerkId, email };
 };
 
