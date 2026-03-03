@@ -102,6 +102,14 @@ async function seed() {
       phoneNumber: '99192615',
       gender: 'FEMALE',
     },
+      {
+      id: randomUUID(),
+      azureEmail: 'tsetsegulziiocherdene@gmail.com',
+      firstName: 'Ocherdene',
+      lastName: 'Tsetsegulzii',
+      phoneNumber: '88703020',
+      gender: 'MALE',
+    },
   ];
 
   console.log('PRAGMA foreign_keys = OFF;');

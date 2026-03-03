@@ -9,7 +9,6 @@ const Home = () => {
 
       <div className="relative z-10 w-full max-w-2xl px-6">
         <div className="overflow-hidden rounded-3xl border border-gray-200/50 bg-white/70 p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl transition-all hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)]">
-          
           {/* Дээд талын жижиг текст */}
           {/* <div className="mb-6 flex justify-center">
             <span className="rounded-full bg-gray-100 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
@@ -24,25 +23,28 @@ const Home = () => {
                 Backend
               </span>
             </h1>
-            
+
             <p className="mt-8 text-lg leading-relaxed text-gray-500">
-              Системийн өгөгдөл, хэрэглэгч болон тохиргоог удирдах <br className="hidden md:block" /> 
+              Системийн өгөгдөл, хэрэглэгч болон тохиргоог удирдах{' '}
+              <br className="hidden md:block" />
               төв хяналтын хэсэгт тавтай морилно уу.
             </p>
 
             {/* Үйлдэл хийх хэсэг */}
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <button   className="w-full rounded-xl bg-gray-900 px-8 py-4 font-medium text-white transition-all hover:bg-gray-800 hover:shadow-lg sm:w-auto">
-             <a href="https://studio.apollographql.com/sandbox/explorer?endpoint=https://105-ochko-need-new-branch.cloudflare-pine-club.pages.dev/api/graphql"> Системд нэвтрэх</a>  
+              <button className="w-full rounded-xl bg-gray-900 px-8 py-4 font-medium text-white transition-all hover:bg-gray-800 hover:shadow-lg sm:w-auto">
+                <a href="https://studio.apollographql.com/sandbox/explorer?endpoint=https://105-ochko-need-new-branch.cloudflare-pine-club.pages.dev/api/graphql">
+                  {' '}
+                  Системд нэвтрэх
+                </a>
               </button>
-            
             </div>
           </div>
         </div>
-        
+
         {/* Доод талын жижиг текст */}
         <p className="mt-8 text-center text-sm text-gray-400">
-          © {new Date().getFullYear()}  Бүх эрх хуулиар хамгаалагдаагүй.
+          © {new Date().getFullYear()} Бүх эрх хуулиар хамгаалагдаагүй.
         </p>
       </div>
     </div>

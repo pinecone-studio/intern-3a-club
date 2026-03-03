@@ -1,4 +1,4 @@
-import { Edit3, Check, X, ChevronDown } from 'lucide-react';
+import { Edit3, ChevronDown } from 'lucide-react';
 import { cn } from '../../../../../libs/utils';
 import { Props } from '../../../../../libs/types';
 
@@ -31,17 +31,6 @@ export const ClubCardActions = ({
 };
 const renderApproveButtons = (isPrimary: boolean) => {
   if (isPrimary) return null;
-
-  return (
-    <>
-      <button className="p-2.5 rounded-xl bg-secondary">
-        <Check size={16} />
-      </button>
-      <button className="p-2.5 rounded-xl bg-secondary">
-        <X size={16} />
-      </button>
-    </>
-  );
 };
 
 const getBtnClass = (isExpanded: boolean) =>
