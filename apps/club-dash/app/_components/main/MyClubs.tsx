@@ -12,7 +12,7 @@ export interface GetAllClubsByCreatorId {
   name: string;
   description: string;
   teacherId: string;
-  preferredTeachers: any;
+  preferredTeachers: string[];
   type: string;
   frequency: string;
   clubTerm: string;
@@ -74,13 +74,13 @@ export const MyClubs = () => {
       <div>MyClubs</div>
       <div>
         {data?.getAllClubsByCreatorId.map((club) => (
-          <div>
+          <div key={club.id}>
             <div>{club.name}</div>
             <div>{club.status}</div>
             <div>{club.id}</div>
             <div>
               {club.timetables.map((timetable) => (
-                <div>
+                <div key={timetable.id}>
                   <div>{timetable.clubId}</div>
                   <div>{timetable.id}</div>
                   <div>{timetable.date}</div>
