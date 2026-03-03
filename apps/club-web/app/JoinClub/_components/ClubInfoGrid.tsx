@@ -6,7 +6,7 @@ import { ExtendedClub } from '../../../lib/type';
 // 1. Props-уудыг тусдаа interface болгон зарлах
 interface ScheduleInfoProps {
   frequency: string;
-  room: string;
+  club: ExtendedClub;
 }
 
 interface MemberProgressProps {
@@ -22,24 +22,44 @@ const getMemberStats = (min: number = 0, max: number = 1) => {
   return { current: min, max: safeMax, percent };
 };
 
+const FREQUENCY_LABELS: Record<string, string> = {
+  ONCE: 'Нэг удаа',
+  WEEKLY: 'Долоо хоног бүр',
+};
+
 // 3. Дэд компонентууд (Named interface ашиглав)
-const ScheduleInfo = ({ frequency, room }: ScheduleInfoProps) => (
-  <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5">
-    <div className="flex items-center gap-2 mb-4 text-white/20 uppercase text-[10px] font-bold tracking-widest">
-      <Calendar size={14} /> Хуваарь
-    </div>
-    <div className="space-y-3">
-      <div className="flex justify-between text-sm">
-        <span className="text-white/40">Давтамж:</span>
-        <span className="text-white font-bold">{frequency}</span>
+const ScheduleInfo = ({ frequency, club }: ScheduleInfoProps) => {
+  const displayFrequency = FREQUENCY_LABELS[frequency] || frequency;
+
+  const term = club.clubTerm;
+
+  console.log({ term });
+  return (
+    <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5">
+      <div className="flex items-center gap-2 mb-4 text-white/20 uppercase text-[10px] font-bold tracking-widest">
+        <Calendar size={14} /> Хуваарь
       </div>
-      <div className="flex justify-between text-sm">
-        <span className="text-white/40">Өрөө:</span>
-        <span className="text-white font-bold">{room}</span>
+      <div className="space-y-3">
+        <div className="flex justify-between text-sm">
+          <span className="text-white/40">Давтамж:</span>
+          <span className="text-white font-bold">{displayFrequency}</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-white/40">Эхлэх огноо:</span>
+          <span className="text-white font-bold">
+            {club.timetables[0]?.date}
+          </span>
+        </div>
+        {Number(club.clubTerm) >= 1 && (
+          <div className="flex justify-between text-sm">
+            <span className="text-white/40">Үргэлжлэх хугацаа:</span>
+            <span className="text-white font-bold">{club.clubTerm} сар</span>
+          </div>
+        )}
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const MemberProgress = ({ current, max, percent }: MemberProgressProps) => (
   <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5">
@@ -75,11 +95,10 @@ export const ClubInfoGrid = ({ club }: { club: ExtendedClub }) => {
   );
 
   const frequency = club.frequency || 'WEEKLY';
-  const room = club.timetables?.[0]?.room || '303';
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      <ScheduleInfo frequency={frequency} room={room} />
+      <ScheduleInfo frequency={frequency} club={club} />
       <MemberProgress current={current} max={max} percent={percent} />
     </div>
   );
