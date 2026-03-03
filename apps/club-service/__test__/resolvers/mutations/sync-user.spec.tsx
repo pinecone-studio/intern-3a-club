@@ -2,7 +2,6 @@ import { DB } from 'db/drizzle';
 import { teachers, students } from 'db/schema';
 import { syncUser } from 'graphql-gql/resolvers/mutations';
 
-// Mock бүтцийг тодорхойлох
 const mockChain = {
   from: jest.fn().mockReturnThis(),
   where: jest.fn().mockReturnThis(),

@@ -1,16 +1,20 @@
-import { execute, gql, ApolloLink } from '@apollo/client';
+import { execute, gql } from '@apollo/client';
 import { apolloClient } from '../../libs/apollo/apollo-client';
 
-// Clerk-ийн бүтцийг тестэд зориулж тодорхойлох
 interface MockClerk {
   session: {
     getToken: jest.Mock<Promise<string | null>, []>;
   };
 }
 
+interface ExtendedWindow extends Window {
+  Clerk?: MockClerk | undefined;
+}
+
+const customWindow = window as unknown as ExtendedWindow;
+
 describe('Apollo Client Auth Link', () => {
   beforeEach(() => {
-    // Console-ын log-уудыг mock хийж цэвэрхэн байлгана
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
@@ -19,8 +23,7 @@ describe('Apollo Client Auth Link', () => {
     jest.clearAllMocks();
     (console.error as jest.Mock).mockRestore();
     (console.warn as jest.Mock).mockRestore();
-    // window.Clerk-ийг цэвэрлэнэ
-    (window as any).Clerk = undefined;
+    customWindow.Clerk = undefined;
   });
 
   it('Clerk токен байгаа үед Authorization header-ийг Bearer-тэй зөв дамжуулах ёстой', async () => {
@@ -31,7 +34,6 @@ describe('Apollo Client Auth Link', () => {
       },
     };
 
-    // window.Clerk-ийг тодорхойлох
     Object.defineProperty(window, 'Clerk', {
       value: mockClerk,
       configurable: true,
@@ -46,7 +48,6 @@ describe('Apollo Client Auth Link', () => {
       }
     `;
 
-    // execute функцэд заавал 3 аргумент дамжуулна: (link, request, context)
     const observable = execute(
       apolloClient.link,
       { query },
@@ -59,11 +60,9 @@ describe('Apollo Client Auth Link', () => {
         error: () => resolve(),
         complete: () => resolve(),
       });
-      // Async getToken ажиллахыг хүлээнэ
       setTimeout(resolve, 100);
     });
 
-    // Шалгалт: getToken ямар ч аргументгүй (template-гүй) дуудагдсан эсэх
     expect(mockClerk.session.getToken).toHaveBeenCalledWith();
     expect(mockClerk.session.getToken).toHaveBeenCalledTimes(1);
   });
