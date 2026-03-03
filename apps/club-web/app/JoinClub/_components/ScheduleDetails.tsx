@@ -48,7 +48,7 @@ export const ScheduleDetails = ({ club }: { club: ExtendedClub }) => {
                     </span>
                   </div>
                   <div className="flex flex-col text-sm">
-                    <span className="text-white/40">Duration:</span>
+                    <span className="text-white/40">Үргэлжлэх хугацаа:</span>
                     <span className="text-white font-bold">
                       {schedule.duration} мин
                     </span>
