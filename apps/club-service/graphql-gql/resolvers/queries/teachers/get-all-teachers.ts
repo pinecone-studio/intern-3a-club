@@ -7,6 +7,7 @@ export const getAllTeachers = async () => {
       id: teachers.id,
       firstName: teachers.firstName,
       lastName: teachers.lastName,
+      azureEmail: teachers.azureEmail,
       profilePicture: teachers.profilePicture,
     }).from(teachers);
   } catch (error) {

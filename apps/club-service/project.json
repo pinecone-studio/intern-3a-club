@@ -57,6 +57,9 @@
 ]
       }
     },
+    "deploy-prod": {
+      "command": "" 
+    },
     "build-worker": {
       "executor": "nx:run-commands",
       "options": {
