@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
+import Page from '../../app/page.txtt';
 import { ViewRender } from '../../app/_components/main/ViewRender';
 import { Providers } from '../../libs/apollo/Providers';
 import Dashboard from '../../app/page';
