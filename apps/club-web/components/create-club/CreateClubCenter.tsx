@@ -109,6 +109,7 @@ export const CreateClubCenter = () => {
     }
     return executeSubmission();
   };
+  console.log('formData', formData);
   return (
     <div className="max-w-[1400px] mx-auto p-6 lg:p-10 relative z-10 min-h-screen">
       <HeaderSection
@@ -134,3 +135,4 @@ export const CreateClubCenter = () => {
     </div>
   );
 };
+//h

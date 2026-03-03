@@ -3,7 +3,6 @@ import React, { useState, useCallback } from 'react';
 import { LogisticsSection } from './LogisticsSection';
 import { Step1 } from './Step1';
 import { ClubFormProps, GetAllTeacher } from './types';
-import { ClubFormHelp } from './ClubFormHelp';
 import { getStep1Errors, getStep2Errors } from './create-club-helpers';
 import { ProgressBar } from './ProgressBar';
 
@@ -50,9 +49,7 @@ const Step2View = ({ props, onBack, onSubmit, status }: StepViewProps) => (
       </button>
     </div>
     {status && (
-      <div className="mt-3 text-sm text-center text-white/90">
-        {status}
-      </div>
+      <div className="mt-3 text-sm text-center text-white/90">{status}</div>
     )}
   </div>
 );
@@ -81,7 +78,6 @@ export const ClubForm = (props: ClubFormProps) => {
   }, [formData, handleSubmit]);
 
   const onBack = useCallback(() => setStep(1), []);
-  const toggleHelp = useCallback(() => setShowHelp((s) => !s), []);
 
   return (
     <div className="lg:col-span-7">
@@ -89,24 +85,31 @@ export const ClubForm = (props: ClubFormProps) => {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-lg font-extrabold text-white">Клуб бүртгүүлэх</h4>
-              <div className="text-sm text-blue-200/80">
-                <div className="flex items-center gap-3">
-                  <p className="m-0 text-white/90">Клуб нээх заавар</p>
-                  <button type="button" onClick={toggleHelp} className="text-xs px-2 py-1 bg-white/5 rounded-md hover:bg-white/10">
-                    {showHelp ? 'Хаах' : 'Тусламж'}
-                  </button>
-                </div>
-                <ClubFormHelp showHelp={showHelp} />
-              </div>
+              <h4 className="text-lg font-extrabold text-white">
+                Клуб бүртгүүлэх
+              </h4>
             </div>
-            <div className="hidden sm:block w-48"><ProgressBar step={step} /></div>
+            <div className="hidden sm:block w-48">
+              <ProgressBar step={step} />
+            </div>
           </div>
-          <div className="sm:hidden"><ProgressBar step={step} /></div>
+          <div className="sm:hidden">
+            <ProgressBar step={step} />
+          </div>
           {step === 1 ? (
-            <Step1View props={props} teachers={teachers} errors={errors} onNext={onNext} />
+            <Step1View
+              props={props}
+              teachers={teachers}
+              errors={errors}
+              onNext={onNext}
+            />
           ) : (
-            <Step2View props={props} onBack={onBack} onSubmit={onSubmit} status={submissionStatus} />
+            <Step2View
+              props={props}
+              onBack={onBack}
+              onSubmit={onSubmit}
+              status={submissionStatus}
+            />
           )}
         </div>
       </div>
