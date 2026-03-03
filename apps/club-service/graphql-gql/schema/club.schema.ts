@@ -57,6 +57,7 @@ export const clubTypeDefs = gql`
     getClubById(id: ID!): Club
     getAllPendingClubs: [Club!]!
     getAllApprovedClubs: [Club!]!
+    getAllClubsByCreatorId: [Club!]!
   }
 
   extend type Mutation {

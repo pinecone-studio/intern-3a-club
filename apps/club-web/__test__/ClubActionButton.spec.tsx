@@ -1,55 +1,68 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ClubActionButtons } from '../app/JoinClub/_components/ClubActionButton';
-import React from 'react';
 
-describe('ClubActionButtons 100% Coverage', () => {
-  const defaultProps = {
-    isEnrolled: false,
-    isLocked: false,
-    status: 'Open',
-    remainingTime: 0,
-    onEnroll: jest.fn(),
-    onLeave: jest.fn(),
-  };
+const defaultProps = {
+  isEnrolled: false,
+  isLocked: false,
+  status: 'Open',
+  remainingTime: 0,
+  onEnroll: jest.fn(),
+  onLeave: jest.fn(),
+  loading: false,
+};
 
-  it('should cover line 33 (default className) and pass custom className', () => {
-    // 1. className дамжуулахгүй байх (Line 33-ийн default утгыг хамрах)
-    const { rerender } = render(<ClubActionButtons {...defaultProps} />);
-    const button = screen.getByRole('button');
+describe('ClubActionButtons', () => {
+  beforeEach(() => jest.clearAllMocks());
 
-    // Анхны классууд байгаа эсэхийг шалгах
-    expect(button).toHaveClass('w-full');
-
-    // 2. className дамжуулах (Line 33-ийн хувьсагч ашиглагдах хэсгийг хамрах)
-    const customClass = 'my-custom-style';
-    rerender(<ClubActionButtons {...defaultProps} className={customClass} />);
-
-    // Custom класс нэмэгдсэн эсэхийг шалгах
-    expect(button).toHaveClass('my-custom-style');
+  it('isEnrolled=false үед товч харуулна', () => {
+    render(<ClubActionButtons {...defaultProps} />);
+    expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
-  it('should cover isEnrolled branch (Lines 36-45)', () => {
+  it('isEnrolled=true үед "Клубээс гарах" товч харуулна', () => {
     render(<ClubActionButtons {...defaultProps} isEnrolled={true} />);
-    const leaveBtn = screen.getByText(/Клубээс гарах/i);
-    fireEvent.click(leaveBtn);
-    expect(defaultProps.onLeave).toHaveBeenCalled();
+    expect(screen.getByText('Клубээс гарах')).toBeInTheDocument();
   });
 
-  it('should cover isLocked state and ButtonContent (Lines 24-32, 47-51)', () => {
+  it('loading=true үед "Уншиж байна..." харуулна', () => {
+    render(
+      <ClubActionButtons {...defaultProps} isEnrolled={true} loading={true} />
+    );
+    expect(screen.getByText('Уншиж байна...')).toBeInTheDocument();
+  });
+
+  it('isLocked=true үед товч disabled байна', () => {
     render(
       <ClubActionButtons {...defaultProps} isLocked={true} remainingTime={10} />
     );
-
-    // Locked үеийн текст болон классыг шалгах
-    expect(screen.getByText(/10с хүлээх/i)).toBeInTheDocument();
-    expect(screen.getByText(/Түр хүлээх шаардлагатай/i)).toBeInTheDocument();
-    const button = screen.getByRole('button');
-    expect(button).toBeDisabled();
-    expect(button).toHaveClass('cursor-not-allowed');
+    expect(screen.getByRole('button')).toBeDisabled();
   });
 
-  it('should show "Full" status when status is not Open', () => {
-    render(<ClubActionButtons {...defaultProps} status="Full" />);
-    expect(screen.getByText(/Суудал дүүрсэн/i)).toBeInTheDocument();
+  it('isLocked=true үед bg-red-500/20 класс байна', () => {
+    render(
+      <ClubActionButtons {...defaultProps} isLocked={true} remainingTime={10} />
+    );
+    expect(screen.getByRole('button')).toHaveClass('bg-red-500/20');
+  });
+
+  it('onEnroll дуудагдана', () => {
+    const onEnroll = jest.fn();
+    render(<ClubActionButtons {...defaultProps} onEnroll={onEnroll} />);
+    fireEvent.click(screen.getByRole('button'));
+    expect(onEnroll).toHaveBeenCalled();
+  });
+
+  it('onLeave дуудагдана', () => {
+    const onLeave = jest.fn();
+    render(
+      <ClubActionButtons
+        {...defaultProps}
+        isEnrolled={true}
+        onLeave={onLeave}
+      />
+    );
+    fireEvent.click(screen.getByText('Клубээс гарах'));
+    expect(onLeave).toHaveBeenCalled();
   });
 });

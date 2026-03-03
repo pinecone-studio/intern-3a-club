@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../../../club-web/lib/utils';
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

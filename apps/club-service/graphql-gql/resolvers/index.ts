@@ -5,12 +5,14 @@ import { clubs, timetable } from 'db/schema';
 import {
   getAllApprovedClubs,
   getAllClubs,
+  getAllClubsByCreatorId,
   getAllPendingClubs,
   getAllTeachers,
 } from './queries';
 import {
   createClubWithSchedules,
   deleteClub,
+  deleteTimetable,
   syncUser,
   updateClub,
   updateTimetable,
@@ -28,6 +30,7 @@ export const resolvers = {
     getAllApprovedClubs,
     getAllPendingClubs,
     getAllTeachers,
+    getAllClubsByCreatorId,
   },
   Mutation: {
     createClubWithSchedules,
@@ -35,6 +38,7 @@ export const resolvers = {
     updateTimetable,
     updateClub,
     syncUser,
+    deleteTimetable,
   },
   // Relationship (Холболт) хэсэг:
   Club: {

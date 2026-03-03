@@ -1,6 +1,5 @@
 import { DB } from 'db/drizzle';
-import { clubs, students, teachers, timetable } from 'db/schema';
-import { eq } from 'drizzle-orm';
+import { clubs, timetable } from 'db/schema';
 import { CreateClubWithSchedulesArgs } from 'gql-type';
 import {
   handleMutationError,
@@ -13,24 +12,11 @@ import {
   resolveTerm,
   resolveType,
 } from 'gql-utils';
+import { getCreatorId } from 'gql-utils/user/user.util';
 
 interface MyContext {
   clerkId?: string;
 }
-
-const getCreatorId = async (clerkId: string): Promise<string | null> => {
-  const teacher = await DB.select()
-    .from(teachers)
-    .where(eq(teachers.authUserId, clerkId))
-    .get();
-  if (teacher) return teacher.id;
-
-  const student = await DB.select()
-    .from(students)
-    .where(eq(students.authUserId, clerkId))
-    .get();
-  return student ? student.id : null;
-};
 
 const validateAndGetCreator = async (clerkId?: string): Promise<string> => {
   if (!clerkId) throw new Error('Нэвтрээгүй байна.');

@@ -2,7 +2,6 @@ import { DB } from 'db/drizzle';
 import { clubs } from 'db/schema';
 import { updateClub } from 'graphql-gql/resolvers/mutations';
 
-// 1. Mock-ийг гадна талд зарлаж өгснөөр гинжин дуудалтыг (chaining) хянахад хялбар болно
 const mockReturning = jest.fn();
 const mockWhere = jest.fn(() => ({ returning: mockReturning }));
 const mockSet = jest.fn(() => ({ where: mockWhere }));
@@ -13,10 +12,8 @@ jest.mock('db/drizzle', () => ({
   },
 }));
 
-// handleMutationError-ийг mock хийх
 jest.mock('gql-utils', () => ({
   handleMutationError: jest.fn((err) => {
-    // Хэрэв Error объект биш бол "Unknown error" гэж шидэх логикийг тестэд зориулж дуурайлгана
     if (err instanceof Error) throw err;
     throw new Error('Unknown error');
   }),
@@ -31,7 +28,6 @@ describe('updateClub Full Coverage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Тестийн үед консол дээр log харуулахгүй байх
     jest.spyOn(console, 'log').mockImplementation(() => {});
   });
 
@@ -44,9 +40,7 @@ describe('updateClub Full Coverage', () => {
 
     const result = await updateClub(null, { input: mockInput });
 
-    // DB.update клубын хүснэгт дээр дуудагдсан эсэх
     expect(DB.update).toHaveBeenCalledWith(clubs);
-    // .set() функц руу ID-гүй объект очсон эсэхийг шалгах (destructuring test)
     expect(mockSet).toHaveBeenCalledWith(
       expect.objectContaining({
         status: mockInput.status,

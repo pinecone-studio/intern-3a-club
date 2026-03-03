@@ -1,7 +1,6 @@
 import { deleteClub } from 'graphql-gql/resolvers/mutations';
 import { DB } from 'db/drizzle';
 
-// DB-ийн үйлдлүүдийг Mock хийх
 jest.mock('db/drizzle', () => ({
   DB: {
     delete: jest.fn().mockReturnThis(),
@@ -17,7 +16,6 @@ describe('deleteClub logic full coverage tests', () => {
     jest.clearAllMocks();
   });
 
-  // --- ТЕСТ 1: АМЖИЛТТАЙ УСТГАХ (Success Path) ---
   it('should return deleted ID on success', async () => {
     const mockReturning = jest.fn().mockResolvedValue([{ deletedId: mockId }]);
 
@@ -32,9 +30,8 @@ describe('deleteClub logic full coverage tests', () => {
     expect(DB.delete).toHaveBeenCalled();
   });
 
-  // --- ТЕСТ 2: КЛУБ ОЛДОХГҮЙ БАЙХ  ---
   it('should throw "Устгах клуб олдсонгүй." when ID does not exist', async () => {
-    const mockReturning = jest.fn().mockResolvedValue([]); // Хоосон жагсаалт ирнэ
+    const mockReturning = jest.fn().mockResolvedValue([]);
 
     (DB.delete as jest.Mock).mockReturnValue({
       where: jest.fn().mockReturnValue({
@@ -47,7 +44,6 @@ describe('deleteClub logic full coverage tests', () => {
     );
   });
 
-  // --- ТЕСТ 3: БААЗЫН АЛДАА (Catch Block Coverage) ---
   it('should throw "Клуб устгахад алдаа гарлаа." when database fails', async () => {
     const mockReturning = jest.fn().mockRejectedValue(new Error('DB Fail'));
 

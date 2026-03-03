@@ -2,7 +2,6 @@ import { DB } from 'db/drizzle';
 import { timetable } from 'db/schema';
 import { updateTimetable } from 'graphql-gql/resolvers/mutations/timetable';
 
-// 1. Mock-ийг гадна талд зарлаж өгснөөр nesting багасна
 const mockReturning = jest.fn();
 const mockWhere = jest.fn(() => ({ returning: mockReturning }));
 const mockSet = jest.fn(() => ({ where: mockWhere }));
