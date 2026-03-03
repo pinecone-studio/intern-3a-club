@@ -6,11 +6,12 @@ import {
 } from '@apollo/client';
 import { SetContextLink } from '@apollo/client/link/context';
 
+// Window интерфейсийг Clerk-тэй тодорхойлох
 declare global {
   interface Window {
     Clerk?: {
       session?: {
-        getToken: (_options: { template: string }) => Promise<string | null>;
+        getToken: () => Promise<string | null>;
       };
     };
   }
@@ -20,15 +21,14 @@ const httpLink = new HttpLink({
   uri: 'http://localhost:4200/api/graphql',
 });
 
+// Шинэ SetContextLink ашиглалт
 const authLink = new SetContextLink(async (prevContext) => {
-  const token = await window.Clerk?.session?.getToken({
-    template: 'pineclub',
-  });
+  const token = await window.Clerk?.session?.getToken();
 
   return {
     ...prevContext,
     headers: {
-      ...prevContext.headers,
+      ...prevContext?.headers,
       authorization: token ? `Bearer ${token}` : '',
     },
   };

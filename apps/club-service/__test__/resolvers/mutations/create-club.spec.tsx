@@ -4,9 +4,6 @@ import { clubs } from 'db/schema';
 import { createClubWithSchedules } from 'graphql-gql/resolvers/mutations/clubs/create-club';
 import { CreateClubWithSchedulesArgs } from 'gql-type';
 
-/**
- * DB Chain mock хийх төрөл
- */
 interface MockChain {
   from: jest.Mock;
   where: jest.Mock;
@@ -28,7 +25,6 @@ jest.mock('db/drizzle', () => ({
   DB: {
     select: jest.fn(() => mockChain),
     insert: jest.fn(() => mockChain),
-    // 1. ESLint засах: 'any' оронд 'unknown' ашиглаж, ашиглаагүй бол '_tx' гэж нэрлэх
     transaction: jest.fn(async (cb: (_tx: unknown) => Promise<unknown>) => {
       return cb({
         insert: jest.fn(() => mockChain),
@@ -116,7 +112,6 @@ describe('createClubWithSchedules Full Coverage', () => {
     const unauthContext = { clerkId: undefined };
 
     await expect(
-      // 2. ESLint засах: 'any' оронд 'unknown' ашиглаж safe-cast хийх
       createClubWithSchedules(
         null,
         mockArgs,
