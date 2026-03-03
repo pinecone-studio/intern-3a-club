@@ -1,99 +1,99 @@
-# Stop on error (Bash -e шиг)
-$ErrorActionPreference = "Stop"
- 
-# Root folder (script байрлаж байгаа хавтас)
-$ROOT = Split-Path -Parent $MyInvocation.MyCommand.Path
- 
-$BIN = "$ROOT\node_modules\.bin"
-$VERCEL_BIN = "$ROOT\apps\club-dash\node_modules\.bin;$BIN"
- 
-$DASH_PROJECT = "cloudflare-club-dash"
-$WEB_PROJECT = "cloudflare-club-web"
-$SERVICE_PROJECT = "cloudflare-pine-club"
- 
-# Branch variables (env override боломжтой)
-$DASH_BRANCH = if ($env:DASH_BRANCH) { $env:DASH_BRANCH } else { "176-branch-change-for-office" }
-$WEB_BRANCH = if ($env:WEB_BRANCH) { $env:WEB_BRANCH } else { "176-branch-change-for-office" }
-$SERVICE_BRANCH = if ($env:SERVICE_BRANCH) { $env:SERVICE_BRANCH } else { "105-ochko-need-new-branch" }
- 
-function Deploy-Dash {
-    Write-Host "=== Deploying DASH ==="
- 
-    Set-Location "$ROOT\apps\club-dash"
- 
-    Remove-Item ".next" -Recurse -Force -ErrorAction Ignore
-    Remove-Item ".vercel\output" -Recurse -Force -ErrorAction Ignore
- 
-    $env:PATH = "$BIN;$env:PATH"
-    $env:NX_TASK_TARGET_PROJECT = "club-dash"
-    $env:NX_TASK_TARGET_TARGET = "build"
-    $env:NX_TASK_TARGET_CONFIGURATION = "production"
-    $env:NX_WORKSPACE_ROOT = $ROOT
-    $env:NX_NEXT_OUTPUT_PATH = "apps/club-dash"
- 
-    & "$BIN\next-on-pages.cmd"
- 
-    npx wrangler pages deploy ".vercel/output/static" `
-        --project-name="$DASH_PROJECT" `
-        --branch="$DASH_BRANCH" `
-        --commit-dirty=true
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+DASH_PROJECT="cloudflare-club-dash"
+WEB_PROJECT="cloudflare-club-web"
+SERVICE_PROJECT="cloudflare-pine-club"
+
+DASH_BRANCH="${DASH_BRANCH:-176-branch-change-for-office}"
+WEB_BRANCH="${WEB_BRANCH:-176-branch-change-for-office}"
+SERVICE_BRANCH="${SERVICE_BRANCH:-105-ochko-need-new-branch}"
+
+TARGET="${1:-all}"
+
+deploy_dash() {
+  echo "=== Deploying DASH ==="
+  (
+    cd "$ROOT/apps/club-dash"
+    rm -rf .next .vercel/output
+
+    NX_TASK_TARGET_PROJECT="club-dash" \
+    NX_TASK_TARGET_TARGET="build" \
+    NX_TASK_TARGET_CONFIGURATION="production" \
+    NX_WORKSPACE_ROOT="$ROOT" \
+    NX_NEXT_OUTPUT_PATH="apps/club-dash" \
+    npx next-on-pages
+
+    npx wrangler pages deploy ".vercel/output/static" \
+      --project-name="$DASH_PROJECT" \
+      --branch="$DASH_BRANCH" \
+      --commit-dirty=true
+  )
 }
- 
-function Deploy-Web {
-    Write-Host "=== Deploying WEB ==="
- 
-    Set-Location "$ROOT\apps\club-web"
- 
-    Remove-Item ".next" -Recurse -Force -ErrorAction Ignore
-    Remove-Item ".vercel\output" -Recurse -Force -ErrorAction Ignore
- 
-    $env:PATH = "$VERCEL_BIN;$env:PATH"
-    $env:NX_TASK_TARGET_PROJECT = "club-web"
-    $env:NX_TASK_TARGET_TARGET = "build"
-    $env:NX_TASK_TARGET_CONFIGURATION = "production"
-    $env:NX_WORKSPACE_ROOT = $ROOT
-    $env:NX_NEXT_OUTPUT_PATH = "apps/club-web"
- 
-    vercel build
- 
-    & "$BIN\next-on-pages.cmd" --skip-build
- 
-    npx wrangler pages deploy ".vercel/output/static" `
-        --project-name="$WEB_PROJECT" `
-        --branch="$WEB_BRANCH" `
-        --commit-dirty=true
+
+deploy_web() {
+  echo "=== Deploying WEB ==="
+  (
+    cd "$ROOT/apps/club-web"
+    rm -rf .next .vercel/output
+
+    NX_TASK_TARGET_PROJECT="club-web" \
+    NX_TASK_TARGET_TARGET="build" \
+    NX_TASK_TARGET_CONFIGURATION="production" \
+    NX_WORKSPACE_ROOT="$ROOT" \
+    NX_NEXT_OUTPUT_PATH="apps/club-web" \
+    npx vercel build
+
+    NX_TASK_TARGET_PROJECT="club-web" \
+    NX_TASK_TARGET_TARGET="build" \
+    NX_TASK_TARGET_CONFIGURATION="production" \
+    NX_WORKSPACE_ROOT="$ROOT" \
+    NX_NEXT_OUTPUT_PATH="apps/club-web" \
+    npx next-on-pages --skip-build
+
+    npx wrangler pages deploy ".vercel/output/static" \
+      --project-name="$WEB_PROJECT" \
+      --branch="$WEB_BRANCH" \
+      --commit-dirty=true
+  )
 }
- 
-function Deploy-Service {
-    Write-Host "=== Deploying SERVICE ==="
- 
-    Set-Location $ROOT
- 
+
+deploy_service() {
+  echo "=== Deploying SERVICE ==="
+  (
+    cd "$ROOT"
     npx nx run club-service:build-worker
- 
-    Set-Location "$ROOT\apps\club-service"
- 
-    & "$ROOT\node_modules\.bin\wrangler.cmd" pages deploy ".vercel/output/static" `
-        --project-name="$SERVICE_PROJECT" `
-        --branch="$SERVICE_BRANCH" `
-        --commit-dirty=true
+  )
+
+  (
+    cd "$ROOT/apps/club-service"
+    npx wrangler pages deploy ".vercel/output/static" \
+      --project-name="$SERVICE_PROJECT" \
+      --branch="$SERVICE_BRANCH" \
+      --commit-dirty=true
+  )
 }
- 
-param(
-    [string]$Target = "all"
-)
- 
-switch ($Target) {
-    "dash"    { Deploy-Dash }
-    "web"     { Deploy-Web }
-    "service" { Deploy-Service }
-    "all"     { 
-        Deploy-Dash
-        Deploy-Web
-        Deploy-Service
-    }
-    default {
-        Write-Host "Usage: ./deploy.ps1 [dash|web|service|all]"
-        exit 1
-    }
-}
+
+case "$TARGET" in
+  dash)
+    deploy_dash
+    ;;
+  web)
+    deploy_web
+    ;;
+  service)
+    deploy_service
+    ;;
+  all)
+    deploy_dash
+    deploy_web
+    deploy_service
+    ;;
+  *)
+    echo "Usage: ./deploy-all.sh [dash|web|service|all]"
+    exit 1
+    ;;
+esac

@@ -77,7 +77,7 @@ describe('RequestHistory Component', () => {
         expect(screen.getByText('Club 2')).toBeInTheDocument();
         expect(screen.getByText('Club 3')).toBeInTheDocument();
 
-        // Check status text — covers both approved and non-approved branches in getStatusClasses
+        // Check status text
         expect(screen.getByText('approved')).toBeInTheDocument();
         expect(screen.getByText('pending')).toBeInTheDocument();
         expect(screen.getByText('unknown')).toBeInTheDocument();

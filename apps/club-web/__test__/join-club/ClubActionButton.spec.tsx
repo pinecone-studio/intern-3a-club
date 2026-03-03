@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { ClubActionButtons } from '../app/JoinClub/_components/ClubActionButton';
+import { ClubActionButtons } from '../../app/JoinClub/_components/ClubActionButton';
 
 const defaultProps = {
   isEnrolled: false,

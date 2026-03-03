@@ -1,16 +1,16 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { ClubList } from '../app/JoinClub/_components/ClubList';
-import { GetAllClub } from '../lib/type';
+import { ClubList } from '../../app/JoinClub/_components/ClubList';
+import { ExtendedClub } from '../../lib/type'; 
 import React from 'react';
 
-// 1. ClubCard-ийг mock хийхдээ 'any' ашиглахгүйгээр төрлийг нь зааж өгөх
-interface MockClubCardProps {
-  club: GetAllClub;
+
+interface MockClubCardProps { 
+  club: ExtendedClub;
   isSelected: boolean;
   onClick: (_id: string) => void;
 }
 
-jest.mock('../app/JoinClub/_components/ClubCard', () => ({
+jest.mock('../../app/JoinClub/_components/ClubCard',() => ({
   ClubCard: ({ club, isSelected, onClick }: MockClubCardProps) => (
     <div
       data-testid={`club-card-${club.id}`}
@@ -22,17 +22,24 @@ jest.mock('../app/JoinClub/_components/ClubCard', () => ({
   ),
 }));
 
-const mockClubs: GetAllClub[] = [
+// ExtendedClub төрөлд тохируулан mock өгөгдөл бэлдэх
+const mockClubs: ExtendedClub[] = [
   {
     id: '1',
     name: 'Robotics Club',
     description: 'Build robots',
     status: 'Open',
     teacherId: 'T1',
+    creatorId: 'C1',
     type: 'mentor',
     minMember: 5,
     maxMember: 10,
+    frequency: 'Weekly',
+    clubTerm: 'Spring',
     timetables: [],
+    __typename: 'Club',
+    isEnrolled: false,
+    bannedUntil: 0,
   },
   {
     id: '2',
@@ -40,10 +47,16 @@ const mockClubs: GetAllClub[] = [
     description: 'Painting',
     status: 'Open',
     teacherId: 'T2',
+    creatorId: 'C2',
     type: 'mentor',
     minMember: 2,
     maxMember: 5,
+    frequency: 'Weekly',
+    clubTerm: 'Spring',
     timetables: [],
+    __typename: 'Club',
+    isEnrolled: true,
+    bannedUntil: 0,
   },
 ];
 
@@ -80,6 +93,7 @@ describe('ClubList Component', () => {
     );
 
     const selectedClub = screen.getByTestId('club-card-1');
+    // MockClubCard-д өгсөн style-ийг шалгах
     expect(selectedClub).toHaveStyle('border: 1px solid blue');
   });
 });

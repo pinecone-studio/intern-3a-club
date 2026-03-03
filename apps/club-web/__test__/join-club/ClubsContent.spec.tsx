@@ -1,14 +1,14 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { ClubsContent } from '../app/JoinClub/_components/ClubsContent';
+import { ClubsContent } from '../../app/JoinClub/_components/ClubsContent';
 import {
   GET_ALL_APPROVED_CLUBS,
   GET_ALL_TEACHERS,
-} from '../app/JoinClub/_components/club-query';
-import { useClubAction } from '../app/_hooks/use-redis-hook';
+} from '../../lib/club-query';
+import { useClubAction } from '../../app/_hooks/use-redis-hook';
 import { MockedProvider } from '@apollo/client/testing/react';
 
-jest.mock('../app/_hooks/use-redis-hook');
+jest.mock('../../app/_hooks/use-redis-hook');
 
 const mockUseClubAction = jest.mocked(useClubAction);
 
