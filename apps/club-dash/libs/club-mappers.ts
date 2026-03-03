@@ -9,9 +9,8 @@ export const mapGetAllClubToClub = (src: GetAllClub): Club => ({
   minMember: src.minMember,
   maxMember: src.maxMember,
   status: src.status,
-  timetables: src.timetables,
+  timetables: (src.timetables ?? []).filter((t): t is Club['timetables'][number] => t !== null),
 });
 
 export const mapGetAllClubsToClubs = (items: GetAllClub[]): Club[] =>
   items.map(mapGetAllClubToClub);
-

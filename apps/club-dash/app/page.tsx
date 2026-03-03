@@ -5,18 +5,50 @@ import { DashboardHeader } from './_components/main/Header';
 import { DashboardSidebar } from './_components/main/sidebar/DashSidebar';
 import { ViewRender } from './_components/main/ViewRender';
 import { useAuth } from '@clerk/nextjs';
+import gql from 'graphql-tag';
 import { useMutation } from '@apollo/client/react';
-import {
-  SyncUserDocument,
-  SyncUserMutation,
-} from './_hooks/generated/graphql';
-
+ 
+interface SyncUserResponse {
+  syncUser: {
+    __typename: 'Teacher' | 'Student';
+    id: string;
+    authUserId: string;
+    azureEmail: string;
+    firstName: string;
+    lastName: string;
+    classId?: string;
+  };
+}
+ 
+const SYNC_USER_MUTATION = gql`
+  mutation SyncUser {
+    syncUser {
+      __typename
+      ... on Teacher {
+        id
+        authUserId
+        azureEmail
+        firstName
+        lastName
+      }
+      ... on Student {
+        id
+        authUserId
+        azureEmail
+        firstName
+        lastName
+        classId
+      }
+    }
+  }
+`;
+ 
 const isAbortError = (err: unknown): boolean => {
   const error = err as { name?: string; message?: string };
   return error.name === 'AbortError' || !!error.message?.includes('aborted');
 };
-
-const handleSyncSuccess = (data: SyncUserMutation | undefined) => {
+ 
+const handleSyncSuccess = (data: SyncUserResponse | undefined) => {
   if (data?.syncUser) {
     console.log('Backend-тэй амжилттай синхрончилллоо:', data.syncUser);
   }
@@ -26,7 +58,8 @@ export default function Dashboard() {
   const [activeView, setActiveView] = useState<string>('Join Club');
   const { isLoaded, userId } = useAuth();
  
-  const [syncUser, { loading, error }] = useMutation(SyncUserDocument);
+  const [syncUser, { loading, error }] =
+    useMutation<SyncUserResponse>(SYNC_USER_MUTATION);
  
   const performSync = useCallback(
     async (signal: AbortSignal) => {

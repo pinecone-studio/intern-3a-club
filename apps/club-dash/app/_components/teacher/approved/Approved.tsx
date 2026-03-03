@@ -11,7 +11,6 @@ import {
   mockStartTime,
 } from './approved-utils';
 import {
-  DeleteClubMutation,
   DeleteClubDocument,
   GetAllClubsDocument,
   GetAllClubsQuery,
@@ -52,16 +51,13 @@ export const ApprovedClubDetail = ({
   const [openEdit, setOpenEdit] = useState(false);
   const primaryTimetable = club.timetables?.[0] ?? null;
 
-  const [deleteClub, { loading: isDeleting }] = useMutation<DeleteClubMutation>(
-    DELETE_CLUB,
-    {
-      refetchQueries: [{ query: GET_ALL_CLUBS }],
-      onCompleted: () => {
-        alert('Клуб амжилттай устгагдлаа.');
-      },
-      onError: (e) => alert(e.message),
-    }
-  );
+  const [deleteClub, { loading: isDeleting }] = useMutation(DELETE_CLUB, {
+    refetchQueries: [{ query: GET_ALL_CLUBS }],
+    onCompleted: () => {
+      alert('Клуб амжилттай устгагдлаа.');
+    },
+    onError: (e) => alert(e.message),
+  });
 
   const handleDeleteClick = async () => {
     if (window.confirm('Та энэ клубыг устгахдаа итгэлтэй байна уу?')) {

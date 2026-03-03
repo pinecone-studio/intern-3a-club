@@ -16,8 +16,9 @@ export const scheduleOverlapped = (
   const formatted = format(date, 'yyyy-MM-dd');
   return (
     data?.getAllClubs.some((club) =>
-      club.timetables.some(
+      (club.timetables ?? []).some(
         (overlap) =>
+          overlap !== null &&
           overlap.date === formatted &&
           overlap.room === room &&
           overlap.clubStartTime === StartTime

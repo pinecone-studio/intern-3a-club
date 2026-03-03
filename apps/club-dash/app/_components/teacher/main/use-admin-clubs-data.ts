@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client/react';
-import { Club, GetAllClub } from '../../../../libs/types';
+import { Club } from '../../../../libs/types';
 import {
   GET_ALL_APPROVED_CLUBS,
   GET_ALL_PENDING_CLUBS,
@@ -29,17 +29,13 @@ export function useAdminClubsData() {
 
   useEffect(() => {
     if (approvedData?.getAllApprovedClubs) {
-      setApproved(
-        mapGetAllClubsToClubs(approvedData.getAllApprovedClubs as GetAllClub[])
-      );
+      setApproved(mapGetAllClubsToClubs(approvedData.getAllApprovedClubs));
     }
   }, [approvedData]);
 
   useEffect(() => {
     if (pendingData?.getAllPendingClubs) {
-      setPending(
-        mapGetAllClubsToClubs(pendingData.getAllPendingClubs as GetAllClub[])
-      );
+      setPending(mapGetAllClubsToClubs(pendingData.getAllPendingClubs));
     }
   }, [pendingData]);
 

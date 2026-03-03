@@ -1,4 +1,10 @@
 import { ChangeEvent, Dispatch, SetStateAction, ReactNode } from 'react';
+import type {
+  GetAllApprovedClubsQuery,
+  GetAllClubsQuery,
+  GetAllPendingClubsQuery,
+  GetAllTeachersQuery,
+} from '../app/_hooks/generated/graphql';
 
 export type ClassTeacherType = {
   id: string;
@@ -88,39 +94,16 @@ export type CreateClubState = {
   clubTerm: string;
   scheduleChange: Record<string, ScheduleChange>;
 };
-export type Data = {
-  getAllClubs: GetAllClub[];
-};
-export type ApprovedClubsData = {
-  getAllApprovedClubs: GetAllClub[];
-};
-export type PendingClubsData = {
-  getAllPendingClubs: GetAllClub[];
-};
-export type GetAllClub = {
-  id: string;
-  name: string;
-  description: string;
-  creatorId: string | null;
-  teacherId: string;
-  type: string;
-  status: string;
-  preferredTeachers: string[] | null;
-  minMember: number;
-  maxMember: number;
-  timetables: Timetable[];
-  frequency?: string;
-  termMonths?: number;
-};
-export type Timetable = {
-  id: string;
-  clubId: string;
-  endDate?: string;
-  date: string;
-  room: string;
-  clubStartTime: string;
-  duration: number;
-};
+type ArrayItem<T> = T extends Array<infer U> ? U : never;
+type ClubQueryTimetable = NonNullable<
+  ArrayItem<NonNullable<GetAllClubsQuery['getAllClubs'][number]['timetables']>>
+>;
+
+export type Data = GetAllClubsQuery;
+export type ApprovedClubsData = GetAllApprovedClubsQuery;
+export type PendingClubsData = GetAllPendingClubsQuery;
+export type GetAllClub = GetAllClubsQuery['getAllClubs'][number];
+export type Timetable = ClubQueryTimetable & { endDate?: string };
 export type CreateClubSetters = {
   setTeacherId: Dispatch<SetStateAction<string>>;
   setClubStartDate: Dispatch<SetStateAction<Date[] | undefined>>;
@@ -147,12 +130,5 @@ export type CreateClubHandlers = {
   handleDeleteDate: (_day: Date) => void;
   handleEmptyFields: () => void;
 };
-export type TeacherData = {
-  getAllTeachers: GetAllTeacher[];
-};
-export type GetAllTeacher = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  profilePicture: string;
-};
+export type TeacherData = GetAllTeachersQuery;
+export type GetAllTeacher = GetAllTeachersQuery['getAllTeachers'][number];
