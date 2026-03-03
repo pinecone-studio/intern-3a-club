@@ -14,7 +14,7 @@ type EditTimetableDialogContentProps = {
   onSelectDate: (_d?: Date) => void;
   highlighted: Date[];
   conflictDates: Date[];
-  active: import('../../../../libs/types').Timetable | null;
+  active: import('../../../../../libs/types').Timetable | null;
   room: string;
   time: string;
   duration: string;

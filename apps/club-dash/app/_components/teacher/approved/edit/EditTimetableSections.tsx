@@ -1,5 +1,24 @@
 /* eslint-disable max-lines */
-import { DialogFooter, AlertDialogTrigger, AlertDialog, AlertDialogDescription, AlertDialogContent, AlertDialogAction, AlertDialogTitle, AlertDialogHeader, AlertDialogCancel, AlertDialogFooter, Calendar, Button, Label, Select, SelectTrigger, SelectItem, SelectValue, SelectContent } from '@intern-3a-club/shadcn';
+import {
+  DialogFooter,
+  AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogDescription,
+  AlertDialogContent,
+  AlertDialogAction,
+  AlertDialogTitle,
+  AlertDialogHeader,
+  AlertDialogCancel,
+  AlertDialogFooter,
+  Calendar,
+  Button,
+  Label,
+  Select,
+  SelectTrigger,
+  SelectItem,
+  SelectValue,
+  SelectContent,
+} from '@intern-3a-club/shadcn';
 
 type CalendarSectionProps = {
   selectedDate: Date | undefined;
@@ -22,7 +41,7 @@ type FormSectionProps = {
 };
 
 type FooterSectionProps = {
-  active: import('../../../../libs/types').Timetable | null;
+  active: import('../../../../../libs/types').Timetable | null;
   saving: boolean;
   saveLabel: string;
   onSave: () => void;
@@ -152,4 +171,3 @@ export const EditTimetableFooterSection = ({
     </AlertDialog>
   </DialogFooter>
 );
-
