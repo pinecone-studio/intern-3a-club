@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { JoinLabel } from '../app/JoinClub/_components/ClubJoinLabel';
+import { JoinLabel } from '../../app/JoinClub/_components/ClubJoinLabel';
 
 describe('JoinLabel', () => {
   it('loading=true үед "Уншиж байна..." харуулна', () => {

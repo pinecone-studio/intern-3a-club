@@ -1,20 +1,22 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { useClubAction } from '../app/_hooks/use-redis-hook';
-import { ClubDetail } from '../app/JoinClub/_components/ClubDetail';
-import { ExtendedClub, GetAllTeacher } from '../lib/type';
+import { useClubAction } from '../../app/_hooks/use-redis-hook'
+import { ClubDetail } from '../../app/JoinClub/_components/ClubDetail';
+import { ExtendedClub, GetAllTeacher } from '../../lib/type';
 
-jest.mock('../app/_hooks/use-redis-hook');
-jest.mock('../app/JoinClub/_components/ClubActionButton', () => ({
+jest.mock('../../app/_hooks/use-redis-hook');
+jest.mock('../../app/JoinClub/_components/ClubActionButton', () => ({
   ClubActionButtons: jest.fn(({ remainingTime }) => (
     <div data-testid="club-action-buttons" data-time={remainingTime} />
   )),
 }));
-jest.mock('../app/JoinClub/_components/ClubInfoGrid', () => ({
+jest.mock('../../app/JoinClub/_components/ClubInfoGrid', () => ({
   ClubInfoGrid: () => <div data-testid="club-info-grid" />,
 }));
 jest.mock('lucide-react', () => ({
   ShieldCheck: () => <div data-testid="shield-check" />,
+  ChevronDown: () => <div data-testid="chevron-down" />, 
+  ChevronUp: () => <div data-testid="chevron-up" />,
 }));
 
 const mockUseClubAction = jest.mocked(useClubAction);
