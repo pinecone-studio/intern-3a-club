@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { PendingModalItem } from '../../app/_components/teacher/pending/PendingModalItem';
-import type { Club } from '../../libs/types';
+import { PendingModalItem } from '../../../app/_components/teacher/pending/PendingModalItem';
+import type { Club } from '../../../libs/types';
 
 const club: Club = {
   id: '1',

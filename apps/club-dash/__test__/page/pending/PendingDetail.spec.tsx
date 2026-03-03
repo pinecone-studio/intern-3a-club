@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { PendingClubDetail } from '../../app/_components/teacher/pending/PendingDetail';
-import type { Club } from '../../libs/types';
+import { PendingClubDetail } from '../../../app/_components/teacher/pending/PendingDetail';
+import type { Club } from '../../../libs/types';
 
 const baseClub: Club = {
   id: '1',
@@ -43,4 +43,3 @@ describe('PendingClubDetail', () => {
     expect(dashValues.length).toBeGreaterThanOrEqual(2);
   });
 });
-
