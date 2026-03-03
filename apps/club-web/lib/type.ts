@@ -6,7 +6,6 @@ export interface ExtendedClub extends GetAllApprovedClub {
   isEnrolled: boolean;
   bannedUntil: number;
 }
-
 export interface GetAllApprovedClub {
   __typename: string;
   id: string;

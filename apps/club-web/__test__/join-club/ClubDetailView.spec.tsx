@@ -1,18 +1,18 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import React from 'react';
-import { ClubDetailView } from '../app/JoinClub/_components/ClubDetailView';
-import { ExtendedClub } from '../lib/type';
+import { ClubDetailView } from '../../app/JoinClub/_components/ClubDetailView';
+import { ExtendedClub } from '../../lib/type';
 
-jest.mock('../app/JoinClub/_components/ClubInfoGrid', () => ({
+jest.mock('../../app/JoinClub/_components/ClubInfoGrid', () => ({
   ClubInfoGrid: () => <div data-testid="club-info-grid" />,
 }));
 
-jest.mock('../app/JoinClub/_components/ScheduleDetails', () => ({
+jest.mock('../../app/JoinClub/_components/ScheduleDetails', () => ({
   ScheduleDetails: () => <div data-testid="schedule-details" />,
 }));
 
-jest.mock('../app/JoinClub/_components/ClubActionButton', () => ({
+jest.mock('../../app/JoinClub/_components/ClubActionButton', () => ({
   ClubActionButtons: ({
     onEnroll,
     onLeave,

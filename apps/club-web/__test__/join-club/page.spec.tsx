@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import JoinClubPage from '../app/JoinClub/page';
+import JoinClubPage from '../../app/JoinClub/page';
 import {
   GET_ALL_APPROVED_CLUBS,
   GET_ALL_TEACHERS,
-} from '../app/JoinClub/_components/club-query';
+} from '../../lib/club-query';
 import { MockedProvider } from '@apollo/client/testing/react';
 
 const successMocks = [

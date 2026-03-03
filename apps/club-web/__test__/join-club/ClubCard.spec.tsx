@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { ClubCard } from '../app/JoinClub/_components/ClubCard';
-import { ExtendedClub } from '../lib/type';
+import { ClubCard } from '../../app/JoinClub/_components/ClubCard';
+import { ExtendedClub } from '../../lib/type';
 
 const mockTimetable = {
   id: 'tt-1',

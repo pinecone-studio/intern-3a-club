@@ -10,6 +10,8 @@ interface UseClubActionProps {
   onLeaveSuccess: () => void;
 }
 
+
+
 export const useClubAction = ({
   userid,
   clubid,
@@ -19,6 +21,7 @@ export const useClubAction = ({
   const [remainingTime, setRemainingTime] = useState<number | null>(null);
   const [banned, setBanned] = useState(false);
   const [loading, setLoading] = useState(false);
+
 
   // 🔹 Helper to reduce complexity in main functions
   const handleBanResponse = (time: number) => {

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { ClubsHeader } from '../app/JoinClub/_components/ClubsHeader';
+import { ClubsHeader } from '../../app/JoinClub/_components/ClubsHeader';
 import '@testing-library/jest-dom';
 
 describe('ClubsHeader', () => {
