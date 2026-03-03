@@ -46,9 +46,19 @@ const isAbortError = (err: unknown): boolean => {
 const Home = () => {
   const [isSynced, setIsSynced] = useState(false);
   const { isLoaded, userId } = useAuth();
-
-  const [syncUser, { loading, error }] =
+  const [syncUser, { error }] =
     useMutation<SyncUserResponse>(SYNC_USER_MUTATION);
+
+  // Логикийг хялбарчлахын тулд алдаа шалгах хэсгийг тусад нь функц болгов
+  const handleSyncResult = useCallback(
+    (data: SyncUserResponse | null | undefined) => {
+      if (data?.syncUser) {
+        console.log('Backend-тэй амжилттай синхрончлолоо:', data.syncUser);
+        setIsSynced(true);
+      }
+    },
+    []
+  );
 
   const performSync = useCallback(
     async (signal: AbortSignal) => {
@@ -56,35 +66,28 @@ const Home = () => {
         const { data } = await syncUser({
           context: { fetchOptions: { signal } },
         });
-        console.log({ data });
-        if (data?.syncUser) {
-          // Энд шууд log болон state-ээ шинэчилнэ
-          console.log('Backend-тэй амжилттай синхрончлолоо:', data.syncUser);
-          setIsSynced(true);
-        }
+        handleSyncResult(data);
       } catch (err: unknown) {
-        if (isAbortError(err)) return;
-        console.error('Синхрончлолын алдаа:', err);
+        if (!isAbortError(err)) {
+          console.error('Синхрончлолын алдаа:', err);
+        }
       }
     },
-    [syncUser]
+    [syncUser, handleSyncResult]
   );
 
   useEffect(() => {
     if (!isLoaded || !userId) return;
-
     const controller = new AbortController();
     performSync(controller.signal);
-
-    return () => {
-      controller.abort();
-    };
+    return () => controller.abort();
   }, [isLoaded, userId, performSync]);
 
+  // Error View
   if (error && !isSynced) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#050816]">
-        <div className="bg-white p-8 rounded-2xl text-center">
+        <div className="bg-white p-8 rounded-2xl text-center shadow-2xl">
           <h2 className="text-xl font-bold text-red-600">Холболт амжилтгүй</h2>
           <p className="text-gray-500 mt-2">{error.message}</p>
         </div>
@@ -92,11 +95,11 @@ const Home = () => {
     );
   }
 
-  // Амжилттай болсон үед
   return (
     <div className="min-h-screen bg-[url('/pinebaatar.png')] bg-cover bg-center bg-no-repeat flex items-center justify-center">
       <CreateClubCenter />
     </div>
   );
 };
+
 export default Home;

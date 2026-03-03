@@ -62,7 +62,7 @@ exports[`Home Page should match the snapshot 1`] = `
       <p
         class="mt-8 text-center text-sm text-gray-400"
       >
-        © 2026  Бүх эрх хуулиар хамгаалагдаагүй.
+        © 2026 Бүх эрх хуулиар хамгаалагдаагүй.
       </p>
     </div>
   </div>

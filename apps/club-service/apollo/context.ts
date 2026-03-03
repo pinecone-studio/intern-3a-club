@@ -41,7 +41,6 @@ export const createContext = async ({ req }: { req: NextRequest }) => {
   const secretKey = process.env.CLERK_SECRET_KEY;
   console.log('auth header', req.headers.get('authorization'));
 
-
   if (!token) return { clerkId: null, email: null };
   if (!secretKey) {
     console.error('CLERK_SECRET_KEY тохируулагдаагүй байна.');

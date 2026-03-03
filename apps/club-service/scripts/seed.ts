@@ -1,7 +1,6 @@
 import { randomUUID } from 'crypto';
 
 async function seed() {
-  // --- 1. ОЮУТНУУДЫН ДАТА ---
   const students = [
     {
       id: randomUUID(),
@@ -73,9 +72,21 @@ async function seed() {
       gender: 'FEMALE',
       activeStatus: 'ACTIVE',
     },
+    {
+      id: randomUUID(),
+      classId: '3a',
+      studentCode: '25LP4098',
+      azureEmail: '25LP4098@nest.edu.mn',
+      registerNumber: 'UU00000000',
+      personalEmail: '',
+      profilePicture: 'https://avatar.com/student_1.png',
+      firstName: 'Och-Erdene',
+      lastName: '',
+      phoneNumber: '00000000',
+      gender: 'MALE',
+      activeStatus: 'ACTIVE',
+    },
   ];
-
-  // --- 2. БАГШ НАРЫН ДАТА (Нийт 11 багш) ---
   const teachers = [
     {
       id: randomUUID(),
@@ -166,10 +177,8 @@ async function seed() {
       gender: 'MALE',
     },
   ];
-
   console.log('PRAGMA foreign_keys = OFF;');
 
-  // --- 3. ОЮУТНУУДЫГ INSERT ХИЙХ SQL ---
   students.forEach((s) => {
     const studentSql = `
 INSERT INTO students (
@@ -188,7 +197,6 @@ INSERT INTO students (
     console.log(studentSql);
   });
 
-  // --- 4. БАГШ НАРЫГ INSERT ХИЙХ SQL ---
   teachers.forEach((t) => {
     const teacherSql = `
 INSERT INTO teachers (

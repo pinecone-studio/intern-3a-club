@@ -16,6 +16,7 @@ module.exports = {
     'type.ts',
     'utils.ts',
     '.d.ts',
+    'Providers.tsx',
   ],
   collectCoverageFrom: [
     '**/*.ts',
@@ -53,6 +54,7 @@ module.exports = {
     '!**/redis.ts/**',
     '!**/*middleware.ts',
     '!**/*graphql.ts',
+    '!**/Providers.tsx',
   ],
   coverageThreshold: {
     global: {
