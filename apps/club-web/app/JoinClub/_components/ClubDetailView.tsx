@@ -23,7 +23,7 @@ interface ClubDetailViewProps {
 }
 
 const TeacherProfile = ({ initial, name }: TeacherData) => (
-  <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 mb-6">
+  <div className="flex items-center gap-4 px-3 py-2 rounded-2xl bg-white/[0.02] border border-white/5 mb-6">
     <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg uppercase">
       {initial}
     </div>
@@ -45,16 +45,15 @@ export const ClubDetailView = ({
   handleEnroll,
   handleLeave,
 }: ClubDetailViewProps) => {
-  const clubType = club.type || 'Premium';
+
+ 
 
   return (
-    <div className="flex-1 w-full bg-blue-600/20 border border-white/5 rounded-3xl p-6 lg:p-8">
+    <div className="flex-1 bg-blue-600/20 border border-white/5 rounded-3xl p-6 lg:p-8">
       <header className="mb-8 flex justify-between items-start">
         <div className="space-y-2">
-          <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest bg-blue-500/10 px-2 py-1 rounded-md border border-blue-500/20">
-            {clubType}
-          </span>
-          <h1 className="text-2xl lg:text-3xl font-black text-white uppercase tracking-tight">
+       
+          <h1 className="text-2xl lg:text-3xl font-black pt-2 text-white uppercase tracking-tight">
             {club.name}
           </h1>
         </div>
@@ -65,7 +64,7 @@ export const ClubDetailView = ({
 
       <TeacherProfile {...teacherData} />
 
-      <p className="text-white/50 text-sm leading-relaxed mb-8 px-2 border-l border-white/10 italic">
+      <p className="text-white/50 text-sm leading-relaxed mb-8 px-2 ml-3 border-l border-white/10 italic">
         {club.description}
       </p>
 

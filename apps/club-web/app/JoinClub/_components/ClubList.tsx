@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ClubCard } from './ClubCard';
 import { ExtendedClub } from '../../../lib/type';
 
-// 1. Inline type-ийг interface болгож засав (jsx-no-inline-types алдаа)
 interface ClubListProps {
   selectedClubId: string;
   onSelect: (_id: string) => void;

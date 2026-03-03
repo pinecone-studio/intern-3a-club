@@ -8,9 +8,9 @@ describe('CustomButton Component', () => {
     render(<CustomButton variant="primary">Click Me</CustomButton>);
     const button = screen.getByRole('button', { name: /click me/i });
     
-    // Үндсэн дизайны классууд
+   
     expect(button).toHaveClass('rounded-2xl', 'px-6', 'py-4', 'font-black');
-    // Variant-ийн классууд
+
     expect(button).toHaveClass('bg-blue-600', 'hover:bg-blue-700');
   });
 
@@ -30,7 +30,7 @@ describe('CustomButton Component', () => {
     render(<CustomButton className="my-custom-class">Extra</CustomButton>);
     const button = screen.getByRole('button');
     expect(button).toHaveClass('my-custom-class');
-    // Үндсэн класс хэвээрээ байгааг шалгах
+  
     expect(button).toHaveClass('rounded-2xl');
   });
 
@@ -49,7 +49,7 @@ describe('CustomButton Component', () => {
   });
 
   it('Default variant нь primary байна', () => {
-    // variant prop дамжуулахгүй үед
+
     render(<CustomButton>Default</CustomButton>);
     const button = screen.getByRole('button');
     expect(button).toHaveClass('bg-blue-600');

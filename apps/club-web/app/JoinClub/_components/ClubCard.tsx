@@ -19,7 +19,6 @@ const EnrollmentBadge = ({ isEnrolled }: { isEnrolled: boolean }) => {
   );
 };
 
-// 2. any-г ApprovedClubTimetable-оор солив
 const ClubSchedule = ({ timetable }: { timetable?: ApprovedClubTimetable }) => {
   const scheduleText = timetable
     ? `${timetable.date} • ${timetable.clubStartTime}`
