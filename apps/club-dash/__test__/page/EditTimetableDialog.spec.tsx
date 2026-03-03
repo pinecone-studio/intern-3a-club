@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { EditTimetableDialog } from '../../app/_components/teacher/approved/EditTimetableDialog';
-import type { EditTimetableDialogContent } from '../../app/_components/teacher/approved/EditTimetableDialogContent';
+import { EditTimetableDialog } from '../../app/_components/teacher/approved/edit/EditTimetableDialog';
+import type { EditTimetableDialogContent } from '../../app/_components/teacher/approved/edit/EditTimetableDialogContent';
 import type { Timetable } from '../../libs/types';
-import * as editTimetableUtils from '../../app/_components/teacher/approved/edit-timetable-utils';
+import * as editTimetableUtils from '../../app/_components/teacher/approved/edit/edit-timetable-utils';
 
 type MockContentProps = React.ComponentProps<typeof EditTimetableDialogContent>;
 
