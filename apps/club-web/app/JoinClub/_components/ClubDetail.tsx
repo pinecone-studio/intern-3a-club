@@ -28,18 +28,16 @@ const getTeacherInfo = (teachers: GetAllTeacher[] = [], id?: string) => {
 };
 
 const EmptyState = () => (
-  <div className="flex-1 flex items-center justify-center min-h-[400px] text-white/20 border border-white/5 rounded-3xl bg-[#0a0f1d]">
+  <div className="text-white/20 ">
     Клуб сонгоно уу
   </div>
 );
 
-// complexity is marginal due to branching/early return; ignore since refactored
 // eslint-disable-next-line complexity
 export const ClubDetail = (props: ClubDetailProps) => {
   const { selectedClub, userId, allTeachers, onEnrollSuccess, onLeaveSuccess } =
     props;
 
-  // hooks must be called unconditionally; compute IDs even when no club is selected
   const clubId = selectedClub?.id ?? '';
   const teacherId = selectedClub?.teacherId;
 
@@ -55,7 +53,6 @@ export const ClubDetail = (props: ClubDetailProps) => {
     [allTeachers, teacherId]
   );
 
-  // early return when there's nothing to render
   if (!selectedClub) {
     return <EmptyState />;
   }
