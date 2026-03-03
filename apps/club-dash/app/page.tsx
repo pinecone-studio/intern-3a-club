@@ -155,7 +155,7 @@ export default function Dashboard() {
   // }
 
   return (
-    <div className="min-h-screen mx-auto bg-background">
+    <div className="max-h-360 mx-auto bg-background">
       <DashboardSidebar
         currentActive={activeView}
         onViewChange={handleViewChange}

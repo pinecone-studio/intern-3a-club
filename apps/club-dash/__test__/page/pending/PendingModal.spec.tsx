@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { PendingModal } from '../../app/_components/teacher/pending/PendingModal';
-import type { Club } from '../../libs/types';
+import { PendingModal } from '../../../app/_components/teacher/pending/PendingModal';
+import type { Club } from '../../../libs/types';
 
 jest.mock('@intern-3a-club/shadcn', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires -- Jest mock factory cannot reference outer scope (e.g. React)
@@ -52,12 +52,8 @@ describe('PendingModal', () => {
       />
     );
 
-    expect(
-      screen.getByText(/pending requests/i)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/1 club awaiting review/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/pending requests/i)).toBeInTheDocument();
+    expect(screen.getByText(/1 club awaiting review/i)).toBeInTheDocument();
     expect(screen.getByText('Test Club')).toBeInTheDocument();
   });
 
@@ -75,8 +71,6 @@ describe('PendingModal', () => {
 
     expect(screen.getByText('Test Club')).toBeInTheDocument();
     expect(screen.getByText('Club 2')).toBeInTheDocument();
-    expect(
-      screen.getByText(/2 clubs awaiting review/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/2 clubs awaiting review/i)).toBeInTheDocument();
   });
 });

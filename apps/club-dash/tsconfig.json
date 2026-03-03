@@ -27,7 +27,7 @@
     ".next/types/**/*.ts",
     "../../apps/club-dash/.next/types/**/*.ts",
     "../../dist/apps/club-dash/.next/types/**/*.ts",
-    "app/page.txtt"
+    "app/page.tsx"
   ],
   "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
 }
