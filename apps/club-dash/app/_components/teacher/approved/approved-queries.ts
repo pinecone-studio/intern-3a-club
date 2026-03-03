@@ -24,6 +24,8 @@ export const GET_ALL_CLUBS = gql`
       preferredTeachers
       minMember
       maxMember
+      frequency
+      clubTerm
       timetables {
         id
         clubId
@@ -39,4 +41,3 @@ export const GET_ALL_CLUBS = gql`
 export function getAllTimetablesFromData(data: Data | undefined) {
   return data?.getAllClubs?.flatMap((c) => c.timetables ?? []) ?? [];
 }
-

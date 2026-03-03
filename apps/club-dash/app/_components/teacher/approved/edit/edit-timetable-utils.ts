@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import type { Timetable } from '../../../../libs/types';
+import type { Timetable } from '../../../../../libs/types';
 
 export type { Timetable };
 
@@ -38,8 +38,7 @@ export const fmt = (m: number): string => {
   return `${h}:${mm === 0 ? '00' : mm}`;
 };
 
-const CONFLICT_ALERT =
-  'Энэ өрөөнд энэ цагийн интервалд аль хэдийн клуб байна.';
+const CONFLICT_ALERT = 'Энэ өрөөнд энэ цагийн интервалд аль хэдийн клуб байна.';
 
 function hasNoRequired(
   active: Timetable | null,
@@ -89,11 +88,7 @@ function isSameSlot(
   return t.id !== activeId && t.date === newDateStr && t.room === room;
 }
 
-function overlapsWith(
-  t: Timetable,
-  newStart: number,
-  newEnd: number
-): boolean {
+function overlapsWith(t: Timetable, newStart: number, newEnd: number): boolean {
   const existingStart = mins(t.clubStartTime);
   const existingEnd = existingStart + t.duration;
   return isTimeOverlap(newStart, newEnd, existingStart, existingEnd);

@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { DetailTile } from '../main/DetailTile';
 import { ApprovedClubDetailProps, Data } from '../../../../libs/types';
-import { EditTimetableDialog } from './EditTimetableDialog';
+import { EditTimetableDialog } from './edit/EditTimetableDialog';
 import {
   getDetailDisplay,
   mockClassroom,
