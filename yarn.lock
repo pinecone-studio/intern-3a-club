@@ -1253,6 +1253,9 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 "@clerk/backend@1.15.0-client-touch.v9ff6ce8":
   version "1.15.0-client-touch.v9ff6ce8"
   resolved "https://registry.yarnpkg.com/@clerk/backend/-/backend-1.15.0-client-touch.v9ff6ce8.tgz#fe7c1ccbf798e62d68d54d59c1f4deeb73c388e6"
@@ -1266,8 +1269,11 @@
 
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 "@clerk/backend@^2.33.0":
   version "2.33.0"
   resolved "https://registry.yarnpkg.com/@clerk/backend/-/backend-2.33.0.tgz#18c1048d825f98a88ec217c430db063efc3f7f67"
@@ -1280,6 +1286,9 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 "@clerk/clerk-react@5.12.1-client-touch.v9ff6ce8":
   version "5.12.1-client-touch.v9ff6ce8"
   resolved "https://registry.yarnpkg.com/@clerk/clerk-react/-/clerk-react-5.12.1-client-touch.v9ff6ce8.tgz#2c4c4f5490ded4b2375bfc5f3068019c2670f3b7"
@@ -1313,8 +1322,11 @@
     std-env "^3.7.0"
     swr "^2.2.0"
 =======
+<<<<<<< HEAD
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 "@clerk/clerk-react@^5.61.3":
   version "5.61.3"
   resolved "https://registry.yarnpkg.com/@clerk/clerk-react/-/clerk-react-5.61.3.tgz#595f496b12a05b3a30285e806951896cf2b3c09b"
@@ -1335,8 +1347,11 @@
     server-only "0.0.1"
     tslib "2.8.1"
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 83e6c77 (Teacher-side plus queries)
 =======
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 >>>>>>> 83e6c77 (Teacher-side plus queries)
 
 "@clerk/shared@^3.47.2":
@@ -1353,6 +1368,9 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 "@clerk/types@4.27.0-client-touch.v9ff6ce8":
   version "4.27.0-client-touch.v9ff6ce8"
   resolved "https://registry.yarnpkg.com/@clerk/types/-/types-4.27.0-client-touch.v9ff6ce8.tgz#549a5422981d3a7de79c084b034d04a0fcc9feef"
@@ -1362,8 +1380,11 @@
 
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 "@clerk/types@^4.101.20":
   version "4.101.20"
   resolved "https://registry.yarnpkg.com/@clerk/types/-/types-4.101.20.tgz#32f6e12135311256932a7ae54cc2c5aff51e3355"
@@ -1452,6 +1473,9 @@
 "@cloudflare/workers-types@^4.20260210.0":
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "4.20260228.1"
   resolved "https://registry.yarnpkg.com/@cloudflare/workers-types/-/workers-types-4.20260228.1.tgz#5e37915a81ce2229586a8f6edf4dc722c63caf22"
   integrity sha512-gTpLuST3b1gdQfp+u1yiMavoE+n1g1CXuHeiDtlChOePVje+R/V92k6JeEY+6o9qVmQpHzluMe9j/OwvRJuCUg==
@@ -1460,11 +1484,14 @@
   resolved "https://registry.yarnpkg.com/@cloudflare/workers-types/-/workers-types-4.20260301.1.tgz#9c45640df9e778fa2bec77dcab2a0be1d45dab12"
   integrity sha512-klKnECMb5A4GtVF0P5NH6rCjtyjqIEKJaz6kEtx9YPHhfFO2HUEarO+MI4F8WPchgeZqpGlEpDhRapzrOTw51Q==
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
   version "4.20260301.1"
   resolved "https://registry.yarnpkg.com/@cloudflare/workers-types/-/workers-types-4.20260301.1.tgz#9c45640df9e778fa2bec77dcab2a0be1d45dab12"
   integrity sha512-klKnECMb5A4GtVF0P5NH6rCjtyjqIEKJaz6kEtx9YPHhfFO2HUEarO+MI4F8WPchgeZqpGlEpDhRapzrOTw51Q==
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 
 "@colors/colors@1.5.0":
   version "1.5.0"
@@ -2870,6 +2897,9 @@
 "@img/colour@^1.0.0":
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@img/colour/-/colour-1.0.0.tgz#d2fabb223455a793bf3bf9c70de3d28526aa8311"
   integrity sha512-A5P/LfWGFSl6nsckYtjw9da+19jB8hkJ6ACTGcDfEJ0aE+l2n2El7dsVM7UVHZQ9s2lmYMWlrS21YLy2IR1LUw==
@@ -2878,11 +2908,14 @@
   resolved "https://registry.yarnpkg.com/@img/colour/-/colour-1.1.0.tgz#b0c2c2fa661adf75effd6b4964497cd80010bb9d"
   integrity sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@img/colour/-/colour-1.1.0.tgz#b0c2c2fa661adf75effd6b4964497cd80010bb9d"
   integrity sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 
 "@img/sharp-darwin-arm64@0.34.5":
   version "0.34.5"
@@ -5033,6 +5066,9 @@
 "@types/node@*":
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "25.3.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-25.3.2.tgz#cbc4b963e1b3503eb2bcf7c55bf48c95204918d1"
   integrity sha512-RpV6r/ij22zRRdyBPcxDeKAzH43phWVKEjL2iksqo1Vz3CuBUrgmPpPhALKiRfU7OMCmeeO9vECBMsV0hMTG8Q==
@@ -5041,11 +5077,14 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-25.3.3.tgz#605862544ee7ffd7a936bcbf0135a14012f1e549"
   integrity sha512-DpzbrH7wIcBaJibpKo9nnSQL0MTRdnWttGyE5haGwK86xgMOkFLp7vEyfQPGLOJh5wNYiJ3V9PmUMDhV9u8kkQ==
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
   version "25.3.3"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-25.3.3.tgz#605862544ee7ffd7a936bcbf0135a14012f1e549"
   integrity sha512-DpzbrH7wIcBaJibpKo9nnSQL0MTRdnWttGyE5haGwK86xgMOkFLp7vEyfQPGLOJh5wNYiJ3V9PmUMDhV9u8kkQ==
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   dependencies:
     undici-types "~7.18.0"
 
@@ -5958,13 +5997,19 @@ ansi-styles@^5.0.0:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 ansi-styles@^6.2.1:
 =======
 ansi-styles@^6.2.1, ansi-styles@^6.2.3:
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 ansi-styles@^6.2.1, ansi-styles@^6.2.3:
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "6.2.3"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-6.2.3.tgz#c044d5dcc521a076413472597a1acb1f103c4041"
   integrity sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==
@@ -6756,6 +6801,9 @@ camelcase@^6.2.0:
 caniuse-lite@^1.0.30001406, caniuse-lite@^1.0.30001759, caniuse-lite@^1.0.30001774:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "1.0.30001774"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001774.tgz#0e576b6f374063abcd499d202b9ba1301be29b70"
   integrity sha512-DDdwPGz99nmIEv216hKSgLD+D4ikHQHjBC/seF98N9CPqRX4M5mSxT9eTV6oyisnJcuzxtZy4n17yKKQYmYQOA==
@@ -6764,11 +6812,14 @@ caniuse-lite@^1.0.30001406, caniuse-lite@^1.0.30001759, caniuse-lite@^1.0.300017
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001775.tgz#9572266e3f7f77efee5deac1efeb4795879d1b7f"
   integrity sha512-s3Qv7Lht9zbVKE9XoTyRG6wVDCKdtOFIjBGg3+Yhn6JaytuNKPIjBMTMIY1AnOH3seL5mvF+x33oGAyK3hVt3A==
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
   version "1.0.30001775"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001775.tgz#9572266e3f7f77efee5deac1efeb4795879d1b7f"
   integrity sha512-s3Qv7Lht9zbVKE9XoTyRG6wVDCKdtOFIjBGg3+Yhn6JaytuNKPIjBMTMIY1AnOH3seL5mvF+x33oGAyK3hVt3A==
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 
 capital-case@^1.0.4:
   version "1.0.4"
@@ -6956,6 +7007,9 @@ cli-truncate@^2.1.0:
 cli-truncate@^5.0.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/cli-truncate/-/cli-truncate-5.1.1.tgz#455476face9904d94b7d11e98d9adbca15292ea5"
   integrity sha512-SroPvNHxUnk+vIW/dOSfNqdy1sPEFkrTk6TUtqLCnBlo3N7TNYYkzzN7uSD6+jVjrdO4+p8nH7JzH6cIvUem6A==
@@ -6963,8 +7017,11 @@ cli-truncate@^5.0.0:
     slice-ansi "^7.1.0"
     string-width "^8.0.0"
 =======
+<<<<<<< HEAD
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/cli-truncate/-/cli-truncate-5.2.0.tgz#c8e72aaca8339c773d128c36e0a17c6315b694eb"
   integrity sha512-xRwvIOMGrfOAnM1JYtqQImuaNtDEv9v6oIYAs4LIHwTiKee8uwvIi363igssOC0O5U04i4AlENs79LQLu9tEMw==
@@ -6972,8 +7029,11 @@ cli-truncate@^5.0.0:
     slice-ansi "^8.0.0"
     string-width "^8.2.0"
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 83e6c77 (Teacher-side plus queries)
 =======
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 >>>>>>> 83e6c77 (Teacher-side plus queries)
 
 cli-width@^4.1.0:
@@ -7155,6 +7215,9 @@ cookie-es@^2.0.0:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 cookie@0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.7.0.tgz#2148f68a77245d5c2c0005d264bc3e08cfa0655d"
@@ -7162,8 +7225,11 @@ cookie@0.7.0:
 
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 cookie@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.5.0.tgz#d1f5d71adec6558c58f389987c366aa47e994f8b"
@@ -7299,6 +7365,9 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 crypto-js@4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
@@ -7306,8 +7375,11 @@ crypto-js@4.2.0:
 
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 css-select@^5.1.0:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/css-select/-/css-select-5.2.2.tgz#01b6e8d163637bb2dd6c982ca4ed65863682786e"
@@ -7376,6 +7448,9 @@ cssstyle@^2.3.0:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 csstype@3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.1.tgz#841b532c45c758ee546a11d5bd7b7b473c8c30b9"
@@ -7383,8 +7458,11 @@ csstype@3.1.1:
 
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 csstype@3.1.3:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.3.tgz#d80ff294d114fb0e6ac500fbf85b60137d7eff81"
@@ -7573,6 +7651,9 @@ decompress-response@^6.0.0:
 dedent@^1.0.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/dedent/-/dedent-1.7.1.tgz#364661eea3d73f3faba7089214420ec2f8f13e15"
   integrity sha512-9JmrhGZpOlEgOLdQgSm0zxFaYoQon408V1v49aqTWuXENVlnCuY9JBZcXZiCsZQWDjTm5Qf/nIvAy77mXDAjEg==
@@ -7581,11 +7662,14 @@ dedent@^1.0.0:
   resolved "https://registry.yarnpkg.com/dedent/-/dedent-1.7.2.tgz#34e2264ab538301e27cf7b07bf2369c19baa8dd9"
   integrity sha512-WzMx3mW98SN+zn3hgemf4OzdmyNhhhKz5Ay0pUfQiMQ3e1g+xmTJWp/pKdwKVXhdSkAEGIIzqeuWrL3mV/AXbA==
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/dedent/-/dedent-1.7.2.tgz#34e2264ab538301e27cf7b07bf2369c19baa8dd9"
   integrity sha512-WzMx3mW98SN+zn3hgemf4OzdmyNhhhKz5Ay0pUfQiMQ3e1g+xmTJWp/pKdwKVXhdSkAEGIIzqeuWrL3mV/AXbA==
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 
 deep-equal@^2.0.5:
   version "2.2.3"
@@ -9173,6 +9257,9 @@ flat@^5.0.2:
 flatted@^3.2.9:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.3.tgz#67c8fad95454a7c7abebf74bb78ee74a44023358"
   integrity sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==
@@ -9181,11 +9268,14 @@ flatted@^3.2.9:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.4.tgz#0986e681008f0f13f58e18656c47967682db5ff6"
   integrity sha512-3+mMldrTAPdta5kjX2G2J7iX4zxtnwpdA8Tr2ZSjkyPSanvbZAcy6flmtnXbEybHrDcU9641lxrMfFuUxVz9vA==
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.4.tgz#0986e681008f0f13f58e18656c47967682db5ff6"
   integrity sha512-3+mMldrTAPdta5kjX2G2J7iX4zxtnwpdA8Tr2ZSjkyPSanvbZAcy6flmtnXbEybHrDcU9641lxrMfFuUxVz9vA==
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 
 follow-redirects@^1.0.0, follow-redirects@^1.15.11:
   version "1.15.11"
@@ -10084,13 +10174,19 @@ is-fullwidth-code-point@^3.0.0:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 is-fullwidth-code-point@^5.0.0:
 =======
 is-fullwidth-code-point@^5.0.0, is-fullwidth-code-point@^5.1.0:
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 is-fullwidth-code-point@^5.0.0, is-fullwidth-code-point@^5.1.0:
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/is-fullwidth-code-point/-/is-fullwidth-code-point-5.1.0.tgz#046b2a6d4f6b156b2233d3207d4b5a9783999b98"
   integrity sha512-5XHYaSyiqADb4RnZ1Bdad6cPp8Toise4TzEjcOYDHZkTCbKgiUl7WTUCpNWHuxmDt91wnsZBc9xinNzopv3JMQ==
@@ -11277,6 +11373,9 @@ map-cache@^0.2.0:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 map-obj@^4.1.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-4.3.0.tgz#9304f906e93faae70880da102a9f1df0ea8bb05a"
@@ -11284,8 +11383,11 @@ map-obj@^4.1.0:
 
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 math-intrinsics@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/math-intrinsics/-/math-intrinsics-1.1.0.tgz#a0dd74be81e2aa5c2f27e65ce283605ee4e2b7f9"
@@ -13402,9 +13504,13 @@ slice-ansi@^7.1.0:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 slice-ansi@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/slice-ansi/-/slice-ansi-8.0.0.tgz#22d0b66d18bc5c57f488bfcf36cbde3bef731537"
@@ -13414,8 +13520,11 @@ slice-ansi@^8.0.0:
     is-fullwidth-code-point "^5.1.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 83e6c77 (Teacher-side plus queries)
 =======
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 >>>>>>> 83e6c77 (Teacher-side plus queries)
 smart-buffer@^4.2.0:
   version "4.2.0"
@@ -13437,6 +13546,9 @@ snake-case@^3.0.4:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 snakecase-keys@5.4.4:
   version "5.4.4"
   resolved "https://registry.yarnpkg.com/snakecase-keys/-/snakecase-keys-5.4.4.tgz#28745b0175863ffc292ad97d96fe4e8e288a87a2"
@@ -13448,8 +13560,11 @@ snakecase-keys@5.4.4:
 
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 socks-proxy-agent@^8.0.2, socks-proxy-agent@^8.0.5:
   version "8.0.5"
   resolved "https://registry.yarnpkg.com/socks-proxy-agent/-/socks-proxy-agent-8.0.5.tgz#b9cdb4e7e998509d7659d689ce7697ac21645bee"
@@ -13630,13 +13745,19 @@ statuses@^2.0.1, statuses@~2.0.2:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 std-env@^3.7.0, std-env@^3.9.0:
 =======
 std-env@^3.9.0:
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 std-env@^3.9.0:
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "3.10.0"
   resolved "https://registry.yarnpkg.com/std-env/-/std-env-3.10.0.tgz#d810b27e3a073047b2b5e40034881f5ea6f9c83b"
   integrity sha512-5GS12FdOZNliM5mAOxFRg7Ir0pWz8MdpYm6AY6VPkGpbA7ZzmbzNcBJQ0GPvvyWgcY7QAhCgf9Uy89I03faLkg==
@@ -13708,13 +13829,19 @@ string-width@^7.0.0:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 string-width@^8.0.0:
 =======
 string-width@^8.2.0:
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 string-width@^8.2.0:
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-8.2.0.tgz#bdb6a9bd6d7800db635adae96cdb0443fec56c42"
   integrity sha512-6hJPQ8N0V0P3SNmP6h2J99RLuzrWz2gvT7VnK5tKvrNqJoyS9W4/Fb8mo31UiPvy00z7DQXkP2hnKBVav76thw==
@@ -13931,6 +14058,9 @@ swr@2.3.4:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 swr@^2.2.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/swr/-/swr-2.4.1.tgz#c9e48abff6bf4b04846342e2f1f6be108a078cf6"
@@ -13941,8 +14071,11 @@ swr@^2.2.0:
 
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 symbol-tree@^3.2.4:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
@@ -14274,6 +14407,9 @@ tsconfig-paths@^4.1.2:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 tslib@2.4.1, tslib@~2.4.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.1.tgz#0d0bfbaac2880b91e22df0768e55be9753a5b17e"
@@ -14281,8 +14417,11 @@ tslib@2.4.1, tslib@~2.4.0:
 
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 tslib@2.8.1, tslib@^2.0.0, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.4.0, tslib@^2.5.0, tslib@^2.6.3, tslib@^2.8.0, tslib@^2.8.1:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.8.1.tgz#612efe4ed235d567e8aba5f2a5fab70280ade83f"
@@ -14290,17 +14429,24 @@ tslib@2.8.1, tslib@^2.0.0, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.3.
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 tslib@~2.4.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.1.tgz#0d0bfbaac2880b91e22df0768e55be9753a5b17e"
   integrity sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 83e6c77 (Teacher-side plus queries)
 =======
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 >>>>>>> 83e6c77 (Teacher-side plus queries)
 tslib@~2.6.0:
   version "2.6.3"
@@ -14363,6 +14509,9 @@ type-fest@^0.8.1:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 type-fest@^2.5.2:
   version "2.19.0"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-2.19.0.tgz#88068015bb33036a598b952e55e9311a60fd3a9b"
@@ -14370,8 +14519,11 @@ type-fest@^2.5.2:
 
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 type-fest@^4.41.0:
   version "4.41.0"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.41.0.tgz#6ae1c8e5731273c2bf1f58ad39cbae2c91a46c58"
@@ -14674,13 +14826,19 @@ use-sidecar@^1.1.3:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
 use-sync-external-store@^1.4.0, use-sync-external-store@^1.6.0:
 =======
 use-sync-external-store@^1.4.0:
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+<<<<<<< HEAD
 =======
 use-sync-external-store@^1.4.0:
 >>>>>>> 83e6c77 (Teacher-side plus queries)
+=======
+>>>>>>> f399bfe (Teacher-side plus queries)
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.6.0.tgz#b174bfa65cb2b526732d9f2ac0a408027876f32d"
   integrity sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==
