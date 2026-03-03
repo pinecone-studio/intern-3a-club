@@ -5,6 +5,7 @@ import { ShieldCheck } from 'lucide-react';
 import { ExtendedClub } from '../../../lib/type';
 import { ClubActionButtons } from './ClubActionButton';
 import { ClubInfoGrid } from './ClubInfoGrid';
+import { ScheduleDetails } from './ScheduleDetails';
 
 interface TeacherData {
   initial: string;
@@ -69,6 +70,7 @@ export const ClubDetailView = ({
       </p>
 
       <ClubInfoGrid club={club} />
+      <ScheduleDetails club={club} />
 
       <div className="mt-12 pt-8 border-t border-white/5">
         <ClubActionButtons
