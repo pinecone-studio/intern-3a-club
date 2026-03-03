@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { DashboardHeader } from './_components/main/Header';
 import { DashboardSidebar } from './_components/main/sidebar/DashSidebar';
 import { ViewRender } from './_components/main/ViewRender';
 import { useAuth } from '@clerk/nextjs';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/client/react';
+import { useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
 // import { MyClubs } from './_components/main/MyClubs';
 
 interface SyncUserResponse {
@@ -51,6 +53,8 @@ export default function Dashboard() {
   const [activeView, setActiveView] = useState<string>('Join Club');
   const [isSynced, setIsSynced] = useState(false);
   const { isLoaded, userId, getToken } = useAuth();
+  const searchParams = useSearchParams();
+  const hasShownSignOutToast = useRef(false);
 
   const [syncUser, { loading, error }] =
     useMutation<SyncUserResponse>(SYNC_USER_MUTATION);
@@ -97,6 +101,15 @@ export default function Dashboard() {
     };
   }, [isLoaded, userId, performSync]);
 
+  useEffect(() => {
+    if (hasShownSignOutToast.current) return;
+    if (searchParams.get('signed_out') !== '1') return;
+
+    hasShownSignOutToast.current = true;
+    toast.success('Амжилттай гарлаа.');
+    window.history.replaceState({}, '', '/');
+  }, [searchParams]);
+
   const handleViewChange = (label: string) => {
     setActiveView(label);
   };
@@ -119,6 +132,27 @@ export default function Dashboard() {
   };
 
   const currentStatus = loading ? 'loading' : error ? 'error' : 'success';
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen mx-auto bg-background">
+        <DashboardHeader />
+      </div>
+    );
+  }
+
+  // if (!userId) {
+  //   return (
+  //     <div className="min-h-screen mx-auto bg-background">
+  //       <DashboardHeader />
+  //       <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-6">
+  //         <div className="text-sm text-muted-foreground">
+  //           Нэвтэрч орсны дараа dashboard харагдана.
+  //         </div>
+  //       </main>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen mx-auto bg-background">
