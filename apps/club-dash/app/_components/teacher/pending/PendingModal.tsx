@@ -1,13 +1,22 @@
 'use client';
 
-import { X } from 'lucide-react';
-import { PendingClubDetail } from './Pending';
+import { useState } from 'react';
 import { Club } from '../../../../libs/types';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  ScrollArea,
+  Separator,
+} from '@intern-3a-club/shadcn';
+import { PendingModalItem } from './PendingModalItem';
 
 interface PendingModalProps {
   pending: Club[];
   setOpenModal: (_v: boolean) => void;
-  onApprove: (_club: Club) => void;
+  onApprove: (_club: Club, _teacherId: string) => void;
   onReject: (_club: Club) => void;
 }
 
@@ -17,86 +26,53 @@ export const PendingModal = ({
   onApprove,
   onReject,
 }: PendingModalProps) => {
-  const handleClose = () => setOpenModal(false);
+  const [selectedTeacher, setSelectedTeacher] = useState<
+    Record<string, string>
+  >({});
 
-  const handleApprove = (club: Club) => {
-    onApprove(club);
+  const handleOpenChange = (open: boolean) => {
+    if (!open) setOpenModal(false);
   };
 
-  const handleReject = (club: Club) => {
-    onReject(club);
+  const handleTeacherChange = (clubId: string, value: string) => {
+    setSelectedTeacher((prev) => ({
+      ...prev,
+      [clubId]: value,
+    }));
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-start justify-end">
-      <button className="absolute inset-0" onClick={handleClose} />
-
-      <div className="relative mt-10 mr-6 w-full sm:max-w-lg md:max-w-xl max-w-2xl max-h-[80vh] bg-card rounded-3xl p-6 overflow-hidden shadow-2xl border border-border">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="font-black uppercase">Хүсэлтүүд</h3>
-          <button
-            className="p-2 rounded-xl hover:bg-secondary"
-            onClick={handleClose}
-          >
-            <X />
-          </button>
-        </div>
-
-        <div className="space-y-4 overflow-y-auto pr-2 max-h-[70vh]">
-          {pending.map((club) => (
-            <PendingItem
-              key={club.id}
-              club={club}
-              onApprove={handleApprove}
-              onReject={handleReject}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
+  const renderPendingItem = (club: Club) => (
+    <PendingModalItem
+      key={club.id}
+      club={club}
+      selectedTeacherId={selectedTeacher[club.id]}
+      onTeacherChange={handleTeacherChange}
+      onReject={onReject}
+      onApprove={onApprove}
+    />
   );
-};
-
-interface PendingItemProps {
-  club: Club;
-  onApprove: (_club: Club) => void;
-  onReject: (_club: Club) => void;
-}
-
-const PendingItem = ({ club, onApprove, onReject }: PendingItemProps) => {
-  const handleApproveClick = () => onApprove(club);
-  const handleRejectClick = () => onReject(club);
 
   return (
-    <div className="bg-secondary/60 rounded-2xl p-4 border border-border">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h4 className="font-black uppercase">{club.name}</h4>
-          <p className="text-xs text-muted-foreground">
-            {club.description ?? ''}
-          </p>
-        </div>
+    <Dialog open onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-lg p-0 gap-0 overflow-hidden">
+        <DialogHeader className="px-6 pt-6 pb-4">
+          <DialogTitle className="text-base font-semibold tracking-tight">
+            Pending Requests
+          </DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">
+            {pending.length} club{pending.length !== 1 ? 's' : ''} awaiting
+            review
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="flex gap-2">
-          <button
-            onClick={handleApproveClick}
-            className="px-4 py-2 rounded-xl bg-foreground text-background font-black uppercase text-xs"
-          >
-            Approve
-          </button>
+        <Separator />
 
-          <button
-            onClick={handleRejectClick}
-            className="px-4 py-2 rounded-xl bg-secondary border border-border text-foreground/70 font-black uppercase text-xs"
-          >
-            Reject
-          </button>
-        </div>
-      </div>
-
-      <div className="mt-4">
-        <PendingClubDetail club={club} />
-      </div>
-    </div>
+        <ScrollArea className="max-h-[60vh]">
+          <div className="divide-y divide-border">
+            {pending.map(renderPendingItem)}
+          </div>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
   );
 };

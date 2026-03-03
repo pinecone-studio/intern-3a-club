@@ -1,9 +1,7 @@
-import gql from 'graphql-tag';
-import { Data } from './types';
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
-// Shared GraphQL queries for clubs used across admin views
-
-export const GET_ALL_APPROVED_CLUBS = gql`
+exports[`club-queries gql exports matches approved clubs query snapshot 1`] = `
+"
   query GetAllApprovedClubs {
     getAllApprovedClubs {
       id
@@ -27,45 +25,11 @@ export const GET_ALL_APPROVED_CLUBS = gql`
       }
     }
   }
+"
 `;
 
-export const GET_ALL_PENDING_CLUBS = gql`
-  query GetAllPendingClubs {
-    getAllPendingClubs {
-      id
-      name
-      description
-      creatorId
-      teacherId
-      type
-      status
-      preferredTeachers
-      minMember
-      maxMember
-      frequency
-      clubTerm
-      timetables {
-        id
-        clubId
-        date
-        room
-        clubStartTime
-        duration
-      }
-    }
-  }
-`;
-
-export const UPDATE_CLUB = gql`
-  mutation UpdateClub($input: UpdateClubInput!) {
-    updateClub(input: $input) {
-      id
-      status
-    }
-  }
-`;
-
-export const GET_ALL_DECLINED_CLUBS = gql`
+exports[`club-queries gql exports matches declined clubs query snapshot 1`] = `
+"
   query {
     getAllClubs(status: declined) {
       id
@@ -73,19 +37,19 @@ export const GET_ALL_DECLINED_CLUBS = gql`
       status
     }
   }
+"
 `;
 
-export const DELETE_CLUB = gql`
+exports[`club-queries gql exports matches delete club mutation snapshot 1`] = `
+"
   mutation DeleteClub($id: ID!) {
     deleteClub(id: $id)
   }
+"
 `;
 
-export type DeleteClubData = {
-  deleteClub: string;
-};
-
-export const GET_ALL_CLUBS = gql`
+exports[`club-queries gql exports matches get all clubs query snapshot 1`] = `
+"
   query GetAllClubs {
     getAllClubs {
       id
@@ -110,8 +74,45 @@ export const GET_ALL_CLUBS = gql`
       }
     }
   }
+"
 `;
 
-export function getAllTimetablesFromData(data: Data | undefined) {
-  return data?.getAllClubs?.flatMap((c) => c.timetables ?? []) ?? [];
-}
+exports[`club-queries gql exports matches pending clubs query snapshot 1`] = `
+"
+  query GetAllPendingClubs {
+    getAllPendingClubs {
+      id
+      name
+      description
+      creatorId
+      teacherId
+      type
+      status
+      preferredTeachers
+      minMember
+      maxMember
+      frequency
+      clubTerm
+      timetables {
+        id
+        clubId
+        date
+        room
+        clubStartTime
+        duration
+      }
+    }
+  }
+"
+`;
+
+exports[`club-queries gql exports matches update club mutation snapshot 1`] = `
+"
+  mutation UpdateClub($input: UpdateClubInput!) {
+    updateClub(input: $input) {
+      id
+      status
+    }
+  }
+"
+`;

@@ -1,65 +1,67 @@
-import { Calendar, DoorOpen, Users2, Clock } from 'lucide-react';
-import { DetailTile } from '../main/DetailTile';
-import { Club } from '../../../../libs/types';
+'use client';
 
-interface PendingClubDetailProps {
-  club: Club;
-}
+import { useState } from 'react';
+import { useQuery, useMutation } from '@apollo/client/react';
 
-function getDescription(club: Club) {
-  return club.description ?? '';
-}
-function getStartTime(primary: Club['timetables'][0]) {
-  return primary?.clubStartTime ?? '-';
-}
-function getRoom(primary: Club['timetables'][0]) {
-  return primary?.room ?? '-';
-}
-function getMembers(club: Club) {
-  return `${club.minMember ?? 0} - ${club.maxMember ?? 0}`;
-}
-function getPendingDetailDisplay(club: Club) {
-  const primary = club.timetables[0];
-  return {
-    description: getDescription(club),
-    startTime: getStartTime(primary),
-    room: getRoom(primary),
-    members: getMembers(club),
-    status: club.status,
+import {
+  GET_ALL_PENDING_CLUBS,
+  UPDATE_CLUB,
+} from '../../../../libs/club-queries';
+
+import { PendingClubsData, Club } from '../../../../libs/types';
+import { mapGetAllClubsToClubs } from '../../../../libs/club-mappers';
+import { PendingModal } from './PendingModal';
+
+export const Pending = () => {
+  const [open, setOpen] = useState(false);
+
+  const { data } = useQuery<PendingClubsData>(GET_ALL_PENDING_CLUBS);
+
+  const pendingClubs = mapGetAllClubsToClubs(data?.getAllPendingClubs ?? []);
+
+  const [updateClub] = useMutation(UPDATE_CLUB);
+
+  const handleApprove = async (club: Club) => {
+    console.log('APPROVE CLICKED', club);
+    await updateClub({
+      variables: {
+        input: {
+          id: club.id,
+          status: 'approved',
+        },
+      },
+    });
   };
-}
 
-export const PendingClubDetail = ({ club }: PendingClubDetailProps) => {
-  const display = getPendingDetailDisplay(club);
+  const handleReject = async (club: Club) => {
+    await updateClub({
+      variables: {
+        input: {
+          id: club.id,
+          status: 'declined',
+        },
+      },
+    });
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   return (
-    <div>
-      <p className="text-sm text-muted-foreground pb-2.5">
-        {display.description}
-      </p>
+    <>
+      <button onClick={handleOpen}>
+        Pending ({pendingClubs.length})
+      </button>
 
-      <div className="grid grid-cols-2 gap-3">
-        <DetailTile
-          icon={<Clock size={14} />}
-          label="Schedule"
-          value={display.startTime}
+      {open && (
+        <PendingModal
+          pending={pendingClubs}
+          setOpenModal={setOpen}
+          onApprove={handleApprove}
+          onReject={handleReject}
         />
-        <DetailTile
-          icon={<DoorOpen size={14} />}
-          label="Room"
-          value={display.room}
-        />
-        <DetailTile
-          icon={<Users2 size={14} />}
-          label="Members"
-          value={display.members}
-        />
-        <DetailTile
-          icon={<Calendar size={14} />}
-          label="Status"
-          value={display.status}
-        />
-      </div>
-    </div>
+      )}
+    </>
   );
 };

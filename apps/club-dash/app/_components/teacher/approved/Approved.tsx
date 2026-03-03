@@ -1,55 +1,32 @@
 import { Calendar, DoorOpen, Users2, Clock } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { gql } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { DetailTile } from '../main/DetailTile';
 import { ApprovedClubDetailProps, Data } from '../../../../libs/types';
-import { EditTimetableDialog } from './EditTimetableDialog';
+import { EditTimetableDialog } from './edit/EditTimetableDialog';
 import {
   getDetailDisplay,
   mockClassroom,
   mockDuration,
   mockStartTime,
 } from './approved-utils';
-
-const DELETE_CLUB = gql`
-  mutation DeleteClub($id: ID!) {
-    deleteClub(id: $id)
-  }
-`;
-
-type DeleteClubData = {
-  deleteClub: string;
-};
-
-export const GET_ALL_CLUBS = gql`
-  query GetAllClubs {
-    getAllClubs {
-      id
-      name
-      description
-      creatorId
-      teacherId
-      type
-      status
-      preferredTeachers
-      minMember
-      maxMember
-      timetables {
-        id
-        clubId
-        date
-        room
-        clubStartTime
-        duration
-      }
-    }
-  }
-`;
-
-function getAllTimetablesFromData(data: Data | undefined) {
-  return data?.getAllClubs?.flatMap((c) => c.timetables ?? []) ?? [];
-}
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@intern-3a-club/shadcn';
+import {
+  DELETE_CLUB,
+  DeleteClubData,
+  GET_ALL_CLUBS,
+  getAllTimetablesFromData,
+} from '../../../../libs/club-queries';
 
 export const ApprovedClubDetail = ({
   club,
@@ -72,11 +49,9 @@ export const ApprovedClubDetail = ({
     }
   );
 
-  const handleDeleteClick = async () => {
-    if (window.confirm('Та энэ клубыг устгахдаа итгэлтэй байна уу?')) {
-      await deleteClub({ variables: { id: club.id } });
-      onDelete?.(club);
-    }
+  const handleDeleteConfirm = async () => {
+    await deleteClub({ variables: { id: club.id } });
+    onDelete?.(club);
   };
 
   const handleOpenEdit = () => {
@@ -127,13 +102,34 @@ export const ApprovedClubDetail = ({
             Edit
           </button>
 
-          <button
-            onClick={handleDeleteClick}
-            disabled={isDeleting}
-            className="flex-1 py-2 rounded-2xl bg-secondary border border-border text-foreground/70 font-black uppercase text-xs"
-          >
-            {isDeleting ? 'Deleting...' : 'Delete'}
-          </button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                disabled={isDeleting}
+                className="flex-1 py-2 rounded-2xl bg-secondary border border-border text-foreground/70 font-black uppercase text-xs"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </AlertDialogTrigger>
+
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Клуб устгах уу?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Та энэ клубыг устгахдаа итгэлтэй байна уу? Энэ үйлдлийг буцааж
+                  болохгүй.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+
+              <AlertDialogFooter>
+                <AlertDialogCancel>Цуцлах</AlertDialogCancel>
+
+                <AlertDialogAction onClick={handleDeleteConfirm}>
+                  Устгах
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 
