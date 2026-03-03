@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { Avatar, AvatarImage } from '../app/JoinClub/_components/ui/Avatar';
+import { Avatar, AvatarImage } from '../../app/JoinClub/_components/ui/Avatar';
 
 describe('Avatar Component', () => {
   it('Avatar доторх контентыг зөв харуулж байна', () => {

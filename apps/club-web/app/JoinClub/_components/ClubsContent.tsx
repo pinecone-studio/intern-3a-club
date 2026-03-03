@@ -8,7 +8,7 @@ import { ApprovedClubData, ExtendedClub, TeacherData } from '../../../lib/type';
 import {
   GET_ALL_APPROVED_CLUBS,
   GET_ALL_TEACHERS,
-} from '../_components/club-query';
+} from '../../../lib/club-query';
 
 const DEFAULT_USER_ID = 'USER123';
 
