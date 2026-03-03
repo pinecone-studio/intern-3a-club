@@ -10,7 +10,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ClerkProvider>
+        <ClerkProvider clerkJSVersion="5.125.3">
           <Providers>{children}</Providers>
         </ClerkProvider>
       </body>

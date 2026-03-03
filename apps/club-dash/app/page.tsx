@@ -50,7 +50,7 @@ const isAbortError = (err: unknown): boolean => {
 export default function Dashboard() {
   const [activeView, setActiveView] = useState<string>('Join Club');
   const [isSynced, setIsSynced] = useState(false);
-  const { isLoaded, userId } = useAuth();
+  const { isLoaded, userId, getToken } = useAuth();
 
   const [syncUser, { loading, error }] =
     useMutation<SyncUserResponse>(SYNC_USER_MUTATION);
@@ -58,8 +58,19 @@ export default function Dashboard() {
   const performSync = useCallback(
     async (signal: AbortSignal) => {
       try {
+        const token = await getToken();
+        if (!token) {
+          console.error('Синхрончлол алгасагдлаа: Clerk token олдсонгүй.');
+          return;
+        }
+
         const { data } = await syncUser({
-          context: { fetchOptions: { signal } },
+          context: {
+            fetchOptions: { signal },
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          },
         });
         console.log({ data });
         if (data?.syncUser) {
@@ -72,7 +83,7 @@ export default function Dashboard() {
         console.error('Синхрончлолын алдаа:', err);
       }
     },
-    [syncUser]
+    [getToken, syncUser]
   );
 
   useEffect(() => {
