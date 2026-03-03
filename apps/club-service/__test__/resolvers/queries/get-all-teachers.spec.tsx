@@ -22,6 +22,7 @@ describe('getAllTeachers', () => {
         id: 'teacher-1',
         firstName: 'Bold',
         lastName: 'Bat',
+        azureEmail: 'bold.bat@nest.edu.mn',
         profilePicture: 'url-1',
       },
     ];
@@ -38,6 +39,7 @@ describe('getAllTeachers', () => {
       id: expect.anything(),
       firstName: expect.anything(),
       lastName: expect.anything(),
+      azureEmail: expect.anything(),
       profilePicture: expect.anything(),
     });
     expect(result).toEqual(mockTeachers);

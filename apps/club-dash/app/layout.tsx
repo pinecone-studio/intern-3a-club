@@ -1,20 +1,19 @@
 import { Providers } from '../libs/apollo/Providers';
 import './global.css';
-import { ClerkProvider } from '@clerk/nextjs';
 
-const RootLayout = ({
+import { ClerkProvider } from '@clerk/nextjs';
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}): React.ReactNode => {
+}) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body>
+    <html lang="en">
+      <body>
+        <ClerkProvider>
           <Providers>{children}</Providers>
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
-};
-export default RootLayout;
+}

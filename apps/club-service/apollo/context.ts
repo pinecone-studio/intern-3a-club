@@ -39,6 +39,8 @@ const verifyClerkToken = async (token: string, secretKey: string) => {
 export const createContext = async ({ req }: { req: NextRequest }) => {
   const token = getValidatedToken(req);
   const secretKey = process.env.CLERK_SECRET_KEY;
+  console.log('auth header', req.headers.get('authorization'));
+
 
   if (!token) return { clerkId: null, email: null };
   if (!secretKey) {
