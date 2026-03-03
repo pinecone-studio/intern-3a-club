@@ -16,6 +16,7 @@ jest.mock('db/drizzle', () => ({
   },
 }));
 
+// Дотоод ensureCreatorId-г биш, түүний ашиглаж буй utility-г mock хийх нь илүү бодитой тест болно
 jest.mock('gql-utils/user/user.util', () => ({
   getCreatorId: jest.fn(),
 }));
@@ -34,6 +35,7 @@ describe('getAllClubsByCreatorId query', () => {
       fail('Should have thrown UNAUTHENTICATED error');
     } catch (error) {
       const gqlError = error as GraphQLError;
+      expect(gqlError).toBeInstanceOf(GraphQLError);
       expect(gqlError.message).toBe('Нэвтрээгүй байна.');
       expect(gqlError.extensions?.code).toBe('UNAUTHENTICATED');
     }
@@ -53,13 +55,13 @@ describe('getAllClubsByCreatorId query', () => {
   });
 
   it('Амжилттай үед тухайн creator-ийн клубүүдийг буцаах ёстой', async () => {
-    const mockData = [
-      { id: 'club-1', name: 'Basketball', creatorId: mockCreatorId },
-      { id: 'club-2', name: 'Coding', creatorId: mockCreatorId },
+    const mockClubs = [
+      { id: 'club-1', name: 'Science Club', creatorId: mockCreatorId },
+      { id: 'club-2', name: 'Music Club', creatorId: mockCreatorId },
     ];
 
     (getCreatorId as jest.Mock).mockResolvedValueOnce(mockCreatorId);
-    mockChain.where.mockResolvedValueOnce(mockData);
+    mockChain.where.mockResolvedValueOnce(mockClubs);
 
     const result = await getAllClubsByCreatorId(
       null,
@@ -67,22 +69,25 @@ describe('getAllClubsByCreatorId query', () => {
       { clerkId: mockClerkId }
     );
 
-    expect(result).toEqual(mockData);
+    expect(result).toEqual(mockClubs);
     expect(getCreatorId).toHaveBeenCalledWith(mockClerkId);
     expect(DB.select).toHaveBeenCalled();
     expect(mockChain.from).toHaveBeenCalledWith(clubs);
   });
 
-  it('Өгөгдлийн сангийн алдаа гарсан үед ерөнхий GraphQLError шидэх ёстой', async () => {
+  it('Өгөгдлийн сангийн алдаа гарсан үед GraphQLError шидэх ёстой', async () => {
     (getCreatorId as jest.Mock).mockResolvedValueOnce(mockCreatorId);
-    mockChain.where.mockRejectedValueOnce(new Error('DB connection lost'));
+    mockChain.where.mockRejectedValueOnce(new Error('DB Connection Fail'));
 
     try {
       await getAllClubsByCreatorId(null, {}, { clerkId: mockClerkId });
-      fail('Should have thrown error');
+      fail('Should have thrown general error');
     } catch (error) {
       const gqlError = error as GraphQLError;
-      expect(gqlError.message).toBe('Клубүүдийг авахад алдаа гарлаа.');
+      // Хэрэв ensureCreatorId-аас шидсэн GraphQLError биш бол ерөнхий мессеж ирнэ
+      expect(gqlError.message).toBe(
+        'Клубүүдийг creator id-аар авахад алдаа гарлаа.'
+      );
     }
   });
 });

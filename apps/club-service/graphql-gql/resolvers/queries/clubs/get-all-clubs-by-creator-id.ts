@@ -4,29 +4,37 @@ import { eq } from 'drizzle-orm';
 import { getCreatorId } from 'gql-utils/user/user.util';
 import { GraphQLError } from 'graphql';
 
-export const getAllClubsByCreatorId = async (
-  _: unknown,
-  __: unknown,
-  context: { clerkId?: string }
-) => {
-  if (!context.clerkId) {
+const ensureCreatorId = async (clerkId?: string): Promise<string> => {
+  if (!clerkId) {
     throw new GraphQLError('Нэвтрээгүй байна.', {
       extensions: { code: 'UNAUTHENTICATED' },
     });
   }
 
-  try {
-    const creatorId = await getCreatorId(context.clerkId);
+  const creatorId = await getCreatorId(clerkId);
 
-    if (!creatorId) {
-      throw new GraphQLError('Хэрэглэгч олдсонгүй.', {
-        extensions: { code: 'NOT_FOUND' },
-      });
-    }
+  if (!creatorId) {
+    throw new GraphQLError('Хэрэглэгч олдсонгүй.', {
+      extensions: { code: 'NOT_FOUND' },
+    });
+  }
+
+  return creatorId;
+};
+
+export const getAllClubsByCreatorId = async (
+  _: unknown,
+  __: unknown,
+  context: { clerkId?: string }
+) => {
+  try {
+    const creatorId = await ensureCreatorId(context.clerkId);
 
     return await DB.select().from(clubs).where(eq(clubs.creatorId, creatorId));
   } catch (error) {
+    if (error instanceof GraphQLError) throw error;
+
     console.error('Error:', error);
-    throw new GraphQLError('Клубүүдийг авахад алдаа гарлаа.');
+    throw new GraphQLError('Клубүүдийг creator id-аар авахад алдаа гарлаа.');
   }
 };

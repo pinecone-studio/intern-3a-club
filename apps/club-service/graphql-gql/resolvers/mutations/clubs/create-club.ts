@@ -1,6 +1,5 @@
 import { DB } from 'db/drizzle';
-import { clubs, students, teachers, timetable } from 'db/schema';
-import { eq } from 'drizzle-orm';
+import { clubs, timetable } from 'db/schema';
 import { CreateClubWithSchedulesArgs } from 'gql-type';
 import {
   handleMutationError,
