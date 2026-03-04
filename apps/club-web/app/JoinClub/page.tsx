@@ -14,7 +14,7 @@ const JoinClubPage = () => {
   if (error) return <div>Алдаа гарлаа: {error.message}</div>;
 
   return (
-    <div className="min-h-screen bg-[url('/pinebaatar.png')] w-full bg-cover bg-center bg-no-repeat">
+    <div className="min-h-screen  w-full bg-cover bg-center bg-no-repeat">
       <ClubsContent />
       <JoinAndLeaveLogic />
     </div>

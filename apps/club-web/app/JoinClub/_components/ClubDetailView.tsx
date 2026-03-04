@@ -45,11 +45,14 @@ export const ClubDetailView = ({
   handleEnroll,
   handleLeave,
 }: ClubDetailViewProps) => {
-
- 
-
   return (
-    <div className="flex-1 bg-blue-600/20 border border-white/5 rounded-3xl p-6 lg:p-8">
+    <div
+      className={`flex-1 rounded-3xl p-6 lg:p-8 transition-colors ${
+        banned
+          ? 'bg-red-600/15 border border-red-500/50'
+          : 'bg-blue-600/20 border border-white/5'
+      }`}
+    >
       <header className="mb-8 flex justify-between items-start">
         <div className="space-y-2">
        

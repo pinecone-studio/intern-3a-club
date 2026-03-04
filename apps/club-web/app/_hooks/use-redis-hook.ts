@@ -30,10 +30,19 @@ export const useClubAction = ({
       setBanned(true);
       return true;
     }
+
+    setRemainingTime(null);
+    setBanned(false);
     return false;
   };
 
   useEffect(() => {
+    if (!userid || !clubid) {
+      setRemainingTime(null);
+      setBanned(false);
+      return;
+    }
+
     const fetchBan = async () => {
       try {
         const res = await fetch(
@@ -79,6 +88,11 @@ export const useClubAction = ({
 
   // handleEnroll (Complexity: 3)
   const handleEnroll = useCallback(async () => {
+    if (!userid) {
+      toast.error('Эхлээд нэвтэрнэ үү.');
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch('/api/club/join', {
@@ -97,7 +111,17 @@ export const useClubAction = ({
     }
   }, [userid, clubid, onEnrollSuccess, processJoinResult]); // eslint-disable-line react-hooks/exhaustive-deps
   const handleLeave = useCallback(async () => {
-    if (!window.confirm('Та клубээс гарахдаа итгэлтэй байна уу?')) return;
+    if (!userid) {
+      toast.error('Эхлээд нэвтэрнэ үү.');
+      return;
+    }
+
+    if (
+      !window.confirm(
+        'Та клубээс гарахдаа итгэлтэй байна уу?\n\nГарвал энэ клубт 2 минут дахин нэгдэх боломжгүй болно.'
+      )
+    )
+      return;
 
     setLoading(true);
     try {

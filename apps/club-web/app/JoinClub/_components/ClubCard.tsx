@@ -42,17 +42,23 @@ const ClubSchedule = ({ timetable }: { timetable?: ApprovedClubTimetable }) => {
 
 export const ClubCard = ({ club, isSelected, onClick }: ClubCardProps) => {
   const handleCardClick = () => onClick(club.id);
+  const isBanned = (club.bannedUntil ?? 0) > Date.now();
+  const isEnrolled = !!club.isEnrolled;
 
   const containerClass = cn(
     'w-full p-4 rounded-xl cursor-pointer border transition-colors duration-150',
-    isSelected
-      ? 'bg-blue-600/20 border-blue-500'
-      : 'bg-blue-600/20 border-white/5'
+    isBanned
+      ? 'bg-red-600/10 border-red-500/70'
+      : isEnrolled
+        ? 'bg-emerald-600/15 border-emerald-500/70'
+      : isSelected
+        ? 'bg-blue-600/20 border-blue-500'
+        : 'bg-blue-600/20 border-white/5'
   );
 
   const titleClass = cn(
     'text-sm font-bold uppercase truncate',
-    isSelected ? 'text-white' : 'text-white/70'
+    isEnrolled ? 'text-emerald-200' : isSelected ? 'text-white' : 'text-white/70'
   );
 
   return (
