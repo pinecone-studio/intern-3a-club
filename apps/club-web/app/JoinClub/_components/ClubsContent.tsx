@@ -11,20 +11,6 @@ import {
   GET_ALL_TEACHERS,
 } from '../../../lib/club-query';
 
-
-const LoadingState = () => (
-  <div className="p-12 text-center text-white/50 animate-pulse uppercase text-[10px] font-bold tracking-widest">
-    Уншиж байна...
-  </div>
-);
-
-const ErrorState = ({ msg }: { msg: string }) => (
-  <div className="text-red-500 p-12 text-center font-bold italic text-sm">
-    Алдаа: {msg}
-  </div>
-);
-
-
 const compareByEnrollment = (a: ExtendedClub, b: ExtendedClub): number => {
   const now = Date.now();
   const aBanned = (a.bannedUntil ?? 0) > now;
@@ -156,8 +142,7 @@ export const ClubsContent = ({ userId }: ClubsContentProps) => {
   const logic = useClubsLogic();
   const effectiveUserId = userId ?? clerkUserId ?? '';
 
-  if (logic.loading) return <LoadingState />;
-  if (logic.error) return <ErrorState msg={logic.error.message} />;
+
 
   return <ClubsLayout userId={effectiveUserId} logic={logic} />;
 };
