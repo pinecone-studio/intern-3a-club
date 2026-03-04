@@ -18,6 +18,8 @@ export const DashboardHeader = () => {
     const next = getInitialTheme();
     setTheme(next);
     document.documentElement.classList.toggle('dark', next === 'dark');
+    (window as any).__unstable__onBeforeSetActive = undefined;
+    (window as any).__unstable__onAfterSetActive = undefined;
   }, []);
 
   const toggleTheme = () => {
@@ -77,7 +79,7 @@ export const DashboardHeader = () => {
           </SignUpButton>
         </SignedOut>
         <SignedIn>
-          <UserButton />
+          <UserButton afterSignOutUrl="/?signed_out=1" />
         </SignedIn>
       </div>
     </header>
