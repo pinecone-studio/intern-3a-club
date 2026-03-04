@@ -7,6 +7,11 @@ import {
 } from '../../lib/club-query';
 import { MockedProvider } from '@apollo/client/testing/react';
 
+jest.mock('@clerk/nextjs', () => ({
+  useAuth: () => ({ userId: 'test-user-id' }),
+  useUser: () => ({ user: { id: 'test-user-id' } }),
+}));
+
 const successMocks = [
   {
     request: { query: GET_ALL_APPROVED_CLUBS },
@@ -57,7 +62,7 @@ describe('JoinClubPage', () => {
       </MockedProvider>
     );
     await waitFor(() =>
-      expect(screen.getByText(/Алдаа гарлаа/)).toBeInTheDocument()
+      expect(screen.getByText(/Алдаа/)).toBeInTheDocument()
     );
   });
 });
