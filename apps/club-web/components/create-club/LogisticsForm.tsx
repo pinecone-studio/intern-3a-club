@@ -67,7 +67,6 @@ export const LogisticsForm = ({
         />
       </div>
 
-
       <CalendarSelectField
         label="Үргэлжлэх"
         icon={<Timer size={12} />}

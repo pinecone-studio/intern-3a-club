@@ -68,7 +68,7 @@ const PreferredSection = ({
   handlePreferredToggle,
 }: PreferredProps) => (
   <div>
-    <label className="text-sm font-black flex items-center gap-2">
+    <label className="text-sm font-semibold flex items-center gap-2 mb-6">
       Багш сонгох
     </label>
     <PreferredTeacherList
