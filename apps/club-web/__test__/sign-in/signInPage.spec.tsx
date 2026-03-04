@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import SignInPage from 'apps/club-web/app/sign-in/[[...sign-in]]/page';
+import SignInPage from '../../app/sign-in/[[...sign-in]]/page';
 
 jest.mock('@clerk/nextjs', () => ({
   SignIn: () => <div data-testid="clerk-signin">Mocked SignIn Component</div>,

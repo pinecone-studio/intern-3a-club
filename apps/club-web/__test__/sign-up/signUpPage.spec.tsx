@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import SignUpPage from 'apps/club-web/app/sign-up/[[...sign-up]]/page';
+import SignUpPage from '../../app/sign-up/[[...sign-up]]/page';
 
 jest.mock('@clerk/nextjs', () => ({
   SignUp: () => <div data-testid="clerk-signup">Mocked SignUp Component</div>,

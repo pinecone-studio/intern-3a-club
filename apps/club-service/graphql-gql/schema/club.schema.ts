@@ -33,6 +33,7 @@ export const clubTypeDefs = gql`
     createdAt: String!
     updatedAt: String!
     timetables: [Timetable]
+    members: [ClubMember]
   }
 
   input CreateClubInput {
@@ -54,10 +55,10 @@ export const clubTypeDefs = gql`
 
   extend type Query {
     getAllClubs: [Club!]!
-    getClubById(id: ID!): Club
     getAllPendingClubs: [Club!]!
     getAllApprovedClubs: [Club!]!
     getAllClubsByCreatorId: [Club!]!
+    getClubById(id: ID!): Club
   }
 
   extend type Mutation {

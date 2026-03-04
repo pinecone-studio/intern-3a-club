@@ -45,7 +45,7 @@ const graphqlHandler = async (req: NextRequest): Promise<Response> => {
     const body = (await req.json()) as GraphqlRequest;
     const { query, variables, operationName } = body;
 
-    // 1. Context-ийг try/catch дотор үүсгэх
+    //  Context-ийг try/catch дотор үүсгэх
     let contextValue = {};
     try {
       contextValue = await createContext({ req });

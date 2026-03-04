@@ -4,6 +4,7 @@ import { clubTypeDefs } from './club.schema';
 import { timetableTypeDefs } from './timetable.schema';
 import { teacherTypeDefs } from './teacher.schema';
 import { studentTypeDefs } from './student.schema';
+import { clubMemberTypeDefs } from './club.member.schema';
 
 // Суурь Query болон Mutation (бусад схемүүд үүнийг extend хийнэ)
 const baseTypeDefs = gql`
@@ -15,7 +16,6 @@ const baseTypeDefs = gql`
   }
 `;
 
-console.log('Student type definition:', studentTypeDefs); // Энэ undefined байвал импорт алдаатай байна
 // mergeTypeDefs массив дотор нэмж өгөх
 export const typeDefs = mergeTypeDefs([
   baseTypeDefs,
@@ -23,4 +23,5 @@ export const typeDefs = mergeTypeDefs([
   teacherTypeDefs,
   clubTypeDefs,
   timetableTypeDefs,
+  clubMemberTypeDefs,
 ]);
