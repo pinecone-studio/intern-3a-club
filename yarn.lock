@@ -5637,10 +5637,10 @@ __metadata:
 
 "@pinecone-monorepo/workspace-plugin@file:tools/workspace-plugin::locator=%40intern-3a-club%2Fsource%40workspace%3A.":
   version: 0.0.1
-  resolution: "@pinecone-monorepo/workspace-plugin@file:tools/workspace-plugin#tools/workspace-plugin::hash=d6c205&locator=%40intern-3a-club%2Fsource%40workspace%3A."
+  resolution: "@pinecone-monorepo/workspace-plugin@file:tools/workspace-plugin#tools/workspace-plugin::hash=845e08&locator=%40intern-3a-club%2Fsource%40workspace%3A."
   dependencies:
     "@nx/devkit": "npm:17.1.3"
-  checksum: 10c0/ce0ba3bc92738a354d77b0fe6102c357cacbe7da5422319db097d933ceb8925d610cebdb1d06326fa164793e1d8d4dde49f0eafc20e7fd4d9ac77a76b304b99a
+  checksum: 10c0/0db5d4a97ac16c960843b5ced1ede023245f65d11359d680db8aee337cc5930f2e133f8cd0d3117de75786589c2a964f9a142d00f14aadee9fe85d9abc5f91a3
   languageName: node
   linkType: hard
 
