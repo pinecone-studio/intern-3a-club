@@ -13,41 +13,6 @@ import {
   GET_ALL_TEACHERS,
 } from '../../../lib/club-query';
 
-
-const LoadingState = () => (
-  <div className="p-12 text-center text-white/50 animate-pulse uppercase text-[10px] font-bold tracking-widest">
-    Уншиж байна...
-  </div>
-);
-
-const ErrorState = ({ msg }: { msg: string }) => (
-  <div className="text-red-500 p-12 text-center font-bold italic text-sm">
-    Алдаа: {msg}
-  </div>
-);
-
-interface SyncUserResponse {
-  syncUser: {
-    __typename: 'Teacher' | 'Student';
-    id: string;
-  };
-}
-
-const SYNC_USER_MUTATION = gql`
-  mutation SyncUser {
-    syncUser {
-      __typename
-      ... on Teacher {
-        id
-      }
-      ... on Student {
-        id
-      }
-    }
-  }
-`;
-
-
 const compareByEnrollment = (a: ExtendedClub, b: ExtendedClub): number => {
   if (a.isEnrolled === b.isEnrolled) return 0;
   return a.isEnrolled ? -1 : 1;
@@ -205,9 +170,7 @@ export const ClubsContent = ({ userId }: ClubsContentProps) => {
   const effectiveUserId = userId ?? clerkUserId ?? '';
   const hasClubs = logic.sortedClubs.length > 0;
 
-  // Show full-screen loading only on first load, not on background refetch.
-  if (logic.loading && !hasClubs) return <LoadingState />;
-  if (logic.error && !hasClubs) return <ErrorState msg={logic.error.message} />;
+
 
   return <ClubsLayout userId={effectiveUserId} logic={logic} />;
 };
