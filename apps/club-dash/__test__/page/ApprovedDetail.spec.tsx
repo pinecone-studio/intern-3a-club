@@ -1,6 +1,6 @@
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { ApprovedClubDetail } from '../../app/_components/teacher/approved/Approved';
+import { ApprovedClubDetail } from '../../app/_components/teacher/approved/main/Approved';
 import type { Club } from '../../libs/types';
 
 const mockMutate = jest.fn();
@@ -51,9 +51,7 @@ describe('ApprovedClubDetail', () => {
 
   it('calls delete mutation when Delete clicked and confirm true', async () => {
     mockMutate.mockResolvedValue({ data: { deleteClub: '1' } });
-    render(
-      <ApprovedClubDetail club={club} onDelete={jest.fn()} />
-    );
+    render(<ApprovedClubDetail club={club} onDelete={jest.fn()} />);
 
     fireEvent.click(screen.getByText(/delete/i));
     fireEvent.click(screen.getByText('Устгах'));

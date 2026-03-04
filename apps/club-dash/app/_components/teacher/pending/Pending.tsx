@@ -50,9 +50,7 @@ export const Pending = () => {
 
   return (
     <>
-      <button onClick={handleOpen}>
-        Pending ({pendingClubs.length})
-      </button>
+      <button onClick={handleOpen}>Pending ({pendingClubs.length})</button>
 
       {open && (
         <PendingModal

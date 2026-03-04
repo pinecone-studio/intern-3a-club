@@ -24,19 +24,24 @@ export const ClubCardHeader = ({ req }: { req: Club }) => {
   return (
     <div className="flex items-center justify-between pl-5 w-full min-w-0">
       <div className="min-w-0">
-        <h3 className="text-xl font-black uppercase truncate">{req.name}</h3>
-        <p className="text-xs text-muted-foreground uppercase truncate">
+        <h3
+          className="text-xl font-semibold
+         truncate"
+        >
+          {req.name}
+        </h3>
+        <p className="text-xs text-muted-foreground uppercase truncate mt-0.5">
           {display.description}
         </p>
-        <p className="text-[10px] text-muted-foreground mt-1 truncate">
+        <p className="text-[10px] text-muted-foreground mt-0.5 truncate">
           Members: {req.minMember}–{req.maxMember} • Status: {req.status}
         </p>
       </div>
 
       <div className="flex items-center gap-6 text-sm font-bold">
-        <span>{display.startTime}</span>
-        <span className="opacity-50">|</span>
         <span>{display.room}</span>
+        <span className="opacity-50">|</span>
+        <span>{display.startTime}</span>
       </div>
     </div>
   );

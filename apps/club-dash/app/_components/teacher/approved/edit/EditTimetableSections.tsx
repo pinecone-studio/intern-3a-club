@@ -45,6 +45,8 @@ type FooterSectionProps = {
   saving: boolean;
   saveLabel: string;
   onSave: () => void;
+  onDelete?: () => void;
+  deleting?: boolean;
 };
 
 export const EditTimetableCalendarSection = ({
@@ -143,8 +145,42 @@ export const EditTimetableFooterSection = ({
   saving,
   saveLabel,
   onSave,
+  onDelete,
+  deleting,
 }: FooterSectionProps) => (
-  <DialogFooter className="border-t px-6 py-4 flex justify-end">
+  <DialogFooter className="border-t px-6 py-4 flex justify-between gap-2">
+    {/* Delete товч */}
+    {onDelete && (
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={!active || deleting}
+          >
+            {deleting ? 'Устгаж байна...' : 'Устгах'}
+          </Button>
+        </AlertDialogTrigger>
+
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Хуваарь устгах уу?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Та энэ хуваарийг устгахдаа итгэлтэй байна уу?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Цуцлах</AlertDialogCancel>
+            <AlertDialogAction onClick={onDelete} disabled={deleting}>
+              Тийм, устгах
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    )}
+
+    {/* Save товч (одоо байгаа логик) */}
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button className="w-full" size="sm" disabled={!active || saving}>
@@ -162,7 +198,6 @@ export const EditTimetableFooterSection = ({
 
         <AlertDialogFooter>
           <AlertDialogCancel>Цуцлах</AlertDialogCancel>
-
           <AlertDialogAction onClick={onSave} disabled={saving}>
             {saving ? 'Saving...' : 'Хадгалах'}
           </AlertDialogAction>

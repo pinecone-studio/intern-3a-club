@@ -1,6 +1,23 @@
 import { Clock, DoorOpen, Users, Check, X } from 'lucide-react';
 import { Club } from '../../../../libs/types';
-import { Button, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, AlertDialogTitle, AlertDialog, AlertDialogTrigger, AlertDialogHeader, AlertDialogDescription, AlertDialogContent, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@intern-3a-club/shadcn';
+import {
+  Button,
+  Badge,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  AlertDialogTitle,
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogHeader,
+  AlertDialogDescription,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@intern-3a-club/shadcn';
 
 type PendingModalItemProps = {
   club: Club;
@@ -12,7 +29,8 @@ type PendingModalItemProps = {
 
 const getPrimaryTimetable = (club: Club) => club.timetables?.[0];
 
-const getMembersLabel = (club: Club) => `${club.minMember ?? '-'}-${club.maxMember ?? '-'}`;
+const getMembersLabel = (club: Club) =>
+  `${club.minMember ?? '-'}-${club.maxMember ?? '-'}`;
 
 // eslint-disable-next-line complexity,react/function-component-definition
 export const PendingModalItem = ({
@@ -152,4 +170,3 @@ export const PendingModalItem = ({
     </div>
   );
 };
-
