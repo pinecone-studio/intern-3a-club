@@ -86,8 +86,9 @@ const MemberProgress = ({ current, max, percent }: MemberProgressProps) => (
 );
 
 export const ClubInfoGrid = ({ club }: { club: ExtendedClub }) => {
+  const currentMembers = club.members?.length || 0;
   const { current, max, percent } = getMemberStats(
-    club.minMember,
+    currentMembers,
     club.maxMember
   );
 

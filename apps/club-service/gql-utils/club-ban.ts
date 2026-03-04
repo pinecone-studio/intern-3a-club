@@ -1,4 +1,4 @@
-const BAN_SECONDS = 120;
+const BAN_SECONDS = 20;
 
 const getUpstashConfig = () => {
   const url = process.env.UPSTASH_REDIS_REST_URL;

@@ -1,7 +1,8 @@
 import { redis } from '../../../../lib/redis';
 import { NextResponse } from 'next/server';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
+const BAN_SECONDS = 20;
 
 type LeavePayload = {
   userId: string;
@@ -44,8 +45,12 @@ export async function POST(req: Request) {
     }
 
     const { userId, clubId } = body;
+    if (!redis) {
+      return NextResponse.json({ success: true, remainingTime: BAN_SECONDS });
+    }
+
     const key = `club:ban:${clubId}:${userId}`;
-    await redis.set(key, '1', { ex: 120 });
+    await redis.set(key, '1', { ex: BAN_SECONDS });
     const ttl = await redis.ttl(key);
     return NextResponse.json({ success: true, remainingTime: ttl });
   } catch (error: unknown) {

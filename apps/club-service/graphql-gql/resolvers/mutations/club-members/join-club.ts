@@ -2,6 +2,7 @@ import { DB } from 'db/drizzle';
 import { clubMembers, clubs, students } from 'db/schema';
 import { handleMutationError } from 'gql-utils';
 import { getJoinBanTtlSeconds } from 'gql-utils/club-ban';
+import { publishClubEvent } from 'gql-utils/realtime-publisher';
 import { GraphQLError } from 'graphql';
 import { eq, and, count } from 'drizzle-orm';
 
@@ -89,6 +90,13 @@ export const joinClub = async (
         studentId: student.id,
       })
       .returning();
+
+    await publishClubEvent({
+      type: 'club_member_joined',
+      clubId,
+      clerkId: context.clerkId,
+      at: Date.now(),
+    });
 
     return newMember;
   } catch (error) {
