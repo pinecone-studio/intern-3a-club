@@ -81,11 +81,11 @@ export const ClubForm = (props: ClubFormProps) => {
 
   return (
     <div className="lg:col-span-7">
-      <div className="rounded-2xl border border-blue-900/20 bg-gradient-to-br from-slate-900/80 via-blue-900/60 to-blue-800/50 p-6 lg:p-8 backdrop-blur-sm shadow-lg">
+      <div className="rounded-xl border border-blue-900/20 bg-gradient-to-br from-slate-900/80 via-blue-900/60 to-blue-800/50 p-5 lg:p-7 backdrop-blur-sm shadow-lg">
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-lg font-semibold text-white">
+              <h4 className="text-sm font-medium text-white">
                 Клуб бүртгүүлэх
               </h4>
             </div>
