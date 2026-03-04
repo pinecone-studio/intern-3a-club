@@ -1,4 +1,4 @@
-import type { Club } from '../../../../libs/types';
+import type { Club } from '../../../../../libs/types';
 
 function getDescription(club: Club) {
   return club?.description ?? '';

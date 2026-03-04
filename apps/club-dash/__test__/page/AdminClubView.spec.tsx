@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { AdminClubsView } from '../../app/_components/teacher/main/AdminClubView';
-import { ApprovedClubDetail } from '../../app/_components/teacher/approved/Approved';
+import { ApprovedClubDetail } from '../../app/_components/teacher/approved/main/Approved';
 import * as useAdminClubsDataModule from '../../app/_components/teacher/main/use-admin-clubs-data';
 import type { Club } from '../../libs/types';
 import {

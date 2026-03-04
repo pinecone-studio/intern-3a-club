@@ -17,7 +17,7 @@ export default function RootLayout({
         <ClerkProvider>
           <Providers>
             <Header />
-            <div className="max-w-[1400px] mx-auto flex items-start min-h-screen  flex items-center justify-center">
+            <div className="max-w-[1400px] mx-auto flex items-start min-h-screen  justify-center">
               <Sidebar />
               <main className="flex-1 min-w-0">{children}</main>
             </div>

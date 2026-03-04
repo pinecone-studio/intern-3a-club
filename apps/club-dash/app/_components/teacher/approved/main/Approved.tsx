@@ -1,9 +1,9 @@
 import { Calendar, DoorOpen, Users2, Clock } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { DetailTile } from '../main/DetailTile';
-import { ApprovedClubDetailProps, Data } from '../../../../libs/types';
-import { EditTimetableDialog } from './edit/EditTimetableDialog';
+import { DetailTile } from '../../main/DetailTile';
+import { ApprovedClubDetailProps, Data } from '../../../../../libs/types';
+import { EditTimetableDialog } from '../edit/EditTimetableDialog';
 import {
   getDetailDisplay,
   mockClassroom,
@@ -26,7 +26,7 @@ import {
   DeleteClubData,
   GET_ALL_CLUBS,
   getAllTimetablesFromData,
-} from './approved-queries';
+} from '../../../../../libs/club-queries';
 
 export const ApprovedClubDetail = ({
   club,
@@ -67,9 +67,7 @@ export const ApprovedClubDetail = ({
   return (
     <>
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">{display.description}</p>
-
+        <div className="space-y-4 pt-4">
           <div className="grid grid-cols-2 gap-3">
             <DetailTile
               icon={<Clock size={14} />}

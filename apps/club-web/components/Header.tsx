@@ -27,7 +27,7 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[#050816]/80 backdrop-blur-xl border-b border-white/5">
-      <div className="max-w-[1400px] mx-auto flex items-center justify-between py-4">
+      <div className="max-w-[1400px] mx-auto flex items-center justify-between py-2.5">
         <div className="flex items-center gap-10">
           <div className="h-8 w-8  flex items-center justify-center">
             <div className="flex items-center lg:gap-6">
@@ -57,7 +57,7 @@ export const Header = () => {
             </div>
           </div>
 
-          <nav className="flex items-center gap-8 text-ls font-medium text-white">
+          <nav className="flex items-center gap-8 text-sm font-sans text-white">
             <Link href="/" className="transition">
               Home
             </Link>
@@ -68,38 +68,38 @@ export const Header = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-5 py-3 rounded-full bg-white/5 text-white text-xl">
-            <Flame size={28} className="text-pink-500 fill-pink-500" />
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-white text-[16px]">
+            <Flame size={20} className="text-pink-500 fill-pink-500" />
             100
           </div>
 
-          <div className="flex items-center gap-2 px-5 py-3 rounded-full bg-white/5 text-white text-xl">
-            <Star size={28} className="text-yellow-400 fill-yellow-400" />
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-white text-[16px]">
+            <Star size={20} className="text-yellow-400 fill-yellow-400" />
             882
           </div>
 
-          <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-white/5 text-white text-xl">
-            <div className="h-6 w-6 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold">
+          <div className="flex items-center gap-3 px-3 py-1 rounded-full bg-white/5 text-white text-[16px]">
+            <div className="h-5 w-5 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold">
               7
             </div>
             4344<span className="text-white/40">/4580XP</span>
           </div>
 
-          <button className="p-4 rounded-full bg-white/5 hover:bg-white/10 transition">
-            <RotateCcw size={18} className="text-white/60" />
+          <button className="p-3 rounded-full bg-white/5 hover:bg-white/10 transition">
+            <RotateCcw size={16} className="text-white/60" />
           </button>
 
-          <button className="p-4 rounded-full bg-white/5 hover:bg-white/10 transition">
-            <Bell size={18} className="text-white/60" />
+          <button className="p-3 rounded-full bg-white/5 hover:bg-white/10 transition">
+            <Bell size={16} className="text-white/60" />
           </button>
 
-          <button className="p-4 rounded-full bg-white/5 hover:bg-white/10 transition">
-            <User size={18} className="text-white/60" />
+          <button className="p-3 rounded-full bg-white/5 hover:bg-white/10 transition">
+            <User size={16} className="text-white/60" />
           </button>
           <SignedOut>
             <SignInButton />
             <SignUpButton>
-              <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
+              <button className="bg-[#6c47ff] text-white rounded-full font-sans text-sm sm:text-base  py-1.5 px-2 sm:px-3 cursor-pointer">
                 Sign Up
               </button>
             </SignUpButton>
@@ -107,7 +107,7 @@ export const Header = () => {
           <SignedIn>
             <button
               onClick={handleSafeSignOut}
-              className="bg-white/10 hover:bg-white/20 text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer transition"
+              className="bg-white/10 hover:bg-white/20 text-white rounded-full font-sans text-sm sm:text-base py-1.5 px-2 sm:px-3 cursor-pointer transition"
             >
               Sign out
             </button>

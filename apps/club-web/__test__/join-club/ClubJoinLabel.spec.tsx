@@ -10,11 +10,11 @@ describe('JoinLabel', () => {
 
   it('isLocked=true үед хүлээх контент харуулна', () => {
     render(<JoinLabel loading={false} isLocked={true} time={10} />);
-    expect(screen.getByText(/10с хүлээх/)).toBeInTheDocument();
+    expect(screen.getByText(/10 сek хүлээх/)).toBeInTheDocument();
   });
 
-  it('isLocked=false үед "Одоо нэгдэх" харуулна', () => {
+  it('isLocked=false үед "Клубт элсэх" харуулна', () => {
     render(<JoinLabel loading={false} isLocked={false} time={0} />);
-    expect(screen.getByText('Одоо нэгдэх')).toBeInTheDocument();
+    expect(screen.getByText('Клубт элсэх')).toBeInTheDocument();
   });
 });

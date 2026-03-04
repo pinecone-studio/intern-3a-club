@@ -26,6 +26,8 @@ type EditTimetableDialogContentProps = {
   mockDuration: { id: string; duration: string }[];
   onSave: () => void;
   saving: boolean;
+  onDelete?: () => void;
+  deleting?: boolean;
 };
 
 function toSelectedEditDates(d: Date | undefined): Date[] {
@@ -52,6 +54,8 @@ export const EditTimetableDialogContent = ({
   mockDuration,
   onSave,
   saving,
+  onDelete,
+  deleting,
 }: EditTimetableDialogContentProps) => {
   const selectedEditDates = toSelectedEditDates(selectedDate);
   const saveLabel = getSaveLabel(saving);
@@ -89,6 +93,8 @@ export const EditTimetableDialogContent = ({
         saving={saving}
         saveLabel={saveLabel}
         onSave={onSave}
+        onDelete={onDelete}
+        deleting={deleting}
       />
     </DialogContent>
   );

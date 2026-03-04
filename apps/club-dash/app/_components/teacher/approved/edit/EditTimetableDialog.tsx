@@ -16,6 +16,8 @@ import {
   type Timetable,
 } from './edit-timetable-utils';
 import { EditTimetableDialogContent } from './EditTimetableDialogContent';
+import { DELETE_TIMETABLE } from 'apps/club-dash/app/delete/page';
+import { GET_ALL_APPROVED_CLUBS } from 'apps/club-dash/app/delete/page';
 
 function applyFoundToState(
   setActive: (_t: Timetable | null) => void,
@@ -114,6 +116,28 @@ export const EditTimetableDialog = ({
     await executeUpdateAndClose();
   }, [active, selectedDate, checkConflict, executeUpdateAndClose]);
 
+  const [deleteTimetable, { loading: deleting }] = useMutation(
+    DELETE_TIMETABLE,
+    {
+      refetchQueries: [{ query: GET_ALL_APPROVED_CLUBS }],
+      onCompleted: () => {
+        // Хүсвэл энд Toast эсвэл Alert харуулж болно
+        console.log('Амжилттай устлаа');
+      },
+      onError: (error) => {
+        alert(`Алдаа гарлаа: ${error.message}`);
+      },
+    }
+  );
+
+  const handleDelete = async (timetableId: string) => {
+    if (window.confirm('Та энэ хуваарийг устгахдаа итгэлтэй байна уу?')) {
+      await deleteTimetable({
+        variables: { id: timetableId },
+      });
+    }
+  };
+
   const conflictDates = useMemo(
     () =>
       getConflictDates(
@@ -146,6 +170,8 @@ export const EditTimetableDialog = ({
         mockDuration={mockDuration}
         onSave={handleSave}
         saving={loading}
+        onDelete={active ? () => handleDelete(active.id) : undefined}
+        deleting={deleting}
       />
     </Dialog>
   );

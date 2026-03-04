@@ -39,6 +39,7 @@ const mockClubs: ExtendedClub[] = [
     __typename: 'Club',
     isEnrolled: false,
     bannedUntil: 0,
+    members: []
   },
   {
     id: '2',
@@ -56,6 +57,7 @@ const mockClubs: ExtendedClub[] = [
     __typename: 'Club',
     isEnrolled: true,
     bannedUntil: 0,
+    members: []
   },
 ];
 
