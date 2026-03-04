@@ -129,7 +129,7 @@ export const Step1 = ({
 
   const inputClass = (hasError: boolean) =>
     cn(
-      'w-full bg-black/40 border rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-primary/50 font-bold italic transition-all',
+      'w-full bg-black/40 border rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-primary/50 font-sans text-xs transition-all',
       hasError ? 'border-red-500/50 bg-red-500/5' : 'border-white/10'
     );
 
