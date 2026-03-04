@@ -1,4 +1,4 @@
-import { Calendar, DoorOpen, Users2, Clock } from 'lucide-react';
+import { Calendar, DoorOpen, Users2, Clock, ChevronDown } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { DetailTile } from '../../main/DetailTile';
@@ -33,9 +33,11 @@ export const ApprovedClubDetail = ({
   onDelete,
 }: ApprovedClubDetailProps) => {
   const display = getDetailDisplay(club);
+  console.log({ display });
   const { data } = useQuery<Data>(GET_ALL_CLUBS);
   const allTimetables = useMemo(() => getAllTimetablesFromData(data), [data]);
-  const [openEdit, setOpenEdit] = useState(false);
+  const [openEdit, setOpenEdit] = useState<boolean>(false);
+  const [openStudentList, setOpenStudentList] = useState<boolean>(false);
   const primaryTimetable = club.timetables?.[0] ?? null;
 
   const [deleteClub, { loading: isDeleting }] = useMutation<DeleteClubData>(
@@ -65,29 +67,62 @@ export const ApprovedClubDetail = ({
   const handleCloseEdit = () => setOpenEdit(false);
 
   return (
-    <>
-      <div className="grid md:grid-cols-2 gap-6">
+    <div className="flex items-start gap-80">
+      <div className="flex flex-col pt-4">
+        <button
+          onClick={() => setOpenStudentList((list) => !list)}
+          className="flex items-center justify-between w-full text-left"
+        >
+          <div className="flex items-center gap-2 text-sm font-semibold text-foreground/70">
+            <ChevronDown
+              size={14}
+              className={`transition-transform duration-200 ${
+                openStudentList ? 'rotate-180' : ''
+              }`}
+            />
+            Joined Students
+          </div>
+        </button>
+
+        {openStudentList && (
+          <div className="mt-3 flex flex-col gap-2">
+            {[].length === 0 ? (
+              <p className="text-xs text-foreground/40">No students yet</p>
+            ) : (
+              [].map((student: { id: string; name: string }) => (
+                <div
+                  key={student.id}
+                  className="text-xs text-foreground/70 py-1 border-b border-border"
+                >
+                  {student.name}
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col gap-6 ml-20">
         <div className="space-y-4 pt-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="flex flex-1 gap-3">
+            <DetailTile
+              icon={<Calendar size={14} />}
+              label="Term"
+              value={display.term}
+            />
             <DetailTile
               icon={<Clock size={14} />}
-              label="Schedule"
-              value={display.startTime}
+              label="Duration"
+              value={display.duration}
             />
             <DetailTile
-              icon={<DoorOpen size={14} />}
-              label="Room"
-              value={display.room}
-            />
-            <DetailTile
-              icon={<Users2 size={14} />}
-              label="Members"
-              value={display.members}
+              icon={<Clock size={14} />}
+              label="Frequency"
+              value={display.frequency}
             />
             <DetailTile
               icon={<Calendar size={14} />}
-              label="Status"
-              value={display.status}
+              label="Weekdays"
+              value={display.days}
             />
           </div>
         </div>
@@ -140,6 +175,6 @@ export const ApprovedClubDetail = ({
         mockDuration={mockDuration}
         allTimetables={allTimetables}
       />
-    </>
+    </div>
   );
 };
