@@ -19,11 +19,9 @@ export const ClubList = ({
   return (
     <div className="w-full lg:w-[320px] flex flex-col">
       <div className="mb-6 px-1 flex justify-between items-center">
-        <div className="space-y-1">
-          <h2 className="text-white/90 font-bold text-lg tracking-tight">
-            Клубууд
-          </h2>
-          <p className="text-[12px] font-medium text-white/40 tracking-normal">
+        <div className="">
+          <h2 className="text-white/90 font-semibold text-xl ">Клубууд</h2>
+          <p className="text-xs text-white/50">
             Өөрийн ур чадвараа дараагийн түвшинд гарга
           </p>
         </div>
