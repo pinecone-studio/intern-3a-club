@@ -81,14 +81,6 @@ const page = () => {
     onError: (error) => {
       alert(`Алдаа гарлаа: ${error.message}`);
     },
-    // Устгаж дууссаны дараа клубын мэдээллийг дахин татаж UI-г шинэчлэх
-    // refetchQueries: [{ query: GET_CLUB_BY_ID, variables: { id: clubId } }],
-    // onCompleted: () => {
-    //   alert('Хуваарь амжилттай устлаа.');
-    // },
-    // onError: (error) => {
-    //   alert(error.message);
-    // },
   });
 
   const handleDelete = async (timetableId: string) => {

@@ -1,7 +1,7 @@
 import { cn } from '../../../../../libs/utils';
 import { ClubCardHeader } from './ClubCardHeader';
 import { ClubCardActions } from './ClubCardActions';
-import { ApprovedClubDetail } from '../Approved';
+import { ApprovedClubDetail } from '../main/Approved';
 import { getContainerClass } from './Helper';
 import { ClubCardProps } from '../../../../../libs/types';
 
@@ -19,7 +19,7 @@ export const ClubCard = ({
     <div className={containerClass}>
       <div className={barClass} />
 
-      <div className="grid grid-cols-[1fr_auto] items-center gap-8 px-5 py-4">
+      <div className="grid grid-cols-[1fr_auto] items-center gap-8 px-3.5 py-2.5">
         <ClubCardHeader req={req} />
 
         <ClubCardActions

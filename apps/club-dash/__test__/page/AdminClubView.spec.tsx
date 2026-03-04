@@ -1,10 +1,13 @@
 import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { AdminClubsView } from '../../app/_components/teacher/main/AdminClubView';
-import { ApprovedClubDetail } from '../../app/_components/teacher/approved/Approved';
+import { ApprovedClubDetail } from '../../app/_components/teacher/approved/main/Approved';
 import * as useAdminClubsDataModule from '../../app/_components/teacher/main/use-admin-clubs-data';
 import type { Club } from '../../libs/types';
-import { GET_ALL_PENDING_CLUBS, GET_ALL_APPROVED_CLUBS } from '../../libs/club-queries';
+import {
+  GET_ALL_PENDING_CLUBS,
+  GET_ALL_APPROVED_CLUBS,
+} from '../../libs/club-queries';
 import { useQuery } from '@apollo/client/react';
 
 const mockMutate = jest.fn();
@@ -27,32 +30,26 @@ jest.mock('@apollo/client/react', () => ({
   useMutation: () => [mockMutate, { loading: false, data: null, error: null }],
 }));
 
-jest.mock(
-  '../../app/_components/teacher/pending/PendingModal',
-  () => ({
-    PendingModal: (props: {
-      pending: Club[];
-      onApprove: (_club: Club, _teacherId: string) => void;
-      onReject: (_club: Club) => void;
-    }) => (
-      <div>
-        <h1>Pending Requests</h1>
-        <button
-          type="button"
-          onClick={() => props.onApprove(props.pending[0], 'teacher-1')}
-        >
-          Approve
-        </button>
-        <button
-          type="button"
-          onClick={() => props.onReject(props.pending[0])}
-        >
-          Reject
-        </button>
-      </div>
-    ),
-  })
-);
+jest.mock('../../app/_components/teacher/pending/PendingModal', () => ({
+  PendingModal: (props: {
+    pending: Club[];
+    onApprove: (_club: Club, _teacherId: string) => void;
+    onReject: (_club: Club) => void;
+  }) => (
+    <div>
+      <h1>Pending Requests</h1>
+      <button
+        type="button"
+        onClick={() => props.onApprove(props.pending[0], 'teacher-1')}
+      >
+        Approve
+      </button>
+      <button type="button" onClick={() => props.onReject(props.pending[0])}>
+        Reject
+      </button>
+    </div>
+  ),
+}));
 
 const mockClubCard = jest.fn(
   (props: { req: Club; isPrimary: boolean; isExpanded: boolean }) => (
@@ -62,16 +59,10 @@ const mockClubCard = jest.fn(
   )
 );
 
-jest.mock(
-  '../../app/_components/teacher/approved/clubcard/ClubCard',
-  () => ({
-    ClubCard: (props: {
-      req: Club;
-      isPrimary: boolean;
-      isExpanded: boolean;
-    }) => mockClubCard(props),
-  })
-);
+jest.mock('../../app/_components/teacher/approved/clubcard/ClubCard', () => ({
+  ClubCard: (props: { req: Club; isPrimary: boolean; isExpanded: boolean }) =>
+    mockClubCard(props),
+}));
 
 const mockClub: Club = {
   id: '1',

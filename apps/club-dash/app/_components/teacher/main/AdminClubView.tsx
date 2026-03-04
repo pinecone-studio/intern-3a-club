@@ -5,10 +5,18 @@ import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client/react';
 import { ShieldCheck } from 'lucide-react';
 
-import { GET_ALL_PENDING_CLUBS, GET_ALL_APPROVED_CLUBS, UPDATE_CLUB } from '../../../../libs/club-queries';
+import {
+  GET_ALL_PENDING_CLUBS,
+  GET_ALL_APPROVED_CLUBS,
+  UPDATE_CLUB,
+} from '../../../../libs/club-queries';
 
 import { mapGetAllClubsToClubs } from '../../../../libs/club-mappers';
-import { Club, PendingClubsData, ApprovedClubsData } from '../../../../libs/types';
+import {
+  Club,
+  PendingClubsData,
+  ApprovedClubsData,
+} from '../../../../libs/types';
 
 import { ClubCard } from '../approved/clubcard/ClubCard';
 import { PendingModal } from '../pending/PendingModal';
@@ -106,11 +114,11 @@ const AdminClubsViewContent = ({
     <div className="p-10 max-w-6xl mx-auto">
       <div className="flex justify-between mb-10">
         <div>
-          <h2 className="text-3xl font-bold uppercase flex gap-3">
-            <ShieldCheck className="h-10 w-10" /> Admin Clubs
+          <h2 className="text-3xl font-semibold uppercase flex gap-3">
+            Admin Clubs
           </h2>
-          <p className="text-muted-foreground mt-2">
-            Шинээр үүсгэх хүсэлтүүдийг хянах хэсэг.
+          <p className="text-muted-foreground mt-1">
+            New construction control section.
           </p>
         </div>
 
