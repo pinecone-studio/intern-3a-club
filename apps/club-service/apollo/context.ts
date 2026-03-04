@@ -21,37 +21,54 @@ const extractEmail = (decoded: ClerkTokenPayload): string | null => {
   );
 };
 
-const verifyClerkToken = async (token: string, secretKey: string) => {
+const decodeToken = async (
+  token: string,
+  secretKey: string
+): Promise<ClerkTokenPayload | null> => {
   try {
-    const decoded = (await verifyToken(token, {
+    return (await verifyToken(token, {
       secretKey,
     })) as unknown as ClerkTokenPayload;
-
-    let email = extractEmail(decoded);
-    if (!email && decoded.sub) {
-      try {
-        const clerkClient = createClerkClient({ secretKey });
-        const user = await clerkClient.users.getUser(decoded.sub);
-        const primaryEmail = user.emailAddresses.find(
-          (item) => item.id === user.primaryEmailAddressId
-        );
-        email = primaryEmail?.emailAddress ?? null;
-      } catch (fallbackError) {
-        console.error(
-          'Clerk хэрэглэгчийн email авахад алдаа гарлаа:',
-          fallbackError
-        );
-      }
-    }
-
-    return {
-      clerkId: decoded.sub,
-      email,
-    };
   } catch (error) {
     console.error('Токен баталгаажуулахад алдаа гарлаа:', error);
-    return { clerkId: null, email: null };
+    return null;
   }
+};
+
+const resolveEmailViaClerk = async (
+  clerkId: string,
+  secretKey: string
+): Promise<string | null> => {
+  try {
+    const clerkClient = createClerkClient({ secretKey });
+    const user = await clerkClient.users.getUser(clerkId);
+    const primaryEmail = user.emailAddresses.find(
+      (item) => item.id === user.primaryEmailAddressId
+    );
+    return primaryEmail?.emailAddress ?? null;
+  } catch (fallbackError) {
+    console.error('Clerk хэрэглэгчийн email авахад алдаа гарлаа:', fallbackError);
+    return null;
+  }
+};
+
+const resolveTokenIdentity = async (
+  decoded: ClerkTokenPayload,
+  secretKey: string
+) => {
+  const email = extractEmail(decoded);
+  if (email || !decoded.sub) {
+    return { clerkId: decoded.sub, email };
+  }
+
+  const fallbackEmail = await resolveEmailViaClerk(decoded.sub, secretKey);
+  return { clerkId: decoded.sub, email: fallbackEmail };
+};
+
+const verifyClerkToken = async (token: string, secretKey: string) => {
+  const decoded = await decodeToken(token, secretKey);
+  if (!decoded) return { clerkId: null, email: null };
+  return resolveTokenIdentity(decoded, secretKey);
 };
 
 export const createContext = async ({ req }: { req: NextRequest }) => {

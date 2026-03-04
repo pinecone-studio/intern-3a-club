@@ -11,6 +11,45 @@ const getUpstashConfig = () => {
 const getBanKey = (clubId: string, clerkId: string) =>
   `club:ban:${clubId}:${clerkId}`;
 
+const buildRedisEndpoint = (url: string, commandParts: string[]): string =>
+  `${url}/${commandParts.map((part) => encodeURIComponent(part)).join('/')}`;
+
+const parseRedisPayload = (payload: {
+  result?: unknown;
+  error?: string;
+}): unknown | null => {
+  if (payload.error) {
+    console.error('Upstash Redis command failed:', payload.error);
+    return null;
+  }
+
+  return payload.result ?? null;
+};
+
+const executeRedisRequest = async (
+  endpoint: string,
+  token: string
+): Promise<unknown | null> => {
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const payload = (await response.json()) as {
+    result?: unknown;
+    error?: string;
+  };
+
+  if (!response.ok) {
+    console.error('Upstash Redis command failed:', payload.error);
+    return null;
+  }
+
+  return parseRedisPayload(payload);
+};
+
 const runRedisCommand = async (
   commandParts: string[]
 ): Promise<unknown | null> => {
@@ -18,28 +57,8 @@ const runRedisCommand = async (
   if (!config) return null;
 
   try {
-    const endpoint = `${config.url}/${commandParts
-      .map((part) => encodeURIComponent(part))
-      .join('/')}`;
-
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
-    });
-
-    const payload = (await response.json()) as {
-      result?: unknown;
-      error?: string;
-    };
-
-    if (!response.ok || payload.error) {
-      console.error('Upstash Redis command failed:', payload.error);
-      return null;
-    }
-
-    return payload.result ?? null;
+    const endpoint = buildRedisEndpoint(config.url, commandParts);
+    return await executeRedisRequest(endpoint, config.token);
   } catch (error) {
     console.error('Upstash Redis request failed:', error);
     return null;
