@@ -4,7 +4,6 @@ import { useQuery } from '@apollo/client/react';
 import { Data } from '../../lib/type';
 import { ClubsContent } from './_components/ClubsContent';
 import { GET_ALL_APPROVED_CLUBS } from '../../lib/club-query';
-// import { JoinAndLeaveLogic } from './JoinAndLeaveLogic';
 
 const JoinClubPage = () => {
   const { loading, error, data } = useQuery<Data>(GET_ALL_APPROVED_CLUBS);

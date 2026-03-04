@@ -55,6 +55,13 @@
       "options": {
         "lintFilePatterns": ["apps/club-web/**/*.{ts,tsx,js,jsx}"]
       }
+    },
+    "pages-deploy": {
+      "executor": "@pinecone-monorepo/workspace-plugin:pages-deploy",
+      "dependsOn": ["build"],
+      "options": {
+        "projectName": "cloudflare-club-web"
+      }
     }
   },
   "tags": []
