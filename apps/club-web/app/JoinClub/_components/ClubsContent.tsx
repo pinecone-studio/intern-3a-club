@@ -49,15 +49,17 @@ const SYNC_USER_MUTATION = gql`
 
 
 const compareByEnrollment = (a: ExtendedClub, b: ExtendedClub): number => {
-  const now = Date.now();
-  const aBanned = (a.bannedUntil ?? 0) > now;
-  const bBanned = (b.bannedUntil ?? 0) > now;
-
-  if (aBanned !== bBanned) return aBanned ? 1 : -1;
   if (a.isEnrolled === b.isEnrolled) return 0;
   return a.isEnrolled ? -1 : 1;
 };
-const BAN_SECONDS = 20;
+
+const computeIsEnrolled = (
+  members: ExtendedClub['members'] | undefined,
+  studentId: string
+) => {
+  if (!studentId) return false;
+  return (members || []).some((member) => member.studentId === studentId);
+};
 
 
 const useClubsLogic = () => {
@@ -71,15 +73,23 @@ const useClubsLogic = () => {
   const { data: teacherData } = useQuery<TeacherData>(GET_ALL_TEACHERS);
   const [syncUser] = useMutation<SyncUserResponse>(SYNC_USER_MUTATION);
 
-  const [allClubs, setAllClubs] = useState<ExtendedClub[]>([]);
   const [selectedClubId, setSelectedClubId] = useState<string>('');
   const [currentStudentId, setCurrentStudentId] = useState<string>('');
+  const sortedClubs = useMemo(() => {
+    const raw = clubData?.getAllApprovedClubs || [];
+    return raw
+      .map((club) => ({
+        ...club,
+        isEnrolled: computeIsEnrolled(club.members, currentStudentId),
+        bannedUntil: 0,
+      }))
+      .sort(compareByEnrollment);
+  }, [clubData, currentStudentId]);
   const handleRealtimeEvent = useCallback(() => {
     void refetch();
   }, [refetch]);
 
   useClubRealtime({
-    clubId: selectedClubId || undefined,
     onEvent: handleRealtimeEvent,
   });
 
@@ -113,47 +123,16 @@ const useClubsLogic = () => {
   }, [getToken, isLoaded, syncUser, userId]);
 
   useEffect(() => {
-    const raw = clubData?.getAllApprovedClubs;
-    if (raw && raw.length > 0) {
-      setAllClubs((prev) => {
-        if (prev.length === 0) {
-          return raw.map((c) => ({
-            ...c,
-            isEnrolled: !!currentStudentId
-              ? (c.members || []).some((m) => m.studentId === currentStudentId)
-              : false,
-            bannedUntil: 0,
-          }));
-        }
-
-        const nextById = new Map(raw.map((club) => [club.id, club]));
-        const merged = prev.map((club) => {
-          const fresh = nextById.get(club.id);
-          if (!fresh) return club;
-
-          // Keep UI state stable; update only backend-driven member data.
-          return {
-            ...club,
-            members: fresh.members,
-          };
-        });
-
-        const knownIds = new Set(merged.map((club) => club.id));
-        const appended = raw
-          .filter((club) => !knownIds.has(club.id))
-          .map((club) => ({
-            ...club,
-            isEnrolled: !!currentStudentId
-              ? (club.members || []).some((m) => m.studentId === currentStudentId)
-              : false,
-            bannedUntil: 0,
-          }));
-
-        return [...merged, ...appended];
-      });
-      setSelectedClubId((prev) => prev || raw[0].id);
+    if (sortedClubs.length === 0) {
+      setSelectedClubId('');
+      return;
     }
-  }, [clubData, currentStudentId]);
+    setSelectedClubId((prev) =>
+      prev && sortedClubs.some((club) => club.id === prev)
+        ? prev
+        : sortedClubs[0].id
+    );
+  }, [sortedClubs]);
 
   const allTeachers = useMemo(
     () => teacherData?.getAllTeachers || [],
@@ -161,63 +140,12 @@ const useClubsLogic = () => {
   );
 
   const onEnroll = useCallback(() => {
-    setAllClubs((p) =>
-      p.map((c) =>
-        c.id === selectedClubId
-          ? {
-              ...c,
-              isEnrolled: true,
-              bannedUntil: 0,
-              members: [
-                ...(c.members || []),
-                {
-                  __typename: 'ClubMember',
-                  id: `local-${Date.now()}`,
-                  studentId: `local-${Date.now()}`,
-                  student: { firstName: '', lastName: '', classId: '' },
-                },
-              ],
-            }
-          : c
-      )
-    );
-  }, [selectedClubId]);
+    void refetch();
+  }, [refetch]);
 
   const onLeave = useCallback(() => {
-    const banUntil = Date.now() + BAN_SECONDS * 1000;
-
-    setAllClubs((p) =>
-      p.map((c) =>
-        c.id === selectedClubId
-          ? {
-              ...c,
-              isEnrolled: false,
-              bannedUntil: banUntil,
-              members: (() => {
-                const currentMembers = c.members || [];
-                return currentMembers.slice(
-                  0,
-                  Math.max(currentMembers.length - 1, 0)
-                );
-              })(),
-            }
-          : c
-      )
-    );
-
-    setTimeout(() => {
-      setAllClubs((prev) =>
-        prev.map((c) =>
-          c.id === selectedClubId ? { ...c, bannedUntil: 0 } : c
-        )
-      );
-    }, BAN_SECONDS * 1000);
-  }, [selectedClubId]);
-
-  const sortedClubs = useMemo(
-    () => [...allClubs].sort(compareByEnrollment),
-    [allClubs]
-  );
+    void refetch();
+  }, [refetch]);
 
   const selectedClub = useMemo(
     () => sortedClubs.find((c) => c.id === selectedClubId),

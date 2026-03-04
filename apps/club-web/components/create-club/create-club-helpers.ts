@@ -49,13 +49,20 @@ export const buildMutationVariables = (
   formData: FormDataType,
   selectedDates: Date[]
 ) => {
+  const directTeacher =
+    formData.teacher && formData.teacher !== 'student' ? formData.teacher : '';
+  const preferredTeachers = Array.from(
+    new Set([...(formData.preferredTeachers || []), directTeacher].filter(Boolean))
+  );
+
   return {
     input: {
       name: formData.name,
       description: formData.goal,
       type: 'mentor',
-      teacherId: formData.teacher === 'student' ? null : formData.teacher,
-      preferredTeachers: formData.preferredTeachers || [],
+      // club-web flow: assign teacher later from preferred list
+      teacherId: null,
+      preferredTeachers,
       minMember: getMinMax(formData.minStudents),
       maxMember: getMinMax(formData.maxStudents),
     },

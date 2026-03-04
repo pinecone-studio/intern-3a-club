@@ -1,5 +1,5 @@
 export const resolvePreferredTeachers = (
-  teacherId?: string,
+  // teacherId?: string,
   preferred?: string[]
 ) => {
   const normalized = (preferred || [])

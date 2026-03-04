@@ -81,6 +81,12 @@ export const DELETE_CLUB = gql`
   }
 `;
 
+export const DELETE_TIMETABLE = gql`
+  mutation DeleteTimetable($id: ID!) {
+    deleteTimetable(id: $id)
+  }
+`;
+
 export type DeleteClubData = {
   deleteClub: string;
 };

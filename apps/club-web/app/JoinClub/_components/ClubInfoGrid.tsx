@@ -12,6 +12,7 @@ interface MemberProgressProps {
   current: number;
   max: number;
   percent: number;
+  emails: string[];
 }
 
 const getMemberStats = (min: number = 0, max: number = 1) => {
@@ -81,7 +82,12 @@ const ScheduleInfo = ({ frequency, club }: ScheduleInfoProps) => {
   );
 };
 
-const MemberProgress = ({ current, max, percent }: MemberProgressProps) => (
+const MemberProgress = ({
+  current,
+  max,
+  percent,
+  emails,
+}: MemberProgressProps) => (
   <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5">
     <div className="mb-4 flex items-center justify-between">
       <h4 className="flex items-center gap-2 text-[10px] font-semibold text-white/20">
@@ -104,6 +110,22 @@ const MemberProgress = ({ current, max, percent }: MemberProgressProps) => (
           <p className="text-xs font-medium text-white/80">{percent}%</p>
         </div>
       </div>
+      <div className="rounded-xl border border-white/5 bg-black/10 p-3">
+        <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-white/40">
+          Элссэн гишүүдийн email
+        </p>
+        {emails.length === 0 ? (
+          <p className="text-xs text-white/35">Одоогоор гишүүн алга</p>
+        ) : (
+          <div className="max-h-24 space-y-1 overflow-y-auto pr-1">
+            {emails.map((email) => (
+              <p key={email} className="text-xs text-white/75 break-all">
+                {email}
+              </p>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   </div>
 );
@@ -114,13 +136,21 @@ export const ClubInfoGrid = ({ club }: { club: ExtendedClub }) => {
     currentMembers,
     club.maxMember
   );
+  const memberEmails = (club.members || [])
+    .map((member) => member.student?.azureEmail)
+    .filter(Boolean) as string[];
 
   const frequency = club.frequency || 'WEEKLY';
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <ScheduleInfo frequency={frequency} club={club} />
-      <MemberProgress current={current} max={max} percent={percent} />
+      <MemberProgress
+        current={current}
+        max={max}
+        percent={percent}
+        emails={memberEmails}
+      />
     </div>
   );
 };
