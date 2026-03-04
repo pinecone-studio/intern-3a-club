@@ -9,6 +9,11 @@ import { useClubAction } from '../../app/_hooks/use-redis-hook';
 import { MockedProvider } from '@apollo/client/testing/react';
 
 jest.mock('../../app/_hooks/use-redis-hook');
+jest.mock('@clerk/nextjs', () => ({
+  useAuth: () => ({ userId: 'test-user-id' }),
+  useUser: () => ({ user: { id: 'test-user-id' } }),
+  useClerk: () => ({ signOut: jest.fn() }),
+}));
 
 const mockUseClubAction = jest.mocked(useClubAction);
 
@@ -174,7 +179,7 @@ describe('ClubsContent', () => {
       expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
     );
 
-    fireEvent.click(screen.getByText('Одоо нэгдэх'));
+    fireEvent.click(screen.getByText('Клубт элсэх'));
 
     await waitFor(() =>
       expect(screen.getByText('Клубээс гарах')).toBeInTheDocument()
@@ -200,14 +205,14 @@ describe('ClubsContent', () => {
       expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
     );
 
-    fireEvent.click(screen.getByText('Одоо нэгдэх'));
+    fireEvent.click(screen.getByText('Клубт элсэх'));
     await waitFor(() =>
       expect(screen.getByText('Клубээс гарах')).toBeInTheDocument()
     );
 
     fireEvent.click(screen.getByText('Клубээс гарах'));
     await waitFor(() =>
-      expect(screen.getByText('Одоо нэгдэх')).toBeInTheDocument()
+      expect(screen.getByText('Клубт элсэх')).toBeInTheDocument()
     );
   });
 
@@ -226,7 +231,7 @@ describe('ClubsContent', () => {
       expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
     );
 
-    fireEvent.click(screen.getByText('Одоо нэгдэх'));
+    fireEvent.click(screen.getByText('Клубт элсэх'));
 
     await waitFor(() => expect(screen.getByText('Элссэн')).toBeInTheDocument());
   });
@@ -252,7 +257,7 @@ describe('ClubsContent', () => {
       expect(screen.getAllByText('Second Club').length).toBeGreaterThan(0)
     );
 
-    fireEvent.click(screen.getByText('Одоо нэгдэх'));
+    fireEvent.click(screen.getByText('Клубт элсэх'));
 
     await waitFor(() => expect(screen.getByText('Элссэн')).toBeInTheDocument());
   });
@@ -276,14 +281,14 @@ describe('ClubsContent', () => {
       expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
     );
 
-    fireEvent.click(screen.getByText('Одоо нэгдэх'));
+    fireEvent.click(screen.getByText('Клубт элсэх'));
     await waitFor(() =>
       expect(screen.getByText('Клубээс гарах')).toBeInTheDocument()
     );
 
     fireEvent.click(screen.getByText('Клубээс гарах'));
     await waitFor(() =>
-      expect(screen.getByText('Одоо нэгдэх')).toBeInTheDocument()
+      expect(screen.getByText('Клубт элсэх')).toBeInTheDocument()
     );
   });
 });

@@ -39,7 +39,7 @@ describe('ClubActionButtons', () => {
     expect(screen.getByRole('button')).toBeDisabled();
   });
 
-  it('isLocked=true үед bg-red-500/20 класс байна', () => {
+  it('isLocked=true үед bg-red-600/30 класс байна', () => {
     render(
       <ClubActionButtons {...defaultProps} isLocked={true} remainingTime={10} />
     );

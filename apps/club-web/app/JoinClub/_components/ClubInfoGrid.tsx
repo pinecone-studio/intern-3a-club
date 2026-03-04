@@ -46,32 +46,32 @@ const ScheduleInfo = ({ frequency, club }: ScheduleInfoProps) => {
 
   return (
     <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5">
-      <div className="flex items-center gap-2 mb-4 text-white/20 uppercase text-[10px] font-bold tracking-widest">
-        <Calendar size={14} /> Хуваарь
+      <div className="flex items-center gap-2 mb-4 text-white/20  text-[10px] font-semibold ">
+        <Calendar size={10} /> Хуваарь
       </div>
       <div className="space-y-3">
         <div className="flex items-center justify-between ">
           <span className="text-xs text-white/40">Давтамж:</span>
-          <span className="text-sm text-white/80 font-bold">
+          <span className="text-xs text-white/80 font-medium">
             {displayFrequency}
           </span>
         </div>
         <div className="flex items-center justify-between ">
           <span className="text-xs text-white/40">Орох өдрүүд:</span>
-          <span className="text-sm text-white/80 font-bold">
+          <span className="text-xs text-white/80 font-medium">
             {uniqueDays.join(', ')}
           </span>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-xs text-white/40">Эхлэх огноо:</span>
-          <span className="text-sm text-white/80 font-bold">
+          <span className="text-xs text-white/80 font-medium">
             {club.timetables[0]?.date}
           </span>
         </div>
         {Number(club.clubTerm) >= 1 && (
           <div className="flex justify-between items-center">
             <span className="text-xs text-white/40">Үргэлжлэх хугацаа:</span>
-            <span className="text-sm text-white/80 font-bold">
+            <span className="text-xs text-white/80 font-medium">
               {club.clubTerm} сар
             </span>
           </div>
@@ -84,10 +84,10 @@ const ScheduleInfo = ({ frequency, club }: ScheduleInfoProps) => {
 const MemberProgress = ({ current, max, percent }: MemberProgressProps) => (
   <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5">
     <div className="mb-4 flex items-center justify-between">
-      <h4 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/20">
-        <Users size={14} /> Гишүүдийн тоо
+      <h4 className="flex items-center gap-2 text-[10px] font-semibold text-white/20">
+        <Users size={10} /> Гишүүдийн тоо
       </h4>
-      <span className="text-xs font-bold text-white/80">
+      <span className="text-xs font-medium text-white/80">
         {current} / {max}
       </span>
     </div>
@@ -101,7 +101,7 @@ const MemberProgress = ({ current, max, percent }: MemberProgressProps) => (
         </div>
         <div className="mt-3 flex justify-between text-right">
           <p className="text-xs text-white/40">Дүүргэлт :</p>
-          <p className="text-sm font-bold text-white/80">{percent}%</p>
+          <p className="text-xs font-medium text-white/80">{percent}%</p>
         </div>
       </div>
     </div>
