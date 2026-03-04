@@ -11,11 +11,11 @@ export default function RootLayout({
 }): React.ReactNode {
   return (
     <html lang="en">
-      <body className="bg-[#050816] text-white">
+      <body className="bg-[#050816] text-white bg-[url('/pinebaatar.png')] bg-cover bg-center bg-no-repeat ">
         <ClerkProvider>
           <Providers>
             <Header />
-            <div className="max-w-[1700px] mx-auto flex items-start">
+            <div className="max-w-[1400px] mx-auto flex items-start min-h-screen  flex items-center justify-center">
               <Sidebar />
               <main className="flex-1 min-w-0">{children}</main>
             </div>

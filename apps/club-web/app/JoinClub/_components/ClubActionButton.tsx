@@ -18,7 +18,9 @@ interface ActionProps extends JoinActionProps {
 }
 
 const getButtonStyles = (isLocked: boolean) => {
-  return isLocked ? 'bg-red-500/20 text-red-400' : 'bg-blue-600';
+  return isLocked
+    ? 'bg-red-600/30 text-red-300 border border-red-500/60'
+    : 'bg-blue-600';
 };
 
 const JoinAction = (props: JoinActionProps) => {

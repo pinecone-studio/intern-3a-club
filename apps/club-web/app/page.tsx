@@ -106,7 +106,7 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[url('/pinebaatar.png')] bg-cover bg-center bg-no-repeat flex items-center justify-center">
+    <div className="">
       <CreateClubCenter />
     </div>
   );

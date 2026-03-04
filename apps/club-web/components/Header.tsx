@@ -27,7 +27,7 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[#050816]/80 backdrop-blur-xl border-b border-white/5">
-      <div className="max-w-[1700px] mx-auto flex items-center justify-between py-4">
+      <div className="max-w-[1400px] mx-auto flex items-center justify-between py-4">
         <div className="flex items-center gap-10">
           <div className="h-8 w-8  flex items-center justify-center">
             <div className="flex items-center lg:gap-6">

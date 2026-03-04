@@ -1,9 +1,16 @@
 import { DB } from 'db/drizzle';
 import { clubMembers, clubs, students } from 'db/schema';
 import { handleMutationError } from 'gql-utils';
+import { getJoinBanTtlSeconds } from 'gql-utils/club-ban';
 import { GraphQLError } from 'graphql';
 import { eq, and, count } from 'drizzle-orm';
-import crypto from 'crypto';
+
+const createMemberId = (): string => {
+  return (
+    globalThis.crypto?.randomUUID?.() ??
+    `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+  );
+};
 
 // Сурагчийг шалгах
 async function getStudentOrThrow(clerkId: string) {
@@ -66,11 +73,18 @@ export const joinClub = async (
   try {
     if (!context.clerkId) throw new GraphQLError('Нэвтрээгүй байна.');
 
+    const banTtl = await getJoinBanTtlSeconds(clubId, context.clerkId);
+    if (banTtl > 0) {
+      throw new GraphQLError(
+        `Та энэ клубт ${banTtl} секундийн дараа дахин нэгдэнэ үү.`
+      );
+    }
+
     const student = await validateJoinAction(clubId, context.clerkId);
 
     const [newMember] = await DB.insert(clubMembers)
       .values({
-        id: crypto.randomUUID(),
+        id: createMemberId(),
         clubId: clubId,
         studentId: student.id,
       })
