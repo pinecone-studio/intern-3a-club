@@ -24,13 +24,26 @@ const FREQUENCY_LABELS: Record<string, string> = {
   ONCE: 'Нэг удаа',
   WEEKLY: 'Долоо хоног бүр',
 };
+const WEEKDAY_MN: Record<number, string> = {
+  0: 'Ня',
+  1: 'Да',
+  2: 'Мя',
+  3: 'Лх',
+  4: 'Пү',
+  5: 'Ба',
+  6: 'Бя',
+};
+
+const getUniqueDayNames = (dates: string[]): string[] => {
+  const days = dates.map((date) => WEEKDAY_MN[new Date(date).getDay()]);
+  return [...new Set(days)];
+};
 
 const ScheduleInfo = ({ frequency, club }: ScheduleInfoProps) => {
   const displayFrequency = FREQUENCY_LABELS[frequency] || frequency;
+  const dates = club.timetables.map((t) => t.date);
+  const uniqueDays = getUniqueDayNames(dates);
 
-  const term = club.clubTerm;
-
-  console.log({ term });
   return (
     <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5">
       <div className="flex items-center gap-2 mb-4 text-white/20 uppercase text-[10px] font-bold tracking-widest">
@@ -39,7 +52,15 @@ const ScheduleInfo = ({ frequency, club }: ScheduleInfoProps) => {
       <div className="space-y-3">
         <div className="flex items-center justify-between ">
           <span className="text-xs text-white/40">Давтамж:</span>
-          <span className="text-sm text-white/80 font-bold">{displayFrequency}</span>
+          <span className="text-sm text-white/80 font-bold">
+            {displayFrequency}
+          </span>
+        </div>
+        <div className="flex items-center justify-between ">
+          <span className="text-xs text-white/40">Орох өдрүүд:</span>
+          <span className="text-sm text-white/80 font-bold">
+            {uniqueDays.join(', ')}
+          </span>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-xs text-white/40">Эхлэх огноо:</span>
@@ -50,7 +71,9 @@ const ScheduleInfo = ({ frequency, club }: ScheduleInfoProps) => {
         {Number(club.clubTerm) >= 1 && (
           <div className="flex justify-between items-center">
             <span className="text-xs text-white/40">Үргэлжлэх хугацаа:</span>
-            <span className="text-sm text-white/80 font-bold">{club.clubTerm} сар</span>
+            <span className="text-sm text-white/80 font-bold">
+              {club.clubTerm} сар
+            </span>
           </div>
         )}
       </div>

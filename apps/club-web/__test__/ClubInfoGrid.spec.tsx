@@ -19,7 +19,7 @@ const mockClub = {
     {
       id: 't1',
       clubId: '1',
-      date: '2026-03-01',
+      date: '2026-03-02', // Да (Monday)
       room: '301',
       clubStartTime: '13:00',
       duration: 60,
@@ -33,14 +33,6 @@ const mockClub = {
 } as unknown as ExtendedClub;
 
 describe('ClubInfoGrid', () => {
-  beforeEach(() => {
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it('renders frequency label for WEEKLY', () => {
     render(<ClubInfoGrid club={mockClub} />);
     expect(screen.getByText('Долоо хоног бүр')).toBeInTheDocument();
@@ -72,7 +64,46 @@ describe('ClubInfoGrid', () => {
 
   it('renders start date from first timetable', () => {
     render(<ClubInfoGrid club={mockClub} />);
-    expect(screen.getByText('2026-03-01')).toBeInTheDocument();
+    expect(screen.getByText('2026-03-02')).toBeInTheDocument();
+  });
+
+  it('renders unique weekday names from timetables', () => {
+    render(<ClubInfoGrid club={mockClub} />);
+    expect(screen.getByText('Да')).toBeInTheDocument();
+  });
+
+  it('renders multiple unique weekday names', () => {
+    const club = {
+      ...mockClub,
+      timetables: [
+        {
+          id: 't1',
+          clubId: '1',
+          date: '2026-03-02',
+          room: '301',
+          clubStartTime: '13:00',
+          duration: 60,
+        }, // Да
+        {
+          id: 't2',
+          clubId: '1',
+          date: '2026-03-04',
+          room: '301',
+          clubStartTime: '13:00',
+          duration: 60,
+        }, // Лх
+        {
+          id: 't3',
+          clubId: '1',
+          date: '2026-03-09',
+          room: '301',
+          clubStartTime: '13:00',
+          duration: 60,
+        }, // Да (duplicate)
+      ],
+    } as unknown as ExtendedClub;
+    render(<ClubInfoGrid club={club} />);
+    expect(screen.getByText('Да, Лх')).toBeInTheDocument();
   });
 
   it('renders club term when clubTerm >= 1', () => {
@@ -120,5 +151,10 @@ describe('ClubInfoGrid', () => {
     const club = { ...mockClub, timetables: [] } as unknown as ExtendedClub;
     render(<ClubInfoGrid club={club} />);
     expect(screen.getByText('Хуваарь')).toBeInTheDocument();
+  });
+
+  it('renders Орох өдрүүд label', () => {
+    render(<ClubInfoGrid club={mockClub} />);
+    expect(screen.getByText('Орох өдрүүд:')).toBeInTheDocument();
   });
 });
