@@ -43,7 +43,7 @@ const Step2View = ({ props, onBack, onSubmit, status }: StepViewProps) => (
       <button
         type="button"
         onClick={onSubmit}
-        className="flex-1 h-11 rounded-lg bg-blue-600 text-white font-bold uppercase tracking-wide shadow-lg hover:brightness-95 transition"
+        className="flex-1 h-11 rounded-lg bg-blue-600 text-white font-bold uppercase  shadow-lg hover:brightness-95 transition"
       >
         Хүсэлт илгээх
       </button>
@@ -85,7 +85,7 @@ export const ClubForm = (props: ClubFormProps) => {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-lg font-extrabold text-white">
+              <h4 className="text-lg font-semibold text-white">
                 Клуб бүртгүүлэх
               </h4>
             </div>
