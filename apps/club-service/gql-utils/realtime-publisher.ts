@@ -1,6 +1,6 @@
 type RealtimeEvent = {
-  type: 'club_member_joined' | 'club_member_left';
-  clubId: string;
+  type: 'club_member_joined' | 'club_member_left' | 'club_created' | 'club_deleted';
+  clubId?: string;
   clerkId: string;
   at: number;
 };
@@ -19,7 +19,10 @@ const publishToAbly = async (event: RealtimeEvent): Promise<boolean> => {
   const ablyApiKey = getAblyApiKey();
   if (!ablyApiKey) return false;
 
-  const channel = `club:${event.clubId}`;
+  const channel =
+    event.type === 'club_created' || event.type === 'club_deleted'
+      ? 'clubs'
+      : `club:${event.clubId}`;
   const url = `https://rest.ably.io/channels/${encodeURIComponent(
     channel
   )}/messages`;
