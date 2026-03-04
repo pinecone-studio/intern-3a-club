@@ -62,7 +62,7 @@ export const RequestHistory = () => {
       <h3 className="flex items-center gap-3 text-sm font-semmibold uppercase tracking-[0.1em] text-white/40">
         <History size={16} /> Илгээсэн хүсэлтүүд
       </h3>
-      <div className="space-y-3 max-h-[260px] lg:max-h-[360px] overflow-y-auto pr-2 scrollbar-hide">
+      <div className="space-y-3 max-h-[260px] lg:max-h-[360px] overflow-y-auto pr-2">
         {loading
           ? Array.from({ length: 3 }).map((_, i) => (
               <div
