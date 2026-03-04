@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { ShieldCheck } from 'lucide-react';
 import { ExtendedClub } from '../../../lib/type';
 import { ClubActionButtons } from './ClubActionButton';
 import { ClubInfoGrid } from './ClubInfoGrid';
@@ -24,14 +23,14 @@ interface ClubDetailViewProps {
 
 const TeacherProfile = ({ initial, name }: TeacherData) => (
   <div className="flex items-center gap-4 px-3 py-2 rounded-2xl bg-white/[0.02] border border-white/5 mb-6">
-    <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg uppercase">
+    <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm ">
       {initial}
     </div>
     <div>
-      <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest">
+      <p className="text-[9px] font-medium text-white/40 ">
         Хариуцсан багш
       </p>
-      <h3 className="text-sm font-bold text-white uppercase">{name}</h3>
+      <h3 className="text-xs font-medium text-white ">{name}</h3>
     </div>
   </div>
 );
@@ -53,28 +52,26 @@ export const ClubDetailView = ({
           : 'bg-blue-600/20 border border-white/5'
       }`}
     >
-      <header className="mb-8 flex justify-between items-start">
+      <header className="mb-6 flex justify-between items-start">
         <div className="space-y-2">
-       
-          <h1 className="text-2xl lg:text-3xl font-black pt-2 text-white uppercase tracking-tight">
+      
+          <h1 className="text-xl lg:text-xl font-bold pt-2 text-white uppercase">
             {club.name}
           </h1>
         </div>
-        <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-          <ShieldCheck className="h-5 w-5 text-white/20" />
-        </div>
+      
       </header>
 
       <TeacherProfile {...teacherData} />
 
-      <p className="text-white/50 text-sm leading-relaxed mb-8 px-2 ml-3 border-l border-white/10 italic">
+      <p className="text-white/50 text-xs mb-8 px-2 ml-3 border-l border-white/10 ">
         {club.description}
       </p>
 
       <ClubInfoGrid club={club} />
       <ScheduleDetails club={club} />
 
-      <div className="mt-12 pt-8 border-t border-white/5">
+      <div className="mt-10 pt-6 border-t border-white/5">
         <ClubActionButtons
           isEnrolled={club.isEnrolled}
           isLocked={banned}

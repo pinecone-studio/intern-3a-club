@@ -57,7 +57,7 @@ export const ClubCard = ({ club, isSelected, onClick }: ClubCardProps) => {
   );
 
   const titleClass = cn(
-    'text-sm font-bold uppercase truncate',
+    'text-xs font-semibold uppercase truncate',
     isEnrolled ? 'text-emerald-200' : isSelected ? 'text-white' : 'text-white/70'
   );
 

@@ -7,9 +7,9 @@ export const JoinLabel = ({ loading, isLocked, time }: JoinLabelProps) => {
  
     const lockedContent = (
         <span className="flex items-center gap-2">
-            <Timer className="animate-spin" size={16} /> {time}с хүлээх
+            <Timer className="animate-spin" size={16} /> {time} сek хүлээх
         </span>
     );
  
-    return isLocked ? lockedContent : <>Одоо нэгдэх</>;
+    return isLocked ? lockedContent : <>Клубт элсэх</>;
 };
