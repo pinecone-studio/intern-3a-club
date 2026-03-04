@@ -1,9 +1,13 @@
 import { redis } from '../../../../lib/redis';
 import { NextResponse } from 'next/server';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 export async function POST(req: Request) {
+  if (!redis) {
+    return NextResponse.json({ success: true });
+  }
+
   const { userId, clubId } = await req.json();
   console.log({ userId, clubId });
 

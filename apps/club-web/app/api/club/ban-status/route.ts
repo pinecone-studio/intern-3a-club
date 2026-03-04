@@ -2,7 +2,7 @@
 import { redis } from '../../../../lib/redis';
 import { NextResponse } from 'next/server';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -11,6 +11,10 @@ export async function GET(req: Request) {
 
   if (!userId || !clubId) {
     return NextResponse.json({ error: 'Missing params' }, { status: 400 });
+  }
+
+  if (!redis) {
+    return NextResponse.json({ remainingTime: 0 });
   }
 
   const key = `club:ban:${clubId}:${userId}`;

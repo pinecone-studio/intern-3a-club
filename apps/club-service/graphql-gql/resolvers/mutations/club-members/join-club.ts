@@ -2,6 +2,7 @@ import { DB } from 'db/drizzle';
 import { clubMembers, clubs, students } from 'db/schema';
 import { handleMutationError } from 'gql-utils';
 import { getJoinBanTtlSeconds } from 'gql-utils/club-ban';
+import { publishClubEvent } from 'gql-utils/realtime-publisher';
 import { GraphQLError } from 'graphql';
 import { eq, and, count } from 'drizzle-orm';
 
@@ -64,6 +65,20 @@ async function validateJoinAction(clubId: string, clerkId: string) {
   return student;
 }
 
+const getClerkIdOrThrow = (context: { clerkId?: string }): string => {
+  if (!context.clerkId) throw new GraphQLError('Нэвтрээгүй байна.');
+  return context.clerkId;
+};
+
+const assertJoinNotBanned = async (clubId: string, clerkId: string) => {
+  const banTtl = await getJoinBanTtlSeconds(clubId, clerkId);
+  if (banTtl > 0) {
+    throw new GraphQLError(
+      `Та энэ клубт ${banTtl} секундийн дараа дахин нэгдэнэ үү.`
+    );
+  }
+};
+
 // Үндсэн Mutation функц
 export const joinClub = async (
   _: unknown,
@@ -71,16 +86,10 @@ export const joinClub = async (
   context: { clerkId?: string }
 ) => {
   try {
-    if (!context.clerkId) throw new GraphQLError('Нэвтрээгүй байна.');
+    const clerkId = getClerkIdOrThrow(context);
+    await assertJoinNotBanned(clubId, clerkId);
 
-    const banTtl = await getJoinBanTtlSeconds(clubId, context.clerkId);
-    if (banTtl > 0) {
-      throw new GraphQLError(
-        `Та энэ клубт ${banTtl} секундийн дараа дахин нэгдэнэ үү.`
-      );
-    }
-
-    const student = await validateJoinAction(clubId, context.clerkId);
+    const student = await validateJoinAction(clubId, clerkId);
 
     const [newMember] = await DB.insert(clubMembers)
       .values({
@@ -89,6 +98,13 @@ export const joinClub = async (
         studentId: student.id,
       })
       .returning();
+
+    await publishClubEvent({
+      type: 'club_member_joined',
+      clubId,
+      clerkId,
+      at: Date.now(),
+    });
 
     return newMember;
   } catch (error) {

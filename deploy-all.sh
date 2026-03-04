@@ -45,14 +45,7 @@ deploy_web() {
     NX_TASK_TARGET_CONFIGURATION="production" \
     NX_WORKSPACE_ROOT="$ROOT" \
     NX_NEXT_OUTPUT_PATH="apps/club-web" \
-    npx vercel build
-
-    NX_TASK_TARGET_PROJECT="club-web" \
-    NX_TASK_TARGET_TARGET="build" \
-    NX_TASK_TARGET_CONFIGURATION="production" \
-    NX_WORKSPACE_ROOT="$ROOT" \
-    NX_NEXT_OUTPUT_PATH="apps/club-web" \
-    npx next-on-pages --skip-build
+    npx next-on-pages
 
     npx wrangler pages deploy ".vercel/output/static" \
       --project-name="$WEB_PROJECT" \

@@ -1,6 +1,8 @@
 import './global.css';
-import { Providers } from '../libs/apollo/Providers';
+import { Providers } from '../libs/apollo/providers';
 import { ClerkProvider } from '@clerk/nextjs';
+
+export const runtime = 'edge';
 
 export default function RootLayout({
   children,

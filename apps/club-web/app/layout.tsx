@@ -4,6 +4,8 @@ import { Sidebar } from '../components/Sidebar';
 import { Providers } from '../lib/apollo/Providers';
 import { ClerkProvider } from '@clerk/nextjs';
 
+export const runtime = 'edge';
+
 export default function RootLayout({
   children,
 }: {

@@ -31,7 +31,7 @@ export const ClubCard = ({
       </div>
 
       {isExpanded && (
-        <div className="px-8 pb-8 pt-2 border-t border-border mx-8">
+        <div className="pb-8 pt-2 border-t border-border mx-8">
           <ApprovedClubDetail club={req} onDelete={onDelete} />
         </div>
       )}

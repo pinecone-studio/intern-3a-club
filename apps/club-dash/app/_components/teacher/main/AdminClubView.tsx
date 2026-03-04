@@ -3,7 +3,6 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client/react';
-import { ShieldCheck } from 'lucide-react';
 
 import {
   GET_ALL_PENDING_CLUBS,
@@ -114,7 +113,7 @@ const AdminClubsViewContent = ({
     <div className="p-10 max-w-6xl mx-auto">
       <div className="flex justify-between mb-10">
         <div>
-          <h2 className="text-3xl font-semibold uppercase flex gap-3">
+          <h2 className="text-2xl font-semibold uppercase flex gap-3">
             Admin Clubs
           </h2>
           <p className="text-muted-foreground mt-1">
@@ -129,7 +128,7 @@ const AdminClubsViewContent = ({
             onClick={handleOpenModal}
             className="relative bg-secondary border border-border px-6 py-3 rounded-2xl"
           >
-            <span className="text-xs font-black uppercase">Хүсэлт</span>
+            <span className="text-xs font-black uppercase">Request</span>
 
             {pending.length > 0 && (
               <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-foreground text-background text-[11px] font-black flex items-center justify-center">
