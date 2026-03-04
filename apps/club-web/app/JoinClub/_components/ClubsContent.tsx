@@ -1,103 +1,60 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useMutation, useQuery } from '@apollo/client/react';
+import { useQuery } from '@apollo/client/react';
 import { useAuth } from '@clerk/nextjs';
-import gql from 'graphql-tag';
 import { ClubDetail } from './ClubDetail';
 import { ClubList } from './ClubList';
-import { useClubRealtime } from '../../_hooks/use-club-realtime';
 import { ApprovedClubData, ExtendedClub, TeacherData } from '../../../lib/type';
 import {
   GET_ALL_APPROVED_CLUBS,
   GET_ALL_TEACHERS,
 } from '../../../lib/club-query';
 
+const LoadingState = () => (
+  <div className="p-12 text-center text-white/50 animate-pulse uppercase text-[10px] font-bold tracking-widest">
+    Уншиж байна...
+  </div>
+);
+
+const ErrorState = ({ msg }: { msg: string }) => (
+  <div className="text-red-500 p-12 text-center font-bold italic text-sm">
+    Алдаа: {msg}
+  </div>
+);
+
 const compareByEnrollment = (a: ExtendedClub, b: ExtendedClub): number => {
+  const now = Date.now();
+  const aBanned = (a.bannedUntil ?? 0) > now;
+  const bBanned = (b.bannedUntil ?? 0) > now;
+
+  if (aBanned !== bBanned) return aBanned ? 1 : -1;
   if (a.isEnrolled === b.isEnrolled) return 0;
   return a.isEnrolled ? -1 : 1;
 };
 
-const computeIsEnrolled = (
-  members: ExtendedClub['members'] | undefined,
-  studentId: string
-) => {
-  if (!studentId) return false;
-  return (members || []).some((member) => member.studentId === studentId);
-};
-
-
 const useClubsLogic = () => {
-  const { isLoaded, userId, getToken } = useAuth();
   const {
     loading,
     error,
     data: clubData,
-    refetch,
   } = useQuery<ApprovedClubData>(GET_ALL_APPROVED_CLUBS);
   const { data: teacherData } = useQuery<TeacherData>(GET_ALL_TEACHERS);
-  const [syncUser] = useMutation<SyncUserResponse>(SYNC_USER_MUTATION);
 
+  const [allClubs, setAllClubs] = useState<ExtendedClub[]>([]);
   const [selectedClubId, setSelectedClubId] = useState<string>('');
-  const [currentStudentId, setCurrentStudentId] = useState<string>('');
-  const sortedClubs = useMemo(() => {
-    const raw = clubData?.getAllApprovedClubs || [];
-    return raw
-      .map((club) => ({
-        ...club,
-        isEnrolled: computeIsEnrolled(club.members, currentStudentId),
+  useEffect(() => {
+    const raw = clubData?.getAllApprovedClubs;
+    if (raw && raw.length > 0) {
+      const mapped = raw.map((c) => ({
+        ...c,
+        isEnrolled: false,
         bannedUntil: 0,
-      }))
-      .sort(compareByEnrollment);
-  }, [clubData, currentStudentId]);
-  const handleRealtimeEvent = useCallback(() => {
-    void refetch();
-  }, [refetch]);
-
-  useClubRealtime({
-    onEvent: handleRealtimeEvent,
-  });
-
-  useEffect(() => {
-    const syncCurrentUser = async () => {
-      try {
-        if (!isLoaded || !userId) return;
-        const token = await getToken();
-        if (!token) return;
-
-        const { data } = await syncUser({
-          context: {
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-          },
-        });
-
-        const resolved = data?.syncUser;
-        if (resolved?.__typename === 'Student') {
-          setCurrentStudentId(resolved.id);
-        } else {
-          setCurrentStudentId('');
-        }
-      } catch {
-        setCurrentStudentId('');
-      }
-    };
-
-    void syncCurrentUser();
-  }, [getToken, isLoaded, syncUser, userId]);
-
-  useEffect(() => {
-    if (sortedClubs.length === 0) {
-      setSelectedClubId('');
-      return;
+      }));
+      setAllClubs(mapped);
+      setSelectedClubId((prev) => prev || mapped[0].id);
     }
-    setSelectedClubId((prev) =>
-      prev && sortedClubs.some((club) => club.id === prev)
-        ? prev
-        : sortedClubs[0].id
-    );
-  }, [sortedClubs]);
+  }, [clubData]);
 
   const allTeachers = useMemo(
     () => teacherData?.getAllTeachers || [],
@@ -105,12 +62,37 @@ const useClubsLogic = () => {
   );
 
   const onEnroll = useCallback(() => {
-    void refetch();
-  }, [refetch]);
+    setAllClubs((p) =>
+      p.map((c) =>
+        c.id === selectedClubId ? { ...c, isEnrolled: true, bannedUntil: 0 } : c
+      )
+    );
+  }, [selectedClubId]);
 
   const onLeave = useCallback(() => {
-    void refetch();
-  }, [refetch]);
+    const banUntil = Date.now() + 120 * 1000;
+
+    setAllClubs((p) =>
+      p.map((c) =>
+        c.id === selectedClubId
+          ? { ...c, isEnrolled: false, bannedUntil: banUntil }
+          : c
+      )
+    );
+
+    setTimeout(() => {
+      setAllClubs((prev) =>
+        prev.map((c) =>
+          c.id === selectedClubId ? { ...c, bannedUntil: 0 } : c
+        )
+      );
+    }, 120 * 1000);
+  }, [selectedClubId]);
+
+  const sortedClubs = useMemo(
+    () => [...allClubs].sort(compareByEnrollment),
+    [allClubs]
+  );
 
   const selectedClub = useMemo(
     () => sortedClubs.find((c) => c.id === selectedClubId),
@@ -129,7 +111,6 @@ const useClubsLogic = () => {
     selectedClub,
   };
 };
-
 
 interface ClubsLayoutProps {
   userId: string;
@@ -159,7 +140,6 @@ const ClubsLayout = ({ userId, logic }: ClubsLayoutProps) => (
   </div>
 );
 
-
 interface ClubsContentProps {
   userId?: string;
 }
@@ -168,9 +148,9 @@ export const ClubsContent = ({ userId }: ClubsContentProps) => {
   const { userId: clerkUserId } = useAuth();
   const logic = useClubsLogic();
   const effectiveUserId = userId ?? clerkUserId ?? '';
-  const hasClubs = logic.sortedClubs.length > 0;
 
-
+  if (logic.loading) return <LoadingState />;
+  if (logic.error) return <ErrorState msg={logic.error.message} />;
 
   return <ClubsLayout userId={effectiveUserId} logic={logic} />;
 };
