@@ -23,14 +23,24 @@ const httpLink = new HttpLink({
 
 // Шинэ SetContextLink ашиглалт
 const authLink = new SetContextLink(async (prevContext) => {
+  if (typeof window === 'undefined') {
+    return prevContext;
+  }
+
   const token = await window.Clerk?.session?.getToken();
+  const nextHeaders = {
+    ...prevContext?.headers,
+  } as Record<string, string>;
+
+  if (token) {
+    nextHeaders.authorization = `Bearer ${token}`;
+  } else {
+    delete nextHeaders.authorization;
+  }
 
   return {
     ...prevContext,
-    headers: {
-      ...prevContext?.headers,
-      authorization: token ? `Bearer ${token}` : '',
-    },
+    headers: nextHeaders,
   };
 });
 

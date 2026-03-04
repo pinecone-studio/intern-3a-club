@@ -45,7 +45,7 @@ const isAbortError = (err: unknown): boolean => {
 
 const Home = () => {
   const [isSynced, setIsSynced] = useState(false);
-  const { isLoaded, userId } = useAuth();
+  const { isLoaded, userId, getToken } = useAuth();
   const [syncUser, { error }] =
     useMutation<SyncUserResponse>(SYNC_USER_MUTATION);
 
@@ -63,8 +63,18 @@ const Home = () => {
   const performSync = useCallback(
     async (signal: AbortSignal) => {
       try {
+        const token = await getToken();
+        if (!token) {
+          return;
+        }
+
         const { data } = await syncUser({
-          context: { fetchOptions: { signal } },
+          context: {
+            fetchOptions: { signal },
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          },
         });
         handleSyncResult(data);
       } catch (err: unknown) {
@@ -73,7 +83,7 @@ const Home = () => {
         }
       }
     },
-    [syncUser, handleSyncResult]
+    [getToken, syncUser, handleSyncResult]
   );
 
   useEffect(() => {
