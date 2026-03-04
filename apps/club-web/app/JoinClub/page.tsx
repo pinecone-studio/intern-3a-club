@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client/react';
 import { Data } from '../../lib/type';
 import { ClubsContent } from './_components/ClubsContent';
 import { GET_ALL_APPROVED_CLUBS } from '../../lib/club-query';
-import { JoinAndLeaveLogic } from './JoinAndLeaveLogic';
+// import { JoinAndLeaveLogic } from './JoinAndLeaveLogic';
 
 const JoinClubPage = () => {
   const { loading, error, data } = useQuery<Data>(GET_ALL_APPROVED_CLUBS);
@@ -15,7 +15,7 @@ const JoinClubPage = () => {
   return (
     <div className="min-h-screen bg-[url('/pinebaatar.png')] w-full bg-cover bg-center bg-no-repeat">
       <ClubsContent />
-      <JoinAndLeaveLogic />
+      {/* <JoinAndLeaveLogic /> */}
     </div>
   );
 };

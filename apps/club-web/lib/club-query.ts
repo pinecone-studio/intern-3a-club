@@ -24,6 +24,12 @@ export const GET_ALL_APPROVED_CLUBS = gql`
       }
       members {
         id
+        studentId
+        student {
+          firstName
+          lastName
+          classId
+        }
       }
     }
   }
