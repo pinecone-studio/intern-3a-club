@@ -26,7 +26,7 @@ import {
   DeleteClubData,
   GET_ALL_CLUBS,
   getAllTimetablesFromData,
-} from '../../../../libs/club-queries';
+} from './approved-queries';
 
 export const ApprovedClubDetail = ({
   club,
