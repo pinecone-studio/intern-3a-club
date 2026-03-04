@@ -1,6 +1,6 @@
 import { DB } from 'db/drizzle';
 import { students, teachers } from 'db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 interface AuthContext {
   clerkId?: string;
@@ -8,21 +8,23 @@ interface AuthContext {
 }
 
 const validateContext = (clerkId?: string, email?: string) => {
-  console.log("dbkdnfbjndfajkobndafkobnadkfbnakdfbnlkdfbkdfnldk")
-  console.log({clerkId},{email})
-  
+  console.log('dbkdnfbjndfajkobndafkobnadkfbnakdfbnlkdfbkdfnldk');
+  console.log({ clerkId }, { email });
+
   if (!clerkId || !email) {
     throw new Error('Authentication context missing');
   }
-  
+
   return { clerkId, email };
 };
 
 const findAndUpdateUser = async (clerkId: string, email: string) => {
+  const normalizedEmail = email.trim().toLowerCase();
+
   // Багш мөн эсэхийг шалгаад шинэчлэх
   const teacher = await DB.select()
     .from(teachers)
-    .where(eq(teachers.azureEmail, email))
+    .where(sql`lower(${teachers.azureEmail}) = ${normalizedEmail}`)
     .get();
   if (teacher) {
     const [updated] = await DB.update(teachers)
@@ -35,7 +37,7 @@ const findAndUpdateUser = async (clerkId: string, email: string) => {
   // Сурагч мөн эсэхийг шалгаад шинэчлэх
   const student = await DB.select()
     .from(students)
-    .where(eq(students.azureEmail, email))
+    .where(sql`lower(${students.azureEmail}) = ${normalizedEmail}`)
     .get();
   if (student) {
     const [updated] = await DB.update(students)
@@ -56,6 +58,8 @@ export const syncUser = async (
   const { clerkId, email } = validateContext(context.clerkId, context.email);
 
   const result = await findAndUpdateUser(clerkId, email);
+  console.log('end clerkees ireh return');
+  console.log({ result });
 
   if (!result) {
     throw new Error('Бүртгэлгүй хэрэглэгч байна.');

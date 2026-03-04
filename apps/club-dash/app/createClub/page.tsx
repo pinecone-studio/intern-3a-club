@@ -8,22 +8,28 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  Textarea,
-  Label,
   Button,
 } from '@intern-3a-club/shadcn';
-import React, { useState } from 'react';
-import { Teachers, CreatedTimetable } from './_components';
-import { useCreateClubState } from '../_hooks/use-createclub-states';
-import { useCreateClubMutation } from '../_hooks/use-create-club';
+import React from 'react';
+import { CreatedTimetable } from './_components';
+import { useCreateClubErrorForm } from '../_hooks/use-create-club-errorform';
+import { ClubFormFields } from './_components/ClubErrorFormFields';
 
-const CreateClub = () => {
-  const [open, setOpen] = useState<boolean>(false);
-  const { state, setters, handlers } = useCreateClubState();
-  const { handleSubmit, loading } = useCreateClubMutation(state, () => {
-    setOpen(false);
-    handlers.handleEmptyFields();
-  });
+export default function CreateClub() {
+  const {
+    open,
+    setOpen,
+    errors,
+    state,
+    setters,
+    handlers,
+    loading,
+    onSubmit,
+    handleNameChange,
+    handleDescChange,
+    handleTeacherChange,
+  } = useCreateClubErrorForm();
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -38,7 +44,7 @@ const CreateClub = () => {
         className="max-w-2xl block overscroll-y-auto"
         style={{ scrollbarWidth: 'none' }}
       >
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onSubmit}>
           <DialogHeader>
             <DialogTitle>Шинэ клуб нээх</DialogTitle>
             <DialogDescription className="sr-only">
@@ -46,34 +52,17 @@ const CreateClub = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="flex justify-between items-end gap-3">
-              <div className="flex flex-col gap-2 w-80">
-                <Label htmlFor="clubName">Клубын нэр</Label>
-                <Textarea
-                  rows={1}
-                  className="min-h-0 h-[40px] py-1"
-                  id="clubName"
-                  placeholder="Клубын нэр"
-                  value={state.clubName}
-                  onChange={handlers.handleName}
-                />
-              </div>
-              <Teachers
-                teacherId={state.teacherId}
-                setTeacherId={setters.setTeacherId}
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="description">Клубын зорилго</Label>
-              <Textarea
-                id="description"
-                placeholder="Клубын зорилго"
-                value={state.clubDesc}
-                onChange={handlers.handleDesc}
-              />
-            </div>
-
+            <ClubFormFields
+              clubName={state.clubName}
+              clubDesc={state.clubDesc}
+              teacherId={state.teacherId}
+              clubNameError={errors.clubName}
+              teacherIdError={errors.teacherId}
+              clubDescError={errors.clubDesc}
+              onNameChange={handleNameChange}
+              onDescChange={handleDescChange}
+              onTeacherChange={handleTeacherChange}
+            />
             <CreatedTimetable
               state={state}
               setters={setters}
@@ -96,5 +85,4 @@ const CreateClub = () => {
       </DialogContent>
     </Dialog>
   );
-};
-export default CreateClub;
+}

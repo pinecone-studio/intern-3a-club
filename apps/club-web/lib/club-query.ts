@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
- 
+
 export const GET_ALL_APPROVED_CLUBS = gql`
   query GetAllApprovedClubs {
     getAllApprovedClubs {
@@ -22,10 +22,19 @@ export const GET_ALL_APPROVED_CLUBS = gql`
         clubStartTime
         duration
       }
+      members {
+        id
+        studentId
+        student {
+          firstName
+          lastName
+          classId
+        }
+      }
     }
   }
 `;
- 
+
 export const GET_ALL_TEACHERS = gql`
   query GetAllTeachers {
     getAllTeachers {

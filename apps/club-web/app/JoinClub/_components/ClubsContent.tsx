@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client/react';
+import { useAuth } from '@clerk/nextjs';
 import { ClubDetail } from './ClubDetail';
 import { ClubList } from './ClubList';
 import { ApprovedClubData, ExtendedClub, TeacherData } from '../../../lib/type';
@@ -10,9 +11,7 @@ import {
   GET_ALL_TEACHERS,
 } from '../../../lib/club-query';
 
-const DEFAULT_USER_ID = 'USER123';
 
-// 1. UI Components
 const LoadingState = () => (
   <div className="p-12 text-center text-white/50 animate-pulse uppercase text-[10px] font-bold tracking-widest">
     Уншиж байна...
@@ -25,13 +24,18 @@ const ErrorState = ({ msg }: { msg: string }) => (
   </div>
 );
 
-// 2. Sort helper
+
 const compareByEnrollment = (a: ExtendedClub, b: ExtendedClub): number => {
+  const now = Date.now();
+  const aBanned = (a.bannedUntil ?? 0) > now;
+  const bBanned = (b.bannedUntil ?? 0) > now;
+
+  if (aBanned !== bBanned) return aBanned ? 1 : -1;
   if (a.isEnrolled === b.isEnrolled) return 0;
   return a.isEnrolled ? -1 : 1;
 };
 
-// 3. Custom Hook
+
 const useClubsLogic = () => {
   const {
     loading,
@@ -62,14 +66,32 @@ const useClubsLogic = () => {
 
   const onEnroll = useCallback(() => {
     setAllClubs((p) =>
-      p.map((c) => (c.id === selectedClubId ? { ...c, isEnrolled: true } : c))
+      p.map((c) =>
+        c.id === selectedClubId
+          ? { ...c, isEnrolled: true, bannedUntil: 0 }
+          : c
+      )
     );
   }, [selectedClubId]);
 
   const onLeave = useCallback(() => {
+    const banUntil = Date.now() + 120 * 1000;
+
     setAllClubs((p) =>
-      p.map((c) => (c.id === selectedClubId ? { ...c, isEnrolled: false } : c))
+      p.map((c) =>
+        c.id === selectedClubId
+          ? { ...c, isEnrolled: false, bannedUntil: banUntil }
+          : c
+      )
     );
+
+    setTimeout(() => {
+      setAllClubs((prev) =>
+        prev.map((c) =>
+          c.id === selectedClubId ? { ...c, bannedUntil: 0 } : c
+        )
+      );
+    }, 120 * 1000);
   }, [selectedClubId]);
 
   const sortedClubs = useMemo(
@@ -95,13 +117,13 @@ const useClubsLogic = () => {
   };
 };
 
-// 4. Layout компонент
+
 interface ClubsLayoutProps {
-  userId?: string;
+  userId: string;
   logic: ReturnType<typeof useClubsLogic>;
 }
 
-const ClubsLayout = ({ userId = DEFAULT_USER_ID, logic }: ClubsLayoutProps) => (
+const ClubsLayout = ({ userId, logic }: ClubsLayoutProps) => (
   <div className="max-w-[1400px] mx-auto min-h-screen p-4 lg:p-12">
     <div className="flex flex-col lg:flex-row gap-3 items-start h-full">
       <div className="w-full lg:w-[350px] sticky shrink-0 order-2 lg:order-1">
@@ -124,16 +146,18 @@ const ClubsLayout = ({ userId = DEFAULT_USER_ID, logic }: ClubsLayoutProps) => (
   </div>
 );
 
-// 5. Үндсэн компонент
+
 interface ClubsContentProps {
   userId?: string;
 }
 
 export const ClubsContent = ({ userId }: ClubsContentProps) => {
+  const { userId: clerkUserId } = useAuth();
   const logic = useClubsLogic();
+  const effectiveUserId = userId ?? clerkUserId ?? '';
 
   if (logic.loading) return <LoadingState />;
   if (logic.error) return <ErrorState msg={logic.error.message} />;
 
-  return <ClubsLayout userId={userId} logic={logic} />;
+  return <ClubsLayout userId={effectiveUserId} logic={logic} />;
 };

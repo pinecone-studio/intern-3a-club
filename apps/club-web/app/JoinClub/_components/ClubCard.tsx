@@ -19,7 +19,6 @@ const EnrollmentBadge = ({ isEnrolled }: { isEnrolled: boolean }) => {
   );
 };
 
-// 2. any-г ApprovedClubTimetable-оор солив
 const ClubSchedule = ({ timetable }: { timetable?: ApprovedClubTimetable }) => {
   const scheduleText = timetable
     ? `${timetable.date} • ${timetable.clubStartTime}`
@@ -43,18 +42,28 @@ const ClubSchedule = ({ timetable }: { timetable?: ApprovedClubTimetable }) => {
 
 export const ClubCard = ({ club, isSelected, onClick }: ClubCardProps) => {
   const handleCardClick = () => onClick(club.id);
+  const isBanned = (club.bannedUntil ?? 0) > Date.now();
+  const isEnrolled = !!club.isEnrolled;
+
+  const getContainerClass = () => {
+    if (isBanned) return 'bg-red-600/10 border-red-500/70';
+    if (isEnrolled) return 'bg-emerald-600/15 border-emerald-500/70';
+    if (isSelected) return 'bg-blue-600/20 border-blue-500';
+    return 'bg-blue-600/20 border-white/5';
+  };
+
+  const getTitleClass = () => {
+    if (isEnrolled) return 'text-emerald-200';
+    if (isSelected) return 'text-white';
+    return 'text-white/70';
+  };
 
   const containerClass = cn(
     'w-full p-4 rounded-xl cursor-pointer border transition-colors duration-150',
-    isSelected
-      ? 'bg-blue-600/20 border-blue-500'
-      : 'bg-blue-600/20 border-white/5'
+    getContainerClass()
   );
 
-  const titleClass = cn(
-    'text-sm font-bold uppercase truncate',
-    isSelected ? 'text-white' : 'text-white/70'
-  );
+  const titleClass = cn('text-xs font-semibold uppercase truncate', getTitleClass());
 
   return (
     <div onClick={handleCardClick} className={containerClass}>

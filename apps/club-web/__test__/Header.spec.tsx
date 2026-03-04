@@ -1,42 +1,59 @@
+import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Header } from '../components/Header';
 
-// Mock lucide-react icons
-jest.mock('lucide-react', () => ({
-  Flame: () => <div data-testid="flame-icon" />,
-  Star: () => <div data-testid="star-icon" />,
-  Bell: () => <div data-testid="bell-icon" />,
-  RotateCcw: () => <div data-testid="rotate-ccw-icon" />,
-  User: () => <div data-testid="user-icon" />,
+// Clerk-ийг mock хийх
+jest.mock('@clerk/nextjs', () => ({
+  SignedIn: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="signed-in">{children}</div>
+  ),
+  SignedOut: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="signed-out">{children}</div>
+  ),
+  SignInButton: () => <button>Sign In</button>,
+  SignUpButton: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  UserButton: () => <div data-testid="user-button">User Profile</div>,
 }));
 
+// Next/Link-ийг mock хийх
+jest.mock('next/link', () => {
+  return ({ children, href }: { children: React.ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  );
+});
+
 describe('Header Component', () => {
-  it('should render navigation links', () => {
+  it('үндсэн цэсүүд зөв харагдаж байгаа эсэхийг шалгах', () => {
     render(<Header />);
+
     expect(screen.getByText('Home')).toBeInTheDocument();
     expect(screen.getByText('Projects')).toBeInTheDocument();
   });
 
-  it('should render stats correctly', () => {
+  it('хэрэглэгчийн статистик (Flame, Star, XP) зөв харагдаж байгаа эсэх', () => {
     render(<Header />);
-    // Check for static stats values
-    expect(screen.getByText('100')).toBeInTheDocument();
-    expect(screen.getByText('882')).toBeInTheDocument();
 
-    // Check for XP stats
-    expect(screen.getByText('4344')).toBeInTheDocument();
-    expect(screen.getByText('/4580XP')).toBeInTheDocument();
-
-    // Check for level badge
-    expect(screen.getByText('7')).toBeInTheDocument();
+    expect(screen.getByText('100')).toBeInTheDocument(); // Flame
+    expect(screen.getByText('882')).toBeInTheDocument(); // Star
+    expect(screen.getByText(/4344/)).toBeInTheDocument(); // XP
   });
 
-  it('should render all action icons', () => {
+  it('нэвтрээгүй үед Sign In болон Sign Up товч харагдах ёстой', () => {
     render(<Header />);
-    expect(screen.getByTestId('flame-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('star-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('bell-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('rotate-ccw-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('user-icon')).toBeInTheDocument();
+
+    const signedOutContainer = screen.getByTestId('signed-out');
+    expect(signedOutContainer).toBeInTheDocument();
+    expect(screen.getByText('Sign In')).toBeInTheDocument();
+    expect(screen.getByText('Sign Up')).toBeInTheDocument();
+  });
+
+  it('нэвтэрсэн үед UserButton харагдах ёстой', () => {
+    render(<Header />);
+
+    const signedInContainer = screen.getByTestId('signed-in');
+    expect(signedInContainer).toBeInTheDocument();
+    expect(screen.getByTestId('user-button')).toBeInTheDocument();
   });
 });

@@ -1,26 +1,92 @@
 import { randomUUID } from 'crypto';
 
 async function seed() {
-  // --- 1. ОЮУТНЫ ДАТА (Одоо эдгээр утгуудыг эндээс удирдаж болно) ---
-  const student = {
-    id: randomUUID(),
-    authUserId: null,
-    classId: '3a',
-    studentCode: '25LP4018',
-    azureEmail: '25LP4018@nest.edu.mn',
-    registerNumber: 'УУ00000000',
-    personalEmail: 'oyunmyagmar.g@gmail.com',
-    profilePicture: 'https://avatar.com/me.png',
-    firstName: 'Oyunmyagmar',
-    lastName: 'Ganbaatar',
-    phoneNumber: '00000000',
-    gender: 'FEMALE',
-    activeStatus: 'ACTIVE',
-    isGraduated: 0,
-    graduatedDate: null, // Төгсөөгүй бол null эсвэл 'YYYY-MM-DD'
-  };
-
-  // --- 2. БАГШ НАРЫН ДАТА (Нийт 10 багш) ---
+  const students = [
+    {
+      id: randomUUID(),
+      classId: '3a',
+      studentCode: '25LP4018',
+      azureEmail: 'davaasuren7932@gmail.com',
+      registerNumber: 'УУ00000000',
+      personalEmail: '',
+      profilePicture: 'https://avatar.com/student_1.png',
+      firstName: 'Davaasuren',
+      lastName: '',
+      phoneNumber: '00000000',
+      gender: 'FEMALE',
+      activeStatus: 'ACTIVE',
+    },
+    {
+      id: randomUUID(),
+      classId: '3a',
+      studentCode: '25LP9779',
+      azureEmail: 'nnaso0275@gmail.com',
+      registerNumber: 'UU00000000',
+      personalEmail: '',
+      profilePicture: 'https://avatar.com/student_2.png',
+      firstName: 'Naransolongo',
+      lastName: '',
+      phoneNumber: '00000000',
+      gender: 'FEMALE',
+      activeStatus: 'ACTIVE',
+    },
+    {
+      id: randomUUID(),
+      classId: '3a',
+      studentCode: '25LP5598',
+      azureEmail: 'hbbaatar@gmail.com',
+      registerNumber: 'УУ00000000',
+      personalEmail: '',
+      profilePicture: 'https://avatar.com/student_1.png',
+      firstName: 'Khatanbaatar',
+      lastName: '',
+      phoneNumber: '00000000',
+      gender: 'MALE',
+      activeStatus: 'ACTIVE',
+    },
+    {
+      id: randomUUID(),
+      classId: '3a',
+      studentCode: '25LP6030',
+      azureEmail: 'battsooj1010@gmail.com',
+      registerNumber: 'УУ00000000',
+      personalEmail: '',
+      profilePicture: 'https://avatar.com/student_1.png',
+      firstName: 'Battsooj',
+      lastName: '',
+      phoneNumber: '00000000',
+      gender: 'MALE',
+      activeStatus: 'ACTIVE',
+    },
+    {
+      id: randomUUID(),
+      classId: '3a',
+      studentCode: '25LP8609',
+      azureEmail: 'khishigdari.nb@gmail.com',
+      registerNumber: 'УУ00000000',
+      personalEmail: '',
+      profilePicture: 'https://avatar.com/student_1.png',
+      firstName: 'Khishigdari',
+      lastName: '',
+      phoneNumber: '00000000',
+      gender: 'FEMALE',
+      activeStatus: 'ACTIVE',
+    },
+    {
+      id: randomUUID(),
+      classId: '3a',
+      studentCode: '25LP4098',
+      azureEmail: '25LP4098@nest.edu.mn',
+      registerNumber: 'UU00000000',
+      personalEmail: '',
+      profilePicture: 'https://avatar.com/student_1.png',
+      firstName: 'Och-Erdene',
+      lastName: '',
+      phoneNumber: '00000000',
+      gender: 'MALE',
+      activeStatus: 'ACTIVE',
+    },
+  ];
   const teachers = [
     {
       id: randomUUID(),
@@ -102,7 +168,7 @@ async function seed() {
       phoneNumber: '99192615',
       gender: 'FEMALE',
     },
-      {
+    {
       id: randomUUID(),
       azureEmail: 'tsetsegulziiocherdene@gmail.com',
       firstName: 'Ocherdene',
@@ -111,12 +177,10 @@ async function seed() {
       gender: 'MALE',
     },
   ];
-
   console.log('PRAGMA foreign_keys = OFF;');
 
-  // 3. ОЮУТАН ОРУУЛАХ SQL
-  // Тогтмол утгуудыг (100, READY гэх мэт) шууд VALUES-т нь хадгалав
-  const studentSql = `
+  students.forEach((s) => {
+    const studentSql = `
 INSERT INTO students (
   id, authUserId, classId, studentCode, azureEmail, registerNumber, 
   personalEmail, profilePicture, firstName, lastName, phoneNumber, 
@@ -124,20 +188,15 @@ INSERT INTO students (
   profileProgress, isAdvocator, isProfileVisible, profileVisibledDate, 
   isProfileStaged, isInternational, dateOfBirth, jobSeekingStatus, hasAgreedTerms
 ) VALUES (
-  '${student.id}', NULL, '${student.classId}', '${student.studentCode}', 
-  '${student.azureEmail}', '${student.registerNumber}', '${
-    student.personalEmail
-  }', 
-  '${student.profilePicture}', '${student.firstName}', '${student.lastName}', 
-  '${student.phoneNumber}', '${student.gender}', '${student.activeStatus}', 
-  ${student.isGraduated}, ${
-    student.graduatedDate ? `'${student.graduatedDate}'` : 'NULL'
-  },
-  100, 0, 1, '2026-02-26', 1, 0, '2000-01-01', 'READY', 1
+  '${s.id}', NULL, '${s.classId}', '${s.studentCode}', 
+  '${s.azureEmail}', '${s.registerNumber}', '${s.personalEmail}', 
+  '${s.profilePicture}', '${s.firstName}', '${s.lastName}', 
+  '${s.phoneNumber}', '${s.gender}', '${s.activeStatus}', 
+  0, NULL, 100, 0, 1, '2026-03-03', 1, 0, '2000-01-01', 'READY', 1
 );`;
-  console.log(studentSql);
+    console.log(studentSql);
+  });
 
-  // 4. БАГШ НАРЫГ ОРУУЛАХ SQL
   teachers.forEach((t) => {
     const teacherSql = `
 INSERT INTO teachers (

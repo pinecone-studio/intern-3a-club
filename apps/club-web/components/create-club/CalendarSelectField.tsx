@@ -43,7 +43,7 @@ export const CalendarSelectField = ({
     <div className="space-y-2">
       <label
         htmlFor={id}
-        className="text-[9px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2"
+        className="text-[9px] font-semibold text-white/40 uppercase tracking-widest flex items-center gap-2"
       >
         {icon} {label}
       </label>
@@ -68,4 +68,3 @@ export const CalendarSelectField = ({
     </div>
   );
 };
-

@@ -30,10 +30,10 @@ const RequestRow: React.FC<{
           className={cn('h-2 w-2 rounded-full shadow-[0_0_8px]', statusClass)}
         />
         <div>
-          <h5 className="text-sm font-bold text-white group-hover/item:text-primary transition-colors">
+          <h5 className="text-sm font-semmibold text-white group-hover/item:text-primary transition-colors">
             {req.name}
           </h5>
-          <p className="text-[9px] text-white/30 font-black uppercase tracking-tighter">
+          <p className="text-[9px] text-white/30 font-semmibold uppercase tracking-tighter">
             {req.id}
           </p>
         </div>
@@ -59,27 +59,30 @@ export const RequestHistory = () => {
 
   return (
     <section className="space-y-4">
-      <h3 className="flex items-center gap-3 text-xs font-black uppercase tracking-[0.3em] text-white/40">
+      <h3 className="flex items-center gap-3 text-sm font-semmibold uppercase tracking-[0.1em] text-white/40">
         <History size={16} /> Илгээсэн хүсэлтүүд
       </h3>
-      <div className="space-y-3 max-h-[260px] lg:max-h-[360px] overflow-y-auto pr-2 scrollbar-hide">
+      <div
+        className="space-y-3 max-h-[260px] lg:max-h-[360px] overflow-y-auto pr-2 scrollbar-hide"
+        style={{ scrollbarWidth: 'none' }}
+      >
         {loading
           ? Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              data-testid="loading-skeleton"
-              className="flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/5 transition-all group/item animate-pulse"
-            >
-              <div className="flex items-center gap-4">
-                <div className="h-2 w-2 rounded-full bg-white/10" />
-                <div className="space-y-1">
-                  <div className="h-4 w-40 rounded bg-white/10" />
-                  <div className="h-3 w-24 rounded bg-white/5" />
+              <div
+                key={i}
+                data-testid="loading-skeleton"
+                className="flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/5 transition-all group/item animate-pulse"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="h-2 w-2 rounded-full bg-white/10" />
+                  <div className="space-y-1">
+                    <div className="h-4 w-40 rounded bg-white/10" />
+                    <div className="h-3 w-24 rounded bg-white/5" />
+                  </div>
                 </div>
+                <div className="h-6 w-16 rounded bg-white/10" />
               </div>
-              <div className="h-6 w-16 rounded bg-white/10" />
-            </div>
-          ))
+            ))
           : requests.map((req) => <RequestRow key={req.id} req={req} />)}
       </div>
     </section>

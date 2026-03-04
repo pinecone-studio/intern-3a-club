@@ -7,7 +7,7 @@ interface ProgressBarProps {
 
 export const ProgressBar = ({ step }: ProgressBarProps) => (
     <div className="flex gap-4">
-        <div className={cn('h-5 flex-1 rounded-full text-white')}>
+        <div className={cn('h-3 flex-1 rounded-xl text-white')}>
             Алхам {step === 1 ? '1' : '2'}
         </div>
     </div>

@@ -18,7 +18,9 @@ interface ActionProps extends JoinActionProps {
 }
 
 const getButtonStyles = (isLocked: boolean) => {
-  return isLocked ? 'bg-red-500/20 text-red-400' : 'bg-blue-600';
+  return isLocked
+    ? 'bg-red-500/20 text-red-300 border border-red-500/60'
+    : 'bg-blue-600';
 };
 
 const JoinAction = (props: JoinActionProps) => {
@@ -32,7 +34,7 @@ const JoinAction = (props: JoinActionProps) => {
     <CustomButton
       disabled={isDisabled}
       onClick={onEnroll}
-      className={`w-full py-4 font-bold transition-all ${getButtonStyles(
+      className={`w-full py-3 font-semibold transition-all ${getButtonStyles(
         isLocked
       )}`}
     >
@@ -51,7 +53,7 @@ export const ClubActionButtons = (props: ActionProps) => {
       variant="destructive"
       onClick={onLeave}
       disabled={loading}
-      className="w-full py-4 flex items-center justify-center gap-2"
+      className="w-full py-3 flex items-center justify-center gap-2"
     >
       <LogOut size={20} />
       {loading ? 'Уншиж байна...' : 'Клубээс гарах'}

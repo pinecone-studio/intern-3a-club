@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ClubCard } from './ClubCard';
 import { ExtendedClub } from '../../../lib/type';
 
-// 1. Inline type-ийг interface болгож засав (jsx-no-inline-types алдаа)
 interface ClubListProps {
   selectedClubId: string;
   onSelect: (_id: string) => void;
@@ -18,19 +17,17 @@ export const ClubList = ({
   clubs,
 }: ClubListProps) => {
   return (
-    <div className="w-full lg:w-[320px] flex flex-col h-full max-h-[calc(100vh-160px)]">
+    <div className="w-full lg:w-[320px] flex flex-col">
       <div className="mb-6 px-1 flex justify-between items-center">
-        <div className="space-y-1">
-          <h2 className="text-white/90 font-bold text-lg tracking-tight">
-            Клубууд
-          </h2>
-          <p className="text-[12px] font-medium text-white/40 tracking-normal">
+        <div className="">
+          <h2 className="text-white/90 font-semibold text-xl ">Клубууд</h2>
+          <p className="text-xs text-white/50">
             Өөрийн ур чадвараа дараагийн түвшинд гарга
           </p>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar">
+      <div className="flex-1">
         <div className="flex flex-col gap-4 pb-4">
           <AnimatePresence mode="popLayout" initial={false}>
             {clubs.map((item) => (

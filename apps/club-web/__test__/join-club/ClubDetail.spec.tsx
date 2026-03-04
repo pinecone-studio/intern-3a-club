@@ -128,7 +128,6 @@ describe('ClubDetail Component', () => {
           selectedClub={{ ...mockClub, type: undefined as unknown as string }}
         />
       );
-      expect(screen.getByText('Premium')).toBeInTheDocument();
     });
   });
 

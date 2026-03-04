@@ -20,6 +20,7 @@ export interface GetAllApprovedClub {
   minMember: number;
   maxMember: number;
   timetables: ApprovedClubTimetable[];
+  members: ClubMember[];
 }
 
 export interface ApprovedClubTimetable {
@@ -32,6 +33,17 @@ export interface ApprovedClubTimetable {
   duration: number;
 }
 
+export interface ClubMember {
+  __typename: string;
+  id: string;
+  studentId: string;
+  student: {
+    firstName: string;
+    lastName: string;
+    classId: string;
+  };
+}
+
 export interface TeacherData {
   getAllTeachers: GetAllTeacher[];
 }
@@ -42,7 +54,6 @@ export interface GetAllTeacher {
   lastName: string;
   profilePicture: string;
 }
-
 
 // ---- data ----
 import { gql } from '@apollo/client';
