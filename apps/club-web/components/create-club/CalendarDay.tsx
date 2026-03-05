@@ -17,7 +17,7 @@ export const CalendarDay = ({
       disabled={isPast}
       onClick={handleClick}
       className={cn(
-        'h-10 w-10 rounded-xl text-xs font-bold transition-all relative flex items-center justify-center bg-white/5',
+        'h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 rounded-xl text-[10px] sm:text-xs font-bold transition-all relative flex items-center justify-center ',
         {
           'opacity-10 cursor-not-allowed': isPast,
           'hover:bg-primary/20 text-white/80': !isPast,

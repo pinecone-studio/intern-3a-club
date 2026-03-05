@@ -24,7 +24,7 @@ const NameAndTeacher = ({
   errors,
   inputClass,
 }: SectionProps) => (
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
     <InputField
       label={<>Клубын нэр </>}
       icon={<Globe2 size={12} />}

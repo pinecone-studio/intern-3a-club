@@ -9,8 +9,8 @@ interface TeacherSelectProps {
 }
 
 const FALLBACK_TEACHERS = [
-  { id: 'erdenetsogt', firstName: 'Эрдэнэцогт', lastName: undefined },
-  { id: 'narantsatsralt', firstName: 'Наранцацралт', lastName: undefined },
+  { id: 'teacher1', firstName: 'Bagsh1', lastName: undefined },
+  { id: 'teacher2', firstName: 'Bagsh2', lastName: undefined },
 ];
 
 export const TeacherSelect = ({
