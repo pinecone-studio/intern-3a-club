@@ -37,7 +37,7 @@ export default function CreateClub() {
           variant="outline"
           className="bg-secondary border p-6 rounded-2xl text-xs font-black uppercase"
         >
-          Клуб нээх
+          Create Club
         </Button>
       </DialogTrigger>
       <DialogContent

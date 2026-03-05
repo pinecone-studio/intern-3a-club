@@ -5,3 +5,10 @@ export const resolveFrequency = (freq: string): 'ONCE' | 'WEEKLY' => {
 
   throw new Error(`Invalid frequency: ${freq}. Expected 'ONCE' or 'WEEKLY'.`);
 };
+
+export const normalizeFrequency = (freq?: string | null): 'ONCE' | 'WEEKLY' => {
+  const normalized = (freq || '').trim().toUpperCase();
+  if (normalized === 'ONCE') return 'ONCE';
+  if (normalized === 'WEEKLY') return 'WEEKLY';
+  return 'WEEKLY';
+};

@@ -11,7 +11,6 @@ import {
   GET_ALL_TEACHERS,
 } from '../../../lib/club-query';
 
-
 const LoadingState = () => (
   <div className="p-12 text-center text-white/50 animate-pulse uppercase text-[10px] font-bold tracking-widest">
     Уншиж байна...
@@ -24,7 +23,6 @@ const ErrorState = ({ msg }: { msg: string }) => (
   </div>
 );
 
-
 const compareByEnrollment = (a: ExtendedClub, b: ExtendedClub): number => {
   const now = Date.now();
   const aBanned = (a.bannedUntil ?? 0) > now;
@@ -34,7 +32,6 @@ const compareByEnrollment = (a: ExtendedClub, b: ExtendedClub): number => {
   if (a.isEnrolled === b.isEnrolled) return 0;
   return a.isEnrolled ? -1 : 1;
 };
-
 
 const useClubsLogic = () => {
   const {
@@ -67,9 +64,7 @@ const useClubsLogic = () => {
   const onEnroll = useCallback(() => {
     setAllClubs((p) =>
       p.map((c) =>
-        c.id === selectedClubId
-          ? { ...c, isEnrolled: true, bannedUntil: 0 }
-          : c
+        c.id === selectedClubId ? { ...c, isEnrolled: true, bannedUntil: 0 } : c
       )
     );
   }, [selectedClubId]);
@@ -117,7 +112,6 @@ const useClubsLogic = () => {
   };
 };
 
-
 interface ClubsLayoutProps {
   userId: string;
   logic: ReturnType<typeof useClubsLogic>;
@@ -145,7 +139,6 @@ const ClubsLayout = ({ userId, logic }: ClubsLayoutProps) => (
     </div>
   </div>
 );
-
 
 interface ClubsContentProps {
   userId?: string;

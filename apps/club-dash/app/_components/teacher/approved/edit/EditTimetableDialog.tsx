@@ -16,8 +16,10 @@ import {
   type Timetable,
 } from './edit-timetable-utils';
 import { EditTimetableDialogContent } from './EditTimetableDialogContent';
-import { DELETE_TIMETABLE } from 'apps/club-dash/app/delete/page';
-import { GET_ALL_APPROVED_CLUBS } from 'apps/club-dash/app/delete/page';
+import {
+  DELETE_TIMETABLE,
+  GET_ALL_APPROVED_CLUBS,
+} from '../../../../../libs/club-queries';
 
 function applyFoundToState(
   setActive: (_t: Timetable | null) => void,

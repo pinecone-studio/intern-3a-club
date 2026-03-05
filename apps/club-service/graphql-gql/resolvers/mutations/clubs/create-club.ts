@@ -12,6 +12,7 @@ import {
   resolveTerm,
   resolveType,
 } from 'gql-utils';
+import { publishClubEvent } from 'gql-utils/realtime-publisher';
 import { getCreatorId } from 'gql-utils/user/user.util';
 
 interface MyContext {
@@ -39,7 +40,7 @@ const getClubValues = (clubId: string, args: CreateClubWithSchedulesArgs) => ({
   status: resolveStatus(args.input.teacherId),
   type: resolveType(args.input.type, args.input.teacherId),
   preferredTeachers: resolvePreferredTeachers(
-    args.input.teacherId,
+    // args.input.teacherId,
     args.input.preferredTeachers
   ),
   minMember: resolveMinMember(args.input.minMember),
@@ -92,6 +93,13 @@ export const createClubWithSchedules = async (
 
     //Хуваарийг хадгалах
     await insertSchedules(clubId, args.schedules);
+
+    await publishClubEvent({
+      type: 'club_created',
+      clubId,
+      clerkId: context.clerkId || '',
+      at: Date.now(),
+    });
 
     return newClub;
   } catch (error) {

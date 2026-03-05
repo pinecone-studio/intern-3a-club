@@ -74,7 +74,6 @@ export const LogisticsForm = ({
         onChange={bind('duration')}
         options={[
           { l: '1:00 цаг', v: '1:00' },
-          { l: '1:30 цаг', v: '1:30' },
           { l: '2:00 цаг', v: '2:00' },
         ]}
         id="duration-select"

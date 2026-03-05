@@ -46,8 +46,7 @@ function Deploy-Web {
     $env:NX_WORKSPACE_ROOT = "$Root"
     $env:NX_NEXT_OUTPUT_PATH = "apps/club-web"
 
-    npx vercel build
-    npx next-on-pages --skip-build
+    npx next-on-pages
     npx wrangler pages deploy .vercel/output/static --project-name=$WebProject --branch=$WebBranch --commit-dirty=true
   }
   finally {

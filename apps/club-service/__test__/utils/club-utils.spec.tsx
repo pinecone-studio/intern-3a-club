@@ -47,14 +47,19 @@ describe('resolveMemberLimits', () => {
 });
 
 describe('resolvePreferredTeachers', () => {
-  it('should return null if teacherId is provided', () => {
-    expect(clubUtils.resolvePreferredTeachers('t1', ['t2'])).toBeNull();
+  it('should keep preferred teachers even if teacherId is provided', () => {
+    expect(clubUtils.resolvePreferredTeachers('t1', ['t2'])).toEqual(['t2']);
   });
   it('should return preferred list if teacherId is missing', () => {
     const preferred = ['t2', 't3'];
     expect(clubUtils.resolvePreferredTeachers(undefined, preferred)).toEqual(
       preferred
     );
+  });
+  it('should normalize, remove empty values and deduplicate', () => {
+    expect(
+      clubUtils.resolvePreferredTeachers('t1', ['t2', '  t2  ', '', 't3'])
+    ).toEqual(['t2', 't3']);
   });
 });
 

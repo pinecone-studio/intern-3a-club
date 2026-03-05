@@ -2,6 +2,25 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import { useMutation } from '@apollo/client/react';
+import gql from 'graphql-tag';
+const BAN_SECONDS = 20;
+
+const JOIN_CLUB = gql`
+  mutation JoinClub($clubId: ID!) {
+    joinClub(clubId: $clubId) {
+      id
+      studentId
+      joinedAt
+    }
+  }
+`;
+
+const LEAVE_CLUB = gql`
+  mutation LeaveClub($clubId: ID!) {
+    leaveClub(clubId: $clubId)
+  }
+`;
 
 interface UseClubActionProps {
   userid: string;
@@ -20,7 +39,9 @@ export const useClubAction = ({
 }: UseClubActionProps) => {
   const [remainingTime, setRemainingTime] = useState<number | null>(null);
   const [banned, setBanned] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [localLoading, setLocalLoading] = useState(false);
+  const [joinMutation, { loading: joinLoading }] = useMutation(JOIN_CLUB);
+  const [leaveMutation, { loading: leaveLoading }] = useMutation(LEAVE_CLUB);
 
 
   // 🔹 Helper to reduce complexity in main functions
@@ -93,7 +114,7 @@ export const useClubAction = ({
       return;
     }
 
-    setLoading(true);
+    setLocalLoading(true);
     try {
       const res = await fetch('/api/club/join', {
         method: 'POST',
@@ -102,14 +123,19 @@ export const useClubAction = ({
       });
       const data = await res.json();
 
-      // Zero branching here - just calling a helper
-      processJoinResult(res.status, data.remainingTime);
+      if (res.status === 403 || data.remainingTime > 0) {
+        processJoinResult(res.status, data.remainingTime);
+        return;
+      }
+
+      await joinMutation({ variables: { clubId: clubid } });
+      onEnrollSuccess();
     } catch (err) {
       console.error('Join error:', err);
     } finally {
-      setLoading(false);
+      setLocalLoading(false);
     }
-  }, [userid, clubid, onEnrollSuccess, processJoinResult]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [userid, clubid, onEnrollSuccess, processJoinResult, joinMutation]); // eslint-disable-line react-hooks/exhaustive-deps
   const handleLeave = useCallback(async () => {
     if (!userid) {
       toast.error('Эхлээд нэвтэрнэ үү.');
@@ -118,13 +144,15 @@ export const useClubAction = ({
 
     if (
       !window.confirm(
-        'Та клубээс гарахдаа итгэлтэй байна уу?\n\nГарвал энэ клубт 2 минут дахин нэгдэх боломжгүй болно.'
+        `Та клубээс гарахдаа итгэлтэй байна уу?\n\nГарвал энэ клубт ${BAN_SECONDS} секунд дахин нэгдэх боломжгүй болно.`
       )
     )
       return;
 
-    setLoading(true);
+    setLocalLoading(true);
     try {
+      await leaveMutation({ variables: { clubId: clubid } });
+
       const res = await fetch('/api/club/leave', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -136,9 +164,10 @@ export const useClubAction = ({
     } catch (err) {
       console.error('Leave error:', err);
     } finally {
-      setLoading(false);
+      setLocalLoading(false);
     }
-  }, [userid, clubid, onLeaveSuccess]);
+  }, [userid, clubid, onLeaveSuccess, leaveMutation]);
 
+  const loading = localLoading || joinLoading || leaveLoading;
   return { remainingTime, banned, loading, handleEnroll, handleLeave };
 };

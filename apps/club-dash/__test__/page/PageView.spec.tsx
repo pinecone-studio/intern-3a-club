@@ -1,8 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ViewRender } from '../../app/_components/main/ViewRender';
-import { Providers } from '../../libs/apollo/Providers';
+
 import Dashboard from '../../app/page';
+import { Providers } from '../../libs/apollo/providers';
 
 jest.mock('../../app/_components/teacher/main/AdminClubView', () => ({
   AdminClubsView: () => <div>Admin Clubs View</div>,

@@ -3,6 +3,7 @@ import { clubMembers, students } from 'db/schema';
 import { and, eq } from 'drizzle-orm';
 import { handleMutationError } from 'gql-utils';
 import { setJoinBan } from 'gql-utils/club-ban';
+import { publishClubEvent } from 'gql-utils/realtime-publisher';
 import { GraphQLError } from 'graphql';
 
 // Сурагчийг Clerk ID-аар олж баталгаажуулах
@@ -39,6 +40,12 @@ export const leaveClub = async (
     const student = await getAuthenticatedStudent(context.clerkId);
     await performDeleteMember(clubId, student.id);
     await setJoinBan(clubId, context.clerkId);
+    await publishClubEvent({
+      type: 'club_member_left',
+      clubId,
+      clerkId: context.clerkId,
+      at: Date.now(),
+    });
 
     return clubId;
   } catch (error) {
