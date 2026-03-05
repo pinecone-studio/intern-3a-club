@@ -12,7 +12,7 @@ interface MemberProgressProps {
   current: number;
   max: number;
   percent: number;
-  emails: string[];
+  lastnames: string[];
 }
 
 const getMemberStats = (min: number = 0, max: number = 1) => {
@@ -86,7 +86,7 @@ const MemberProgress = ({
   current,
   max,
   percent,
-  emails,
+  lastnames,
 }: MemberProgressProps) => (
   <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5">
     <div className="mb-4 flex items-center justify-between">
@@ -112,15 +112,15 @@ const MemberProgress = ({
       </div>
       <div className="rounded-xl border border-white/5 bg-black/10 p-3">
         <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-white/40">
-          Элссэн гишүүдийн email
+          Элссэн гишүүд
         </p>
-        {emails.length === 0 ? (
+        {lastnames.length === 0 ? (
           <p className="text-xs text-white/35">Одоогоор гишүүн алга</p>
         ) : (
           <div className="max-h-24 space-y-1 overflow-y-auto pr-1">
-            {emails.map((email) => (
-              <p key={email} className="text-xs text-white/75 break-all">
-                {email}
+            {lastnames.map((name) => (
+              <p key={name} className="text-xs text-white/75 break-all">
+                {name}
               </p>
             ))}
           </div>
@@ -137,7 +137,7 @@ export const ClubInfoGrid = ({ club }: { club: ExtendedClub }) => {
     club.maxMember
   );
   const memberEmails = (club.members || [])
-    .map((member) => member.student?.azureEmail)
+    .map((member) => member.student?.firstName)
     .filter(Boolean) as string[];
 
   const frequency = club.frequency || 'WEEKLY';
@@ -149,7 +149,7 @@ export const ClubInfoGrid = ({ club }: { club: ExtendedClub }) => {
         current={current}
         max={max}
         percent={percent}
-        emails={memberEmails}
+        lastnames={memberEmails}
       />
     </div>
   );

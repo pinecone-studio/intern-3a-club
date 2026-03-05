@@ -5,7 +5,12 @@ import { useQuery } from '@apollo/client/react';
 import { useAuth } from '@clerk/nextjs';
 import { ClubDetail } from './ClubDetail';
 import { ClubList } from './ClubList';
-import { ApprovedClubData, ExtendedClub, TeacherData } from '../../../lib/type';
+import {
+  ApprovedClubData,
+  ExtendedClub,
+  GetAllApprovedClub,
+  TeacherData,
+} from '../../../lib/type';
 import {
   GET_ALL_APPROVED_CLUBS,
   GET_ALL_TEACHERS,
@@ -23,17 +28,50 @@ const ErrorState = ({ msg }: { msg: string }) => (
   </div>
 );
 
+const toStartTimestamp = (date?: string, time?: string): number | null => {
+  if (!date || !time) return null;
+  const value = new Date(`${date}T${time}:00`).getTime();
+  return Number.isNaN(value) ? null : value;
+};
+
+const getNearestUpcomingStart = (club: ExtendedClub): number | null => {
+  const now = Date.now();
+  const futureStarts = (club.timetables || [])
+    .map((t) => toStartTimestamp(t.date, t.clubStartTime))
+    .filter((t): t is number => t !== null && t >= now)
+    .sort((a, b) => a - b);
+  return futureStarts[0] ?? null;
+};
+
 const compareByEnrollment = (a: ExtendedClub, b: ExtendedClub): number => {
   const now = Date.now();
   const aBanned = (a.bannedUntil ?? 0) > now;
   const bBanned = (b.bannedUntil ?? 0) > now;
 
   if (aBanned !== bBanned) return aBanned ? 1 : -1;
-  if (a.isEnrolled === b.isEnrolled) return 0;
-  return a.isEnrolled ? -1 : 1;
+  if (a.isEnrolled !== b.isEnrolled) return a.isEnrolled ? -1 : 1;
+
+  const aNearest = getNearestUpcomingStart(a);
+  const bNearest = getNearestUpcomingStart(b);
+
+  if (aNearest === null && bNearest === null) return a.name.localeCompare(b.name);
+  if (aNearest === null) return 1;
+  if (bNearest === null) return -1;
+  return aNearest - bNearest;
 };
 
-const useClubsLogic = () => {
+const computeIsEnrolled = (
+  club: Pick<GetAllApprovedClub, 'members'>,
+  clerkUserId?: string
+): boolean => {
+  if (!clerkUserId) return false;
+  return (club.members || []).some(
+    (member) =>
+      member.student?.authUserId === clerkUserId || member.studentId === clerkUserId
+  );
+};
+
+const useClubsLogic = (clerkUserId?: string) => {
   const {
     loading,
     error,
@@ -48,13 +86,15 @@ const useClubsLogic = () => {
     if (raw && raw.length > 0) {
       const mapped = raw.map((c) => ({
         ...c,
-        isEnrolled: false,
+        isEnrolled: computeIsEnrolled(c, clerkUserId),
         bannedUntil: 0,
       }));
       setAllClubs(mapped);
-      setSelectedClubId((prev) => prev || mapped[0].id);
+      return;
     }
-  }, [clubData]);
+    setAllClubs([]);
+    setSelectedClubId('');
+  }, [clubData, clerkUserId]);
 
   const allTeachers = useMemo(
     () => teacherData?.getAllTeachers || [],
@@ -93,6 +133,14 @@ const useClubsLogic = () => {
     () => [...allClubs].sort(compareByEnrollment),
     [allClubs]
   );
+
+  useEffect(() => {
+    if (sortedClubs.length === 0) return;
+    setSelectedClubId((prev) => {
+      if (prev && sortedClubs.some((club) => club.id === prev)) return prev;
+      return sortedClubs[0].id;
+    });
+  }, [sortedClubs]);
 
   const selectedClub = useMemo(
     () => sortedClubs.find((c) => c.id === selectedClubId),
@@ -146,7 +194,7 @@ interface ClubsContentProps {
 
 export const ClubsContent = ({ userId }: ClubsContentProps) => {
   const { userId: clerkUserId } = useAuth();
-  const logic = useClubsLogic();
+  const logic = useClubsLogic(clerkUserId ?? undefined);
   const effectiveUserId = userId ?? clerkUserId ?? '';
 
   if (logic.loading) return <LoadingState />;

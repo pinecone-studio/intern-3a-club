@@ -72,6 +72,31 @@ const insertSchedules = async (
   await DB.insert(timetable).values(timetableData);
 };
 
+const createClubOrThrow = async (
+  clubId: string,
+  args: CreateClubWithSchedulesArgs,
+  creatorId: string
+) => {
+  const [newClub] = await DB.insert(clubs)
+    .values({ ...getClubValues(clubId, args), creatorId })
+    .returning();
+
+  if (!newClub) {
+    throw new Error('Клуб үүсгэж чадсангүй.');
+  }
+
+  return newClub;
+};
+
+const publishCreatedEvent = async (clubId: string, clerkId?: string) => {
+  await publishClubEvent({
+    type: 'club_created',
+    clubId,
+    clerkId: clerkId || '',
+    at: Date.now(),
+  });
+};
+
 export const createClubWithSchedules = async (
   _: unknown,
   args: CreateClubWithSchedulesArgs,
@@ -82,24 +107,12 @@ export const createClubWithSchedules = async (
 
     const clubId = crypto.randomUUID();
 
-    //Клуб үүсгэх
-    const [newClub] = await DB.insert(clubs)
-      .values({ ...getClubValues(clubId, args), creatorId: creatorId })
-      .returning();
-
-    if (!newClub) {
-      throw new Error('Клуб үүсгэж чадсангүй.');
-    }
+    const newClub = await createClubOrThrow(clubId, args, creatorId);
 
     //Хуваарийг хадгалах
     await insertSchedules(clubId, args.schedules);
 
-    await publishClubEvent({
-      type: 'club_created',
-      clubId,
-      clerkId: context.clerkId || '',
-      at: Date.now(),
-    });
+    await publishCreatedEvent(clubId, context.clerkId);
 
     return newClub;
   } catch (error) {

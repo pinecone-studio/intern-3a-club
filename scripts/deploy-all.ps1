@@ -1,6 +1,7 @@
 param(
   [ValidateSet("dash", "web", "service", "all")]
-  [string]$Target = "all"
+  [string]$Target = "all",
+  [string]$Branch = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -10,12 +11,14 @@ $DashProject = "cloudflare-club-dash"
 $WebProject = "cloudflare-club-web"
 $ServiceProject = "cloudflare-pine-club"
 
-$DashBranch = if ($env:DASH_BRANCH) { $env:DASH_BRANCH } else { "176-branch-change-for-office" }
-$WebBranch = if ($env:WEB_BRANCH) { $env:WEB_BRANCH } else { "176-branch-change-for-office" }
-$ServiceBranch = if ($env:SERVICE_BRANCH) { $env:SERVICE_BRANCH } else { "105-ochko-need-new-branch" }
+$CurrentBranch = (git -C $Root rev-parse --abbrev-ref HEAD)
+$DefaultBranch = if ($Branch) { $Branch } else { $CurrentBranch }
+$DashBranch = $DefaultBranch
+$WebBranch = $DefaultBranch
+$ServiceBranch = $DefaultBranch
 
 function Deploy-Dash {
-  Write-Host "Deploying dash..."
+  Write-Host "Deploying dash... (project=$DashProject branch=$DashBranch)"
   Push-Location "$Root\apps\club-dash"
   try {
     Remove-Item ".next", ".vercel\output" -Recurse -Force -ErrorAction SilentlyContinue
@@ -35,7 +38,7 @@ function Deploy-Dash {
 }
 
 function Deploy-Web {
-  Write-Host "Deploying web..."
+  Write-Host "Deploying web... (project=$WebProject branch=$WebBranch)"
   Push-Location "$Root\apps\club-web"
   try {
     Remove-Item ".next", ".vercel\output" -Recurse -Force -ErrorAction SilentlyContinue
@@ -55,7 +58,16 @@ function Deploy-Web {
 }
 
 function Deploy-Service {
-  Write-Host "Deploying service..."
+  Write-Host "Deploying service... (project=$ServiceProject branch=$ServiceBranch)"
+  if (Test-Path "$Root\apps\club-service\node_modules") {
+    Write-Host "Removing local apps/club-service/node_modules to avoid React duplicate during build..."
+    Remove-Item "$Root\apps\club-service\node_modules" -Recurse -Force
+  }
+  if (-not (Test-Path "$Root\apps\club-service\node_modules")) {
+    Write-Host "Linking apps/club-service/node_modules -> ../../node_modules"
+    New-Item -ItemType SymbolicLink -Path "$Root\apps\club-service\node_modules" -Target "$Root\node_modules" | Out-Null
+  }
+
   Push-Location "$Root"
   try {
     npx nx run club-service:build-worker

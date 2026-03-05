@@ -23,6 +23,19 @@ const ensureCreatorId = async (clerkId?: string): Promise<string> => {
   return creatorId;
 };
 
+const mapClubFrequency = <T extends { frequency?: string | null }>(club: T) => ({
+  ...club,
+  ...(club.frequency != null
+    ? { frequency: normalizeFrequency(club.frequency) }
+    : {}),
+});
+
+const handleCreatorQueryError = (error: unknown): never => {
+  if (error instanceof GraphQLError) throw error;
+  console.error('Error:', error);
+  throw new GraphQLError('Клубүүдийг creator id-аар авахад алдаа гарлаа.');
+};
+
 export const getAllClubsByCreatorId = async (
   _: unknown,
   __: unknown,
@@ -32,14 +45,9 @@ export const getAllClubsByCreatorId = async (
     const creatorId = await ensureCreatorId(context.clerkId);
 
     const rows = await DB.select().from(clubs).where(eq(clubs.creatorId, creatorId));
-    return rows.map((club) => ({
-      ...club,
-      frequency: normalizeFrequency(club.frequency),
-    }));
+    const safeRows = Array.isArray(rows) ? rows : [];
+    return safeRows.map(mapClubFrequency);
   } catch (error) {
-    if (error instanceof GraphQLError) throw error;
-
-    console.error('Error:', error);
-    throw new GraphQLError('Клубүүдийг creator id-аар авахад алдаа гарлаа.');
+    handleCreatorQueryError(error);
   }
 };
