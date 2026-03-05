@@ -3,15 +3,16 @@
 import { useState } from 'react';
 import { Club } from '../../../../libs/types';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  ScrollArea,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
   Separator,
+  ScrollArea,
 } from '@intern-3a-club/shadcn';
 import { PendingModalItem } from './PendingModalItem';
+import { useGetTeachers } from '../../../_hooks/use-get-teachers';
 
 interface PendingModalProps {
   pending: Club[];
@@ -40,6 +41,8 @@ export const PendingModal = ({
       [clubId]: value,
     }));
   };
+  const { data: teacherData } = useGetTeachers();
+  const teachers = teacherData?.getAllTeachers ?? [];
 
   const renderPendingItem = (club: Club) => (
     <PendingModalItem
@@ -49,30 +52,32 @@ export const PendingModal = ({
       onTeacherChange={handleTeacherChange}
       onReject={onReject}
       onApprove={onApprove}
+      teachers={teachers}
     />
   );
 
   return (
-    <Dialog open onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg p-0 gap-0 overflow-hidden">
-        <DialogHeader className="px-6 pt-6 pb-4">
-          <DialogTitle className="text-base font-semibold tracking-tight">
+    <Sheet open onOpenChange={handleOpenChange}>
+      <SheetContent className="sm:max-w-lg p-0 gap-0 overflow-hidden flex flex-col">
+        <SheetHeader className="px-6 pt-6 pb-4">
+          <SheetTitle className="text-base font-semibold tracking-tight">
             Pending Requests
-          </DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground">
+          </SheetTitle>
+
+          <SheetDescription className="text-sm text-muted-foreground">
             {pending.length} club{pending.length !== 1 ? 's' : ''} awaiting
             review
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
         <Separator />
 
-        <ScrollArea className="max-h-[60vh]">
+        <ScrollArea className="flex-1">
           <div className="divide-y divide-border">
             {pending.map(renderPendingItem)}
           </div>
         </ScrollArea>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
