@@ -2,6 +2,7 @@
 import React from 'react';
 import { Calendar, Users } from 'lucide-react';
 import { ExtendedClub } from '../../../lib/type';
+import { JoinedMembersList } from './JoinedMembersList';
 
 interface ScheduleInfoProps {
   frequency: string;
@@ -82,12 +83,7 @@ const ScheduleInfo = ({ frequency, club }: ScheduleInfoProps) => {
   );
 };
 
-const MemberProgress = ({
-  current,
-  max,
-  percent,
-  lastnames,
-}: MemberProgressProps) => (
+const MemberProgress = ({ current, max, percent }: MemberProgressProps) => (
   <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5">
     <div className="mb-4 flex items-center justify-between">
       <h4 className="flex items-center gap-2 text-[10px] font-semibold text-white/20">
@@ -97,7 +93,7 @@ const MemberProgress = ({
         {current} / {max}
       </span>
     </div>
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="relative pt-2">
         <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
           <div
@@ -110,47 +106,42 @@ const MemberProgress = ({
           <p className="text-xs font-medium text-white/80">{percent}%</p>
         </div>
       </div>
-      <div className="rounded-xl border border-white/5 bg-black/10 p-3">
-        <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-white/40">
-          Элссэн гишүүд
-        </p>
-        {lastnames.length === 0 ? (
-          <p className="text-xs text-white/35">Одоогоор гишүүн алга</p>
-        ) : (
-          <div className="max-h-24 space-y-1 overflow-y-auto pr-1">
-            {lastnames.map((name) => (
-              <p key={name} className="text-xs text-white/75 break-all">
-                {name}
-              </p>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   </div>
 );
 
+const getMemberNames = (club: ExtendedClub): string[] =>
+  (club.members || [])
+    .map((member) => member.student?.firstName)
+    .filter((name): name is string => Boolean(name));
+
+const getMemberCount = (club: ExtendedClub): number =>
+  club.members?.length ?? 0;
+
+const getFrequency = (club: ExtendedClub): string => club.frequency || 'WEEKLY';
+
 export const ClubInfoGrid = ({ club }: { club: ExtendedClub }) => {
-  const currentMembers = club.members?.length || 0;
   const { current, max, percent } = getMemberStats(
-    currentMembers,
+    getMemberCount(club),
     club.maxMember
   );
-  const memberEmails = (club.members || [])
-    .map((member) => member.student?.firstName)
-    .filter(Boolean) as string[];
+  const members = getMemberNames(club);
+  const frequency = getFrequency(club);
 
-  const frequency = club.frequency || 'WEEKLY';
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <ScheduleInfo frequency={frequency} club={club} />
-      <MemberProgress
-        current={current}
-        max={max}
-        percent={percent}
-        lastnames={memberEmails}
-      />
+    <div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <ScheduleInfo frequency={frequency} club={club} />
+        <MemberProgress
+          current={current}
+          max={max}
+          percent={percent}
+          lastnames={members}
+        />
+      </div>
+
+      <JoinedMembersList lastnames={members} />
     </div>
   );
 };

@@ -21,6 +21,7 @@ export interface GetAllApprovedClub {
   maxMember: number;
   timetables: ApprovedClubTimetable[];
   members: ClubMember[];
+  createdAt: string
 }
 
 export interface ApprovedClubTimetable {

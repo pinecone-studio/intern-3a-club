@@ -14,6 +14,7 @@ export const GET_ALL_APPROVED_CLUBS = gql`
       clubTerm
       minMember
       maxMember
+      createdAt
       timetables {
         id
         clubId
