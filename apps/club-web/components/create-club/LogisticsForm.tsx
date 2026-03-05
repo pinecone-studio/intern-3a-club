@@ -30,7 +30,7 @@ export const LogisticsForm = ({
   } = useLogisticsForm(formData, setFormData, onRepeatChange);
 
   return (
-    <div className="flex flex-col justify-center space-y-6 lg:border-l border-white/5 lg:pl-10">
+    <div className="flex flex-col justify-center space-y-6 lg:border-l border-white/5 pl-4 sm:pl-6 lg:pl-10">
       <CalendarSelectField
         label="Давтамж"
         icon={<RotateCcw size={12} />}
@@ -46,7 +46,7 @@ export const LogisticsForm = ({
         error={errors.repeat}
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <CalendarSelectField
           label="Орох Анги"
           icon={<DoorOpen size={12} />}

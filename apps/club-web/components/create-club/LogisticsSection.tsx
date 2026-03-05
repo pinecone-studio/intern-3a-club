@@ -78,7 +78,7 @@ export const LogisticsSection = (props: LogisticsSectionProps) => {
   };
 
   return (
-    <div className="p-8 rounded-[2.5rem] bg-black/30 border border-white/5 space-y-8">
+    <div className="p-4 sm:p-6 lg:p-8 rounded-[2.5rem] bg-black/30 border border-white/5 space-y-6 lg:space-y-8">
       <header className="flex items-center justify-between border-b border-white/5 pb-4">
         <h4 className="text-sm font-semibold text-white text-primary flex items-center gap-2">
           <CalendarDays size={16} /> Хуваарь ба Логистик
@@ -97,17 +97,17 @@ export const LogisticsSection = (props: LogisticsSectionProps) => {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
         <div className="space-y-6 text-white">
           <CalendarHeader
             currentMonth={currentMonth}
             onMonthChange={props.handleMonthChange}
           />
-          <div className="grid grid-cols-7 gap-1 text-center">
+          <div className="grid grid-cols-7 gap-0.5 sm:gap-1 text-center">
             {['Ня', 'Да', 'Мя', 'Лх', 'Пү', 'Ба', 'Бя'].map((day) => (
               <div
                 key={day}
-                className="text-[9px] font-black text-white/20 uppercase py-2"
+                className="text-[7px] sm:text-[9px] font-black text-white/20 uppercase py-1 sm:py-2"
               >
                 {day}
               </div>

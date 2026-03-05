@@ -56,7 +56,7 @@ const Step2View = ({ props, onBack, onSubmit, status }: StepViewProps) => (
 
 export const ClubForm = (props: ClubFormProps) => {
   const { formData, handleSubmit, teachers } = props;
-  const [showHelp, setShowHelp] = useState(false);
+  
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submissionStatus, setSubmissionStatus] = useState('');
@@ -81,7 +81,7 @@ export const ClubForm = (props: ClubFormProps) => {
 
   return (
     <div className="lg:col-span-7">
-      <div className="rounded-xl border border-blue-900/20 bg-gradient-to-br from-slate-900/80 via-blue-900/60 to-blue-800/50 p-5 lg:p-7 backdrop-blur-sm shadow-lg">
+        <div className="rounded-xl border border-blue-900/20 bg-gradient-to-br from-slate-900/80 via-blue-900/60 to-blue-800/50 p-4 sm:p-5 lg:p-7 backdrop-blur-sm shadow-lg">
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
