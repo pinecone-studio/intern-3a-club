@@ -64,14 +64,14 @@ export const ClubDetailView = ({
 
       <TeacherProfile {...teacherData} />
 
-      <p className="text-white/50 text-xs mb-8 px-2 ml-3 border-l border-white/10 ">
+      <p className="text-white/50 text-xs mb-4 px-2 ml-3 border-l border-white/10 ">
         {club.description}
       </p>
 
       <ClubInfoGrid club={club} />
       <ScheduleDetails club={club} />
 
-      <div className="mt-10 pt-6 border-t border-white/5">
+      <div className="mt-8 pt-6 border-t border-white/5">
         <ClubActionButtons
           isEnrolled={club.isEnrolled}
           isLocked={banned}

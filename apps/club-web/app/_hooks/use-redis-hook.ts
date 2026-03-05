@@ -1,11 +1,9 @@
 'use client';
-
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useMutation } from '@apollo/client/react';
 import gql from 'graphql-tag';
 const BAN_SECONDS = 20;
-
 const JOIN_CLUB = gql`
   mutation JoinClub($clubId: ID!) {
     joinClub(clubId: $clubId) {
@@ -28,9 +26,6 @@ interface UseClubActionProps {
   onEnrollSuccess: () => void;
   onLeaveSuccess: () => void;
 }
-
-
-
 export const useClubAction = ({
   userid,
   clubid,
@@ -42,9 +37,6 @@ export const useClubAction = ({
   const [localLoading, setLocalLoading] = useState(false);
   const [joinMutation, { loading: joinLoading }] = useMutation(JOIN_CLUB);
   const [leaveMutation, { loading: leaveLoading }] = useMutation(LEAVE_CLUB);
-
-
-  // 🔹 Helper to reduce complexity in main functions
   const handleBanResponse = (time: number) => {
     if (time > 0) {
       setRemainingTime(time);
@@ -94,7 +86,6 @@ export const useClubAction = ({
     return () => clearInterval(interval);
   }, [remainingTime]);
 
-  // helper function (Complexity: 2)
   const processJoinResult = useCallback(
     (status: number, time: number) => {
       if (status === 403 || time > 0) {

@@ -3,7 +3,7 @@ import React from 'react';
 import { Clock, MapPin } from 'lucide-react';
 import { cn } from 'lib/utils';
 import { ExtendedClub, ApprovedClubTimetable } from '../../../lib/type';
-import { CgSandClock } from 'react-icons/cg';
+import { CgSandClock } from "react-icons/cg";
 
 interface ClubCardProps {
   club: ExtendedClub;
@@ -20,27 +20,52 @@ const EnrollmentBadge = ({ isEnrolled }: { isEnrolled: boolean }) => {
   );
 };
 
-const toStartTimestamp = (date?: string, time?: string): number | null => {
-  if (!date || !time) return null;
+const hasDateAndTime = (date?: string, time?: string): date is string =>
+  Boolean(date && time);
+
+const parseTimestamp = (date: string, time: string): number | null => {
   const value = new Date(`${date}T${time}:00`).getTime();
   return Number.isNaN(value) ? null : value;
 };
 
-const getNextTimetable = (
+const toStartTimestamp = (date?: string, time?: string): number | null => {
+  if (!hasDateAndTime(date, time)) return null;
+  return parseTimestamp(date, time as string);
+};
+
+type TimetableWithStart = { timetable: ApprovedClubTimetable; start: number };
+const toTimetableWithStart = (t: ApprovedClubTimetable): TimetableWithStart | null => {
+  const start = toStartTimestamp(t.date, t.clubStartTime);
+  if (start === null) return null;
+  return { timetable: t, start };
+};
+
+export const getNextTimetable = (
   timetables?: ApprovedClubTimetable[]
 ): ApprovedClubTimetable | undefined => {
   const now = Date.now();
   return (timetables || [])
-    .map((timetable) => ({
-      timetable,
-      start: toStartTimestamp(timetable.date, timetable.clubStartTime),
-    }))
-    .filter(
-      (item): item is { timetable: ApprovedClubTimetable; start: number } =>
-        item.start !== null
-    )
+    .map(toTimetableWithStart)
+    .filter((item): item is TimetableWithStart => item !== null)
     .sort((a, b) => a.start - b.start)
     .find((item) => item.start >= now)?.timetable;
+};
+
+const formatDaysAndHours = (days: number, hours: number): string =>
+  `${days} өдөр ${hours} цагийн дараа`;
+
+const formatDaysOnly = (days: number): string => `${days} өдрийн дараа`;
+
+const formatHoursOnly = (hours: number): string => `${hours} цагийн дараа`;
+
+const formatTimeLeft = (days: number, hours: number): string => {
+  if (days > 0) return hours > 0 ? formatDaysAndHours(days, hours) : formatDaysOnly(days);
+  return formatHoursOnly(hours);
+};
+
+const diffToTimeLeft = (diffMs: number): string => {
+  const totalHours = Math.ceil(diffMs / (1000 * 60 * 60));
+  return formatTimeLeft(Math.floor(totalHours / 24), totalHours % 24);
 };
 
 const getTimeLeftText = (timetable?: ApprovedClubTimetable): string | null => {
@@ -48,72 +73,79 @@ const getTimeLeftText = (timetable?: ApprovedClubTimetable): string | null => {
   if (!start) return null;
   const diffMs = start - Date.now();
   if (diffMs <= 0) return null;
-  const totalHours = Math.ceil(diffMs / (1000 * 60 * 60));
-  const days = Math.floor(totalHours / 24);
-  const hours = totalHours % 24;
+  return diffToTimeLeft(diffMs);
 
-  if (days > 0 && hours > 0) return `${days} өдөр ${hours} цагийн дараа`;
-  if (days > 0) return `${days} өдрийн дараа`;
-  return `${hours} цагийн дараа`;
 };
 
-const ClubSchedule = ({ timetable }: { timetable?: ApprovedClubTimetable }) => {
-  const scheduleText = timetable
-    ? `${timetable.date} • ${timetable.clubStartTime}`
-    : 'Хугацаа тодорхойгүй';
-  const timeLeftText = getTimeLeftText(timetable);
+const getScheduleText = (timetable?: ApprovedClubTimetable): string =>
+  timetable ? `${timetable.date} • ${timetable.clubStartTime}` : 'Хугацаа тодорхойгүй';
 
+const getRoomText = (timetable?: ApprovedClubTimetable): string =>
+  timetable?.room ?? 'Өрөө тодорхойгүй';
+
+const ClubSchedule = ({ timetable }: { timetable?: ApprovedClubTimetable }) => {
+  const timeLeftText = getTimeLeftText(timetable);
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-2 text-[10px] text-white/40 font-medium">
         <Clock size={12} strokeWidth={2.5} />
-        <span>{scheduleText}</span>
+        <span>{getScheduleText(timetable)}</span>
       </div>
-
       <div className="flex items-center gap-2 text-[10px] text-white/40 font-medium">
         <MapPin size={12} strokeWidth={2.5} />
-        <span className="truncate">
-          {timetable?.room || 'Өрөө тодорхойгүй'}
-        </span>
+        <span className="truncate">{getRoomText(timetable)}</span>
       </div>
-      {timeLeftText ? (
-        <div className="flex items-center gap-2 text-[10px] text-white/40 font-medium">
-          <CgSandClock size={10} strokeWidth={2.5} />
+      {timeLeftText && (
+        <div className="flex items-center gap-x-2.5 text-[10px] text-white/40 font-medium">
+          <CgSandClock className='opacity-60' size={10} strokeWidth={2.5} />
           <span>{timeLeftText}</span>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };
+
+const CONTAINER_CLASSES = {
+  banned:   'bg-red-600/10 border-red-500/70',
+  enrolled: 'bg-emerald-600/15 border-emerald-500/70',
+  selected: 'bg-blue-600/20 border-blue-500',
+  default:  'bg-blue-600/20 border-white/5',
+} as const;
+
+const TITLE_CLASSES = {
+  enrolled: 'text-emerald-200',
+  selected: 'text-white',
+  default:  'text-white/70',
+} as const;
+
+const getContainerKeyForState = (isEnrolled: boolean, isSelected: boolean) =>
+  isEnrolled ? 'enrolled' : isSelected ? 'selected' : 'default';
+
+type ContainerKey = keyof typeof CONTAINER_CLASSES;
+
+const getContainerKey = (isBanned: boolean, isEnrolled: boolean, isSelected: boolean): ContainerKey => {
+  if (isBanned) return 'banned';
+  return getContainerKeyForState(isEnrolled, isSelected);
+};
+
+const getTitleKey = (isEnrolled: boolean, isSelected: boolean) =>
+  isEnrolled ? 'enrolled' : isSelected ? 'selected' : 'default';
+
+
 
 export const ClubCard = ({ club, isSelected, onClick }: ClubCardProps) => {
   const handleCardClick = () => onClick(club.id);
   const isBanned = (club.bannedUntil ?? 0) > Date.now();
   const isEnrolled = !!club.isEnrolled;
-  const nextTimetable =
-    getNextTimetable(club.timetables) || club.timetables?.[0];
-
-  const getContainerClass = () => {
-    if (isBanned) return 'bg-red-600/10 border-red-500/70';
-    if (isEnrolled) return 'bg-emerald-600/15 border-emerald-500/70';
-    if (isSelected) return 'bg-blue-600/20 border-blue-500';
-    return 'bg-blue-600/20 border-white/5';
-  };
-
-  const getTitleClass = () => {
-    if (isEnrolled) return 'text-emerald-200';
-    if (isSelected) return 'text-white';
-    return 'text-white/70';
-  };
+  const nextTimetable = getNextTimetable(club.timetables) || club.timetables?.[0];
 
   const containerClass = cn(
     'w-full p-4 rounded-xl cursor-pointer border transition-colors duration-150',
-    getContainerClass()
+    CONTAINER_CLASSES[getContainerKey(isBanned, isEnrolled, isSelected)]
   );
-
   const titleClass = cn(
     'text-xs font-semibold uppercase truncate',
-    getTitleClass()
+    TITLE_CLASSES[getTitleKey(isEnrolled, isSelected)]
   );
 
   return (
