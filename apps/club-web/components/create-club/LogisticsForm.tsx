@@ -39,8 +39,6 @@ export const LogisticsForm = ({
         options={[
           { l: 'Зөвхөн сонгосон өдрүүдэд', v: 'none' },
           { l: 'Долоо хоног бүр', v: 'weekly' },
-          { l: '2 долоо хоног тутам', v: 'biweekly' },
-          { l: 'Сар бүр', v: 'monthly' },
         ]}
         id="repeat-select"
         error={errors.repeat}
@@ -52,7 +50,7 @@ export const LogisticsForm = ({
           icon={<DoorOpen size={12} />}
           value={formData.room}
           onChange={bind('room')}
-          options={['301', '302', '303']}
+          options={['301', '302', '303', '304', '305', '401', '402']}
           id="room-select"
           error={errors.room}
         />
@@ -61,7 +59,7 @@ export const LogisticsForm = ({
           icon={<Clock size={12} />}
           value={formData.time}
           onChange={bind('time')}
-          options={['13:00', '14:00', '15:00', '16:00']}
+          options={['13:00', '14:00', '15:00', '16:00', '17:00']}
           id="time-select"
           error={errors.time}
         />
@@ -80,21 +78,21 @@ export const LogisticsForm = ({
       />
 
       <StudentCountField
-        label="Сурагчид (Макс 20)"
+        label="Сурагчид (Макс 25)"
         value={formData.maxStudents}
         onChange={handleInput('maxStudents')}
         onBlur={handleMaxBlur}
         isInvalid={isMaxInvalid}
-        placeholder="15"
+        placeholder=""
       />
 
       <StudentCountField
-        label="Сурагчид (Багадаа 7)"
+        label="Сурагчид (Багадаа 5)"
         value={formData.minStudents}
         onChange={handleInput('minStudents')}
         onBlur={handleMinBlur}
         isInvalid={isMinInvalid}
-        placeholder="11"
+        placeholder=""
       />
     </div>
   );

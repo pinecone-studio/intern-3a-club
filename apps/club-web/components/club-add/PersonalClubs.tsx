@@ -99,7 +99,12 @@ export const MyClubsList = () => {
     };
   }, [isLoaded, userId, getToken]);
 
-  const { data, loading, error, refetch: refetchMyClubs } = useQuery<{
+  const {
+    data,
+    loading,
+    error,
+    refetch: refetchMyClubs,
+  } = useQuery<{
     getAllClubsByCreatorId: MyClub[];
   }>(GET_MY_CLUBS_DETAIL, {
     skip: !isLoaded || !userId || !token,
@@ -113,20 +118,19 @@ export const MyClubsList = () => {
       : undefined,
   });
 
-  const { data: teacherData, refetch: refetchTeachers } = useQuery<{ getAllTeachers: Teacher[] }>(
-    GET_ALL_TEACHERS,
-    {
-      skip: !isLoaded || !userId || !token,
-      fetchPolicy: 'cache-and-network',
-      context: token
-        ? {
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-          }
-        : undefined,
-    }
-  );
+  const { data: teacherData, refetch: refetchTeachers } = useQuery<{
+    getAllTeachers: Teacher[];
+  }>(GET_ALL_TEACHERS, {
+    skip: !isLoaded || !userId || !token,
+    fetchPolicy: 'cache-and-network',
+    context: token
+      ? {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      : undefined,
+  });
   console.log(data, 'data');
 
   const clubs = toClubArray(data?.getAllClubsByCreatorId);
@@ -155,8 +159,8 @@ export const MyClubsList = () => {
 
   return (
     <section className="space-y-4">
-      <h3 className="flex items-center gap-3 text-sm font-semmibold tracking-[0.1em] uppercase text-white/40">
-        <PencilLine size={16} /> Миний Клубууд
+      <h3 className="flex items-center gap-3 text-xs font-medium tracking-[0.1em] uppercase text-white/40">
+        <PencilLine size={12} /> Миний Клубууд
       </h3>
       {loading && (
         <div className="p-6 rounded-[2rem] bg-white/5 border border-white/10 text-sm text-white/50">
@@ -181,22 +185,25 @@ export const MyClubsList = () => {
             onClick={() =>
               setExpandedId((prev) => (prev === club.id ? null : club.id))
             }
-            className="group w-full text-left p-6 rounded-[2rem] bg-gradient-to-r from-primary/10 to-transparent border border-primary/20 backdrop-blur-xl"
+            className="group w-full text-left p-6 rounded-[2rem] bg-gradient-to-r to-transparent border border-white/40  backdrop-blur-xl"
           >
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center text-white font-black shadow-lg shadow-primary/20">
+                <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-white/40 text-sm font-bold">
                   {club.name[0]}
                 </div>
+
                 <div>
-                  <h4 className="font-semmibold text-xl text-white">
+                  <h4 className="font-semibold text-xs text-white">
                     {club.name}
                   </h4>
-                  <p className="text-[10px] text-white/40 uppercase tracking-widest">
+
+                  <p className="text-[8px] text-white/40 uppercase tracking-widest">
                     {club.members?.length ?? 0} Гишүүд • {club.type ?? 'self'}
                   </p>
                 </div>
               </div>
+
               <div className="text-white/50">
                 <ChevronDown
                   size={18}

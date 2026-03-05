@@ -1,54 +1,67 @@
-const Home = () => {
+import { Component as Globe } from '../components/ui/InteractiveGlobe';
+
+const Demo = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f8fafc]">
-      {/* Арын фон дээрх зөөлөн чимэглэл */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-gray-100 blur-[120px]" />
-        <div className="absolute -bottom-[10%] -right-[10%] h-[40%] w-[40%] rounded-full bg-slate-200/50 blur-[120px]" />
-      </div>
+    <div className="flex min-h-screen items-center justify-center bg-background p-8">
+      <div className="w-full max-w-5xl rounded-2xl border border-border bg-card overflow-hidden relative">
+        {/* Ambient glow */}
+        <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-blue-500/5 blur-3xl pointer-events-none" />
 
-      <div className="relative z-10 w-full max-w-2xl px-6">
-        <div className="overflow-hidden rounded-3xl border border-gray-200/50 bg-white/70 p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl transition-all hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)]">
-          {/* Дээд талын жижиг текст */}
-          {/* <div className="mb-6 flex justify-center">
-            <span className="rounded-full bg-gray-100 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
-              Admin Dashboard
-            </span>
-          </div> */}
+        <div className="flex flex-col md:flex-row min-h-[500px]">
+          {/* Баруун талын контент */}
+          <div className="flex-1 flex flex-col justify-center p-10 md:p-14 relative z-10">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-3 py-1 text-xs text-muted-foreground mb-6 w-fit">
+              <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Бүх системүүд хэвийн
+            </div>
 
-          <div className="text-center">
-            <h1 className="text-6xl font-black tracking-tighter text-gray-900 md:text-7xl">
-              Welcome to <br />
-              <span className="bg-gradient-to-b from-gray-900 to-gray-500 bg-clip-text text-transparent">
-                Backend
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground leading-[1.1] mb-4">
+              Backend-д
+              <br />
+              <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                тавтай морилно уу
               </span>
             </h1>
 
-            <p className="mt-8 text-lg leading-relaxed text-gray-500">
-              Системийн өгөгдөл, хэрэглэгч болон тохиргоог удирдах{' '}
-              <br className="hidden md:block" />
-              төв хяналтын хэсэгт тавтай морилно уу.
-            </p>
+            <div className="mb-8">
+              <a
+                href="https://studio.apollographql.com/sandbox/explorer?endpoint=https://105-ochko-need-new-branch.cloudflare-pine-club.pages.dev/api/graphql"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center rounded-xl bg-gray-100 px-5 py-3 text-sm font-semibold text-gray-900 transition hover:bg-white"
+              >
+                Apollo Sandbox руу орох
+              </a>
+            </div>
 
-            {/* Үйлдэл хийх хэсэг */}
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <button className="w-full rounded-xl bg-gray-900 px-8 py-4 font-medium text-white transition-all hover:bg-gray-800 hover:shadow-lg sm:w-auto">
-                <a href="https://studio.apollographql.com/sandbox/explorer?endpoint=https://105-ochko-need-new-branch.cloudflare-pine-club.pages.dev/api/graphql">
-                  {' '}
-                  Системд нэвтрэх
-                </a>
-              </button>
+            <div className="flex items-center gap-6">
+              <div>
+                <p className="text-2xl font-bold text-foreground">150+</p>
+                <p className="text-xs text-muted-foreground">Edge Node-ууд</p>
+              </div>
+              <div className="w-px h-8 bg-border" />
+              <div>
+                <p className="text-2xl font-bold text-foreground">&lt;50ms</p>
+                <p className="text-xs text-muted-foreground">Дундаж хоцролт</p>
+              </div>
+              <div className="w-px h-8 bg-border" />
+              <div>
+                <p className="text-2xl font-bold text-foreground">99.99%</p>
+                <p className="text-xs text-muted-foreground">
+                  Үйлчилгээний тасралтгүй байдал
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Доод талын жижиг текст */}
-        <p className="mt-8 text-center text-sm text-gray-400">
-          © {new Date().getFullYear()} Бүх эрх хуулиар хамгаалагдаагүй.
-        </p>
+          {/* Зүүн тал — Дэлхий */}
+          <div className="flex-1 flex items-center justify-center p-4 md:p-0 min-h-[400px]">
+            <Globe size={460} />
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Home;
+export default Demo;

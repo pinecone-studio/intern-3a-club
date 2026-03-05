@@ -1,4 +1,3 @@
-import { MoveDownIcon } from 'lucide-react';
 import { ChangeEvent } from 'react';
 
 interface TeacherSelectProps {
@@ -31,13 +30,17 @@ export const TeacherSelect = ({
         name="teacher"
         value={value}
         onChange={onChange}
-        className={className}
+        className={`${className ?? ''} appearance-none`}
+        style={{
+          WebkitAppearance: 'none',
+          MozAppearance: 'none',
+          backgroundImage: 'none',
+        }}
       >
         <option value="">Сонгох...</option>
         <option value="teacher">Багш</option>
         <option value="student">Сурагч</option>
       </select>
-      <MoveDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
     </div>
   );
 };

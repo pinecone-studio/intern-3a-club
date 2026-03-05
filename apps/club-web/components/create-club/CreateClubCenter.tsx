@@ -116,7 +116,7 @@ export const CreateClubCenter = () => {
         title="Клуб Нээх"
         subtitle="Шинэ клуб нээх хүсэлт болон хуваарь илгээх."
       />
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 mt-4 sm:mt-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12  sm:gap-6 mt-4 sm:mt-6 items-start">
         <div className="lg:col-span-7">
           <ClubForm
             formData={formData}

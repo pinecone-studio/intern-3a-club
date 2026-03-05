@@ -50,11 +50,11 @@ export const StudentCountField = ({
   </div>
 );
 
-export const checkEmptyOrSmall = (v: number) => !v || v < 7;
+export const checkEmptyOrSmall = (v: number) => !v || v < 5;
 export const checkMinGreater = (v: number, maxV: number) =>
   maxV > 0 && v >= maxV;
 
-export const checkEmptyOrLarge = (v: number) => !v || v > 20;
+export const checkEmptyOrLarge = (v: number) => !v || v > 25;
 export const checkMaxSmaller = (v: number, minV: number) =>
   minV > 0 && v <= minV;
 

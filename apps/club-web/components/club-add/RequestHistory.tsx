@@ -33,12 +33,9 @@ const RequestRow: React.FC<{
           className={cn('h-2 w-2 rounded-full shadow-[0_0_8px]', statusClass)}
         />
         <div>
-          <h5 className="text-sm font-semmibold text-white group-hover/item:text-primary transition-colors">
+          <h5 className="text-xs font-medium text-white/70 group-hover/item:text-primary transition-colors">
             {req.name}
           </h5>
-          <p className="text-[9px] text-white/30 font-semmibold uppercase tracking-tighter">
-            {req.id}
-          </p>
         </div>
       </div>
       <span
@@ -110,8 +107,8 @@ export const RequestHistory = () => {
 
   return (
     <section className="space-y-4">
-      <h3 className="flex items-center gap-3 text-sm font-semmibold uppercase tracking-[0.1em] text-white/40">
-        <History size={16} /> Илгээсэн хүсэлтүүд
+      <h3 className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.1em] text-white/40">
+        <History size={12} /> Илгээсэн хүсэлтүүд
       </h3>
       <div
         className="space-y-3 max-h-[260px] lg:max-h-[360px] overflow-y-auto pr-2 scrollbar-hide"
