@@ -1,7 +1,9 @@
+import { useAuth } from '@clerk/nextjs';
 import { History } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useQuery } from '@apollo/client/react';
-import { GET_ALL_CLUBS } from '../../lib/type';
+import { useEffect, useState } from 'react';
+import { GET_ALL_CLUBS_BY_CREATOR_ID } from '../../lib/club-query';
 
 const getStatusClasses = (
   status?: string
@@ -51,11 +53,45 @@ const RequestRow: React.FC<{
 };
 
 export const RequestHistory = () => {
-  const { data, loading } = useQuery<{
-    getAllClubs: { id: string; name: string; status?: string }[];
-  }>(GET_ALL_CLUBS);
+  const { isLoaded, userId, getToken } = useAuth();
+  const [token, setToken] = useState<string | null | undefined>(undefined);
 
-  const requests = data?.getAllClubs || [];
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (!userId) {
+      setToken(null);
+      return;
+    }
+
+    let isMounted = true;
+    getToken()
+      .then((value) => {
+        if (isMounted) setToken(value);
+      })
+      .catch(() => {
+        if (isMounted) setToken(null);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isLoaded, userId, getToken]);
+
+  const { data, loading, error } = useQuery<{
+    getAllClubsByCreatorId: { id: string; name: string; status?: string }[];
+  }>(GET_ALL_CLUBS_BY_CREATOR_ID, {
+    skip: !isLoaded || !userId || !token,
+    fetchPolicy: 'cache-and-network',
+    context: token
+      ? {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      : undefined,
+  });
+
+  const requests = data?.getAllClubsByCreatorId || [];
 
   return (
     <section className="space-y-4">
@@ -83,7 +119,20 @@ export const RequestHistory = () => {
                 <div className="h-6 w-16 rounded bg-white/10" />
               </div>
             ))
-          : requests.map((req) => <RequestRow key={req.id} req={req} />)}
+          : null}
+        {!loading && error ? (
+          <div className="p-5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-sm text-rose-200">
+            Хүсэлт ачааллахад алдаа гарлаа: {error.message}
+          </div>
+        ) : null}
+        {!loading && !error && requests.length === 0 ? (
+          <div className="p-5 rounded-2xl bg-white/5 border border-white/5 text-sm text-white/50">
+            Таны илгээсэн хүсэлт алга байна.
+          </div>
+        ) : null}
+        {!loading && !error
+          ? requests.map((req) => <RequestRow key={req.id} req={req} />)
+          : null}
       </div>
     </section>
   );

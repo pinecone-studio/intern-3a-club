@@ -46,3 +46,17 @@ export const GET_ALL_TEACHERS = gql`
     }
   }
 `;
+
+export const GET_ALL_CLUBS_BY_CREATOR_ID = gql`
+  query GetAllClubsByCreatorId {
+    getAllClubsByCreatorId {
+      id
+      name
+      status
+      type
+      members {
+        id
+      }
+    }
+  }
+`;
