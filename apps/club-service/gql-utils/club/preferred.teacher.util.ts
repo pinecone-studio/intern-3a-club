@@ -1,8 +1,12 @@
 export const resolvePreferredTeachers = (
-  // teacherId?: string,
-  preferred?: string[]
+  teacherIdOrPreferred?: string | string[],
+  maybePreferred?: string[]
 ) => {
-  const normalized = (preferred || [])
+  const preferred = Array.isArray(teacherIdOrPreferred)
+    ? teacherIdOrPreferred
+    : maybePreferred;
+
+  const normalized = (preferred ?? [])
     .filter((id): id is string => typeof id === 'string')
     .map((id) => id.trim())
     .filter(Boolean);

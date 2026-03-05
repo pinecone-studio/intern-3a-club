@@ -15,36 +15,47 @@ const toBase64 = (value: string): string =>
 
 const getAblyApiKey = () => stripWrappedQuotes(process.env.ABLY_API_KEY);
 
+const getChannelName = (event: RealtimeEvent): string => {
+  return event.type === 'club_created' || event.type === 'club_deleted'
+    ? 'clubs'
+    : `club:${event.clubId}`;
+};
+
+const getAblyHeaders = (ablyApiKey: string) => ({
+  'Content-Type': 'application/json',
+  Authorization: `Basic ${toBase64(ablyApiKey)}`,
+});
+
+const getAblyBody = (event: RealtimeEvent) =>
+  JSON.stringify([
+    {
+      name: 'club-event',
+      data: event,
+    },
+  ]);
+
+const assertSuccessResponse = async (response: Response) => {
+  if (response.ok) return;
+  const text = await response.text();
+  throw new Error(`Ably publish failed (${response.status}): ${text}`);
+};
+
 const publishToAbly = async (event: RealtimeEvent): Promise<boolean> => {
   const ablyApiKey = getAblyApiKey();
   if (!ablyApiKey) return false;
 
-  const channel =
-    event.type === 'club_created' || event.type === 'club_deleted'
-      ? 'clubs'
-      : `club:${event.clubId}`;
+  const channel = getChannelName(event);
   const url = `https://rest.ably.io/channels/${encodeURIComponent(
     channel
   )}/messages`;
 
   const response = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Basic ${toBase64(ablyApiKey)}`,
-    },
-    body: JSON.stringify([
-      {
-        name: 'club-event',
-        data: event,
-      },
-    ]),
+    headers: getAblyHeaders(ablyApiKey),
+    body: getAblyBody(event),
   });
 
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Ably publish failed (${response.status}): ${text}`);
-  }
+  await assertSuccessResponse(response);
 
   return true;
 };
