@@ -2,7 +2,6 @@ import { Clock, DoorOpen, Users, Check, X } from 'lucide-react';
 import { Club, GetAllTeacher } from '../../../../libs/types';
 import {
   Button,
-  Badge,
   Select,
   SelectContent,
   SelectItem,
@@ -63,7 +62,7 @@ export const PendingModalItem = ({
 
   return (
     <ScrollArea>
-      <div className="p-4">
+      <div className="px-4">
         <div className="rounded-md border border-border bg-card p-4">
           {/* Header */}
           <div className="flex items-start justify-between gap-4 mb-3">
@@ -137,7 +136,7 @@ export const PendingModalItem = ({
                   size="sm"
                   className="h-8 px-3 text-xs text-destructive border-destructive/20 hover:text-destructive hover:bg-destructive/10"
                 >
-                  <X className="size-4 mr-1" />
+                  <X className="size-3 mr-1" />
                   Reject
                 </Button>
               </AlertDialogTrigger>
@@ -172,7 +171,7 @@ export const PendingModalItem = ({
                   disabled={!selectedTeacherId}
                   className="h-8 px-3 text-xs disabled:opacity-40"
                 >
-                  <Check className="size-3.5 mr-1" />
+                  <Check className="size-3 mr-1" />
                   Approve
                 </Button>
               </AlertDialogTrigger>

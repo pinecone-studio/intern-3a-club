@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Club } from '../../../../libs/types';
 import {
   Sheet,
@@ -8,7 +8,6 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  Separator,
   ScrollArea,
 } from '@intern-3a-club/shadcn';
 import { PendingModalItem } from './PendingModalItem';
@@ -30,6 +29,12 @@ export const PendingModal = ({
   const [selectedTeacher, setSelectedTeacher] = useState<
     Record<string, string>
   >({});
+
+  useEffect(() => {
+    if (pending.length === 0) {
+      setOpenModal(false);
+    }
+  }, [pending.length, setOpenModal]);
 
   const handleOpenChange = (open: boolean) => {
     if (!open) setOpenModal(false);
@@ -58,24 +63,20 @@ export const PendingModal = ({
 
   return (
     <Sheet open onOpenChange={handleOpenChange}>
-      <SheetContent className="sm:max-w-lg p-0 gap-0 overflow-hidden flex flex-col">
+      <SheetContent className="sm:max-w-md h-[96vh] border rounded-md p-0 pb-4 gap-0 overflow-hidden flex flex-col">
         <SheetHeader className="px-6 pt-6 pb-4">
           <SheetTitle className="text-base font-semibold tracking-tight">
             Pending Requests
           </SheetTitle>
 
-          <SheetDescription className="text-sm text-muted-foreground">
+          <SheetDescription className="text-sm text-muted-foreground overflow-y-auto">
             {pending.length} club{pending.length !== 1 ? 's' : ''} awaiting
             review
           </SheetDescription>
         </SheetHeader>
 
-        <Separator />
-
-        <ScrollArea className="flex-1">
-          <div className="divide-y divide-border">
-            {pending.map(renderPendingItem)}
-          </div>
+        <ScrollArea className="flex-1 overflow-y-auto">
+          <div className="space-y-3">{pending.map(renderPendingItem)}</div>
         </ScrollArea>
       </SheetContent>
     </Sheet>

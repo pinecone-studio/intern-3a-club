@@ -44,7 +44,7 @@ const Calendar = ({
           buttonVariants({ variant: 'ghost' }),
           'h-9 w-9 p-0 font-normal aria-selected:opacity-100 flex items-center justify-center'
         ),
-        selected: 'bg-primary text-primary-foreground ring-2 ring-primary/40',
+        selected: 'bg-primary text-primary-foreground ring-2 ring-red-500',
         today: 'bg-accent text-accent-foreground',
         outside:
           'day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
@@ -52,14 +52,14 @@ const Calendar = ({
         hidden: 'invisible',
         ...classNames,
       }}
- components={{
-  Chevron: ({ orientation }) =>
-    orientation === "left" ? (
-      <ChevronLeft className="h-4 w-4" />
-    ) : (
-      <ChevronRight className="h-4 w-4" />
-    ),
-}}
+      components={{
+        Chevron: ({ orientation }) =>
+          orientation === 'left' ? (
+            <ChevronLeft className="h-4 w-4" />
+          ) : (
+            <ChevronRight className="h-4 w-4" />
+          ),
+      }}
       {...props}
     />
   );

@@ -19,7 +19,10 @@ export const Pending = () => {
 
   const pendingClubs = mapGetAllClubsToClubs(data?.getAllPendingClubs ?? []);
 
-  const [updateClub] = useMutation(UPDATE_CLUB);
+  const [updateClub] = useMutation(UPDATE_CLUB, {
+    refetchQueries: [GET_ALL_PENDING_CLUBS],
+    awaitRefetchQueries: true,
+  });
 
   const handleApprove = async (club: Club) => {
     console.log('APPROVE CLICKED', club);

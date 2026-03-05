@@ -20,3 +20,4 @@ export * from './lib/ui/scroll-area';
 export * from './lib/ui/separator';
 export * from './lib/ui/badge';
 export * from './lib/ui/sheet';
+export * from './lib/ui/tooltip';

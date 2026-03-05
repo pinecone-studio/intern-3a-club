@@ -35,7 +35,7 @@ export default function CreateClub() {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="bg-secondary border p-6 rounded-2xl text-xs font-black uppercase"
+          className="bg-secondary border p-6 rounded-2xl text-xs font-semibold uppercase"
         >
           Create Club
         </Button>
