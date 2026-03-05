@@ -122,10 +122,7 @@ export const EditTimetableDialog = ({
     DELETE_TIMETABLE,
     {
       refetchQueries: [{ query: GET_ALL_APPROVED_CLUBS }],
-      onCompleted: () => {
-        // Хүсвэл энд Toast эсвэл Alert харуулж болно
-        console.log('Амжилттай устлаа');
-      },
+      onCompleted: () => {},
       onError: (error) => {
         alert(`Алдаа гарлаа: ${error.message}`);
       },
@@ -133,7 +130,8 @@ export const EditTimetableDialog = ({
   );
 
   const handleDelete = async (timetableId: string) => {
-    if (window.confirm('Та энэ хуваарийг устгахдаа итгэлтэй байна уу?')) {
+    alert('Та энэ хуваарийг устгахдаа итгэлтэй байна уу?');
+    {
       await deleteTimetable({
         variables: { id: timetableId },
       });

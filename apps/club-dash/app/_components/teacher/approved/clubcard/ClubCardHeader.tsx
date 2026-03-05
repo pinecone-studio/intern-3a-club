@@ -1,4 +1,10 @@
 import { Club } from '../../../../../libs/types';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@intern-3a-club/shadcn';
 
 function getDescription(req: Club) {
   return req.description ?? '';
@@ -34,9 +40,20 @@ export const ClubCardHeader = ({ req }: { req: Club }) => {
         >
           {req.name}
         </h3>
-        <p className="text-xs text-muted-foreground w-60 truncate mt-0.5">
-          {display.description}
-        </p>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <p className="text-xs text-muted-foreground w-60 truncate mt-0.5">
+                {display.description || 'No description'}
+              </p>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="max-w-sm break-words">
+                {display.description || 'No description'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <p className="text-[10px] text-muted-foreground mt-0.5 truncate">
           Members: {req.minMember}–{req.maxMember}
         </p>

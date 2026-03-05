@@ -128,7 +128,7 @@ const AdminClubsViewContent = ({
             onClick={handleOpenModal}
             className="relative bg-secondary border border-border px-6 py-3 rounded-2xl"
           >
-            <span className="text-xs font-black uppercase">Request</span>
+            <span className="text-xs font-semibold uppercase">Requests</span>
 
             {pending.length > 0 && (
               <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-foreground text-background text-[11px] font-black flex items-center justify-center">

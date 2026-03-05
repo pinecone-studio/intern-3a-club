@@ -4,6 +4,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { DetailTile } from '../../main/DetailTile';
 import { ApprovedClubDetailProps, Data } from '../../../../../libs/types';
 import { EditTimetableDialog } from '../edit/EditTimetableDialog';
+import { MockStudents } from '../../../../../libs/mock';
 import {
   getDetailDisplay,
   mockClassroom,
@@ -24,6 +25,7 @@ import {
 import {
   DELETE_CLUB,
   DeleteClubData,
+  GET_ALL_APPROVED_CLUBS,
   GET_ALL_CLUBS,
   getAllTimetablesFromData,
 } from '../../../../../libs/club-queries';
@@ -37,16 +39,15 @@ export const ApprovedClubDetail = ({
   const { data } = useQuery<Data>(GET_ALL_CLUBS);
   const allTimetables = useMemo(() => getAllTimetablesFromData(data), [data]);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
-  const [openStudentList, setOpenStudentList] = useState<boolean>(false);
+  const [openStudentList, setOpenStudentList] = useState<boolean>(true);
   const primaryTimetable = club.timetables?.[0] ?? null;
 
   const [deleteClub, { loading: isDeleting }] = useMutation<DeleteClubData>(
     DELETE_CLUB,
     {
-      refetchQueries: [{ query: GET_ALL_CLUBS }],
-      onCompleted: () => {
-        alert('Клуб амжилттай устгагдлаа.');
-      },
+      refetchQueries: [{ query: GET_ALL_APPROVED_CLUBS }],
+      awaitRefetchQueries: true,
+      onCompleted: () => {},
       onError: (e) => alert(e.message),
     }
   );
@@ -68,36 +69,34 @@ export const ApprovedClubDetail = ({
 
   return (
     <div className="flex items-start gap-80">
-      <div className="flex flex-col pt-4">
+      <div className="w-fit flex flex-col gap-4 pt-4 relative">
         <button
           onClick={() => setOpenStudentList((list) => !list)}
-          className="flex items-center justify-between w-full text-left"
+          className="flex items-center gap-2 text-left"
         >
-          <div className="flex items-center gap-2 text-sm font-semibold text-foreground/70">
-            <ChevronDown
-              size={14}
-              className={`transition-transform duration-200 ${
-                openStudentList ? 'rotate-180' : ''
-              }`}
-            />
-            Joined Students
-          </div>
+          <ChevronDown
+            size={14}
+            className={`transition-transform duration-200 ${
+              openStudentList ? 'rotate-180' : ''
+            }`}
+          />
+          <p className="whitespace-nowrap">
+            Joined Students ({MockStudents.length})
+          </p>
         </button>
 
         {openStudentList && (
-          <div className="mt-3 flex flex-col gap-2">
-            {[].length === 0 ? (
-              <p className="text-xs text-foreground/40">No students yet</p>
-            ) : (
-              [].map((student: { id: string; name: string }) => (
+          <div className="absolute left-0 top-12 ml-3 z-20 w-[260px] h-fit bg-inherit p-3">
+            <div className="grid grid-cols-5 gap-x-[100px] gap-y-2">
+              {MockStudents.slice(0, 10).map((student) => (
                 <div
                   key={student.id}
-                  className="text-xs text-foreground/70 py-1 border-b border-border"
+                  className="text-sm text-foreground/70 py-1"
                 >
-                  {student.name}
+                  {student.studentCode}
                 </div>
-              ))
-            )}
+              ))}
+            </div>
           </div>
         )}
       </div>

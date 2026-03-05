@@ -154,11 +154,12 @@ export const EditTimetableFooterSection = ({
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
+            className="w-full"
             variant="destructive"
             size="sm"
             disabled={!active || deleting}
           >
-            {deleting ? 'Устгаж байна...' : 'Устгах'}
+            {deleting ? 'Deleting...' : 'Delete'}
           </Button>
         </AlertDialogTrigger>
 
@@ -173,7 +174,7 @@ export const EditTimetableFooterSection = ({
           <AlertDialogFooter>
             <AlertDialogCancel>Цуцлах</AlertDialogCancel>
             <AlertDialogAction onClick={onDelete} disabled={deleting}>
-              Тийм, устгах
+              Устгах
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

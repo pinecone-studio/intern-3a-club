@@ -88,16 +88,21 @@ export const mockClassroom = [
   { id: '1', classRoom: '301' },
   { id: '2', classRoom: '302' },
   { id: '3', classRoom: '303' },
+  { id: '4', classRoom: '304' },
+  { id: '5', classRoom: '305' },
+  { id: '6', classRoom: '401' },
 ];
 
 export const mockStartTime = [
   { id: '1', startTime: '13:00' },
   { id: '2', startTime: '14:00' },
   { id: '3', startTime: '15:00' },
+  { id: '4', startTime: '16:00' },
+  { id: '5', startTime: '17:00' },
+  { id: '6', startTime: '18:00' },
 ];
 
 export const mockDuration = [
   { id: '1', duration: '1:00' },
-  { id: '2', duration: '1:30' },
   { id: '3', duration: '2:00' },
 ];
