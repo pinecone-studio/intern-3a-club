@@ -26,6 +26,7 @@ export const GET_ALL_APPROVED_CLUBS = gql`
         id
         studentId
         student {
+          authUserId
           azureEmail
           firstName
           lastName
