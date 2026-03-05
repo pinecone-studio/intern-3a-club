@@ -38,6 +38,7 @@ export interface ClubMember {
   id: string;
   studentId: string;
   student: {
+    authUserId?: string;
     azureEmail: string;
     firstName: string;
     lastName: string;
