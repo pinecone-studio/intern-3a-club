@@ -1,7 +1,33 @@
 import { ExtendedClub, GetAllApprovedClub } from '../../../lib/type';
 
-// ── timestamp helpers ────────────────────────────────────────────────────────
+export const formatDaysAndHours = (days: number, hours: number): string =>
+  `${days} өдөр ${hours} цагийн дараа`;
 
+export const formatDaysOnly = (days: number): string => `${days} өдрийн дараа`;
+
+export const formatHoursOnly = (hours: number): string => `${hours} цагийн дараа`;
+
+const hasBothDaysAndHours = (days: number, hours: number): boolean => days > 0 && hours > 0;
+const hasDaysOnly = (days: number): boolean => days > 0;
+
+export const formatTimeLeft = (days: number, hours: number): string => {
+  if (hasBothDaysAndHours(days, hours)) return formatDaysAndHours(days, hours);
+  if (hasDaysOnly(days)) return formatDaysOnly(days);
+  return formatHoursOnly(hours);
+};
+export const diffToTimeLeft = (diffMs: number): string => {
+  const totalHours = Math.ceil(diffMs / (1000 * 60 * 60));
+  return formatTimeLeft(Math.floor(totalHours / 24), totalHours % 24);
+};
+
+// Шинэ utility функцууд
+const ENROLLMENT_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 хоног
+
+export const getEnrollmentDeadline = (createdAt: string): Date =>
+  new Date(new Date(createdAt).getTime() + ENROLLMENT_WINDOW_MS);
+
+export const isEnrollmentOpen = (createdAt: string): boolean =>
+  getEnrollmentDeadline(createdAt).getTime() > Date.now();
 
 export const toStartTimestamp = (date: string, time: string): number | null => {
   const value = new Date(`${date}T${time}:00`).getTime();
@@ -58,7 +84,6 @@ const bothAreNull = (a: number | null, b: number | null): boolean =>
   a === null && b === null;
 
 const compareWhenOneNull = (a: number | null): number => (a === null ? 1 : -1);
-
 const compareNearest = (
   a: number | null,
   b: number | null,
@@ -69,7 +94,6 @@ const compareNearest = (
   if (bothAreNull(a, b)) return nameA.localeCompare(nameB);
   return compareWhenOneNull(a);
 };
-
 const compareByNearest = (a: ExtendedClub, b: ExtendedClub): number =>
   compareNearest(
     getNearestUpcomingStart(a),
@@ -77,10 +101,8 @@ const compareByNearest = (a: ExtendedClub, b: ExtendedClub): number =>
     a.name,
     b.name
   );
-
 export const compareByEnrollment = (a: ExtendedClub, b: ExtendedClub): number =>
   sortByBan(a, b) ?? sortByEnrolled(a, b) ?? compareByNearest(a, b);
-
 // ── member helpers ────────────────────────────────────────────────────────────
 
 type Member = { student?: { authUserId?: string }; studentId?: string };
@@ -117,20 +139,16 @@ const enrollClub = (c: ExtendedClub): ExtendedClub => ({
 const leaveClub = (c: ExtendedClub, banUntil: number): ExtendedClub => ({
   ...c, isEnrolled: false, bannedUntil: banUntil,
 });
-
 export const applyEnroll = (clubs: ExtendedClub[], id: string): ExtendedClub[] =>
   clubs.map((c) => (c.id === id ? enrollClub(c) : c));
 
 export const applyLeave = (clubs: ExtendedClub[], id: string, banUntil: number): ExtendedClub[] =>
   clubs.map((c) => (c.id === id ? leaveClub(c, banUntil) : c));
-
 export const clearBan = (clubs: ExtendedClub[], id: string): ExtendedClub[] =>
   clubs.map((c) => (c.id === id ? { ...c, bannedUntil: 0 } : c));
 
 // ── selection helper ──────────────────────────────────────────────────────────
-
 const idExistsInList = (id: string, clubs: ExtendedClub[]): boolean =>
   id !== '' && clubs.some((c) => c.id === id);
-
 export const resolveSelectedId = (prev: string, clubs: ExtendedClub[]): string =>
   idExistsInList(prev, clubs) ? prev : clubs[0]?.id ?? '';
