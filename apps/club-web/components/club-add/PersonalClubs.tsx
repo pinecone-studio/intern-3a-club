@@ -1,11 +1,12 @@
 /* eslint-disable max-lines,complexity,@nx/workspace/jsx-no-inline-function */
 import { useAuth } from '@clerk/nextjs';
 import { useQuery } from '@apollo/client/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, PencilLine } from 'lucide-react';
 import gql from 'graphql-tag';
 import { GET_ALL_TEACHERS } from '../../lib/club-query';
+import { useClubRealtime } from '../../app/_hooks/use-club-realtime';
 
 const GET_MY_CLUBS_DETAIL = gql`
   query GetAllClubsByCreatorId {
@@ -98,7 +99,7 @@ export const MyClubsList = () => {
     };
   }, [isLoaded, userId, getToken]);
 
-  const { data, loading, error } = useQuery<{
+  const { data, loading, error, refetch: refetchMyClubs } = useQuery<{
     getAllClubsByCreatorId: MyClub[];
   }>(GET_MY_CLUBS_DETAIL, {
     skip: !isLoaded || !userId || !token,
@@ -112,7 +113,7 @@ export const MyClubsList = () => {
       : undefined,
   });
 
-  const { data: teacherData } = useQuery<{ getAllTeachers: Teacher[] }>(
+  const { data: teacherData, refetch: refetchTeachers } = useQuery<{ getAllTeachers: Teacher[] }>(
     GET_ALL_TEACHERS,
     {
       skip: !isLoaded || !userId || !token,
@@ -140,6 +141,17 @@ export const MyClubsList = () => {
   console.log(data, 'data');
 
   const myClubs = clubs.filter((club) => club.status === 'approved');
+  const myClubIds = myClubs.map((club) => club.id);
+
+  const handleRealtimeEvent = useCallback(() => {
+    void refetchMyClubs();
+    void refetchTeachers();
+  }, [refetchMyClubs, refetchTeachers]);
+
+  useClubRealtime({
+    clubIds: myClubIds,
+    onEvent: handleRealtimeEvent,
+  });
 
   return (
     <section className="space-y-4">
@@ -204,43 +216,47 @@ export const MyClubsList = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-white/70">
                   <p>
-                    <span className="text-white/40">Approved Teacher:</span>{' '}
+                    <span className="text-white/40">Club Teacher:</span>{' '}
                     {club.teacherId
                       ? teacherNameById.get(club.teacherId) ?? club.teacherId
                       : '-'}
                   </p>
-
-                  <p>
+                  {/* <p>
                     <span className="text-white/40">Preferred Teachers:</span>{' '}
                     {club.preferredTeachers?.length
                       ? club.preferredTeachers
                           .map((id) => teacherNameById.get(id) ?? id)
                           .join(', ')
                       : '-'}
-                  </p>
-                  <p>
+                  </p> */}
+                  {/* <p>
                     <span className="text-white/40">Term:</span>{' '}
                     {club.clubTerm ?? '-'}
-                  </p>
+                  </p> */}
                   <p>
-                    <span className="text-white/40">Status:</span>{' '}
+                    <span className="text-white/40">Status: </span>{' '}
                     {club.status ?? 'unknown'}
                   </p>
                   <p>
                     <span className="text-white/40">Frequency:</span>{' '}
                     {club.frequency ?? '-'}
                   </p>
-                  <p>
+                  {/* <p>
                     <span className="text-white/40">Type:</span>{' '}
                     {club.type ?? 'self'}
-                  </p>
-                  <p>
+                  </p> */}
+                  {/* <p>
                     <span className="text-white/40">Min/Max:</span>{' '}
-                    {club.minMember ?? '-'} / {club.maxMember ?? '-'}
-                  </p>
+                    {club.minMember ?? '-'} /
+                  </p> */}
                   <p>
                     <span className="text-white/40">Members:</span>{' '}
-                    {club.members?.length ?? 0}
+                    {club.members?.length ?? 0} /{club.maxMember ?? '-'}
+                  </p>{' '}
+                  <p>
+                    <span className="text-white/40">
+                      Days:<span className="text-white/70"> Tue , Wed</span>{' '}
+                    </span>{' '}
                   </p>
                 </div>
 

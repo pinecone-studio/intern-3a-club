@@ -2,8 +2,9 @@ import { useAuth } from '@clerk/nextjs';
 import { History } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useQuery } from '@apollo/client/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { GET_ALL_CLUBS_BY_CREATOR_ID } from '../../lib/club-query';
+import { useClubRealtime } from '../../app/_hooks/use-club-realtime';
 
 const getStatusClasses = (
   status?: string
@@ -83,7 +84,7 @@ export const RequestHistory = () => {
     };
   }, [isLoaded, userId, getToken]);
 
-  const { data, loading, error } = useQuery<{
+  const { data, loading, error, refetch } = useQuery<{
     getAllClubsByCreatorId: RequestItem[] | null;
   }>(GET_ALL_CLUBS_BY_CREATOR_ID, {
     skip: !isLoaded || !userId || !token,
@@ -98,6 +99,14 @@ export const RequestHistory = () => {
   });
 
   const requests = toRequestArray(data?.getAllClubsByCreatorId);
+
+  const handleRealtimeEvent = useCallback(() => {
+    void refetch();
+  }, [refetch]);
+
+  useClubRealtime({
+    onEvent: handleRealtimeEvent,
+  });
 
   return (
     <section className="space-y-4">

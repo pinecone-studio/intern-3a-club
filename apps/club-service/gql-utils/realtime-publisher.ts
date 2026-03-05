@@ -1,5 +1,11 @@
+/* eslint-disable complexity */
 type RealtimeEvent = {
-  type: 'club_member_joined' | 'club_member_left' | 'club_created' | 'club_deleted';
+  type:
+    | 'club_member_joined'
+    | 'club_member_left'
+    | 'club_created'
+    | 'club_deleted'
+    | 'club_updated';
   clubId?: string;
   clerkId: string;
   at: number;
@@ -16,7 +22,9 @@ const toBase64 = (value: string): string =>
 const getAblyApiKey = () => stripWrappedQuotes(process.env.ABLY_API_KEY);
 
 const getChannelName = (event: RealtimeEvent): string => {
-  return event.type === 'club_created' || event.type === 'club_deleted'
+  return event.type === 'club_created' ||
+    event.type === 'club_deleted' ||
+    event.type === 'club_updated'
     ? 'clubs'
     : `club:${event.clubId}`;
 };

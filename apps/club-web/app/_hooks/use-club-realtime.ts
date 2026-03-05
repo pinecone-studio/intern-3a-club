@@ -1,6 +1,7 @@
 'use client';
+/* eslint-disable complexity */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 type UseClubRealtimeOptions = {
   clubId?: string;
@@ -13,6 +14,9 @@ export const useClubRealtime = ({
   clubIds,
   onEvent,
 }: UseClubRealtimeOptions) => {
+  const onEventRef = useRef(onEvent);
+  onEventRef.current = onEvent;
+
   useEffect(() => {
     if (!onEvent) return;
 
@@ -32,12 +36,16 @@ export const useClubRealtime = ({
       ablyApiKey
     )}`;
     const stream = new EventSource(sseUrl);
+    let lastEmitAt = 0;
+    let pendingTimeout: ReturnType<typeof setTimeout> | null = null;
+    const THROTTLE_MS = 1200;
 
     const eventTypes = new Set([
       'club_member_joined',
       'club_member_left',
       'club_created',
       'club_deleted',
+      'club_updated',
     ]);
 
     const extractRealtimeHints = (value: unknown, bag: Set<string>) => {
@@ -90,24 +98,41 @@ export const useClubRealtime = ({
       return false;
     };
 
+    const emitThrottled = () => {
+      const now = Date.now();
+      const elapsed = now - lastEmitAt;
+      if (elapsed >= THROTTLE_MS) {
+        lastEmitAt = now;
+        onEventRef.current?.();
+        return;
+      }
+      if (pendingTimeout) return;
+      pendingTimeout = setTimeout(() => {
+        pendingTimeout = null;
+        lastEmitAt = Date.now();
+        onEventRef.current?.();
+      }, THROTTLE_MS - elapsed);
+    };
+
     stream.onmessage = (event) => {
       // For approved club list, any payload on "clubs" should refresh list.
       if (!event?.data) return;
       if (isClubListOnly) {
-        onEvent();
+        emitThrottled();
         return;
       }
       // Ignore non-domain events (heartbeats/control messages).
       if (!isDomainEvent(event.data)) {
         return;
       }
-      onEvent();
+      emitThrottled();
     };
     stream.onerror = () => {
       // Let EventSource reconnect automatically.
     };
 
     return () => {
+      if (pendingTimeout) clearTimeout(pendingTimeout);
       stream.close();
     };
   }, [clubId, clubIds, onEvent]);
