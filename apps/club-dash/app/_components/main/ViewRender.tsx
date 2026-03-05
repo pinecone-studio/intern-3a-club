@@ -1,5 +1,6 @@
 import { GraduationCap, Briefcase } from 'lucide-react';
 import { AdminClubsView } from '../teacher/main/AdminClubView';
+import { JSX } from 'react';
 
 const AcademicView = () => (
   <div className="p-10">

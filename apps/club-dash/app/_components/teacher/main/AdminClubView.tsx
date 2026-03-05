@@ -167,8 +167,35 @@ export const AdminClubsView = () => {
   const viewModel = useAdminClubsViewModel();
 
   if (viewModel.isLoading) {
-    return <div>Loading...</div>;
+    return <AdminClubsSkeleton />;
   }
 
   return <AdminClubsViewContent {...viewModel} />;
+};
+const AdminClubsSkeleton = () => {
+  return (
+    <div className="p-10 max-w-6xl mx-auto animate-pulse">
+      {/* Header Skeleton */}
+      <div className="flex justify-between mb-10">
+        <div className="space-y-3">
+          <div className="h-8 w-48 bg-secondary rounded-lg" />
+          <div className="h-4 w-64 bg-secondary/50 rounded" />
+        </div>
+        <div className="flex gap-4">
+          <div className="h-12 w-32 bg-secondary rounded-2xl" />
+          <div className="h-12 w-32 bg-secondary rounded-2xl" />
+        </div>
+      </div>
+
+      {/* Cards Skeleton */}
+      <div className="space-y-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="h-24 w-full bg-secondary/40 border border-border rounded-2xl"
+          />
+        ))}
+      </div>
+    </div>
+  );
 };
