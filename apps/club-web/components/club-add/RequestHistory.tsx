@@ -52,6 +52,12 @@ const RequestRow: React.FC<{
   );
 };
 
+type RequestItem = { id: string; name: string; status?: string };
+
+const toRequestArray = (value: unknown): RequestItem[] =>
+  Array.isArray(value) ? (value as RequestItem[]) : [];
+
+// eslint-disable-next-line complexity
 export const RequestHistory = () => {
   const { isLoaded, userId, getToken } = useAuth();
   const [token, setToken] = useState<string | null | undefined>(undefined);
@@ -78,7 +84,7 @@ export const RequestHistory = () => {
   }, [isLoaded, userId, getToken]);
 
   const { data, loading, error } = useQuery<{
-    getAllClubsByCreatorId: { id: string; name: string; status?: string }[];
+    getAllClubsByCreatorId: RequestItem[] | null;
   }>(GET_ALL_CLUBS_BY_CREATOR_ID, {
     skip: !isLoaded || !userId || !token,
     fetchPolicy: 'cache-and-network',
@@ -91,7 +97,7 @@ export const RequestHistory = () => {
       : undefined,
   });
 
-  const requests = data?.getAllClubsByCreatorId || [];
+  const requests = toRequestArray(data?.getAllClubsByCreatorId);
 
   return (
     <section className="space-y-4">

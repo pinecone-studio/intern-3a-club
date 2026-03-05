@@ -1,7 +1,12 @@
+/* eslint-disable max-lines */
 import gql from 'graphql-tag';
-import { useMutation } from '@apollo/client/react';
+import { useApolloClient, useMutation } from '@apollo/client/react';
 import { CreateClubState, ScheduleChange } from '../../../club-dash/libs/types';
 import { format } from 'date-fns';
+import {
+  GET_ALL_APPROVED_CLUBS,
+  GET_ALL_PENDING_CLUBS,
+} from '../../libs/club-queries';
 
 export const CREATE_CLUB_WITH_SCHEDULE = gql`
   mutation CreateClubWithSchedules(
@@ -60,7 +65,6 @@ export function changeScheduleForState(initialSchedule: CreateClubState) {
     return changeSingleSchedule(date, initialSchedule);
   };
 }
-
 export function updateSchedules(initialSchedule: CreateClubState) {
   const dates = initialSchedule.clubStartDate || [];
   const sorted = [...dates].sort(byAscendingDate);
@@ -88,19 +92,22 @@ export const getValues = (initialSchedule: CreateClubState) => {
     clubTerm: getClubTerm(initialSchedule),
   };
 };
-
 export const createClubDash = async (
   state: CreateClubState,
   createClub: (_opts: {
     variables: ReturnType<typeof getValues>;
   }) => Promise<unknown>,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  refetchAfterCreate?: () => Promise<unknown>
 ) => {
   console.log({ state });
   const variables = getValues(state);
   try {
     console.log('Club Data', variables);
     await createClub({ variables });
+    if (refetchAfterCreate) {
+      await refetchAfterCreate();
+    }
     alert('Амжилттай үүсгэлээ!');
     onSuccess?.();
   } catch (error) {
@@ -139,12 +146,26 @@ export const buildOverride = (
   duration: getOverrideDuration(schedule, key, s),
   [field]: value,
 });
-
 export const useCreateClubMutation = (
   state: CreateClubState,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  refetchAfterCreate?: () => Promise<unknown>
 ) => {
-  const [createClub, { loading }] = useMutation(CREATE_CLUB_WITH_SCHEDULE);
+  const apolloClient = useApolloClient();
+  const [createClub, { loading }] = useMutation(CREATE_CLUB_WITH_SCHEDULE, {
+    refetchQueries: [GET_ALL_PENDING_CLUBS, GET_ALL_APPROVED_CLUBS],
+    awaitRefetchQueries: true,
+  });
+
+  const refetchMainLists = async () => {
+    await apolloClient.refetchQueries({
+      include: [GET_ALL_PENDING_CLUBS, GET_ALL_APPROVED_CLUBS],
+    });
+    if (refetchAfterCreate) {
+      await refetchAfterCreate();
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!state.clubStartDate?.length) {
@@ -152,7 +173,7 @@ export const useCreateClubMutation = (
       return;
     }
 
-    createClubDash(state, createClub, onSuccess);
+    createClubDash(state, createClub, onSuccess, refetchMainLists);
   };
   return { handleSubmit, loading };
 };
