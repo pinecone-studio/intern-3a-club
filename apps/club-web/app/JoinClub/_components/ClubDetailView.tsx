@@ -5,6 +5,7 @@ import { ExtendedClub } from '../../../lib/type';
 import { ClubActionButtons } from './ClubActionButton';
 import { ClubInfoGrid } from './ClubInfoGrid';
 import { ScheduleDetails } from './ScheduleDetails';
+import { isEnrollmentOpen } from './clubs-utils';
 
 interface TeacherData {
   initial: string;
@@ -80,6 +81,7 @@ export const ClubDetailView = ({
           onEnroll={handleEnroll}
           onLeave={handleLeave}
           loading={loading}
+          isExpired={!isEnrollmentOpen(club.createdAt)}
         />
       </div>
     </div>
