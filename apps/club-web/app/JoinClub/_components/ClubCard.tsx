@@ -1,9 +1,10 @@
 'use client';
+/* eslint-disable complexity */
 import React from 'react';
 import { Clock, MapPin } from 'lucide-react';
 import { cn } from 'lib/utils';
 import { ExtendedClub, ApprovedClubTimetable } from '../../../lib/type';
-import { CgSandClock } from "react-icons/cg";
+import { CgSandClock } from 'react-icons/cg';
 import { getEnrollmentDeadline, isEnrollmentOpen } from './clubs-utils';
 import {
   getRoomText,
@@ -19,6 +20,7 @@ interface ClubCardProps {
   club: ExtendedClub;
   isSelected: boolean;
   onClick: (_id: string) => void;
+  nowTs?: number;
 }
 
 interface ClubScheduleProps {
@@ -35,19 +37,36 @@ const EnrollmentBadge = ({ isEnrolled }: { isEnrolled: boolean }) => {
   );
 };
 
+const BanCountdown = ({
+  bannedUntil,
+  nowTs,
+}: {
+  bannedUntil: number;
+  nowTs: number;
+}) => {
+  const remainMs = Math.max(0, bannedUntil - nowTs);
+  const remainSec = Math.ceil(remainMs / 1000);
+  if (remainSec <= 0) return null;
+  return (
+    <span className="text-[9px] font-medium text-red-300 border border-red-400/40 px-1.5 py-0.5 rounded uppercase shrink-0">
+      {remainSec}s
+    </span>
+  );
+};
+
 const CONTAINER_CLASSES = {
-  banned:   'bg-red-600/10 border-red-500/70',
-  expired:  'bg-white/5 border-white/5',
+  banned: 'bg-red-600/10 border-red-500/70',
+  expired: 'bg-white/5 border-white/5',
   enrolled: 'bg-emerald-600/15 border-emerald-500/70',
   selected: 'bg-blue-600/20 border-blue-500',
-  default:  'bg-blue-600/20 border-white/5',
+  default: 'bg-blue-600/20 border-white/5',
 } as const;
 
 const TITLE_CLASSES = {
-  expired:  'text-white/30',
+  expired: 'text-white/30',
   enrolled: 'text-emerald-200',
   selected: 'text-white',
-  default:  'text-white/70',
+  default: 'text-white/70',
 } as const;
 
 const ClubSchedule = ({ timetable, createdAt }: ClubScheduleProps) => {
@@ -57,6 +76,10 @@ const ClubSchedule = ({ timetable, createdAt }: ClubScheduleProps) => {
 
   return (
     <div className="flex flex-col gap-1">
+      <div className={getDeadlineClass(expired)}>
+        <Clock size={12} strokeWidth={2.5} />
+        <span>{getDeadlineText(expired, deadline)}</span>
+      </div>
       <div className="flex items-center gap-2 text-[10px] text-white/40 font-medium">
         <MapPin size={12} strokeWidth={2.5} />
         <span className="truncate">{getRoomText(timetable)}</span>
@@ -67,24 +90,29 @@ const ClubSchedule = ({ timetable, createdAt }: ClubScheduleProps) => {
           <span>{timeLeftText}</span>
         </div>
       )}
-      <div className={getDeadlineClass(expired)}>
-        <Clock size={12} strokeWidth={2.5} />
-        <span>{getDeadlineText(expired, deadline)}</span>
-      </div>
     </div>
   );
 };
 
-export const ClubCard = ({ club, isSelected, onClick }: ClubCardProps) => {
+export const ClubCard = ({
+  club,
+  isSelected,
+  onClick,
+  nowTs = Date.now(),
+}: ClubCardProps) => {
   const handleCardClick = () => onClick(club.id);
-  const isBanned   = (club.bannedUntil ?? 0) > Date.now();
+  const banUntil = Number(club.bannedUntil ?? 0);
+  const isBanned = banUntil > nowTs;
   const isEnrolled = !!club.isEnrolled;
-  const isExpired  = !isEnrollmentOpen(club.createdAt);
-  const nextTimetable = getNextTimetable(club.timetables) ?? club.timetables?.[0];
+  const isExpired = !isEnrollmentOpen(club.createdAt);
+  const nextTimetable =
+    getNextTimetable(club.timetables) ?? club.timetables?.[0];
 
   const containerClass = cn(
     'w-full p-4 rounded-xl cursor-pointer border transition-colors duration-150',
-    CONTAINER_CLASSES[getContainerKey(isBanned, isExpired, isEnrolled, isSelected)]
+    CONTAINER_CLASSES[
+      getContainerKey(isBanned, isExpired, isEnrolled, isSelected)
+    ]
   );
   const titleClass = cn(
     'text-xs font-semibold uppercase truncate',
@@ -95,7 +123,10 @@ export const ClubCard = ({ club, isSelected, onClick }: ClubCardProps) => {
     <div onClick={handleCardClick} className={containerClass}>
       <div className="flex justify-between items-start mb-2 gap-2">
         <h3 className={titleClass}>{club.name}</h3>
-        <EnrollmentBadge isEnrolled={isEnrolled} />
+        <div className="flex items-center gap-1.5">
+          {isBanned ? <BanCountdown bannedUntil={banUntil} nowTs={nowTs} /> : null}
+          <EnrollmentBadge isEnrolled={isEnrolled} />
+        </div>
       </div>
       <ClubSchedule timetable={nextTimetable} createdAt={club.createdAt} />
     </div>

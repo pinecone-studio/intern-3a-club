@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable max-lines, complexity */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client/react';
@@ -7,6 +8,7 @@ import { ClubDetail } from './ClubDetail';
 import { ClubList } from './ClubList';
 import { ApprovedClubData, ExtendedClub, TeacherData } from '../../../lib/type';
 import { GET_ALL_APPROVED_CLUBS, GET_ALL_TEACHERS } from '../../../lib/club-query';
+import { useClubRealtime } from '../../_hooks/use-club-realtime';
 import {
   applyEnroll,
   applyLeave,
@@ -31,11 +33,18 @@ const ErrorState = ({ msg }: { msg: string }) => (
 const BAN_MS = 120 * 1000;
 
 const useClubsLogic = (clerkUserId?: string) => {
-  const { loading, error, data: clubData } = useQuery<ApprovedClubData>(GET_ALL_APPROVED_CLUBS);
+  const {
+    loading,
+    error,
+    data: clubData,
+    refetch: refetchClubs,
+  } = useQuery<ApprovedClubData>(GET_ALL_APPROVED_CLUBS);
   const { data: teacherData } = useQuery<TeacherData>(GET_ALL_TEACHERS);
 
   const [allClubs, setAllClubs] = useState<ExtendedClub[]>([]);
   const [selectedClubId, setSelectedClubId] = useState('');
+  const [isLiveSyncing, setIsLiveSyncing] = useState(false);
+  const [nowTs, setNowTs] = useState(() => Date.now());
 
   useEffect(() => {
     const raw = clubData?.getAllApprovedClubs;
@@ -60,11 +69,50 @@ const useClubsLogic = (clerkUserId?: string) => {
   }, [selectedClubId]);
 
   const sortedClubs = useMemo(() => [...allClubs].sort(compareByEnrollment), [allClubs]);
+  const hasActiveBan = useMemo(
+    () => allClubs.some((club) => Number(club.bannedUntil ?? 0) > nowTs),
+    [allClubs, nowTs]
+  );
+  const clubIds = useMemo(
+    () => sortedClubs.map((club) => club.id).filter(Boolean),
+    [sortedClubs]
+  );
+
+  const handleRealtimeEvent = useCallback(() => {
+    setIsLiveSyncing(true);
+    void refetchClubs().finally(() => {
+      window.setTimeout(() => setIsLiveSyncing(false), 700);
+    });
+  }, [refetchClubs]);
+
+  useClubRealtime({
+    clubIds,
+    onEvent: handleRealtimeEvent,
+  });
 
   useEffect(() => {
     if (sortedClubs.length === 0) return;
     setSelectedClubId((prev) => resolveSelectedId(prev, sortedClubs));
   }, [sortedClubs]);
+
+  useEffect(() => {
+    if (!hasActiveBan) return;
+    const timer = window.setInterval(() => setNowTs(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [hasActiveBan]);
+
+  useEffect(() => {
+    if (!hasActiveBan) return;
+    setAllClubs((prev) =>
+      prev.map((club) => {
+        const banUntil = Number(club.bannedUntil ?? 0);
+        if (banUntil > 0 && banUntil <= nowTs) {
+          return { ...club, bannedUntil: 0 };
+        }
+        return club;
+      })
+    );
+  }, [hasActiveBan, nowTs]);
 
   const selectedClub = useMemo(
     () => sortedClubs.find((c) => c.id === selectedClubId),
@@ -81,6 +129,8 @@ const useClubsLogic = (clerkUserId?: string) => {
     onLeave,
     sortedClubs,
     selectedClub,
+    isLiveSyncing,
+    nowTs,
   };
 };
 
@@ -99,6 +149,8 @@ const ClubsLayout = ({ userId, logic }: ClubsLayoutProps) => (
           selectedClubId={logic.selectedClubId}
           onSelect={logic.setSelectedClubId}
           clubs={logic.sortedClubs}
+          isLiveSyncing={logic.isLiveSyncing}
+          nowTs={logic.nowTs}
         />
       </div>
       <div className="w-full order-1 lg:order-2">
