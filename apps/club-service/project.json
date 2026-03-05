@@ -53,12 +53,14 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/club-service/**/*.{ts,tsx,js,jsx}","!apps/club-service/.vercel/**"
-]
+        "lintFilePatterns": [
+          "apps/club-service/**/*.{ts,tsx,js,jsx}",
+          "!apps/club-service/.vercel/**"
+        ]
       }
     },
     "deploy-prod": {
-      "command": "" 
+      "command": ""
     },
     "build-worker": {
       "executor": "nx:run-commands",

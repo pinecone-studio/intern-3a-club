@@ -6,9 +6,12 @@ import { normalizeFrequency } from 'gql-utils';
 export const getAllApprovedClubs = async () => {
   try {
     const rows = await DB.select().from(clubs).where(eq(clubs.status, 'approved'));
-    return rows.map((club) => ({
+    const safeRows = Array.isArray(rows) ? rows : [];
+    return safeRows.map((club) => ({
       ...club,
-      frequency: normalizeFrequency(club.frequency),
+      ...(club.frequency != null
+        ? { frequency: normalizeFrequency(club.frequency) }
+        : {}),
     }));
   } catch (error) {
     console.error('Error in getAllApprovedClubs:', error);
