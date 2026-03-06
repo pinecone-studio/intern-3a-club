@@ -12,21 +12,28 @@ function getRoom(primary?: Club['timetables'][0]) {
 function getMembers(club: Club) {
   return `${club?.minMember ?? 0} - ${club?.maxMember ?? 0}`;
 }
-function getClubTerm(club: Club) {
-  const timetables = club?.timetables;
-  if (!timetables || timetables.length === 0) return '-';
-
-  const dates = timetables
+function getSortedDates(club: Club) {
+  return (club?.timetables ?? [])
     .map((t) => new Date(t.date))
     .sort((a, b) => a.getTime() - b.getTime());
+}
+function getMonthDiff(first: Date, last: Date) {
+  return (
+    (last.getFullYear() - first.getFullYear()) * 12 +
+    (last.getMonth() - first.getMonth())
+  );
+}
+function getTermLabel(months: number) {
+  if (months === 0) return 'One Time';
+  if (months === 1) return '1 month';
+  return `${months} months`;
+}
+function getClubTerm(club: Club) {
+  const dates = getSortedDates(club);
+  if (dates.length === 0) return '-';
   const first = dates[0];
   const last = dates[dates.length - 1];
-
-  const months =
-    (last.getFullYear() - first.getFullYear()) * 12 +
-    (last.getMonth() - first.getMonth());
-
-  return months === 0 ? 'One Time' : `${months} month${months > 1 ? 's' : ''}`;
+  return getTermLabel(getMonthDiff(first, last));
 }
 
 function getDuration(primary?: Club['timetables'][0]) {

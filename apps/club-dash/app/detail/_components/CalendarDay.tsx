@@ -1,15 +1,20 @@
 import { format } from 'date-fns';
+import { CalendarEvent } from '../hook/useCalendarEvents';
 
 type Props = {
   day: Date;
-  events: any[];
+  events: CalendarEvent[];
   onSelect: (_d: Date) => void;
 };
 
 export const CalendarDay = ({ day, events, onSelect }: Props) => {
+  const handleSelect = () => {
+    onSelect(day);
+  };
+
   return (
     <button
-      onClick={() => onSelect(day)}
+      onClick={handleSelect}
       className="min-h-[140px] border-r p-2 text-left hover:bg-muted/40"
     >
       <div className="mb-2 flex justify-between">

@@ -1,19 +1,15 @@
 'use client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Button } from '@intern-3a-club/shadcn';
-import React from 'react';
 import {
   DELETE_TIMETABLE,
   GET_ALL_APPROVED_CLUBS,
 } from '../../libs/club-queries';
 import { ApprovedClubsData } from '../../libs/types';
 
-const page = () => {
-  const {
-    loading: isLoadingApproved,
-    error: errClubApproved,
-    data: clubDataApproved,
-  } = useQuery<ApprovedClubsData>(GET_ALL_APPROVED_CLUBS);
+const Page = () => {
+  const { data: clubDataApproved } =
+    useQuery<ApprovedClubsData>(GET_ALL_APPROVED_CLUBS);
   console.log(clubDataApproved, 'aprroved');
 
   const [deleteTimetable, { loading }] = useMutation(DELETE_TIMETABLE, {
@@ -34,6 +30,11 @@ const page = () => {
       });
     }
   };
+  const getDeleteClickHandler = (timetableId: string) => {
+    return () => {
+      void handleDelete(timetableId);
+    };
+  };
 
   return (
     <div>
@@ -50,7 +51,7 @@ const page = () => {
                     <div>{timetable.id}</div>
                     <div>{timetable.clubId}</div>
                     <Button
-                      onClick={() => handleDelete(timetable.id)}
+                      onClick={getDeleteClickHandler(timetable.id)}
                       disabled={loading}
                       className="bg-red-500 text-white px-4 py-1 rounded"
                     >
@@ -66,4 +67,4 @@ const page = () => {
     </div>
   );
 };
-export default page;
+export default Page;

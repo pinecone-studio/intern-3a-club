@@ -1,5 +1,7 @@
+import { CalendarEvent } from '../hook/useCalendarEvents';
+
 type Props = {
-  event: any;
+  event: CalendarEvent;
 };
 
 export const EventItem = ({ event }: Props) => {

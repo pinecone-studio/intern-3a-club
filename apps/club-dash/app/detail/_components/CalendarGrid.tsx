@@ -1,8 +1,9 @@
 import { CalendarWeek } from './CalendarWeek';
+import { CalendarEvent } from '../hook/useCalendarEvents';
 
 type Props = {
   weeks: Date[][];
-  eventsByDate: Map<string, any[]>;
+  eventsByDate: Map<string, CalendarEvent[]>;
   onSelect: (_d: Date) => void;
 };
 

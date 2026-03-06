@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Clock, DoorOpen, Users, Check, X } from 'lucide-react';
 import { Club, GetAllTeacher } from '../../../../libs/types';
 import {

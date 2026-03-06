@@ -140,6 +140,7 @@ export const EditTimetableFormSection = ({
   </div>
 );
 
+// eslint-disable-next-line complexity
 export const EditTimetableFooterSection = ({
   active,
   saving,

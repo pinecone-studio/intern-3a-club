@@ -185,6 +185,7 @@ export const ApprovedClubDetail = ({
   };
 
   const handleCloseEdit = () => setOpenEdit(false);
+  const handleStudentListToggle = () => setOpenStudentList((list) => !list);
 
   const handleToggleStudentList = () => setOpenStudentList((list) => !list);
   const handleToggleScheduleList = () => setOpenScheduleList((list) => !list);
