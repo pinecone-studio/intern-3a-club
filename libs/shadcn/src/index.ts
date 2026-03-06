@@ -21,3 +21,4 @@ export * from './lib/ui/separator';
 export * from './lib/ui/badge';
 export * from './lib/ui/sheet';
 export * from './lib/ui/tooltip';
+export * from './lib/ui/checkbox';
