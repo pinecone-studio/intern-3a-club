@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable max-lines */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation } from '@apollo/client/react';

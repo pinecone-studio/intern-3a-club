@@ -49,13 +49,13 @@ const isAbortError = (err: unknown): boolean => {
 
 export default function Dashboard() {
   const [activeView, setActiveView] = useState<string>('Join Club');
-  const [isSynced, setIsSynced] = useState(false);
   const { isLoaded, userId, getToken } = useAuth();
 
   const [syncUser, { loading, error }] =
     useMutation<SyncUserResponse>(SYNC_USER_MUTATION);
 
   const performSync = useCallback(
+    // eslint-disable-next-line complexity
     async (signal: AbortSignal) => {
       try {
         const token = await getToken();
@@ -75,7 +75,6 @@ export default function Dashboard() {
         if (data?.syncUser) {
           // Энд шууд log болон state-ээ шинэчилнэ
           console.log('Backend-тэй амжилттай синхрончлолоо:', data.syncUser);
-          setIsSynced(true);
         }
       } catch (err: unknown) {
         if (isAbortError(err)) return;

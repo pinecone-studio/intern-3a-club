@@ -1,4 +1,5 @@
-import { Calendar, DoorOpen, Users2, Clock, ChevronDown } from 'lucide-react';
+/* eslint-disable max-lines */
+import { Calendar, Clock, ChevronDown } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { DetailTile } from '../../main/DetailTile';
@@ -30,6 +31,7 @@ import {
   getAllTimetablesFromData,
 } from '../../../../../libs/club-queries';
 
+// eslint-disable-next-line complexity
 export const ApprovedClubDetail = ({
   club,
   onDelete,
@@ -66,12 +68,13 @@ export const ApprovedClubDetail = ({
   };
 
   const handleCloseEdit = () => setOpenEdit(false);
+  const handleStudentListToggle = () => setOpenStudentList((list) => !list);
 
   return (
     <div className="flex items-start gap-80">
       <div className="w-fit flex flex-col gap-4 pt-4 relative">
         <button
-          onClick={() => setOpenStudentList((list) => !list)}
+          onClick={handleStudentListToggle}
           className="flex items-center gap-2 text-left"
         >
           <ChevronDown

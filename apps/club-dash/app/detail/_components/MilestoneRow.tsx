@@ -1,8 +1,13 @@
 import { MilestoneBar } from './MilestoneBar';
 import { monthIndex } from '../utils/milestone.utils';
 import { addHours } from 'date-fns';
+import { GetAllClub } from '../../../libs/types';
 
-export const MilestoneRow = ({ club }: any) => {
+type Props = {
+  club: GetAllClub;
+};
+
+export const MilestoneRow = ({ club }: Props) => {
   const timetable = club.timetables?.[0];
 
   if (!timetable) return null;

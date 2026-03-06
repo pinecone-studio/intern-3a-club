@@ -1,7 +1,8 @@
 import { MilestoneRow } from './MilestoneRow';
+import { GetAllClub } from '../../../libs/types';
 
 type Props = {
-  clubs: any[];
+  clubs: GetAllClub[];
 };
 
 export const MilestoneGrid = ({ clubs }: Props) => {

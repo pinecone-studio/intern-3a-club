@@ -1,9 +1,10 @@
 import { CalendarDay } from './CalendarDay';
 import { format } from 'date-fns';
+import { CalendarEvent } from '../hook/useCalendarEvents';
 
 type Props = {
   week: Date[];
-  eventsByDate: Map<string, any[]>;
+  eventsByDate: Map<string, CalendarEvent[]>;
   onSelect: (_d: Date) => void;
 };
 

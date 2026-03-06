@@ -1,11 +1,13 @@
 import { format } from 'date-fns';
+import { CalendarEvent } from '../hook/useCalendarEvents';
 
 type Props = {
   selectedDate: Date;
-  selectedEvent: any;
-  selectedEvents: any[];
+  selectedEvent: CalendarEvent | null;
+  selectedEvents: CalendarEvent[];
 };
 
+// eslint-disable-next-line complexity
 export const EventSidebar = ({
   selectedDate,
   selectedEvent,

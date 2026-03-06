@@ -15,11 +15,16 @@ export const DashboardHeader = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
+    type UnstableWindow = Window & {
+      ['__unstable__onBeforeSetActive']?: unknown;
+      ['__unstable__onAfterSetActive']?: unknown;
+    };
     const next = getInitialTheme();
     setTheme(next);
     document.documentElement.classList.toggle('dark', next === 'dark');
-    (window as any).__unstable__onBeforeSetActive = undefined;
-    (window as any).__unstable__onAfterSetActive = undefined;
+    const unstableWindow = window as UnstableWindow;
+    unstableWindow['__unstable__onBeforeSetActive'] = undefined;
+    unstableWindow['__unstable__onAfterSetActive'] = undefined;
   }, []);
 
   const toggleTheme = () => {
