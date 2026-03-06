@@ -81,6 +81,7 @@ export function getDetailDisplay(club: Club) {
     term: getClubTerm(club),
     frequency: getFrequency(club),
     days: getUniqueDays(club),
+    timetables: club.timetables ?? [],
   };
 }
 
