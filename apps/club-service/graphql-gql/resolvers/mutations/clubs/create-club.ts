@@ -3,10 +3,12 @@ import { clubs, timetable } from 'db/schema';
 import { CreateClubWithSchedulesArgs } from 'gql-type';
 import {
   handleMutationError,
+  resolveEndDate,
   resolveFrequency,
   resolveMaxMember,
   resolveMinMember,
   resolvePreferredTeachers,
+  resolveStartDate,
   resolveStatus,
   resolveTeacherId,
   resolveTerm,
@@ -47,6 +49,8 @@ const getClubValues = (clubId: string, args: CreateClubWithSchedulesArgs) => ({
   maxMember: resolveMaxMember(args.input.maxMember),
   frequency: resolveFrequency(args.frequency),
   clubTerm: resolveTerm(args.clubTerm),
+  startDate: resolveStartDate(args.schedules),
+  endDate: resolveEndDate(args.schedules),
 });
 
 const getTimetableValues = (

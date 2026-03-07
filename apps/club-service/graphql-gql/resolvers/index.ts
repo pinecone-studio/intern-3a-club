@@ -13,11 +13,13 @@ import {
 import {
   createClubWithSchedules,
   deleteClub,
+  deleteManyTimetables,
   deleteTimetable,
   joinClub,
   leaveClub,
   syncUser,
   updateClub,
+  updateManyTimetables,
   updateTimetable,
 } from './mutations';
 
@@ -42,6 +44,8 @@ export const resolvers = {
     syncUser,
     joinClub,
     leaveClub,
+    updateManyTimetables,
+    deleteManyTimetables,
   },
   // Relationship (Холболт) хэсэг:
   Club: {

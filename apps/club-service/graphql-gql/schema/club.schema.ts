@@ -22,14 +22,16 @@ export const clubTypeDefs = gql`
     name: String!
     description: String
     status: ClubStatus!
-    type: ClubType!
+    type: ClubType
     creatorId: String
     teacherId: String
     preferredTeachers: [String]
-    minMember: Int!
-    maxMember: Int!
-    frequency: ClubFrequency!
+    minMember: Int
+    maxMember: Int
+    frequency: ClubFrequency
     clubTerm: String
+    startDate: String
+    endDate: String
     createdAt: String!
     updatedAt: String!
     timetables: [Timetable]
@@ -40,11 +42,11 @@ export const clubTypeDefs = gql`
     name: String!
     description: String
     status: ClubStatus
-    type: String!
+    type: String
     teacherId: String
     preferredTeachers: [String]
-    minMember: Int!
-    maxMember: Int!
+    minMember: Int
+    maxMember: Int
   }
 
   input UpdateClubInput {
@@ -64,8 +66,8 @@ export const clubTypeDefs = gql`
   extend type Mutation {
     createClubWithSchedules(
       input: CreateClubInput!
-      schedules: [ScheduleInput!]!
-      frequency: String!
+      schedules: [ScheduleInput]
+      frequency: String
       clubTerm: String
     ): Club
 

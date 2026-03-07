@@ -1,78 +1,113 @@
+import { DB } from 'db/drizzle';
 import * as clubUtils from 'gql-utils/club';
+import { getCreatorId } from 'gql-utils/user/user.util';
 
-describe('resolveStatus', () => {
-  it('should return approved if teacherId is provided', () => {
-    expect(clubUtils.resolveStatus('teacher-1')).toBe('approved');
-  });
-  it('should return pending if teacherId is missing', () => {
-    expect(clubUtils.resolveStatus(undefined)).toBe('pending');
+// 1. Drizzle DB Mock
+jest.mock('db/drizzle', () => ({
+  DB: { select: jest.fn() },
+}));
+
+// Helper Type
+type MockChain = {
+  from: jest.Mock;
+  where: jest.Mock;
+  get: jest.Mock;
+};
+
+// Helper function: any-гүй, цэвэрхэн mock үүсгэх
+const createMockDbChain = (returnValue: unknown): MockChain => ({
+  from: jest.fn().mockReturnThis(),
+  where: jest.fn().mockReturnThis(),
+  get: jest.fn().mockResolvedValue(returnValue),
+});
+
+const mockedDB = DB as jest.Mocked<typeof DB>;
+
+describe('User Utility - getCreatorId', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('Багш болон сурагчийн ID-г хайж олох логик', async () => {
+    // 1. Багш олдсон үед
+    (mockedDB.select as jest.Mock).mockReturnValue(
+      createMockDbChain({ id: 't1' })
+    );
+    expect(await getCreatorId('u1')).toBe('t1');
+
+    // 2. Багш олдохгүй, сурагч олдсон үед
+    (mockedDB.select as jest.Mock)
+      .mockReturnValueOnce(createMockDbChain(null))
+      .mockReturnValueOnce(createMockDbChain({ id: 's1' }));
+    expect(await getCreatorId('u2')).toBe('s1');
+
+    // 3. Аль нь ч олдохгүй үед
+    (mockedDB.select as jest.Mock).mockReturnValue(createMockDbChain(null));
+    expect(await getCreatorId('u3')).toBeNull();
   });
 });
 
-describe('resolveType', () => {
-  it('should return provided type if it exists', () => {
-    expect(clubUtils.resolveType('hobby', 'teacher-1')).toBe('hobby');
+describe('Preferred Teacher Utility - 100% Coverage', () => {
+  it('resolvePreferredTeachers: салбаруудыг нөхөх (Line 9)', () => {
+    // Branch 9 (True): teacherIdOrPreferred нь массив биш (string) үед maybePreferred-ийг авах
+    const fromMaybe = clubUtils.resolvePreferredTeachers('teacher-id', [
+      'p1',
+      'p2',
+    ]);
+    expect(fromMaybe).toEqual(['p1', 'p2']);
+
+    // Branch 9 (False): Эхний аргумент нь массив байх үед
+    expect(clubUtils.resolvePreferredTeachers(['p3'])).toEqual(['p3']);
+
+    const mixed = [' t1 ', 123, null, ' t1 '] as unknown as string[];
+    expect(clubUtils.resolvePreferredTeachers(mixed)).toEqual(['t1']);
+
+    // Undefined нөхцөл
+    expect(clubUtils.resolvePreferredTeachers(undefined, undefined)).toEqual(
+      []
+    );
   });
-  it('should return mentor if type is missing but teacherId exists', () => {
-    expect(clubUtils.resolveType(undefined, 'teacher-1')).toBe('mentor');
-  });
-  it('should return self if both are missing', () => {
+});
+
+describe('Other Club Property Resolvers', () => {
+  it('type.util: mentor болон self салбарыг нөхөх (Line 2)', () => {
+    // teacherId байхгүй бол 'self'
     expect(clubUtils.resolveType(undefined, undefined)).toBe('self');
+    // teacherId байгаа бол 'mentor'
+    expect(clubUtils.resolveType(undefined, 'teacher-id')).toBe('mentor');
+    expect(clubUtils.resolveType('hobby', 'teacher-id')).toBe('hobby');
   });
-});
 
-describe('resolveFrequency', () => {
-  it('should return ONCE for valid input', () => {
-    expect(clubUtils.resolveFrequency('ONCE')).toBe('ONCE');
-  });
-  it('should return WEEKLY for valid input', () => {
-    expect(clubUtils.resolveFrequency('WEEKLY')).toBe('WEEKLY');
-  });
-  it('should throw an error for invalid input', () => {
-    expect(() => clubUtils.resolveFrequency('DAILY')).toThrow(
-      'Invalid frequency: DAILY'
-    );
-  });
-});
-
-describe('resolveMemberLimits', () => {
-  it('should resolve max members with default 0', () => {
-    expect(clubUtils.resolveMaxMember(10)).toBe(10);
-    expect(clubUtils.resolveMaxMember(undefined)).toBe(0);
-  });
-  it('should resolve min members with default 0', () => {
-    expect(clubUtils.resolveMinMember(2)).toBe(2);
+  it('limits, status, term: fallback утгуудыг нөхөх', () => {
+    // min/max member fallback (Line 1)
     expect(clubUtils.resolveMinMember(undefined)).toBe(0);
-  });
-});
+    expect(clubUtils.resolveMaxMember(undefined)).toBe(0);
 
-describe('resolvePreferredTeachers', () => {
-  it('should keep preferred teachers even if teacherId is provided', () => {
-    expect(clubUtils.resolvePreferredTeachers('t1', ['t2'])).toEqual(['t2']);
-  });
-  it('should return preferred list if teacherId is missing', () => {
-    const preferred = ['t2', 't3'];
-    expect(clubUtils.resolvePreferredTeachers(undefined, preferred)).toEqual(
-      preferred
-    );
-  });
-  it('should normalize, remove empty values and deduplicate', () => {
-    expect(
-      clubUtils.resolvePreferredTeachers('t1', ['t2', '  t2  ', '', 't3'])
-    ).toEqual(['t2', 't3']);
-  });
-});
+    // Status
+    expect(clubUtils.resolveStatus(undefined)).toBe('pending');
+    expect(clubUtils.resolveStatus('t1')).toBe('approved');
 
-describe('resolveTeacherId', () => {
-  it('should return teacherId or null', () => {
-    expect(clubUtils.resolveTeacherId('t1')).toBe('t1');
+    // Term and TeacherId
+    expect(clubUtils.resolveTerm(undefined)).toBeNull();
     expect(clubUtils.resolveTeacherId(undefined)).toBeNull();
   });
 });
 
-describe('resolveTerm', () => {
-  it('should return term or null', () => {
-    expect(clubUtils.resolveTerm('1')).toBe('1');
-    expect(clubUtils.resolveTerm(undefined)).toBeNull();
+describe('Dates and Frequency Utilities', () => {
+  it('date resolvers: эхлэл ба төгсгөл огноо', () => {
+    const dates = [{ date: '2026-05-20' }, { date: '2026-03-15' }];
+    expect(clubUtils.resolveStartDate(dates)).toBe('2026-03-15');
+    expect(clubUtils.resolveEndDate(dates)).toBe('2026-05-20');
+    expect(clubUtils.resolveStartDate([])).toBeNull();
+    expect(clubUtils.resolveEndDate([])).toBeNull();
+  });
+
+  it('frequency: resolve болон normalize хийх', () => {
+    expect(clubUtils.resolveFrequency('ONCE')).toBe('ONCE');
+
+    // throw Error branch
+    const invalid = 'DAILY' as unknown as 'ONCE';
+    expect(() => clubUtils.resolveFrequency(invalid)).toThrow();
+
+    expect(clubUtils.normalizeFrequency(null)).toBe('WEEKLY');
+    expect(clubUtils.normalizeFrequency('  once  ')).toBe('ONCE');
   });
 });

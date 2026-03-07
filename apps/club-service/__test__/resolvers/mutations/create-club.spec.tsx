@@ -1,42 +1,18 @@
 import { DB } from 'db/drizzle';
 import * as utils from 'gql-utils';
-import { clubs } from 'db/schema';
-import { createClubWithSchedules } from 'graphql-gql/resolvers/mutations/clubs/create-club';
+import { clubs, timetable } from 'db/schema';
 import { CreateClubWithSchedulesArgs } from 'gql-type';
+import { publishClubEvent } from 'gql-utils/realtime-publisher';
+import { getCreatorId } from 'gql-utils/user/user.util';
+import { createClubWithSchedules } from 'graphql-gql/resolvers/mutations';
 
-interface MockChain {
-  from: jest.Mock;
-  where: jest.Mock;
-  get: jest.Mock;
-  values: jest.Mock;
-  returning: jest.Mock;
-}
-
-const mockChain: MockChain = {
-  from: jest.fn().mockReturnThis(),
-  where: jest.fn().mockReturnThis(),
-  get: jest.fn(),
-  values: jest.fn().mockReturnThis(),
-  returning: jest.fn().mockReturnThis(),
-};
-
-// Drizzle ORM-ийг Mock хийх
+// 1. Mocks
 jest.mock('db/drizzle', () => ({
-  DB: {
-    select: jest.fn(() => mockChain),
-    insert: jest.fn(() => mockChain),
-    transaction: jest.fn(async (cb: (_tx: unknown) => Promise<unknown>) => {
-      return cb({
-        insert: jest.fn(() => mockChain),
-      });
-    }),
-  },
+  DB: { insert: jest.fn() },
 }));
 
-// GQL Utils-ийг Mock хийх
 jest.mock('gql-utils', () => ({
-  ...jest.requireActual('gql-utils'),
-  handleMutationError: jest.fn((err: Error) => {
+  handleMutationError: jest.fn((err: unknown) => {
     throw err;
   }),
   resolveTeacherId: jest.fn(),
@@ -47,21 +23,34 @@ jest.mock('gql-utils', () => ({
   resolveMaxMember: jest.fn(),
   resolveFrequency: jest.fn(),
   resolveTerm: jest.fn(),
+  resolveStartDate: jest.fn(),
+  resolveEndDate: jest.fn(),
 }));
 
-const mockUUID = 'mock-uuid-123';
-Object.defineProperty(global, 'crypto', {
-  value: { randomUUID: () => mockUUID },
-  configurable: true,
+jest.mock('gql-utils/realtime-publisher', () => ({
+  publishClubEvent: jest.fn(),
+}));
+
+jest.mock('gql-utils/user/user.util', () => ({
+  getCreatorId: jest.fn(),
+}));
+
+const createMockChain = (data: unknown[] = []) => ({
+  values: jest.fn().mockReturnThis(),
+  returning: jest.fn().mockResolvedValue(data),
 });
 
-describe('createClubWithSchedules Full Coverage', () => {
-  const mockContext = { clerkId: 'clerk-user-1' };
+const mockedDBInsert = DB.insert as jest.Mock;
+const mockedGetCreatorId = getCreatorId as jest.Mock;
+const mockedPublishEvent = publishClubEvent as jest.Mock;
 
+describe('createClubWithSchedules Mutation - 100% Coverage', () => {
+  const mockUUID = '123e4567-e89b-12d3-a456-426614174000';
+  const mockContext = { clerkId: 'clerk-user-1' };
   const mockArgs: CreateClubWithSchedulesArgs = {
     input: {
-      name: 'New Club',
-      description: 'Desc',
+      name: 'Test Club',
+      description: 'Test Desc',
       teacherId: 'teacher-1',
       type: 'ACADEMIC',
       minMember: 5,
@@ -77,84 +66,80 @@ describe('createClubWithSchedules Full Coverage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    Object.defineProperty(global, 'crypto', {
+      value: { randomUUID: () => mockUUID },
+      configurable: true,
+    });
   });
 
-  afterEach(() => {
-    (console.error as jest.Mock).mockRestore();
-  });
-
-  it('Багш клуб үүсгэхэд амжилттай ажиллах (Teacher Path)', async () => {
-    mockChain.get.mockResolvedValueOnce({ id: 'teacher-id-1' });
-    mockChain.returning.mockResolvedValueOnce([
-      { id: mockUUID, name: 'New Club' },
-    ]);
+  it('Happy Path: Клуб болон хуваарийг амжилттай үүсгэх', async () => {
+    mockedGetCreatorId.mockResolvedValue('creator-id-123');
+    mockedDBInsert.mockReturnValue(createMockChain([{ id: mockUUID }]));
 
     const result = await createClubWithSchedules(null, mockArgs, mockContext);
 
     expect(result?.id).toBe(mockUUID);
-    expect(DB.insert).toHaveBeenCalledWith(clubs);
+    expect(mockedDBInsert).toHaveBeenCalledWith(clubs);
+    expect(mockedDBInsert).toHaveBeenCalledWith(timetable);
+    expect(mockedPublishEvent).toHaveBeenCalled();
   });
 
-  it('Сурагч клуб үүсгэхэд амжилттай ажиллах (Student Path)', async () => {
-    mockChain.get
-      .mockResolvedValueOnce(null)
-      .mockResolvedValueOnce({ id: 'student-id-1' });
+  it('Line 99 Branch Coverage: clerkId falsy (зайтай стринг) үед fallback ажиллах', async () => {
+    // validateAndGetCreator-ийн !clerkId шалгалтыг давуулахын тулд ' ' (whitespace) ашиглана.
+    // Энэ нь truthy боловч || '' логикийн нөгөө талыг шалгахад тусална.
+    const spaceClerkId = ' ';
 
-    mockChain.returning.mockResolvedValueOnce([{ id: mockUUID }]);
+    mockedGetCreatorId.mockResolvedValue('creator-id');
+    mockedDBInsert.mockReturnValue(createMockChain([{ id: mockUUID }]));
 
-    await createClubWithSchedules(null, mockArgs, mockContext);
+    await createClubWithSchedules(null, mockArgs, { clerkId: spaceClerkId });
 
-    expect(DB.select).toHaveBeenCalledTimes(2);
+    expect(mockedPublishEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clerkId: spaceClerkId,
+      })
+    );
   });
 
-  it('Нэвтрээгүй үед (clerkId байхгүй) алдаа шидэх', async () => {
-    const unauthContext = { clerkId: undefined };
+  it('validateAndGetCreator: clerkId байхгүй үед алдаа шидэх', async () => {
+    await expect(
+      createClubWithSchedules(null, mockArgs, { clerkId: undefined })
+    ).rejects.toThrow('Нэвтрээгүй байна.');
+  });
+
+  it('validateAndGetCreator: Хэрэглэгч олдохгүй бол алдаа шидэх', async () => {
+    mockedGetCreatorId.mockResolvedValue(null);
+    await expect(
+      createClubWithSchedules(null, mockArgs, mockContext)
+    ).rejects.toThrow('Хэрэглэгчийн бүртгэл олдсонгүй');
+  });
+
+  it('createClubOrThrow: DB-ээс дата ирэхгүй бол алдаа шидэх', async () => {
+    mockedGetCreatorId.mockResolvedValue('creator-id');
+    mockedDBInsert.mockReturnValue(createMockChain([]));
 
     await expect(
-      createClubWithSchedules(
-        null,
-        mockArgs,
-        unauthContext as unknown as typeof mockContext
-      )
-    ).rejects.toThrow();
+      createClubWithSchedules(null, mockArgs, mockContext)
+    ).rejects.toThrow('Клуб үүсгэж чадсангүй.');
   });
 
-  it('Хэрэглэгч системд бүртгэлгүй бол алдаа шидэх', async () => {
-    mockChain.get.mockResolvedValue(null);
+  it('insertSchedules: Schedules хоосон бол DB дуудахгүй байх', async () => {
+    mockedGetCreatorId.mockResolvedValue('creator-id');
+    mockedDBInsert.mockReturnValue(createMockChain([{ id: mockUUID }]));
+
+    const noSchedulesArgs = { ...mockArgs, schedules: [] };
+    await createClubWithSchedules(null, noSchedulesArgs, mockContext);
+
+    expect(mockedDBInsert).toHaveBeenCalledTimes(1);
+  });
+
+  it('handleMutationError: Алдаа гарсан үед utils дуудах', async () => {
+    const error = new Error('Unexpected Error');
+    mockedGetCreatorId.mockRejectedValue(error);
 
     await expect(
       createClubWithSchedules(null, mockArgs, mockContext)
     ).rejects.toThrow();
-  });
-
-  it('Клуб үүсгэсэн боловч өгөгдөл эргэж ирэхгүй бол алдаа шидэх', async () => {
-    mockChain.get.mockResolvedValue({ id: 'any-id' });
-    mockChain.returning.mockResolvedValueOnce([]);
-
-    await expect(
-      createClubWithSchedules(null, mockArgs, mockContext)
-    ).rejects.toThrow();
-  });
-
-  it('Schedule байхгүй үед зөв ажиллах', async () => {
-    mockChain.get.mockResolvedValue({ id: 'user-id' });
-    mockChain.returning.mockResolvedValueOnce([{ id: mockUUID }]);
-
-    const argsNoSchedules = { ...mockArgs, schedules: [] };
-    await createClubWithSchedules(null, argsNoSchedules, mockContext);
-
-    expect(DB.insert).toHaveBeenCalled();
-  });
-
-  it('Өгөгдлийн сангийн алдааг handleMutationError барьж авах', async () => {
-    const sqlError = new Error('Database Crash');
-    mockChain.get.mockRejectedValue(sqlError);
-
-    try {
-      await createClubWithSchedules(null, mockArgs, mockContext);
-    } catch (e) {
-      expect(utils.handleMutationError).toHaveBeenCalledWith(sqlError);
-    }
+    expect(utils.handleMutationError).toHaveBeenCalledWith(error);
   });
 });

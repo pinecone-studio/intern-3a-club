@@ -13,7 +13,6 @@ const createMemberId = (): string => {
   );
 };
 
-// Сурагчийг шалгах
 async function getStudentOrThrow(clerkId: string) {
   const student = await DB.query.students.findFirst({
     where: eq(students.authUserId, clerkId),
@@ -22,7 +21,6 @@ async function getStudentOrThrow(clerkId: string) {
   return student;
 }
 
-// Клубыг шалгах
 async function getClubOrThrow(clubId: string) {
   const club = await DB.query.clubs.findFirst({
     where: eq(clubs.id, clubId),
@@ -31,7 +29,6 @@ async function getClubOrThrow(clubId: string) {
   return club;
 }
 
-// Өмнө нь бүртгүүлсэн эсэхийг шалгах
 async function checkExistingMembership(clubId: string, studentId: string) {
   const existing = await DB.query.clubMembers.findFirst({
     where: and(
@@ -43,7 +40,6 @@ async function checkExistingMembership(clubId: string, studentId: string) {
     throw new GraphQLError('Та аль хэдийн энэ клубийн гишүүн болсон байна.');
 }
 
-// Клубын багтаамжийг шалгах
 async function checkClubCapacity(clubId: string, maxMember: number) {
   const countRes = await DB.select({ value: count() })
     .from(clubMembers)
@@ -54,13 +50,12 @@ async function checkClubCapacity(clubId: string, maxMember: number) {
   }
 }
 
-// Нэгдсэн шалгалтын логик
 async function validateJoinAction(clubId: string, clerkId: string) {
   const student = await getStudentOrThrow(clerkId);
   const club = await getClubOrThrow(clubId);
 
   await checkExistingMembership(clubId, student.id);
-  await checkClubCapacity(clubId, club.maxMember);
+  await checkClubCapacity(clubId, club.maxMember ?? 0);
 
   return student;
 }
@@ -79,7 +74,6 @@ const assertJoinNotBanned = async (clubId: string, clerkId: string) => {
   }
 };
 
-// Үндсэн Mutation функц
 export const joinClub = async (
   _: unknown,
   { clubId }: { clubId: string },

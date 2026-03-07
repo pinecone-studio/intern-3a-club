@@ -6,3 +6,5 @@ export * from './preferred.teacher.util';
 export * from './teacher.util';
 export * from './term.util';
 export * from './frequency.util';
+export * from './start.date.util';
+export * from './end.date.util';

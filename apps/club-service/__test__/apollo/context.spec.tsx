@@ -1,12 +1,16 @@
-import { verifyToken } from '@clerk/backend';
+import { createClerkClient, verifyToken } from '@clerk/backend';
 import { createContext } from 'apollo/context';
 import { NextRequest } from 'next/server';
 
+// 1. Clerk SDK-ийг mock хийх
 jest.mock('@clerk/backend', () => ({
   verifyToken: jest.fn(),
+  createClerkClient: jest.fn(),
 }));
 
+// Mock функцүүдийг төрөлжүүлж авах
 const mockedVerifyToken = verifyToken as jest.Mock;
+const mockedCreateClerkClient = createClerkClient as jest.Mock;
 
 describe('createContext Full Coverage', () => {
   const MOCK_SECRET = 'sk_test_mock_key';
@@ -14,91 +18,127 @@ describe('createContext Full Coverage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     process.env.CLERK_SECRET_KEY = MOCK_SECRET;
+    // Тестийн үед консол дээр алдааны лог харуулахгүй байх
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
-    delete process.env.CLERK_SECRET_KEY;
+    jest.restoreAllMocks();
   });
 
-  const createMockReq = (authHeader?: string) => {
+  const createMockReq = (authHeader?: string | null): NextRequest => {
     return {
       headers: {
-        get: jest
-          .fn()
-          .mockReturnValue(authHeader !== undefined ? authHeader : null),
+        get: jest.fn().mockReturnValue(authHeader),
       },
     } as unknown as NextRequest;
   };
 
-  it('Authorization header огт байхгүй (null) бол null утга буцаана', async () => {
-    // getValidatedToken доторх authHeader = null үеийг шалгана
-    const req = createMockReq(undefined);
+  it('Authorization header байхгүй бол null утга буцаана', async () => {
+    const req = createMockReq(null);
     const result = await createContext({ req });
     expect(result).toEqual({ clerkId: null, email: null });
   });
 
-  it('Authorization header хоосон стринг бол null утга буцаана', async () => {
-    // replace('Bearer ', '') хийхэд хоосон үлдэх үе
-    const req = createMockReq('');
-    const result = await createContext({ req });
-    expect(result).toEqual({ clerkId: null, email: null });
-  });
-
-  it('email болон primary_email_address хоёулаа байхгүй бол email: null байна', async () => {
-    // extractEmail функцийн хамгийн сүүлийн '|| null' салбарыг шалгана
-    const mockPayload = { sub: 'user_999' };
+  it('Токен зөв боловч payload дотор email байхгүй бол SDK ашиглан нөхөх ёстой', async () => {
+    // Токен дотор sub (ID) байгаа ч email байхгүй үе
+    const mockPayload = { sub: 'user_123' };
     mockedVerifyToken.mockResolvedValue(mockPayload);
 
-    const req = createMockReq('Bearer valid-token');
+    // Clerk Client-ийн getUser-ийг mock хийх
+    const mockGetUser = jest.fn().mockResolvedValue({
+      primaryEmailAddressId: 'email_1',
+      emailAddresses: [
+        { id: 'email_1', emailAddress: 'found_via_sdk@test.com' },
+      ],
+    });
+
+    mockedCreateClerkClient.mockReturnValue({
+      users: { getUser: mockGetUser },
+    });
+
+    const req = createMockReq('Bearer valid_token');
     const result = await createContext({ req });
 
-    expect(result).toEqual({ clerkId: 'user_999', email: null });
+    expect(mockGetUser).toHaveBeenCalledWith('user_123');
+    expect(result).toEqual({
+      clerkId: 'user_123',
+      email: 'found_via_sdk@test.com',
+    });
   });
 
-  it('Токен зөв бол clerkId болон email-ийг амжилттай буцаана', async () => {
-    const mockPayload = { sub: 'user_123', email: 'test@example.com' };
-    mockedVerifyToken.mockResolvedValue(mockPayload);
+  it('SDK-аас хэрэглэгч авахад алдаа гарвал email-ийг null болгоно (Line 61 coverage)', async () => {
+    mockedVerifyToken.mockResolvedValue({ sub: 'user_error' });
 
-    const req = createMockReq('Bearer valid-token');
+    // SDK алдаа заах нөхцөл
+    const mockGetUser = jest
+      .fn()
+      .mockRejectedValue(new Error('Clerk API Error'));
+    mockedCreateClerkClient.mockReturnValue({
+      users: { getUser: mockGetUser },
+    });
+
+    const req = createMockReq('Bearer valid_token');
     const result = await createContext({ req });
 
-    expect(result).toEqual({ clerkId: 'user_123', email: 'test@example.com' });
+    // Энэ хэсэг ажилласнаар Line 61 (catch блок) бүрэн хамрагдана
+    expect(result.email).toBeNull();
+    expect(console.error).toHaveBeenCalled();
   });
 
-  it('email байхгүй үед primary_email_address-аас утга авна', async () => {
-    const mockPayload = {
+  it('Токен дотор primary_email_address байгаа бол шууд авна', async () => {
+    mockedVerifyToken.mockResolvedValue({
       sub: 'user_456',
       // eslint-disable-next-line camelcase
-      primary_email_address: 'primary@example.com',
-    };
-    mockedVerifyToken.mockResolvedValue(mockPayload);
+      primary_email_address: 'direct@test.com',
+    });
 
-    const req = createMockReq('Bearer valid-token');
+    const req = createMockReq('Bearer valid_token');
     const result = await createContext({ req });
 
-    expect(result.email).toBe('primary@example.com');
+    expect(result).toEqual({
+      clerkId: 'user_456',
+      email: 'direct@test.com',
+    });
   });
 
-  it('CLERK_SECRET_KEY байхгүй бол алдаа зааж null буцаана', async () => {
+  it('CLERK_SECRET_KEY тохируулаагүй үед алдааг барьж null буцаана', async () => {
     delete process.env.CLERK_SECRET_KEY;
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-    const req = createMockReq('Bearer token');
+    const req = createMockReq('Bearer some_token');
     const result = await createContext({ req });
 
     expect(result).toEqual({ clerkId: null, email: null });
-    expect(consoleSpy).toHaveBeenCalled();
-    consoleSpy.mockRestore();
+    expect(console.error).toHaveBeenCalledWith(
+      'CLERK_SECRET_KEY тохируулагдаагүй байна.'
+    );
   });
 
-  it('verifyToken алдаа заавал (catch) null утга буцаана', async () => {
-    mockedVerifyToken.mockRejectedValue(new Error('Invalid'));
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+  it('verifyToken (decodeToken) амжилтгүй болбол null буцаана', async () => {
+    mockedVerifyToken.mockRejectedValue(new Error('Invalid signature'));
 
-    const req = createMockReq('Bearer invalid-token');
+    const req = createMockReq('Bearer invalid_token');
     const result = await createContext({ req });
 
     expect(result).toEqual({ clerkId: null, email: null });
-    consoleSpy.mockRestore();
+    expect(console.error).toHaveBeenCalled();
+  });
+
+  it('SDK-аас ирсэн emailAddresses дотор primary ID-тай и-мэйл байхгүй бол null буцаана', async () => {
+    mockedVerifyToken.mockResolvedValue({ sub: 'user_no_match' });
+
+    const mockGetUser = jest.fn().mockResolvedValue({
+      primaryEmailAddressId: 'id_A',
+      emailAddresses: [{ id: 'id_B', emailAddress: 'wrong@test.com' }],
+    });
+
+    mockedCreateClerkClient.mockReturnValue({
+      users: { getUser: mockGetUser },
+    });
+
+    const req = createMockReq('Bearer valid_token');
+    const result = await createContext({ req });
+
+    expect(result.email).toBeNull();
   });
 });
