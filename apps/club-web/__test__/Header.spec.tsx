@@ -1,6 +1,8 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Header } from '../components/Header';
+
+const mockSignOut = jest.fn();
 
 // Clerk-ийг mock хийх
 jest.mock('@clerk/nextjs', () => ({
@@ -15,6 +17,7 @@ jest.mock('@clerk/nextjs', () => ({
     <div>{children}</div>
   ),
   UserButton: () => <div data-testid="user-button">User Profile</div>,
+  useClerk: () => ({ signOut: mockSignOut }),
 }));
 
 // Next/Link-ийг mock хийх
@@ -25,6 +28,10 @@ jest.mock('next/link', () => {
 });
 
 describe('Header Component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('үндсэн цэсүүд зөв харагдаж байгаа эсэхийг шалгах', () => {
     render(<Header />);
 
@@ -54,6 +61,16 @@ describe('Header Component', () => {
 
     const signedInContainer = screen.getByTestId('signed-in');
     expect(signedInContainer).toBeInTheDocument();
-    expect(screen.getByTestId('user-button')).toBeInTheDocument();
+    expect(screen.getByText('Sign out')).toBeInTheDocument();
+  });
+
+  it('Sign out товч дарахад handleSafeSignOut дуудагдана', async () => {
+    render(<Header />);
+    const btn = screen.getByText('Sign out');
+    fireEvent.click(btn);
+
+    await waitFor(() => {
+      expect(mockSignOut).toHaveBeenCalledWith({ redirectUrl: '/' });
+    });
   });
 });

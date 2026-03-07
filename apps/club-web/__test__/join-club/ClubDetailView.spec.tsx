@@ -110,4 +110,9 @@ describe('ClubDetailView', () => {
     fireEvent.click(screen.getByText('Leave'));
     expect(defaultProps.handleLeave).toHaveBeenCalledTimes(1);
   });
+
+  it('renders with banned style when banned prop is true', () => {
+    const { container } = render(<ClubDetailView {...defaultProps} banned={true} />);
+    expect(container.firstChild).toHaveClass('bg-red-600/15');
+  });
 });

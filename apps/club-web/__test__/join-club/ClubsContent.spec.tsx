@@ -15,6 +15,15 @@ jest.mock('@clerk/nextjs', () => ({
   useClerk: () => ({ signOut: jest.fn() }),
 }));
 
+// Mock EventSource locally to avoid global config changes
+global.EventSource = class MockEventSource {
+  constructor(url: string) {}
+  onmessage: any = null;
+  onerror: any = null;
+  onopen: any = null;
+  close() {}
+} as any;
+
 const mockUseClubAction = jest.mocked(useClubAction);
 
 const mockClub = {
@@ -30,6 +39,7 @@ const mockClub = {
   minMember: 5,
   maxMember: 20,
   timetables: [],
+  createdAt: new Date().toISOString(),
 };
 
 const mockClub2 = {
@@ -45,6 +55,7 @@ const mockClub2 = {
   minMember: 5,
   maxMember: 20,
   timetables: [],
+  createdAt: new Date().toISOString(),
 };
 
 const mockTeacher = {
@@ -251,7 +262,7 @@ describe('ClubsContent', () => {
       expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
     );
 
-    fireEvent.click(screen.getByText('Second Club'));
+    fireEvent.click(screen.getAllByText('Second Club')[0]);
 
     await waitFor(() =>
       expect(screen.getAllByText('Second Club').length).toBeGreaterThan(0)

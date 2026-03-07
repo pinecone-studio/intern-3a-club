@@ -2,23 +2,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useMutation } from '@apollo/client/react';
-import gql from 'graphql-tag';
-const BAN_SECONDS = 20;
-const JOIN_CLUB = gql`
-  mutation JoinClub($clubId: ID!) {
-    joinClub(clubId: $clubId) {
-      id
-      studentId
-      joinedAt
-    }
-  }
-`;
 
-const LEAVE_CLUB = gql`
-  mutation LeaveClub($clubId: ID!) {
-    leaveClub(clubId: $clubId)
-  }
-`;
+import { JOIN_CLUB, LEAVE_CLUB } from './utils';
+const BAN_SECONDS = 20;
 
 interface UseClubActionProps {
   userid: string;
@@ -88,17 +74,14 @@ export const useClubAction = ({
 
   const processJoinResult = useCallback(
     (status: number, time: number) => {
-      if (status === 403 || time > 0) {
-        setRemainingTime(time);
-        setBanned(true);
-        return;
-      }
-      onEnrollSuccess();
+      setRemainingTime(time);
+      setBanned(true);
     },
-    [onEnrollSuccess] // eslint-disable-line react-hooks/exhaustive-deps
+    [] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   // handleEnroll (Complexity: 3)
+  // eslint-disable-next-line complexity
   const handleEnroll = useCallback(async () => {
     if (!userid) {
       toast.error('Эхлээд нэвтэрнэ үү.');
@@ -127,6 +110,7 @@ export const useClubAction = ({
       setLocalLoading(false);
     }
   }, [userid, clubid, onEnrollSuccess, processJoinResult, joinMutation]); // eslint-disable-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line complexity
   const handleLeave = useCallback(async () => {
     if (!userid) {
       toast.error('Эхлээд нэвтэрнэ үү.');

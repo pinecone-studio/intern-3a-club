@@ -3,7 +3,6 @@ import { ClubList } from '../../app/JoinClub/_components/ClubList';
 import { ExtendedClub } from '../../lib/type'; 
 import React from 'react';
 
-
 interface MockClubCardProps { 
   club: ExtendedClub;
   isSelected: boolean;
@@ -39,7 +38,8 @@ const mockClubs: ExtendedClub[] = [
     __typename: 'Club',
     isEnrolled: false,
     bannedUntil: 0,
-    members: []
+    members: [],
+    createdAt: '2024-01-01T00:00:00Z'
   },
   {
     id: '2',
@@ -57,7 +57,8 @@ const mockClubs: ExtendedClub[] = [
     __typename: 'Club',
     isEnrolled: true,
     bannedUntil: 0,
-    members: []
+    members: [],
+    createdAt: '2024-01-01T00:00:00Z'
   },
 ];
 
@@ -94,7 +95,18 @@ describe('ClubList Component', () => {
     );
 
     const selectedClub = screen.getByTestId('club-card-1');
-
     expect(selectedClub).toHaveStyle('border: 1px solid blue');
+  });
+
+  it('shows syncing indicator when isLiveSyncing is true', () => {
+    render(
+      <ClubList
+        clubs={mockClubs}
+        selectedClubId="1"
+        onSelect={mockOnSelect}
+        isLiveSyncing={true}
+      />
+    );
+    expect(screen.getByText('Syncing...')).toBeInTheDocument();
   });
 });
