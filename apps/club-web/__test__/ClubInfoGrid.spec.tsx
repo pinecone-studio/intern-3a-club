@@ -30,6 +30,7 @@ const mockClub = {
   creatorId: 'creator1',
   teacherId: 'teacher1',
   preferredTeachers: [],
+  members: new Array(10).fill({}),
 } as unknown as ExtendedClub;
 
 describe('ClubInfoGrid', () => {
@@ -130,7 +131,7 @@ describe('ClubInfoGrid', () => {
   it('caps percent at 100 when members exceed max', () => {
     const club = {
       ...mockClub,
-      minMember: 30,
+      members: new Array(30).fill({}),
       maxMember: 20,
     } as unknown as ExtendedClub;
     render(<ClubInfoGrid club={club} />);
@@ -142,6 +143,7 @@ describe('ClubInfoGrid', () => {
       ...mockClub,
       minMember: undefined,
       maxMember: undefined,
+      members: [],
     } as unknown as ExtendedClub;
     render(<ClubInfoGrid club={club} />);
     expect(screen.getByText('0%')).toBeInTheDocument();

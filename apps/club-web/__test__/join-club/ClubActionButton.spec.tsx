@@ -5,6 +5,7 @@ import { ClubActionButtons } from '../../app/JoinClub/_components/ClubActionButt
 const defaultProps = {
   isEnrolled: false,
   isLocked: false,
+  isExpired: false,
   status: 'Open',
   remainingTime: 0,
   onEnroll: jest.fn(),

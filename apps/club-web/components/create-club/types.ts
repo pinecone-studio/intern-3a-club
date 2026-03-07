@@ -1,3 +1,4 @@
+//apps/club-web/components/create-club/types.ts
 import { ReactNode } from 'react';
 
 export interface CreateClubWithSchedulesResponse {
@@ -30,29 +31,15 @@ export interface CalendarSelectFieldProps {
 
 export interface ClubFormProps {
   formData: FormDataType;
-  setFormData: (_data: FormDataType) => void;
-  handleSubmit: () => Promise<{ success: boolean; message: string }>;
-  selectedDates: Date[];
-  setSelectedDates: (_dates: Date[]) => void;
-  currentMonth: Date;
-  handleMonthChange: (_offset: number) => void;
-  renderCalendarDays: () => React.ReactNode;
-  teachers?: GetAllTeacher[];
+  handleFormChange: (_name: string, _value: string) => void;
+  handleSubmit: () => Promise<void>;
+  errors: Record<string, string>;
+  loading: boolean;
 }
 
 export type FormDataType = {
   name: string;
   goal: string;
-  teacher: string;
-  preferredTeachers: string[];
-  startDate: string;
-  time: string;
-  duration: string;
-  studentEmail: string;
-  room: string;
-  maxStudents: string;
-  minStudents: string;
-  repeat: string;
 };
 
 export interface LogisticsSectionProps {
@@ -68,8 +55,9 @@ export interface LogisticsSectionProps {
 
 export interface Step1Props {
   formData: FormDataType;
-  setFormData: (_data: FormDataType) => void;
-  teachers?: GetAllTeacher[];
+  // name болон value авдаг функц болгож өөрчлөх
+  setFormData: (_name: string, _value: string) => void;
+  errors: Record<string, string>; // ? (optional)-ийг нь болиулбал хэрэглэхэд амар
 }
 export interface CalendarDayProps {
   day: number;
@@ -89,14 +77,16 @@ export interface RecurrenceConfig {
 export const INITIAL_FORM_DATA: FormDataType = {
   name: '',
   goal: '',
-  teacher: '',
-  preferredTeachers: [],
-  startDate: '',
-  time: '13:00',
-  duration: '1:30',
-  studentEmail: '',
-  room: '301',
-  maxStudents: '',
-  minStudents: '',
-  repeat: 'none',
 };
+
+export interface CreateClubInput {
+  input: {
+    name: string;
+    description: string;
+    type: string;
+    minMember: number;
+    maxMember: number;
+  };
+  schedules: string[];
+  frequency: string;
+}

@@ -1,3 +1,5 @@
 import '@testing-library/jest-dom';
 
-window.alert = jest.fn();
+if (typeof window !== 'undefined') {
+  window.alert = jest.fn();
+}

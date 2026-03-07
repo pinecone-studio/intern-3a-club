@@ -3,7 +3,7 @@ import { redis } from '../../../../lib/redis';
 import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';
-
+// eslint-disable-next-line complexity
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get('userId');

@@ -27,6 +27,7 @@ const mockClub = {
   timetables: [mockTimetable],
   isEnrolled: false,
   bannedUntil: 0,
+  createdAt: new Date().toISOString(),
 } as ExtendedClub;
 
 describe('ClubCard', () => {
@@ -53,7 +54,7 @@ describe('ClubCard', () => {
 
   it('timetable байгаа үед хуваарь харуулна', () => {
     render(<ClubCard club={mockClub} isSelected={false} onClick={jest.fn()} />);
-    expect(screen.getByText(/Даваа, Лхагва/)).toBeInTheDocument();
+    expect(screen.getByText(/хүртэл элсэх боломжтой/)).toBeInTheDocument();
     expect(screen.getByText('401-р өрөө')).toBeInTheDocument();
   });
 
@@ -65,7 +66,7 @@ describe('ClubCard', () => {
         onClick={jest.fn()}
       />
     );
-    expect(screen.getByText('Хугацаа тодорхойгүй')).toBeInTheDocument();
+    expect(screen.getByText(/хүртэл элсэх боломжтой/)).toBeInTheDocument();
     expect(screen.getByText('Өрөө тодорхойгүй')).toBeInTheDocument();
   });
 

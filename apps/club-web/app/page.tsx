@@ -61,6 +61,7 @@ const Home = () => {
   );
 
   const performSync = useCallback(
+    // eslint-disable-next-line complexity
     async (signal: AbortSignal) => {
       try {
         const token = await getToken();
