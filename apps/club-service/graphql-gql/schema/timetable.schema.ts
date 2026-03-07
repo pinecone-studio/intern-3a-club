@@ -44,7 +44,9 @@ export const timetableTypeDefs = gql`
   extend type Mutation {
     createTimetable(input: CreateTimetableInput!): Timetable
     updateTimetable(input: UpdateTimetableInput!): Timetable
+    updateManyTimetables(inputs: [UpdateTimetableInput!]!): [Timetable]
     deleteTimetable(id: ID!): Boolean
+    deleteManyTimetables(ids: [ID!]!): Boolean
   }
 
   extend type Club {
