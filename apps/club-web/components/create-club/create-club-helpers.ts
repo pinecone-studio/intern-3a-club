@@ -1,114 +1,47 @@
-import { FormDataType, CreateClubWithSchedulesResponse } from './types';
+//apps/club-web/components/create-club/create-club-helpers.ts
 
-export const calculateTotalMinutes = (duration: string) => {
-  const parts = duration.split(':');
-  return parseInt(parts[0]) * 60 + (parseInt(parts[1]) || 0);
+import { FormDataType } from './types';
+import { FetchResult } from '@apollo/client';
+import { CreateClubWithSchedulesResponse } from './types';
+
+export const validateStep1 = (formData: FormDataType) => {
+  const errors: Record<string, string> = {};
+  if (!formData.name.trim()) errors.name = 'Клубын нэр заавал оруулна уу';
+  if (!formData.goal.trim()) errors.goal = 'Клубын зорилго заавал оруулна уу';
+  return errors;
 };
 
-export const getDayNames = (dates: Date[]) => {
-  return Array.from(
-    new Set(
-      dates.map((d) =>
-        new Intl.DateTimeFormat('en-US', { weekday: 'long' })
-          .format(d)
-          .toUpperCase()
-      )
-    )
-  );
+export const buildMutationVariables = (formData: FormDataType) => ({
+  input: {
+    name: formData.name,
+    description: formData.goal,
+    type: 'mentor',
+    minMember: 0,
+    maxMember: 20,
+  },
+  schedules: [],
+  frequency: 'ONCE',
+});
+
+const getErrorMessage = (
+  res: FetchResult<CreateClubWithSchedulesResponse>
+): string | null => {
+  return res.errors?.[0]?.message || null;
 };
-
-export const getFrequency = (repeat: string) =>
-  repeat === 'none' ? 'ONCE' : repeat.toUpperCase();
-
-export const getMinMax = (val: string) => parseInt(val) || 0;
-export const formatDate = (date: Date) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-};
-
-export const getStep1Errors = (formData: { name?: string; goal?: string }) => {
-  const { name, goal } = formData;
-  return [
-    { key: 'name', val: name?.trim() },
-    { key: 'goal', val: goal?.trim() },
-  ].reduce((acc, { key, val }) => {
-    if (!val) acc[key] = 'Заавал';
-    return acc;
-  }, {} as Record<string, string>);
-};
-
-export const getStep2Errors = (formData: { room?: string }) => {
-  const errs: Record<string, string> = {};
-  if (!formData.room) errs.room = 'Заавал';
-  return errs;
-};
-
-export const buildMutationVariables = (
-  formData: FormDataType,
-  selectedDates: Date[]
-) => {
-  const directTeacher =
-    formData.teacher && formData.teacher !== 'student' ? formData.teacher : '';
-  const preferredTeachers = Array.from(
-    new Set([...(formData.preferredTeachers || []), directTeacher].filter(Boolean))
-  );
-
-  return {
-    input: {
-      name: formData.name,
-      description: formData.goal,
-      type: 'mentor',
-      // club-web flow: assign teacher later from preferred list
-      teacherId: null,
-      preferredTeachers,
-      minMember: getMinMax(formData.minStudents),
-      maxMember: getMinMax(formData.maxStudents),
-    },
-    schedules: selectedDates.map((date) => ({
-      date: formatDate(date),
-      room: formData.room,
-      clubStartTime: formData.time,
-      duration: calculateTotalMinutes(formData.duration),
-    })),
-    frequency: getFrequency(formData.repeat),
-    clubTerm: '2024-2025',
-  };
-};
-
-export const handlePreferredToggleHelper = (
-  current: string[],
-  id: string
-): string[] => {
-  return current.includes(id)
-    ? current.filter((x) => x !== id)
-    : [...current, id];
-};
-
-export const getMutationError = (res: {
-  errors?: readonly { message: string }[];
-  error?: { message: string };
-}) => res?.errors?.[0]?.message || res?.error?.message;
 
 export const handleMutationResult = (
-  res: {
-    data?: CreateClubWithSchedulesResponse | null;
-    errors?: readonly { message: string }[];
-    error?: { message: string };
-  },
+  res: FetchResult<CreateClubWithSchedulesResponse>,
   onSuccess: () => void
-) => {
-  const errorMsg = getMutationError(res);
+): { success: boolean } => {
+  const errorMsg = getErrorMessage(res);
+
   if (errorMsg) {
-    alert(`Алдаа гарлаа: ${errorMsg}`);
-    return { success: false, message: errorMsg };
+    alert(`Алдаа: ${errorMsg}`);
+    return { success: false };
   }
-  if (res?.data?.createClubWithSchedules) {
-    onSuccess();
-    return { success: true, message: 'Клуб амжилттай үүслээ' };
-  }
-  const fallback = 'Клуб үүссэн эсэх тодорхойгүй.';
-  alert(fallback);
-  return { success: false, message: fallback };
+
+  const isSuccess = !!res.data?.createClubWithSchedules;
+  if (isSuccess) onSuccess();
+
+  return { success: isSuccess };
 };

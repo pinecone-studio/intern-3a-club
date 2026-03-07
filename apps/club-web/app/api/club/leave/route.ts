@@ -36,7 +36,7 @@ const getErrorMessage = (error: unknown): string => {
 
   return 'Server error';
 };
-
+// eslint-disable-next-line complexity
 export async function POST(req: Request) {
   try {
     const body = await req.json();

@@ -15,11 +15,14 @@ export const Header = () => {
 
   const handleSafeSignOut = async () => {
     const unstableWindow = window as Window & {
+      // eslint-disable-next-line camelcase
       __unstable__onBeforeSetActive?: unknown;
+      // eslint-disable-next-line camelcase
       __unstable__onAfterSetActive?: unknown;
     };
-
+    // eslint-disable-next-line camelcase
     unstableWindow.__unstable__onBeforeSetActive = undefined;
+    // eslint-disable-next-line camelcase
     unstableWindow.__unstable__onAfterSetActive = undefined;
 
     await signOut({ redirectUrl: '/' });
