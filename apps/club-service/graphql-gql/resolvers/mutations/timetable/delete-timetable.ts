@@ -1,9 +1,20 @@
-/* eslint-disable complexity */
 import { DB } from 'db/drizzle';
 import { timetable } from 'db/schema';
 import { eq } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
 import { publishClubEvent } from 'gql-utils/realtime-publisher';
+
+const notifyTimetableDeletion = async (
+  clubId: string,
+  clerkId?: string
+): Promise<void> => {
+  await publishClubEvent({
+    type: 'club_updated',
+    clubId: clubId,
+    clerkId: clerkId ?? 'system',
+    at: Date.now(),
+  });
+};
 
 export const deleteTimetable = async (
   _: unknown,
@@ -27,12 +38,7 @@ export const deleteTimetable = async (
     });
   }
 
-  await publishClubEvent({
-    type: 'club_updated',
-    clubId: deletedTimetable[0].clubId,
-    clerkId: context?.clerkId ?? 'system',
-    at: Date.now(),
-  });
+  await notifyTimetableDeletion(deletedTimetable[0].clubId, context?.clerkId);
 
   return true;
 };

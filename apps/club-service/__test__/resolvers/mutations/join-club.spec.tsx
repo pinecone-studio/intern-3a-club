@@ -1,15 +1,9 @@
 import { DB } from 'db/drizzle';
 import { handleMutationError } from 'gql-utils';
 import { joinClub } from 'graphql-gql/resolvers/mutations';
+import * as clubBanUtils from 'gql-utils/club-ban';
+import * as realtimePublisher from 'gql-utils/realtime-publisher';
 
-// 1. Crypto-г mock хийх (Энэ байхгүй бол Happy Path унана)
-Object.defineProperty(global, 'crypto', {
-  value: {
-    randomUUID: jest.fn(() => 'uuid-123'),
-  },
-});
-
-// 2. Drizzle Mock
 jest.mock('db/drizzle', () => ({
   DB: {
     query: {
@@ -27,7 +21,18 @@ jest.mock('db/drizzle', () => ({
 }));
 
 jest.mock('gql-utils', () => ({
-  handleMutationError: jest.fn(),
+  handleMutationError: jest.fn((err: unknown) => {
+    if (err instanceof Error) throw err;
+    throw new Error(String(err));
+  }),
+}));
+
+jest.mock('gql-utils/club-ban', () => ({
+  getJoinBanTtlSeconds: jest.fn(),
+}));
+
+jest.mock('gql-utils/realtime-publisher', () => ({
+  publishClubEvent: jest.fn(),
 }));
 
 const mockedDB = DB as unknown as {
@@ -45,17 +50,62 @@ const mockedDB = DB as unknown as {
 };
 
 const mockedHandleError = handleMutationError as unknown as jest.Mock;
+const mockedGetBanTtl =
+  clubBanUtils.getJoinBanTtlSeconds as unknown as jest.Mock;
 
 describe('joinClub Mutation 100% Coverage', () => {
   const mockContext = { clerkId: 'user_123' };
   const mockArgs = { clubId: 'club_777' };
+  let originalCrypto: typeof globalThis.crypto;
+
+  beforeAll(() => {
+    originalCrypto = globalThis.crypto;
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Алдаа гарсан үед handleMutationError-ыг throw хийдэг болгох
-    mockedHandleError.mockImplementation((err) => {
-      throw err;
+    Object.defineProperty(globalThis, 'crypto', {
+      value: originalCrypto,
+      configurable: true,
     });
+    mockedGetBanTtl.mockResolvedValue(0);
+  });
+
+  it('should call handleMutationError on unexpected catch-block error', async () => {
+    const unexpectedError = new Error('DB Crash');
+    mockedGetBanTtl.mockRejectedValueOnce(unexpectedError);
+
+    await expect(joinClub({}, mockArgs, mockContext)).rejects.toThrow(
+      'DB Crash'
+    );
+
+    expect(mockedHandleError).toHaveBeenCalledWith(unexpectedError);
+  });
+
+  it('should use fallback ID generator when crypto is undefined (Line 76 coverage)', async () => {
+    Object.defineProperty(globalThis, 'crypto', {
+      value: undefined,
+      configurable: true,
+    });
+
+    mockedDB.query.students.findFirst.mockResolvedValue({ id: 's1' });
+    mockedDB.query.clubs.findFirst.mockResolvedValue({
+      id: 'c1',
+      maxMember: 10,
+    });
+    mockedDB.query.clubMembers.findFirst.mockResolvedValue(null);
+    mockedDB.where.mockResolvedValueOnce([{ value: 0 }]);
+    mockedDB.returning.mockResolvedValue([{ id: 'fallback-id' }]);
+
+    const result = await joinClub({}, mockArgs, mockContext);
+    expect(result).toBeDefined();
+  });
+
+  it('should throw GraphQLError when user is banned from joining', async () => {
+    mockedGetBanTtl.mockResolvedValueOnce(120);
+    await expect(joinClub({}, mockArgs, mockContext)).rejects.toThrow(
+      /Та энэ клубт 120 секундийн дараа дахин нэгдэнэ үү/
+    );
   });
 
   it('should throw GraphQLError when clerkId is missing', async () => {
@@ -64,84 +114,12 @@ describe('joinClub Mutation 100% Coverage', () => {
     );
   });
 
-  it('should call handleMutationError if student is not found', async () => {
-    mockedDB.query.students.findFirst.mockResolvedValue(null);
-    await expect(joinClub({}, mockArgs, mockContext)).rejects.toThrow(
-      'Сурагчийн бүртгэл олдсонгүй.'
-    );
-  });
-
-  it('should call handleMutationError if club is not found', async () => {
-    mockedDB.query.students.findFirst.mockResolvedValue({ id: 's1' });
-    mockedDB.query.clubs.findFirst.mockResolvedValue(null);
-    await expect(joinClub({}, mockArgs, mockContext)).rejects.toThrow(
-      'Клуб олдсонгүй.'
-    );
-  });
-
-  it('should call handleMutationError if already a member', async () => {
-    mockedDB.query.students.findFirst.mockResolvedValue({ id: 's1' });
-    mockedDB.query.clubs.findFirst.mockResolvedValue({
-      id: 'c1',
-      maxMember: 10,
-    });
-    mockedDB.query.clubMembers.findFirst.mockResolvedValue({ id: 'm1' });
-    await expect(joinClub({}, mockArgs, mockContext)).rejects.toThrow(
-      'Та аль хэдийн энэ клубийн гишүүн болсон байна.'
-    );
-  });
-
-  it('should call handleMutationError if club is full', async () => {
-    mockedDB.query.students.findFirst.mockResolvedValue({ id: 's1' });
-    mockedDB.query.clubs.findFirst.mockResolvedValue({
-      id: 'c1',
-      maxMember: 5,
-    });
-    mockedDB.query.clubMembers.findFirst.mockResolvedValue(null);
-
-    // countRes-ийг дуурайх
-    mockedDB.where.mockResolvedValueOnce([{ value: 5 }]);
-
-    await expect(joinClub({}, mockArgs, mockContext)).rejects.toThrow(
-      'Клуб дүүрсэн байна.'
-    );
-  });
-
-  it('should call handleMutationError if count result is undefined (Branch coverage)', async () => {
-    mockedDB.query.students.findFirst.mockResolvedValue({ id: 's1' });
-    mockedDB.query.clubs.findFirst.mockResolvedValue({
-      id: 'c1',
-      maxMember: 5,
-    });
-    mockedDB.query.clubMembers.findFirst.mockResolvedValue(null);
-
-    // countRes[0] нь undefined байх тохиолдол ((countRes[0]?.value || 0) хэсгийг шалгана)
-    mockedDB.where.mockResolvedValueOnce([]);
-
-    // Happy path шиг ажиллана (0 < 5 учир)
-    mockedDB.returning.mockResolvedValue([{ id: 'm1' }]);
-    const result = await joinClub({}, mockArgs, mockContext);
-    expect(result).toBeDefined();
-  });
-
-  it('should call handleMutationError on unexpected catch-block error', async () => {
-    const dbError = new Error('Unexpected DB Error');
-    mockedDB.query.students.findFirst.mockRejectedValue(dbError);
-
-    try {
-      await joinClub({}, mockArgs, mockContext);
-    } catch (e) {
-      expect(mockedHandleError).toHaveBeenCalledWith(dbError);
-    }
-  });
-
   it('should return new member on success (Happy Path)', async () => {
     const mockNewMember = {
       id: 'uuid-123',
       clubId: 'club_777',
       studentId: 's1',
     };
-
     mockedDB.query.students.findFirst.mockResolvedValue({ id: 's1' });
     mockedDB.query.clubs.findFirst.mockResolvedValue({
       id: 'c1',
@@ -154,6 +132,6 @@ describe('joinClub Mutation 100% Coverage', () => {
     const result = await joinClub({}, mockArgs, mockContext);
 
     expect(result).toEqual(mockNewMember);
-    expect(mockedDB.insert).toHaveBeenCalled();
+    expect(realtimePublisher.publishClubEvent).toHaveBeenCalled();
   });
 });

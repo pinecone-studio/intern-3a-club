@@ -66,8 +66,8 @@ export const clubTypeDefs = gql`
   extend type Mutation {
     createClubWithSchedules(
       input: CreateClubInput!
-      schedules: [ScheduleInput!]!
-      frequency: String!
+      schedules: [ScheduleInput]
+      frequency: String
       clubTerm: String
     ): Club
 

@@ -1,10 +1,21 @@
-/* eslint-disable complexity */
 import { DB } from 'db/drizzle';
 import { timetable } from 'db/schema';
 import { eq } from 'drizzle-orm';
 import { UpdateTimetableArgs } from 'gql-type';
 import { handleMutationError } from 'gql-utils';
 import { publishClubEvent } from 'gql-utils/realtime-publisher';
+
+const notifyTimetableUpdate = async (
+  clubId: string,
+  clerkId?: string
+): Promise<void> => {
+  await publishClubEvent({
+    type: 'club_updated',
+    clubId: clubId,
+    clerkId: clerkId ?? 'system',
+    at: Date.now(),
+  });
+};
 
 export const updateTimetable = async (
   _: unknown,
@@ -30,12 +41,7 @@ export const updateTimetable = async (
       throw new Error('Засах хуваарь олдсонгүй.');
     }
 
-    await publishClubEvent({
-      type: 'club_updated',
-      clubId: updatedSchedule.clubId,
-      clerkId: context?.clerkId ?? 'system',
-      at: Date.now(),
-    });
+    await notifyTimetableUpdate(updatedSchedule.clubId, context?.clerkId);
 
     console.log('SUCCESS: Timetable updated.', updatedSchedule);
     return updatedSchedule;

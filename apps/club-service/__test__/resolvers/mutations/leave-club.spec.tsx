@@ -3,7 +3,6 @@ import { handleMutationError } from 'gql-utils';
 import { GraphQLError } from 'graphql';
 import { leaveClub } from 'graphql-gql/resolvers/mutations';
 
-// 1. Drizzle-ийн Query болон Delete Mock-уудыг тодорхойлох
 jest.mock('db/drizzle', () => ({
   DB: {
     query: {
@@ -15,12 +14,10 @@ jest.mock('db/drizzle', () => ({
   },
 }));
 
-// 2. Бусад хамааралтай модулиудыг Mock хийх
 jest.mock('gql-utils', () => ({
   handleMutationError: jest.fn(),
 }));
 
-// 3. TypeScript-д зориулсан Type Casting (any-гүй)
 const mockedDB = DB as unknown as {
   query: {
     students: { findFirst: jest.Mock };
@@ -30,7 +27,6 @@ const mockedDB = DB as unknown as {
   returning: jest.Mock;
 };
 
-// Error handler-ийг MockedFunction болгож хөрвүүлэх (ts(2352) алдааг засав)
 const mockedHandleError = handleMutationError as unknown as jest.Mock;
 
 describe('leaveClub Mutation Full Tests', () => {
@@ -41,7 +37,6 @@ describe('leaveClub Mutation Full Tests', () => {
     jest.clearAllMocks();
   });
 
-  // TEST 1: Нэвтрээгүй үед (Authentication check)
   it('should throw GraphQLError when clerkId is missing', async () => {
     try {
       await leaveClub({}, mockArgs, {});
@@ -51,7 +46,6 @@ describe('leaveClub Mutation Full Tests', () => {
     }
   });
 
-  // TEST 2: Сурагч олдоогүй үед (getAuthenticatedStudent failure)
   it('should call handleMutationError if student is not found', async () => {
     mockedDB.query.students.findFirst.mockResolvedValue(null);
 
@@ -62,11 +56,9 @@ describe('leaveClub Mutation Full Tests', () => {
     );
   });
 
-  // TEST 3: Гишүүн биш үед устгах мөр олдохгүй (performDeleteMember failure)
   it('should call handleMutationError if student is not a member of the club', async () => {
     mockedDB.query.students.findFirst.mockResolvedValue({ id: 'student_123' });
 
-    // .returning() нь хоосон массив буцаавал устгагдсан мөр байхгүй гэсэн үг
     mockedDB.returning.mockResolvedValue([]);
 
     await leaveClub({}, mockArgs, mockContext);
@@ -76,7 +68,6 @@ describe('leaveClub Mutation Full Tests', () => {
     );
   });
 
-  // TEST 4: Амжилттай гарахад (Happy Path)
   it('should return clubId on successful leave', async () => {
     const mockStudent = { id: 'student_123' };
     const mockDeletedRow = {
