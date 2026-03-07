@@ -60,7 +60,7 @@ async function validateJoinAction(clubId: string, clerkId: string) {
   const club = await getClubOrThrow(clubId);
 
   await checkExistingMembership(clubId, student.id);
-  await checkClubCapacity(clubId, club.maxMember);
+  await checkClubCapacity(clubId, club.maxMember ?? 0);
 
   return student;
 }

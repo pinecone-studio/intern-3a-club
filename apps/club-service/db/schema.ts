@@ -71,15 +71,17 @@ export const clubs = sqliteTable('clubs', {
   name: text('name').notNull(),
   description: text('description'),
   teacherId: text('teacherId').references(() => teachers.id),
-  minMember: integer('minMember').notNull(),
-  maxMember: integer('maxMember').notNull(),
-  type: text('type').notNull(),
+  minMember: integer('minMember'),
+  maxMember: integer('maxMember'),
+  type: text('type'),
   preferredTeachers: text('preferredTeachers', { mode: 'json' }).$type<
     string[]
   >(),
-  status: text('status').notNull(),
-  frequency: text('frequency').notNull(),
+  status: text('status').default('pending'),
+  frequency: text('frequency'),
   clubTerm: text('clubTerm'),
+  startDate: text('startDate'),
+  endDate: text('endDate'),
   createdAt: text('createdAt')
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),
