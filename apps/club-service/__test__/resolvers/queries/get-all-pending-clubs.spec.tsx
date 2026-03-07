@@ -1,5 +1,4 @@
 import { DB } from 'db/drizzle';
-import { clubs } from 'db/schema';
 import * as gqlUtils from 'gql-utils';
 import { getAllPendingClubs } from 'graphql-gql/resolvers/queries';
 

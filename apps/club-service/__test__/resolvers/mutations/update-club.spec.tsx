@@ -1,5 +1,4 @@
 import { DB } from 'db/drizzle';
-import { clubs } from 'db/schema';
 import { publishClubEvent } from 'gql-utils/realtime-publisher';
 import { handleMutationError } from 'gql-utils';
 import { updateClub } from 'graphql-gql/resolvers/mutations';

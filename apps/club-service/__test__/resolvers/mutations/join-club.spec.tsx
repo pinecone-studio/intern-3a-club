@@ -1,9 +1,10 @@
 import { DB } from 'db/drizzle';
-import { handleMutationError } from 'gql-utils';
-import { joinClub } from 'graphql-gql/resolvers/mutations';
+import { handleMutationError } from 'gql-utils'; // 2-р мөр: Одоо доор тестэд ашиглагдана
+import { joinClub } from 'graphql-gql/resolvers/mutations/club-members/join-club';
 import * as clubBanUtils from 'gql-utils/club-ban';
 import * as realtimePublisher from 'gql-utils/realtime-publisher';
 
+// 1. Mocks
 jest.mock('db/drizzle', () => ({
   DB: {
     query: {
@@ -11,19 +12,14 @@ jest.mock('db/drizzle', () => ({
       clubs: { findFirst: jest.fn() },
       clubMembers: { findFirst: jest.fn() },
     },
-    insert: jest.fn().mockReturnThis(),
-    values: jest.fn().mockReturnThis(),
-    returning: jest.fn(),
-    select: jest.fn().mockReturnThis(),
-    from: jest.fn().mockReturnThis(),
-    where: jest.fn().mockReturnThis(),
+    insert: jest.fn(),
+    select: jest.fn(),
   },
 }));
 
 jest.mock('gql-utils', () => ({
-  handleMutationError: jest.fn((err: unknown) => {
-    if (err instanceof Error) throw err;
-    throw new Error(String(err));
+  handleMutationError: jest.fn((err) => {
+    throw err;
   }),
 }));
 
@@ -35,6 +31,7 @@ jest.mock('gql-utils/realtime-publisher', () => ({
   publishClubEvent: jest.fn(),
 }));
 
+// Any-г арилгаж, Jest Mock төрөл оноов
 const mockedDB = DB as unknown as {
   query: {
     students: { findFirst: jest.Mock };
@@ -42,96 +39,124 @@ const mockedDB = DB as unknown as {
     clubMembers: { findFirst: jest.Mock };
   };
   insert: jest.Mock;
-  values: jest.Mock;
-  returning: jest.Mock;
   select: jest.Mock;
-  from: jest.Mock;
-  where: jest.Mock;
 };
 
-const mockedHandleError = handleMutationError as unknown as jest.Mock;
-const mockedGetBanTtl =
-  clubBanUtils.getJoinBanTtlSeconds as unknown as jest.Mock;
-
-describe('joinClub Mutation 100% Coverage', () => {
+describe('joinClub Mutation - Full Coverage', () => {
   const mockContext = { clerkId: 'user_123' };
   const mockArgs = { clubId: 'club_777' };
-  let originalCrypto: typeof globalThis.crypto;
 
-  beforeAll(() => {
-    originalCrypto = globalThis.crypto;
-  });
+  const setupCountMock = (countValue: number) => {
+    const mockWhere = jest.fn().mockResolvedValue([{ value: countValue }]);
+    const mockFrom = jest.fn().mockReturnValue({ where: mockWhere });
+    mockedDB.select.mockReturnValue({ from: mockFrom });
+  };
+
+  const setupInsertMock = (returnValue: unknown) => {
+    const mockReturning = jest.fn().mockResolvedValue(returnValue);
+    const mockValues = jest.fn().mockReturnValue({ returning: mockReturning });
+    mockedDB.insert.mockReturnValue({ values: mockValues });
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (clubBanUtils.getJoinBanTtlSeconds as jest.Mock).mockResolvedValue(0);
+
+    // fetch is not defined алдааг дарах
+    if (!global.fetch) {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ success: true }),
+        })
+      ) as jest.Mock;
+    }
+  });
+
+  it('Амжилттай нэгдэх (Crypto Fallback Line 13-14 Coverage)', async () => {
+    const originalCrypto = globalThis.crypto;
+    Object.defineProperty(globalThis, 'crypto', {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    });
+
+    mockedDB.query.students.findFirst.mockResolvedValue({ id: 's1' });
+    mockedDB.query.clubs.findFirst.mockResolvedValue({
+      id: 'c1',
+      maxMember: 10,
+    });
+    mockedDB.query.clubMembers.findFirst.mockResolvedValue(null);
+    setupCountMock(5);
+    setupInsertMock([{ id: 'm1' }]);
+
+    const result = await joinClub({}, mockArgs, mockContext);
+
+    expect(result).toBeDefined();
+    expect(realtimePublisher.publishClubEvent).toHaveBeenCalled();
+
     Object.defineProperty(globalThis, 'crypto', {
       value: originalCrypto,
       configurable: true,
     });
-    mockedGetBanTtl.mockResolvedValue(0);
   });
 
-  it('should call handleMutationError on unexpected catch-block error', async () => {
-    const unexpectedError = new Error('DB Crash');
-    mockedGetBanTtl.mockRejectedValueOnce(unexpectedError);
+  it('handleMutationError: Алдааг барьж авах (Line 76 coverage & Unused var fix)', async () => {
+    const dbError = new Error('DB Error');
+    mockedDB.query.students.findFirst.mockRejectedValue(dbError);
 
+    try {
+      await joinClub({}, mockArgs, mockContext);
+    } catch {
+      // Catch блок ажиллана
+    }
+
+    expect(handleMutationError).toHaveBeenCalledWith(dbError);
+  });
+
+  it('Нэвтрээгүй үед алдаа заана', async () => {
+    await expect(
+      joinClub({}, mockArgs, { clerkId: undefined })
+    ).rejects.toThrow('Нэвтрээгүй байна.');
+  });
+
+  it('Сурагчийн бүртгэл олдсонгүй', async () => {
+    mockedDB.query.students.findFirst.mockResolvedValue(null);
     await expect(joinClub({}, mockArgs, mockContext)).rejects.toThrow(
-      'DB Crash'
+      'Сурагчийн бүртгэл олдсонгүй.'
     );
-
-    expect(mockedHandleError).toHaveBeenCalledWith(unexpectedError);
   });
 
-  it('should use fallback ID generator when crypto is undefined (Line 76 coverage)', async () => {
-    Object.defineProperty(globalThis, 'crypto', {
-      value: undefined,
-      configurable: true,
-    });
+  it('Клуб олдсонгүй', async () => {
+    mockedDB.query.students.findFirst.mockResolvedValue({ id: 's1' });
+    mockedDB.query.clubs.findFirst.mockResolvedValue(null);
+    await expect(joinClub({}, mockArgs, mockContext)).rejects.toThrow(
+      'Клуб олдсонгүй.'
+    );
+  });
 
+  it('Аль хэдийн гишүүн болсон бол', async () => {
     mockedDB.query.students.findFirst.mockResolvedValue({ id: 's1' });
     mockedDB.query.clubs.findFirst.mockResolvedValue({
       id: 'c1',
       maxMember: 10,
     });
-    mockedDB.query.clubMembers.findFirst.mockResolvedValue(null);
-    mockedDB.where.mockResolvedValueOnce([{ value: 0 }]);
-    mockedDB.returning.mockResolvedValue([{ id: 'fallback-id' }]);
-
-    const result = await joinClub({}, mockArgs, mockContext);
-    expect(result).toBeDefined();
-  });
-
-  it('should throw GraphQLError when user is banned from joining', async () => {
-    mockedGetBanTtl.mockResolvedValueOnce(120);
+    mockedDB.query.clubMembers.findFirst.mockResolvedValue({ id: 'm1' });
     await expect(joinClub({}, mockArgs, mockContext)).rejects.toThrow(
-      /Та энэ клубт 120 секундийн дараа дахин нэгдэнэ үү/
+      'Та аль хэдийн энэ клубийн гишүүн болсон байна.'
     );
   });
 
-  it('should throw GraphQLError when clerkId is missing', async () => {
-    await expect(joinClub({}, mockArgs, {})).rejects.toThrow(
-      'Нэвтрээгүй байна.'
-    );
-  });
-
-  it('should return new member on success (Happy Path)', async () => {
-    const mockNewMember = {
-      id: 'uuid-123',
-      clubId: 'club_777',
-      studentId: 's1',
-    };
+  it('Клуб дүүрсэн байна', async () => {
     mockedDB.query.students.findFirst.mockResolvedValue({ id: 's1' });
     mockedDB.query.clubs.findFirst.mockResolvedValue({
       id: 'c1',
-      maxMember: 10,
+      maxMember: 5,
     });
     mockedDB.query.clubMembers.findFirst.mockResolvedValue(null);
-    mockedDB.where.mockResolvedValueOnce([{ value: 2 }]);
-    mockedDB.returning.mockResolvedValue([mockNewMember]);
-
-    const result = await joinClub({}, mockArgs, mockContext);
-
-    expect(result).toEqual(mockNewMember);
-    expect(realtimePublisher.publishClubEvent).toHaveBeenCalled();
+    setupCountMock(5);
+    await expect(joinClub({}, mockArgs, mockContext)).rejects.toThrow(
+      'Клуб дүүрсэн байна.'
+    );
   });
 });

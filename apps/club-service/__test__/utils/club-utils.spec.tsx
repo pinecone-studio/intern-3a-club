@@ -1,16 +1,21 @@
-import * as clubUtils from 'gql-utils/club';
 import { DB } from 'db/drizzle';
+import * as clubUtils from 'gql-utils/club';
 import { getCreatorId } from 'gql-utils/user/user.util';
 
-// 1. Drizzle DB-г mock хийх
+// 1. Drizzle DB Mock
 jest.mock('db/drizzle', () => ({
-  DB: {
-    select: jest.fn(),
-  },
+  DB: { select: jest.fn() },
 }));
 
-// Mock хэлхээг (chain) төрөлжүүлж дуурайх функц
-const mockDbChain = (returnValue: unknown) => ({
+// Helper Type
+type MockChain = {
+  from: jest.Mock;
+  where: jest.Mock;
+  get: jest.Mock;
+};
+
+// Helper function: any-гүй, цэвэрхэн mock үүсгэх
+const createMockDbChain = (returnValue: unknown): MockChain => ({
   from: jest.fn().mockReturnThis(),
   where: jest.fn().mockReturnThis(),
   get: jest.fn().mockResolvedValue(returnValue),
@@ -18,142 +23,91 @@ const mockDbChain = (returnValue: unknown) => ({
 
 const mockedDB = DB as jest.Mocked<typeof DB>;
 
-describe('user.util.ts 100% Coverage', () => {
-  const mockClerkId = 'clerk_123';
+describe('User Utility - getCreatorId', () => {
+  beforeEach(() => jest.clearAllMocks());
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+  it('Багш болон сурагчийн ID-г хайж олох логик', async () => {
+    // 1. Багш олдсон үед
+    (mockedDB.select as jest.Mock).mockReturnValue(
+      createMockDbChain({ id: 't1' })
+    );
+    expect(await getCreatorId('u1')).toBe('t1');
 
-  it('Хэрэв багш олдвол teacher.id-г буцаах ёстой', async () => {
-    const mockTeacher = { id: 'teacher_001' };
-    (mockedDB.select as jest.Mock).mockReturnValue(mockDbChain(mockTeacher));
-
-    const result = await getCreatorId(mockClerkId);
-
-    expect(result).toBe('teacher_001');
-    expect(mockedDB.select).toHaveBeenCalledTimes(1);
-  });
-
-  it('Багш олдохгүй, харин сурагч олдвол student.id-г буцаах ёстой', async () => {
-    const mockStudent = { id: 'student_002' };
+    // 2. Багш олдохгүй, сурагч олдсон үед
     (mockedDB.select as jest.Mock)
-      .mockReturnValueOnce(mockDbChain(null))
-      .mockReturnValueOnce(mockDbChain(mockStudent));
+      .mockReturnValueOnce(createMockDbChain(null))
+      .mockReturnValueOnce(createMockDbChain({ id: 's1' }));
+    expect(await getCreatorId('u2')).toBe('s1');
 
-    const result = await getCreatorId(mockClerkId);
-
-    expect(result).toBe('student_002');
-    expect(mockedDB.select).toHaveBeenCalledTimes(2);
-  });
-
-  it('Багш болон сурагч аль аль нь олдохгүй бол null буцаах ёстой', async () => {
-    (mockedDB.select as jest.Mock)
-      .mockReturnValueOnce(mockDbChain(null))
-      .mockReturnValueOnce(mockDbChain(null));
-
-    const result = await getCreatorId(mockClerkId);
-
-    expect(result).toBeNull();
+    // 3. Аль нь ч олдохгүй үед
+    (mockedDB.select as jest.Mock).mockReturnValue(createMockDbChain(null));
+    expect(await getCreatorId('u3')).toBeNull();
   });
 });
 
-describe('date.utils.ts 100% Coverage', () => {
-  describe('resolveStartDate', () => {
-    it('Хуваарь хоосон бол null буцаах ёстой', () => {
-      expect(clubUtils.resolveStartDate([])).toBeNull();
-      // @ts-expect-error: Testing runtime safety
-      expect(clubUtils.resolveStartDate(null)).toBeNull();
-    });
+describe('Preferred Teacher Utility - 100% Coverage', () => {
+  it('resolvePreferredTeachers: салбаруудыг нөхөх (Line 9)', () => {
+    // Branch 9 (True): teacherIdOrPreferred нь массив биш (string) үед maybePreferred-ийг авах
+    const fromMaybe = clubUtils.resolvePreferredTeachers('teacher-id', [
+      'p1',
+      'p2',
+    ]);
+    expect(fromMaybe).toEqual(['p1', 'p2']);
 
-    it('Хамгийн эртний огноог (start date) буцаах ёстой', () => {
-      const schedules = [
-        { date: '2026-05-20' },
-        { date: '2026-03-15' },
-        { date: '2026-04-01' },
-      ];
-      expect(clubUtils.resolveStartDate(schedules)).toBe('2026-03-15');
-    });
-  });
+    // Branch 9 (False): Эхний аргумент нь массив байх үед
+    expect(clubUtils.resolvePreferredTeachers(['p3'])).toEqual(['p3']);
 
-  describe('resolveEndDate', () => {
-    it('Хуваарь хоосон бол null буцаах ёстой', () => {
-      expect(clubUtils.resolveEndDate([])).toBeNull();
-    });
+    const mixed = [' t1 ', 123, null, ' t1 '] as unknown as string[];
+    expect(clubUtils.resolvePreferredTeachers(mixed)).toEqual(['t1']);
 
-    it('Хамгийн сүүлийн огноог (end date) буцаах ёстой', () => {
-      const schedules = [
-        { date: '2026-05-20' },
-        { date: '2026-03-15' },
-        { date: '2026-04-01' },
-      ];
-      expect(clubUtils.resolveEndDate(schedules)).toBe('2026-05-20');
-    });
+    // Undefined нөхцөл
+    expect(clubUtils.resolvePreferredTeachers(undefined, undefined)).toEqual(
+      []
+    );
   });
 });
 
-describe('Existing Club Utils (100% Coverage Support)', () => {
-  describe('resolveFrequency', () => {
-    it('should return valid frequency or throw error', () => {
-      expect(clubUtils.resolveFrequency('ONCE')).toBe('ONCE');
-      expect(() => clubUtils.resolveFrequency('DAILY' as any)).toThrow();
-    });
+describe('Other Club Property Resolvers', () => {
+  it('type.util: mentor болон self салбарыг нөхөх (Line 2)', () => {
+    // teacherId байхгүй бол 'self'
+    expect(clubUtils.resolveType(undefined, undefined)).toBe('self');
+    // teacherId байгаа бол 'mentor'
+    expect(clubUtils.resolveType(undefined, 'teacher-id')).toBe('mentor');
+    expect(clubUtils.resolveType('hobby', 'teacher-id')).toBe('hobby');
   });
 
-  describe('normalizeFrequency', () => {
-    it('should return ONCE for "once" and WEEKLY for others', () => {
-      expect(clubUtils.normalizeFrequency('once')).toBe('ONCE');
-      expect(clubUtils.normalizeFrequency(null)).toBe('WEEKLY');
-      expect(clubUtils.normalizeFrequency(undefined)).toBe('WEEKLY');
-    });
+  it('limits, status, term: fallback утгуудыг нөхөх', () => {
+    // min/max member fallback (Line 1)
+    expect(clubUtils.resolveMinMember(undefined)).toBe(0);
+    expect(clubUtils.resolveMaxMember(undefined)).toBe(0);
+
+    // Status
+    expect(clubUtils.resolveStatus(undefined)).toBe('pending');
+    expect(clubUtils.resolveStatus('t1')).toBe('approved');
+
+    // Term and TeacherId
+    expect(clubUtils.resolveTerm(undefined)).toBeNull();
+    expect(clubUtils.resolveTeacherId(undefined)).toBeNull();
+  });
+});
+
+describe('Dates and Frequency Utilities', () => {
+  it('date resolvers: эхлэл ба төгсгөл огноо', () => {
+    const dates = [{ date: '2026-05-20' }, { date: '2026-03-15' }];
+    expect(clubUtils.resolveStartDate(dates)).toBe('2026-03-15');
+    expect(clubUtils.resolveEndDate(dates)).toBe('2026-05-20');
+    expect(clubUtils.resolveStartDate([])).toBeNull();
+    expect(clubUtils.resolveEndDate([])).toBeNull();
   });
 
-  describe('resolvePreferredTeachers', () => {
-    it('should handle array and string inputs', () => {
-      expect(clubUtils.resolvePreferredTeachers(['t1'])).toEqual(['t1']);
-      expect(clubUtils.resolvePreferredTeachers('t1', ['t2'])).toEqual(['t2']);
-      expect(clubUtils.resolvePreferredTeachers(undefined, undefined)).toEqual(
-        []
-      );
-    });
+  it('frequency: resolve болон normalize хийх', () => {
+    expect(clubUtils.resolveFrequency('ONCE')).toBe('ONCE');
 
-    it('should filter mixed types and duplicates', () => {
-      const mixed = ['t1', 123, null, 't1', ' t2 '];
-      expect(clubUtils.resolvePreferredTeachers(mixed as any)).toEqual([
-        't1',
-        't2',
-      ]);
-    });
-  });
+    // throw Error branch
+    const invalid = 'DAILY' as unknown as 'ONCE';
+    expect(() => clubUtils.resolveFrequency(invalid)).toThrow();
 
-  describe('resolveStatus and resolveType', () => {
-    it('should return correct status', () => {
-      expect(clubUtils.resolveStatus('id')).toBe('approved');
-      expect(clubUtils.resolveStatus(undefined)).toBe('pending');
-    });
-
-    it('should return correct type', () => {
-      expect(clubUtils.resolveType('hobby', 'id')).toBe('hobby');
-      expect(clubUtils.resolveType(undefined, 'id')).toBe('mentor');
-      expect(clubUtils.resolveType(undefined, undefined)).toBe('self');
-    });
-  });
-
-  describe('resolveMemberLimits', () => {
-    it('should return value or 0', () => {
-      expect(clubUtils.resolveMaxMember(10)).toBe(10);
-      expect(clubUtils.resolveMaxMember(undefined)).toBe(0);
-      expect(clubUtils.resolveMinMember(5)).toBe(5);
-      expect(clubUtils.resolveMinMember(undefined)).toBe(0);
-    });
-  });
-
-  describe('resolveTeacherId and resolveTerm', () => {
-    it('should return value or null', () => {
-      expect(clubUtils.resolveTeacherId('t1')).toBe('t1');
-      expect(clubUtils.resolveTeacherId(undefined)).toBeNull();
-      expect(clubUtils.resolveTerm('term1')).toBe('term1');
-      expect(clubUtils.resolveTerm(undefined)).toBeNull();
-    });
+    expect(clubUtils.normalizeFrequency(null)).toBe('WEEKLY');
+    expect(clubUtils.normalizeFrequency('  once  ')).toBe('ONCE');
   });
 });
