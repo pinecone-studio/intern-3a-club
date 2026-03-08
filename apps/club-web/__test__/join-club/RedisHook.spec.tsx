@@ -1,6 +1,6 @@
-import { renderHook, act, waitFor } from '@testing-library/react'; 
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { toast } from 'sonner';
-import { useClubAction } from '../../app/_hooks/use-redis-hook'; 
+import { useClubAction } from '../../app/_hooks/use-redis-hook';
 
 jest.mock('@apollo/client/react', () => ({
   useMutation: jest.fn(() => [jest.fn().mockResolvedValue({}), { loading: false }]),
@@ -12,12 +12,12 @@ jest.mock('sonner', () => ({
 
 // Mock EventSource locally to avoid global config changes
 global.EventSource = class MockEventSource {
-  constructor(url: string) {}
-  onmessage: any = null;
-  onerror: any = null;
-  onopen: any = null;
-  close() {}
-} as any;
+  // constructor(_url: string) {} // Useless constructor removed
+  onmessage: ((_ev: MessageEvent) => void) | null = null;
+  onerror: ((_ev: Event) => void) | null = null;
+  onopen: ((_ev: Event) => void) | null = null;
+  close() { }
+} as unknown as typeof EventSource;
 
 describe('useClubAction Hook', () => {
   const mockProps = {
@@ -31,7 +31,7 @@ describe('useClubAction Hook', () => {
     jest.clearAllMocks();
     global.fetch = jest.fn();
     window.confirm = jest.fn(() => true);
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => { });
   });
 
   it('should cover lines 71-73 by handling ban response with time', async () => {
@@ -43,7 +43,7 @@ describe('useClubAction Hook', () => {
 
     const { result } = renderHook(() => useClubAction(mockProps));
     await act(async () => {
-      await result.current.handleEnroll(); 
+      await result.current.handleEnroll();
     });
   });
 
@@ -118,9 +118,9 @@ describe('useClubAction Hook', () => {
 
   it('should abort handleLeave if confirm is false', async () => {
     (window.confirm as jest.Mock).mockReturnValue(false);
-    (global.fetch as jest.Mock).mockResolvedValueOnce({ 
-      ok: true, 
-      json: () => Promise.resolve({ remainingTime: 0 }) 
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ remainingTime: 0 })
     });
 
     const { result } = renderHook(() => useClubAction(mockProps));

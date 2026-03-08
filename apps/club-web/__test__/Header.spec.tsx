@@ -20,11 +20,12 @@ jest.mock('@clerk/nextjs', () => ({
   useClerk: () => ({ signOut: mockSignOut }),
 }));
 
-// Next/Link-ийг mock хийх
 jest.mock('next/link', () => {
-  return ({ children, href }: { children: React.ReactNode; href: string }) => (
+  const MockLink = ({ children, href }: { children: React.ReactNode; href: string }) => (
     <a href={href}>{children}</a>
   );
+  MockLink.displayName = 'MockLink';
+  return MockLink;
 });
 
 describe('Header Component', () => {
