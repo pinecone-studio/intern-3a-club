@@ -1,10 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { ClubsContent } from '../../app/JoinClub/_components/ClubsContent';
-import {
-  GET_ALL_APPROVED_CLUBS,
-  GET_ALL_TEACHERS,
-} from '../../lib/club-query';
+import { GET_ALL_APPROVED_CLUBS, GET_ALL_TEACHERS } from '../../lib/club-query';
 import { useClubAction } from '../../app/_hooks/use-redis-hook';
 import { MockedProvider } from '@apollo/client/testing/react';
 
@@ -17,12 +14,12 @@ jest.mock('@clerk/nextjs', () => ({
 
 // Mock EventSource locally to avoid global config changes
 global.EventSource = class MockEventSource {
-  constructor(url: string) {}
-  onmessage: any = null;
-  onerror: any = null;
-  onopen: any = null;
-  close() {}
-} as any;
+  // constructor(_url: string) {} // Useless constructor removed
+  onmessage: ((_ev: MessageEvent) => void) | null = null;
+  onerror: ((_ev: Event) => void) | null = null;
+  onopen: ((_ev: Event) => void) | null = null;
+  close() { }
+} as unknown as typeof EventSource;
 
 const mockUseClubAction = jest.mocked(useClubAction);
 

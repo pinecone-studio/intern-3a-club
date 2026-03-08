@@ -1,21 +1,25 @@
 import { renderHook } from '@testing-library/react';
 import { useClubRealtime } from '../use-club-realtime';
 
-let lastMockEventSource: any = null;
+let lastMockEventSource: MockEventSource | null = null;
 
 class MockEventSource {
-  onmessage: ((ev: any) => void) | null = null;
-  onerror: ((ev: any) => void) | null = null;
-  onopen: ((ev: any) => void) | null = null;
+  onmessage: ((_ev: { data: string }) => void) | null = null;
+  onerror: ((_ev?: unknown) => void) | null = null;
+  onopen: ((_ev?: unknown) => void) | null = null;
   url: string;
   constructor(url: string) {
     this.url = url;
-    lastMockEventSource = this;
+    setLastMockEventSource(this);
   }
   close = jest.fn();
 }
 
-global.EventSource = MockEventSource as any;
+global.EventSource = MockEventSource as unknown as typeof EventSource;
+
+function setLastMockEventSource(instance: MockEventSource) {
+  lastMockEventSource = instance;
+}
 
 describe('useClubRealtime', () => {
   const originalEnv = process.env;
@@ -46,17 +50,17 @@ describe('useClubRealtime', () => {
 
   it('initializes with clubIds', () => {
     renderHook(() => useClubRealtime({ onEvent, clubIds: ['c1'] }));
-    expect(lastMockEventSource.url).toContain('club%3Ac1');
+    expect(lastMockEventSource!.url).toContain('club%3Ac1');
   });
 
   it('throttles execution', () => {
     renderHook(() => useClubRealtime({ onEvent }));
-    
+
     // isClubListOnly = true since clubId/clubIds are missing
-    lastMockEventSource.onmessage({ data: 'some-data' });
+    lastMockEventSource!.onmessage!({ data: 'some-data' });
     expect(onEvent).toHaveBeenCalledTimes(1);
 
-    lastMockEventSource.onmessage({ data: 'more-data' });
+    lastMockEventSource!.onmessage!({ data: 'more-data' });
     expect(onEvent).toHaveBeenCalledTimes(1); // throttled
 
     jest.advanceTimersByTime(1200);
@@ -65,56 +69,56 @@ describe('useClubRealtime', () => {
 
   it('filters domain events if not list only', () => {
     renderHook(() => useClubRealtime({ onEvent, clubId: 'c1' }));
-    
+
     // Non-domain event
-    lastMockEventSource.onmessage({ data: JSON.stringify({ name: 'heartbeat' }) });
+    lastMockEventSource!.onmessage!({ data: JSON.stringify({ name: 'heartbeat' }) });
     expect(onEvent).not.toHaveBeenCalled();
 
     // Domain event via hint in JSON
-    lastMockEventSource.onmessage({ data: JSON.stringify({ name: 'club_updated' }) });
+    lastMockEventSource!.onmessage!({ data: JSON.stringify({ name: 'club_updated' }) });
     expect(onEvent).toHaveBeenCalledTimes(1);
-    
+
     // Domain event via string inclusions
-    lastMockEventSource.onmessage({ data: 'club_member_joined' });
+    lastMockEventSource!.onmessage!({ data: 'club_member_joined' });
     expect(onEvent).toHaveBeenCalledTimes(1); // throttled
     jest.advanceTimersByTime(1200);
     expect(onEvent).toHaveBeenCalledTimes(2);
   });
 
   it('handles complex extractRealtimeHints branches', () => {
-      renderHook(() => useClubRealtime({ onEvent, clubId: 'c1' }));
-      
-      // Array payload
-      lastMockEventSource.onmessage({ data: JSON.stringify(['club_deleted']) });
-      expect(onEvent).toHaveBeenCalled();
-      
-      jest.advanceTimersByTime(1200);
-      
-      // Object with type field
-      lastMockEventSource.onmessage({ data: JSON.stringify({ type: 'club-event' }) });
-      expect(onEvent).toHaveBeenCalled();
+    renderHook(() => useClubRealtime({ onEvent, clubId: 'c1' }));
 
-      // Null value / falsy
-      lastMockEventSource.onmessage({ data: null });
+    // Array payload
+    lastMockEventSource!.onmessage!({ data: JSON.stringify(['club_deleted']) });
+    expect(onEvent).toHaveBeenCalled();
+
+    jest.advanceTimersByTime(1200);
+
+    // Object with type field
+    lastMockEventSource!.onmessage!({ data: JSON.stringify({ type: 'club-event' }) });
+    expect(onEvent).toHaveBeenCalled();
+
+    // Null value / falsy
+    lastMockEventSource!.onmessage!({ data: null as unknown as string });
   });
 
   it('closes on unmount', () => {
     const { unmount } = renderHook(() => useClubRealtime({ onEvent }));
-    const closeSpy = lastMockEventSource.close;
+    const closeSpy = lastMockEventSource!.close;
     unmount();
     expect(closeSpy).toHaveBeenCalled();
   });
 
   it('handles onerror', () => {
     renderHook(() => useClubRealtime({ onEvent }));
-    lastMockEventSource.onerror();
+    lastMockEventSource!.onerror!();
     // No crash, just exists
   });
 
   it('covers isDomainEvent falsy raw', () => {
-     renderHook(() => useClubRealtime({ onEvent, clubId: 'c1' }));
-     // Trigger branch where raw is empty string
-     lastMockEventSource.onmessage({ data: '' });
-     expect(onEvent).not.toHaveBeenCalled();
+    renderHook(() => useClubRealtime({ onEvent, clubId: 'c1' }));
+    // Trigger branch where raw is empty string
+    lastMockEventSource!.onmessage!({ data: '' });
+    expect(onEvent).not.toHaveBeenCalled();
   });
 });

@@ -9,7 +9,7 @@ jest.mock('@clerk/nextjs', () => ({
   useAuth: jest.fn(),
 }));
 
-let lastOnEvent: any = null;
+let lastOnEvent: (() => void) | null = null;
 jest.mock('../app/_hooks/use-club-realtime', () => ({
   useClubRealtime: jest.fn(({ onEvent }) => {
     lastOnEvent = onEvent;
@@ -18,7 +18,7 @@ jest.mock('../app/_hooks/use-club-realtime', () => ({
 
 jest.mock('framer-motion', () => ({
   motion: {
-    button: ({ children, ...props }: any) => (
+    button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
       <button {...props}>{children}</button>
     ),
   },
@@ -84,26 +84,26 @@ describe('MyClubsList', () => {
 
   it('renders clubs and handles realtime refetch', async () => {
     const mocks = [
-        {
-          request: { query: GET_MY_CLUBS_DETAIL_FOR_TEST },
-          result: {
-            data: {
-              getAllClubsByCreatorId: [
-                {
-                  id: 'c1', name: 'Club 1', description: 'D1', teacherId: 't1', type: 'mentor', status: 'approved',
-                  preferredTeachers: null, minMember: 1, maxMember: 10, frequency: 'ONCE', clubTerm: '1',
-                  timetables: [{ id: 'tt1', date: '2024-10-10', room: 'R1', clubStartTime: '10:00', duration: 60, __typename: 'Timetable' }],
-                  members: [{ id: 'm1', studentId: 's1', __typename: 'Member' }],
-                  __typename: 'Club',
-                }
-              ]
-            }
+      {
+        request: { query: GET_MY_CLUBS_DETAIL_FOR_TEST },
+        result: {
+          data: {
+            getAllClubsByCreatorId: [
+              {
+                id: 'c1', name: 'Club 1', description: 'D1', teacherId: 't1', type: 'mentor', status: 'approved',
+                preferredTeachers: null, minMember: 1, maxMember: 10, frequency: 'ONCE', clubTerm: '1',
+                timetables: [{ id: 'tt1', date: '2024-10-10', room: 'R1', clubStartTime: '10:00', duration: 60, __typename: 'Timetable' }],
+                members: [{ id: 'm1', studentId: 's1', __typename: 'Member' }],
+                __typename: 'Club',
+              }
+            ]
           }
-        },
-        {
-          request: { query: GET_ALL_TEACHERS },
-          result: { data: { getAllTeachers: [{ id: 't1', firstName: 'A', lastName: 'B', __typename: 'Teacher' }] } }
         }
+      },
+      {
+        request: { query: GET_ALL_TEACHERS },
+        result: { data: { getAllTeachers: [{ id: 't1', firstName: 'A', lastName: 'B', __typename: 'Teacher' }] } }
+      }
     ];
 
     render(<MockedProvider mocks={mocks}><MyClubsList /></MockedProvider>);
@@ -113,9 +113,9 @@ describe('MyClubsList', () => {
 
     // Trigger realtime
     if (lastOnEvent) {
-        await act(async () => {
-            lastOnEvent();
-        });
+      await act(async () => {
+        lastOnEvent!();
+      });
     }
   });
 
@@ -128,7 +128,7 @@ describe('MyClubsList', () => {
   it('covers catch block in getToken', async () => {
     useAuth.mockReturnValue({ isLoaded: true, userId: 'u1', getToken: jest.fn().mockRejectedValue('fail') });
     await act(async () => {
-        render(<MockedProvider mocks={[]}><MyClubsList /></MockedProvider>);
+      render(<MockedProvider mocks={[]}><MyClubsList /></MockedProvider>);
     });
     await waitFor(() => expect(screen.queryByText('Ачаалж байна...')).not.toBeInTheDocument());
   });
@@ -136,7 +136,7 @@ describe('MyClubsList', () => {
   it('covers userId missing', async () => {
     useAuth.mockReturnValue({ isLoaded: true, userId: null, getToken: jest.fn() });
     await act(async () => {
-        render(<MockedProvider mocks={[]}><MyClubsList /></MockedProvider>);
+      render(<MockedProvider mocks={[]}><MyClubsList /></MockedProvider>);
     });
   });
 });
