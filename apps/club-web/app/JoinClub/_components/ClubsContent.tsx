@@ -30,7 +30,7 @@ const ErrorState = ({ msg }: { msg: string }) => (
   </div>
 );
 
-const BAN_MS = 120 * 1000;
+const BAN_MS = 20 * 1000;
 
 const useClubsLogic = (clerkUserId?: string) => {
   const {

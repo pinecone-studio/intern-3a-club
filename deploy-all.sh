@@ -3,23 +3,19 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CURRENT_BRANCH="$(git -C "$ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)"
 
 DASH_PROJECT="cloudflare-club-dash"
 WEB_PROJECT="cloudflare-club-web"
 SERVICE_PROJECT="cloudflare-pine-club"
 
-TARGET="${1:-all}"
-BRANCH_OVERRIDE="${2:-}"
-DEFAULT_BRANCH="${BRANCH_OVERRIDE:-$CURRENT_BRANCH}"
+DASH_BRANCH="${DASH_BRANCH:-main}"
+WEB_BRANCH="${WEB_BRANCH:-176-branch-change-for-office}"
+SERVICE_BRANCH="${SERVICE_BRANCH:-105-ochko-need-new-branch}"
 
-DASH_BRANCH="${DASH_BRANCH:-$DEFAULT_BRANCH}"
-WEB_BRANCH="${WEB_BRANCH:-$DEFAULT_BRANCH}"
-SERVICE_BRANCH="${SERVICE_BRANCH:-$DEFAULT_BRANCH}"
+TARGET="${1:-all}"
 
 deploy_dash() {
   echo "=== Deploying DASH ==="
-  echo "Project: $DASH_PROJECT | Branch: $DASH_BRANCH"
   (
     cd "$ROOT/apps/club-dash"
     rm -rf .next .vercel/output
@@ -40,7 +36,6 @@ deploy_dash() {
 
 deploy_web() {
   echo "=== Deploying WEB ==="
-  echo "Project: $WEB_PROJECT | Branch: $WEB_BRANCH"
   (
     cd "$ROOT/apps/club-web"
     rm -rf .next .vercel/output
@@ -61,7 +56,6 @@ deploy_web() {
 
 deploy_service() {
   echo "=== Deploying SERVICE ==="
-  echo "Project: $SERVICE_PROJECT | Branch: $SERVICE_BRANCH"
   (
     cd "$ROOT"
     npx nx run club-service:build-worker
@@ -92,7 +86,7 @@ case "$TARGET" in
     deploy_service
     ;;
   *)
-    echo "Usage: ./deploy-all.sh [dash|web|service|all] [branch]"
+    echo "Usage: ./deploy-all.sh [dash|web|service|all]"
     exit 1
     ;;
 esac
