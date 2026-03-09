@@ -12,7 +12,7 @@ import { useClubAction } from '../../app/_hooks/use-redis-hook';
 import { MockedProvider } from '@apollo/client/testing/react';
 
 jest.mock('../../app/_hooks/use-redis-hook');
-const mockUseAuth = jest.fn(() => ({ userId: 'test-user-id' }));
+const mockUseAuth = jest.fn(() => ({ userId: 'test-user-id' as string | null }));
 jest.mock('@clerk/nextjs', () => ({
   useAuth: () => mockUseAuth(),
   useUser: () => ({ user: { id: 'test-user-id' } }),
@@ -400,7 +400,7 @@ describe('ClubsContent', () => {
     await waitFor(() => expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0));
 
     // 3. clerkUserId is null -> hits line 190 ( ?? undefined ) and 181 ( clerk || '' )
-    mockUseAuth.mockReturnValue({ userId: null } as any);
+    mockUseAuth.mockReturnValue({ userId: null } as unknown as { userId: string | null });
     rerender(
       <MockedProvider mocks={getSuccessMocks()}>
         <ClubsContent />
@@ -408,7 +408,7 @@ describe('ClubsContent', () => {
     );
     await waitFor(() => expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0));
     // Revert mock for other tests
-    mockUseAuth.mockReturnValue({ userId: 'test-user-id' } as any);
+    mockUseAuth.mockReturnValue({ userId: 'test-user-id' } as unknown as { userId: string | null });
   });
 
   it('covers expired ban branch (line 107) directly', async () => {

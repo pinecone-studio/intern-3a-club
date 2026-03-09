@@ -278,7 +278,7 @@ describe('MyClubsList', () => {
       },
       {
         request: { query: GET_ALL_TEACHERS },
-        result: { data: { getAllTeachers: null as any } }
+        result: { data: { getAllTeachers: null as unknown as null } }
       }
     ];
     render(<MockedProvider mocks={mocks}><MyClubsList /></MockedProvider>);
