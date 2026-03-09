@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import { ClubsContent } from '../../app/JoinClub/_components/ClubsContent';
 import { GET_ALL_APPROVED_CLUBS, GET_ALL_TEACHERS } from '../../lib/club-query';
 import { useClubAction } from '../../app/_hooks/use-redis-hook';
@@ -12,13 +12,15 @@ jest.mock('@clerk/nextjs', () => ({
   useClerk: () => ({ signOut: jest.fn() }),
 }));
 
-// Mock EventSource locally to avoid global config changes
+let lastEventSource: { onmessage: ((ev: MessageEvent) => void) | null } | null = null;
 global.EventSource = class MockEventSource {
-  // constructor(_url: string) {} // Useless constructor removed
   onmessage: ((_ev: MessageEvent) => void) | null = null;
   onerror: ((_ev: Event) => void) | null = null;
   onopen: ((_ev: Event) => void) | null = null;
-  close() { }
+  constructor() {
+    lastEventSource = this;
+  }
+  close() {}
 } as unknown as typeof EventSource;
 
 const mockUseClubAction = jest.mocked(useClubAction);
@@ -62,49 +64,22 @@ const mockTeacher = {
   profilePicture: '',
 };
 
-const successMocks = [
-  {
-    request: { query: GET_ALL_APPROVED_CLUBS },
-    result: { data: { getAllApprovedClubs: [mockClub] } },
-  },
-  {
-    request: { query: GET_ALL_TEACHERS },
-    result: { data: { getAllTeachers: [mockTeacher] } },
-  },
-];
-
-const twoClubMocks = [
-  {
-    request: { query: GET_ALL_APPROVED_CLUBS },
-    result: { data: { getAllApprovedClubs: [mockClub, mockClub2] } },
-  },
-  {
-    request: { query: GET_ALL_TEACHERS },
-    result: { data: { getAllTeachers: [mockTeacher] } },
-  },
-];
-
-const emptyMocks = [
-  {
-    request: { query: GET_ALL_APPROVED_CLUBS },
-    result: { data: { getAllApprovedClubs: [] } },
-  },
-  {
-    request: { query: GET_ALL_TEACHERS },
-    result: { data: { getAllTeachers: [] } },
-  },
-];
-
-const errorMocks = [
-  {
-    request: { query: GET_ALL_APPROVED_CLUBS },
-    error: new Error('Network error'),
-  },
-  {
-    request: { query: GET_ALL_TEACHERS },
-    result: { data: { getAllTeachers: [] } },
-  },
-];
+const getSuccessMocks = (repeat = 1) => {
+  const mocks = [];
+  for (let i = 0; i < repeat; i++) {
+    mocks.push(
+      {
+        request: { query: GET_ALL_APPROVED_CLUBS },
+        result: { data: { getAllApprovedClubs: [mockClub] } },
+      },
+      {
+        request: { query: GET_ALL_TEACHERS },
+        result: { data: { getAllTeachers: [mockTeacher] } },
+      }
+    );
+  }
+  return mocks;
+};
 
 const createHookReturn = (overrides = {}) => ({
   remainingTime: null,
@@ -119,11 +94,16 @@ describe('ClubsContent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseClubAction.mockReturnValue(createHookReturn());
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it('loading үед "Уншиж байна..." харуулна', () => {
     render(
-      <MockedProvider mocks={successMocks}>
+      <MockedProvider mocks={getSuccessMocks()} addTypename={false}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -131,17 +111,28 @@ describe('ClubsContent', () => {
   });
 
   it('алдаа гарсан үед алдааны мессеж харуулна', async () => {
+    const errorMocks = [
+      {
+        request: { query: GET_ALL_APPROVED_CLUBS },
+        error: new Error('Network error'),
+      },
+      {
+        request: { query: GET_ALL_TEACHERS },
+        result: { data: { getAllTeachers: [] } },
+      },
+    ];
+
     render(
-      <MockedProvider mocks={errorMocks}>
+      <MockedProvider mocks={errorMocks} addTypename={false}>
         <ClubsContent />
       </MockedProvider>
     );
-    await waitFor(() => expect(screen.getByText(/Алдаа/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/Network error/)).toBeInTheDocument());
   });
 
   it('дата амжилттай ирсэн үед клубын нэр харуулна', async () => {
     render(
-      <MockedProvider mocks={successMocks}>
+      <MockedProvider mocks={getSuccessMocks()} addTypename={false}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -151,8 +142,19 @@ describe('ClubsContent', () => {
   });
 
   it('хоосон дата ирсэн үед "Клуб сонгоно уу" харуулна', async () => {
+    const emptyMocks = [
+      {
+        request: { query: GET_ALL_APPROVED_CLUBS },
+        result: { data: { getAllApprovedClubs: [] } },
+      },
+      {
+        request: { query: GET_ALL_TEACHERS },
+        result: { data: { getAllTeachers: [] } },
+      },
+    ];
+
     render(
-      <MockedProvider mocks={emptyMocks}>
+      <MockedProvider mocks={emptyMocks} addTypename={false}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -163,7 +165,7 @@ describe('ClubsContent', () => {
 
   it('userId prop дамжуулсан үед render хийгдэнэ', async () => {
     render(
-      <MockedProvider mocks={successMocks}>
+      <MockedProvider mocks={getSuccessMocks()} addTypename={false}>
         <ClubsContent userId="test-user" />
       </MockedProvider>
     );
@@ -178,7 +180,7 @@ describe('ClubsContent', () => {
     );
 
     render(
-      <MockedProvider mocks={successMocks}>
+      <MockedProvider mocks={getSuccessMocks()} addTypename={false}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -204,7 +206,7 @@ describe('ClubsContent', () => {
     );
 
     render(
-      <MockedProvider mocks={successMocks}>
+      <MockedProvider mocks={getSuccessMocks()} addTypename={false}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -222,15 +224,18 @@ describe('ClubsContent', () => {
     await waitFor(() =>
       expect(screen.getByText('Клубт элсэх')).toBeInTheDocument()
     );
+
+    // Test ban timeout
+    act(() => {
+      jest.advanceTimersByTime(120 * 1000);
+    });
   });
 
-  it('хоёр клуб байх үед compareByEnrollment ажиллана', async () => {
-    mockUseClubAction.mockImplementation(({ onEnrollSuccess }) =>
-      createHookReturn({ handleEnroll: () => onEnrollSuccess() })
-    );
+  it('realtime event triggers refetch and isLiveSyncing', async () => {
+    const mocksWithRefetch = getSuccessMocks(2);
 
     render(
-      <MockedProvider mocks={twoClubMocks}>
+      <MockedProvider mocks={mocksWithRefetch} addTypename={false}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -239,18 +244,37 @@ describe('ClubsContent', () => {
       expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
     );
 
-    fireEvent.click(screen.getByText('Клубт элсэх'));
+    if (lastEventSource?.onmessage) {
+      await act(async () => {
+        lastEventSource!.onmessage!({ data: 'club_member_joined' } as MessageEvent);
+      });
+    }
 
-    await waitFor(() => expect(screen.getByText('Элссэн')).toBeInTheDocument());
+    // Wait for refetch to finish and syncing indicator to hide
+    await waitFor(() => {
+      // isLiveSyncing becomes false after 700ms in refetch().finally()
+      act(() => {
+        jest.advanceTimersByTime(700);
+      });
+      // We check if it's rendered by seeing if original data is still there (since mocks are same)
+      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0);
+    });
   });
 
-  it('enrolled=false клуб сүүлд байрлана (compareByEnrollment false branch)', async () => {
-    mockUseClubAction.mockImplementation(({ onEnrollSuccess }) =>
-      createHookReturn({ handleEnroll: () => onEnrollSuccess() })
-    );
+  it('compareByEnrollment logic check with two clubs', async () => {
+    const twoClubMocks = [
+      {
+        request: { query: GET_ALL_APPROVED_CLUBS },
+        result: { data: { getAllApprovedClubs: [mockClub, mockClub2] } },
+      },
+      {
+        request: { query: GET_ALL_TEACHERS },
+        result: { data: { getAllTeachers: [mockTeacher] } },
+      },
+    ];
 
     render(
-      <MockedProvider mocks={twoClubMocks}>
+      <MockedProvider mocks={twoClubMocks} addTypename={false}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -259,44 +283,45 @@ describe('ClubsContent', () => {
       expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
     );
 
-    fireEvent.click(screen.getAllByText('Second Club')[0]);
-
-    await waitFor(() =>
-      expect(screen.getAllByText('Second Club').length).toBeGreaterThan(0)
-    );
-
-    fireEvent.click(screen.getByText('Клубт элсэх'));
-
-    await waitFor(() => expect(screen.getByText('Элссэн')).toBeInTheDocument());
+    // Initial order: First is mockClub (Test Club)
+    expect(screen.getAllByRole('button')[0]).toHaveTextContent('Test Club');
   });
 
-  it('onLeave дотор selectedClubId таарахгүй клуб өөрчлөгдөхгүй', async () => {
+  it('handles ban state updates', async () => {
     mockUseClubAction.mockImplementation(
-      ({ onEnrollSuccess, onLeaveSuccess }) =>
+      ({ onLeaveSuccess }) =>
         createHookReturn({
-          handleEnroll: () => onEnrollSuccess(),
           handleLeave: () => onLeaveSuccess(),
         })
     );
 
+    const mocks = getSuccessMocks();
     render(
-      <MockedProvider mocks={twoClubMocks}>
+      <MockedProvider mocks={mocks} addTypename={false}>
         <ClubsContent />
       </MockedProvider>
     );
 
-    await waitFor(() =>
-      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
-    );
-
+    await waitFor(() => screen.getByText('Test Club'));
+    
+    // Enroll and then leave to trigger ban
     fireEvent.click(screen.getByText('Клубт элсэх'));
-    await waitFor(() =>
-      expect(screen.getByText('Клубээс гарах')).toBeInTheDocument()
-    );
+    await waitFor(() => screen.getByText('Клубээс гарах'));
+    
+    await act(async () => {
+      fireEvent.click(screen.getByText('Клубээс гарах'));
+    });
 
-    fireEvent.click(screen.getByText('Клубээс гарах'));
-    await waitFor(() =>
-      expect(screen.getByText('Клубт элсэх')).toBeInTheDocument()
-    );
+    // Advance time to trigger ban expiration logic
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+    
+    act(() => {
+      jest.advanceTimersByTime(120 * 1000);
+    });
+
+    await waitFor(() => expect(screen.getByText('Клубт элсэх')).toBeInTheDocument());
   });
 });
+

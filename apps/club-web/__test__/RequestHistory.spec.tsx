@@ -1,4 +1,4 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MockedProvider } from '@apollo/client/testing/react';
 import { RequestHistory } from '../components/club-add/RequestHistory';
@@ -94,5 +94,39 @@ describe('RequestHistory', () => {
     await act(async () => {
       render(<MockedProvider mocks={[]}><RequestHistory /></MockedProvider>);
     });
+  });
+
+  it('renders non-approved status with amber styling', async () => {
+    const mocks = [
+      {
+        request: { query: GET_ALL_CLUBS_BY_CREATOR_ID },
+        result: {
+          data: {
+            getAllClubsByCreatorId: [
+              { id: 'c2', name: 'Pending Club', status: 'pending', __typename: 'Club' },
+            ],
+          },
+        },
+      },
+    ];
+    render(<MockedProvider mocks={mocks}><RequestHistory /></MockedProvider>);
+    expect(await screen.findByText('Pending Club')).toBeInTheDocument();
+    expect(await screen.findByText('pending')).toBeInTheDocument();
+  });
+
+  it('shows empty state when no requests', async () => {
+    const mocks = [
+      {
+        request: { query: GET_ALL_CLUBS_BY_CREATOR_ID },
+        result: { data: { getAllClubsByCreatorId: [] } },
+      },
+    ];
+    render(<MockedProvider mocks={mocks}><RequestHistory /></MockedProvider>);
+    await waitFor(
+      () => {
+        expect(screen.getByText('Таны илгээсэн хүсэлт алга байна.')).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 });

@@ -121,4 +121,25 @@ describe('useClubRealtime', () => {
     lastMockEventSource!.onmessage!({ data: '' });
     expect(onEvent).not.toHaveBeenCalled();
   });
+
+  it('covers club-event hint from string payload', () => {
+    renderHook(() => useClubRealtime({ onEvent, clubId: 'c1' }));
+    lastMockEventSource!.onmessage!({ data: 'some club-event data' });
+    expect(onEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it('covers pendingTimeout deferred callback', () => {
+    renderHook(() => useClubRealtime({ onEvent }));
+    lastMockEventSource!.onmessage!({ data: 'first' });
+    expect(onEvent).toHaveBeenCalledTimes(1);
+    lastMockEventSource!.onmessage!({ data: 'second' });
+    expect(onEvent).toHaveBeenCalledTimes(1);
+    jest.advanceTimersByTime(1200);
+    expect(onEvent).toHaveBeenCalledTimes(2);
+  });
+
+  it('uses fallbackChannel when clubId provided and clubIds empty', () => {
+    renderHook(() => useClubRealtime({ onEvent, clubId: 'single' }));
+    expect(lastMockEventSource!.url).toContain('club%3Asingle');
+  });
 });

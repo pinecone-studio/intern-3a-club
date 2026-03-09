@@ -139,4 +139,12 @@ describe('MyClubsList', () => {
       render(<MockedProvider mocks={[]}><MyClubsList /></MockedProvider>);
     });
   });
+
+  it('does not fetch when isLoaded is false', async () => {
+    useAuth.mockReturnValue({ isLoaded: false, userId: 'u1', getToken: jest.fn() });
+    render(<MockedProvider mocks={[]}><MyClubsList /></MockedProvider>);
+    await waitFor(() => {
+      expect(screen.queryByText('Ачаалж байна...')).not.toBeInTheDocument();
+    });
+  });
 });

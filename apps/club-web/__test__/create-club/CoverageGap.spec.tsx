@@ -63,6 +63,14 @@ describe('create-club-helpers', () => {
     expect(result.success).toBe(true);
     expect(onSuccess).toHaveBeenCalled();
   });
+
+  it('handleMutationResult when errors is empty array', () => {
+    const res = { data: { createClubWithSchedules: { id: '1' } }, errors: [] };
+    const onSuccess = jest.fn();
+    const result = handleMutationResult(res as any, onSuccess);
+    expect(result.success).toBe(true);
+    expect(onSuccess).toHaveBeenCalled();
+  });
 });
 
 describe('CreateClubCenter Integration', () => {
@@ -164,5 +172,19 @@ describe('ClubForm Extra branch coverage', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: /Хүсэлт илгээх/i }));
     expect(submit).toHaveBeenCalled();
+  });
+
+  it('renders loading state with "Илгээж байна..."', () => {
+    render(
+      <ClubForm
+        formData={{ name: 'A', goal: 'B' }}
+        handleFormChange={() => {}}
+        errors={{}}
+        loading={true}
+        handleSubmit={jest.fn() as any}
+      />
+    );
+    expect(screen.getByRole('button')).toHaveTextContent('Илгээж байна...');
+    expect(screen.getByRole('button')).toBeDisabled();
   });
 });
