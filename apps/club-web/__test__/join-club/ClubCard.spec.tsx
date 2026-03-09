@@ -12,6 +12,10 @@ const mockTimetable = {
   duration: 120,
 };
 
+const futureDate = new Date(
+  Date.now() + 10 * 24 * 60 * 60 * 1000
+).toISOString();
+
 const mockClub = {
   id: 'club-1',
   name: 'React',
@@ -28,6 +32,7 @@ const mockClub = {
   isEnrolled: false,
   bannedUntil: 0,
   createdAt: new Date().toISOString(),
+  startDate: futureDate,
 } as ExtendedClub;
 
 describe('ClubCard', () => {
@@ -54,8 +59,8 @@ describe('ClubCard', () => {
 
   it('timetable байгаа үед хуваарь харуулна', () => {
     render(<ClubCard club={mockClub} isSelected={false} onClick={jest.fn()} />);
-    expect(screen.getByText(/хүртэл элсэх боломжтой/)).toBeInTheDocument();
     expect(screen.getByText('401-р өрөө')).toBeInTheDocument();
+    expect(screen.getByText(/бүртгүүлэх боломжтой/)).toBeInTheDocument();
   });
 
   it('timetable байхгүй үед fallback текст харуулна', () => {
@@ -66,8 +71,8 @@ describe('ClubCard', () => {
         onClick={jest.fn()}
       />
     );
-    expect(screen.getByText(/хүртэл элсэх боломжтой/)).toBeInTheDocument();
     expect(screen.getByText('Өрөө тодорхойгүй')).toBeInTheDocument();
+    expect(screen.getByText(/бүртгүүлэх боломжтой/)).toBeInTheDocument();
   });
 
   it('isSelected=true үед border-blue-500 класс байна', () => {

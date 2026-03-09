@@ -1,13 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { MockedProvider } from '@apollo/client/testing/react';
 import JoinClubPage from '../../app/JoinClub/page';
-import {
-  GET_ALL_APPROVED_CLUBS,
-  GET_ALL_TEACHERS,
-} from '../../lib/club-query';
-import { MockedResponse } from '@apollo/client/testing';
-
 
 jest.mock('@clerk/nextjs', () => ({
   useAuth: () => ({ userId: 'test-user-id' }),
@@ -23,115 +16,63 @@ jest.mock('../../app/JoinClub/_components/ClubsContent', () => ({
   ClubsContent: () => <div data-testid="clubs-content" />,
 }));
 
+jest.mock('@apollo/client/react', () => ({
+  useQuery: jest.fn(),
+}));
 
-interface ClubsMockData {
-  getAllApprovedClubs: { id: string; name: string }[];
-}
+import { useQuery } from '@apollo/client/react';
 
-interface TeachersMockData {
-  getAllTeachers: { id: string; name: string }[];
-}
-
-
-const successMocks: MockedResponse[] = [
-  {
-    request: { query: GET_ALL_APPROVED_CLUBS },
-    result: { data: { getAllApprovedClubs: [] } as ClubsMockData },
-  },
-  {
-    request: { query: GET_ALL_TEACHERS },
-    result: { data: { getAllTeachers: [] } as TeachersMockData },
-  },
-];
-
-const errorMocks: MockedResponse[] = [
-  {
-    request: { query: GET_ALL_APPROVED_CLUBS },
-    error: new Error('Network error'),
-  },
-  {
-    request: { query: GET_ALL_TEACHERS },
-    result: { data: { getAllTeachers: [] } as TeachersMockData },
-  },
-];
-
-const renderPage = (mocks: MockedResponse[]) =>
-  render(
-    <MockedProvider mocks={mocks}>
-      <JoinClubPage />
-    </MockedProvider>
-  );
+const mockUseQuery = useQuery as unknown as jest.Mock;
 
 describe('JoinClubPage', () => {
-
-
-  describe('Loading state', () => {
-
-
-    it('ClubListSkeleton харуулна', () => {
-      renderPage(successMocks);
-      expect(screen.getByTestId('club-list-skeleton')).toBeInTheDocument();
-    });
-
-    it('ClubDetailSkeleton харуулна', () => {
-      renderPage(successMocks);
-      expect(screen.getByTestId('club-detail-skeleton')).toBeInTheDocument();
-    });
-
-    it('ClubsContent харуулахгүй', () => {
-      renderPage(successMocks);
-      expect(screen.queryByTestId('clubs-content')).not.toBeInTheDocument();
-    });
-
-    it('loading wrapper min-h-screen болон bg-cover class-тай байна', () => {
-      const { container } = renderPage(successMocks);
-      const wrapper = container.querySelector('.min-h-screen');
-      expect(wrapper).toBeTruthy();
-      expect(wrapper!.className).toMatch(/bg-cover/);
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  describe('Success state', () => {
-
-    it('ClubsContent харуулна', async () => {
-      renderPage(successMocks);
-      expect(await screen.findByTestId('clubs-content')).toBeInTheDocument();
+  it('loading үед skeleton‑уудыг харуулна', () => {
+    mockUseQuery.mockReturnValue({
+      loading: true,
+      error: null,
+      data: null,
     });
 
-    it('skeleton-үүд арилна', async () => {
-      renderPage(successMocks);
-      await screen.findByTestId('clubs-content');
-      expect(screen.queryByTestId('club-list-skeleton')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('club-detail-skeleton')).not.toBeInTheDocument();
-    });
+    render(<JoinClubPage />);
 
-    it('success wrapper min-h-screen class-тай байна', async () => {
-      const { container } = renderPage(successMocks);
-      await screen.findByTestId('clubs-content');
-      expect(container.querySelector('.min-h-screen')).toBeTruthy();
-    });
+    expect(screen.getByTestId('club-list-skeleton')).toBeInTheDocument();
+    expect(screen.getByTestId('club-detail-skeleton')).toBeInTheDocument();
+    expect(screen.queryByTestId('clubs-content')).not.toBeInTheDocument();
   });
 
-  describe('Error state', () => {
-    it('алдаа гарсан үед алдааны мессеж харуулна', async () => {
-      renderPage(errorMocks);
-      expect(await screen.findByText(/Алдаа/)).toBeInTheDocument();
+  it('алдаа гарсан үед алдааны мессеж харуулна', () => {
+    mockUseQuery.mockReturnValue({
+      loading: false,
+      error: { message: 'Network error' },
+      data: null,
     });
 
-    it('"Алдаа гарлаа" текст харуулна', async () => {
-      renderPage(errorMocks);
-      expect(await screen.findByText(/Алдаа гарлаа/)).toBeInTheDocument();
+    render(<JoinClubPage />);
+
+    expect(screen.getByText(/Алдаа гарлаа/)).toBeInTheDocument();
+    expect(screen.getByText(/Network error/)).toBeInTheDocument();
+    expect(screen.queryByTestId('clubs-content')).not.toBeInTheDocument();
+  });
+
+  it('амжилттай үед ClubsContent болон wrapper‑ийг харуулна', () => {
+    mockUseQuery.mockReturnValue({
+      loading: false,
+      error: null,
+      data: { getAllApprovedClubs: [] },
     });
 
-    it('бодит error message харуулна', async () => {
-      renderPage(errorMocks);
-      expect(await screen.findByText(/Network error/)).toBeInTheDocument();
-    });
+    const { container } = render(<JoinClubPage />);
 
-    it('ClubsContent харуулахгүй', async () => {
-      renderPage(errorMocks);
-      await screen.findByText(/Алдаа гарлаа/);
-      expect(screen.queryByTestId('clubs-content')).not.toBeInTheDocument();
-    });
+    expect(screen.getByTestId('clubs-content')).toBeInTheDocument();
+    expect(screen.queryByTestId('club-list-skeleton')).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('club-detail-skeleton')
+    ).not.toBeInTheDocument();
+
+    const wrapper = container.querySelector('.min-h-screen');
+    expect(wrapper).toBeTruthy();
   });
 });

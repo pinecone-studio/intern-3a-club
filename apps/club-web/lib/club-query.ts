@@ -4,6 +4,8 @@ export const GET_ALL_APPROVED_CLUBS = gql`
   query GetAllApprovedClubs {
     getAllApprovedClubs {
       id
+      startDate
+      endDate
       name
       description
       creatorId

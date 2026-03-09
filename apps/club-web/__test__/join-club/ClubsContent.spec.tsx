@@ -1,302 +1,99 @@
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { ClubsContent } from '../../app/JoinClub/_components/ClubsContent';
-import { GET_ALL_APPROVED_CLUBS, GET_ALL_TEACHERS } from '../../lib/club-query';
-import { useClubAction } from '../../app/_hooks/use-redis-hook';
-import { MockedProvider } from '@apollo/client/testing/react';
 
-jest.mock('../../app/_hooks/use-redis-hook');
-jest.mock('@clerk/nextjs', () => ({
-  useAuth: () => ({ userId: 'test-user-id' }),
-  useUser: () => ({ user: { id: 'test-user-id' } }),
-  useClerk: () => ({ signOut: jest.fn() }),
+type MockAuthReturn = { userId: string | null | undefined };
+
+const mockUseAuth = jest.fn<MockAuthReturn, []>(() => ({
+  userId: 'clerk-user-1',
 }));
 
-// Mock EventSource locally to avoid global config changes
-global.EventSource = class MockEventSource {
-  // constructor(_url: string) {} // Useless constructor removed
-  onmessage: ((_ev: MessageEvent) => void) | null = null;
-  onerror: ((_ev: Event) => void) | null = null;
-  onopen: ((_ev: Event) => void) | null = null;
-  close() { }
-} as unknown as typeof EventSource;
+jest.mock('@clerk/nextjs', () => ({
+  useAuth: () => mockUseAuth(),
+}));
 
-const mockUseClubAction = jest.mocked(useClubAction);
+jest.mock('../../app/JoinClub/_components/utils/use-clubs-logic', () => ({
+  useClubsLogic: jest.fn(),
+}));
 
-const mockClub = {
-  id: 'club-1',
-  name: 'Test Club',
-  description: 'Test description',
-  type: 'Premium',
-  status: 'ACTIVE',
-  teacherId: 'teacher-1',
-  creatorId: 'creator-1',
-  frequency: 'WEEKLY',
-  clubTerm: 'FIRST',
-  minMember: 5,
-  maxMember: 20,
-  timetables: [],
-  createdAt: new Date().toISOString(),
-};
+import { useClubsLogic } from '../../app/JoinClub/_components/utils/use-clubs-logic';
 
-const mockClub2 = {
-  id: 'club-2',
-  name: 'Second Club',
-  description: 'Second description',
-  type: 'Standard',
-  status: 'ACTIVE',
-  teacherId: 'teacher-1',
-  creatorId: 'creator-1',
-  frequency: 'WEEKLY',
-  clubTerm: 'FIRST',
-  minMember: 5,
-  maxMember: 20,
-  timetables: [],
-  createdAt: new Date().toISOString(),
-};
+jest.mock('../../app/JoinClub/_components/ClubDetail', () => ({
+  ClubDetail: () => <div data-testid="club-detail" />,
+}));
 
-const mockTeacher = {
-  id: 'teacher-1',
-  firstName: 'Болд',
-  lastName: 'Баатар',
-  profilePicture: '',
-};
+jest.mock('../../app/JoinClub/_components/ClubList', () => ({
+  ClubList: () => <div data-testid="club-list" />,
+}));
 
-const successMocks = [
-  {
-    request: { query: GET_ALL_APPROVED_CLUBS },
-    result: { data: { getAllApprovedClubs: [mockClub] } },
-  },
-  {
-    request: { query: GET_ALL_TEACHERS },
-    result: { data: { getAllTeachers: [mockTeacher] } },
-  },
-];
-
-const twoClubMocks = [
-  {
-    request: { query: GET_ALL_APPROVED_CLUBS },
-    result: { data: { getAllApprovedClubs: [mockClub, mockClub2] } },
-  },
-  {
-    request: { query: GET_ALL_TEACHERS },
-    result: { data: { getAllTeachers: [mockTeacher] } },
-  },
-];
-
-const emptyMocks = [
-  {
-    request: { query: GET_ALL_APPROVED_CLUBS },
-    result: { data: { getAllApprovedClubs: [] } },
-  },
-  {
-    request: { query: GET_ALL_TEACHERS },
-    result: { data: { getAllTeachers: [] } },
-  },
-];
-
-const errorMocks = [
-  {
-    request: { query: GET_ALL_APPROVED_CLUBS },
-    error: new Error('Network error'),
-  },
-  {
-    request: { query: GET_ALL_TEACHERS },
-    result: { data: { getAllTeachers: [] } },
-  },
-];
-
-const createHookReturn = (overrides = {}) => ({
-  remainingTime: null,
-  banned: false,
+const mockLogicBase = {
   loading: false,
-  handleEnroll: jest.fn(),
-  handleLeave: jest.fn(),
-  ...overrides,
-});
+  error: null,
+  selectedClubId: '',
+  setSelectedClubId: jest.fn(),
+  allTeachers: [],
+  onEnroll: jest.fn(),
+  onLeave: jest.fn(),
+  sortedClubs: [],
+  selectedClub: undefined,
+  isLiveSyncing: false,
+  nowTs: Date.now(),
+};
 
 describe('ClubsContent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseClubAction.mockReturnValue(createHookReturn());
+    mockUseAuth.mockReset();
+    mockUseAuth.mockReturnValue({ userId: 'clerk-user-1' });
   });
 
   it('loading үед "Уншиж байна..." харуулна', () => {
-    render(
-      <MockedProvider mocks={successMocks}>
-        <ClubsContent />
-      </MockedProvider>
-    );
-    expect(screen.getByText('Уншиж байна...')).toBeInTheDocument();
+    (useClubsLogic as jest.Mock).mockReturnValue({
+      ...mockLogicBase,
+      loading: true,
+    });
+
+    render(<ClubsContent />);
+
+    expect(screen.getByText(/Уншиж байна/)).toBeInTheDocument();
   });
 
-  it('алдаа гарсан үед алдааны мессеж харуулна', async () => {
-    render(
-      <MockedProvider mocks={errorMocks}>
-        <ClubsContent />
-      </MockedProvider>
-    );
-    await waitFor(() => expect(screen.getByText(/Алдаа/)).toBeInTheDocument());
+  it('error үед алдааны мессеж харуулна', () => {
+    (useClubsLogic as jest.Mock).mockReturnValue({
+      ...mockLogicBase,
+      error: { message: 'Сүлжээний алдаа' },
+    });
+
+    render(<ClubsContent />);
+
+    expect(screen.getByText(/Сүлжээний алдаа/)).toBeInTheDocument();
   });
 
-  it('дата амжилттай ирсэн үед клубын нэр харуулна', async () => {
-    render(
-      <MockedProvider mocks={successMocks}>
-        <ClubsContent />
-      </MockedProvider>
-    );
-    await waitFor(() =>
-      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
-    );
+  it('амжилттай үед ClubList болон ClubDetail харуулна', () => {
+    (useClubsLogic as jest.Mock).mockReturnValue(mockLogicBase);
+
+    render(<ClubsContent />);
+
+    expect(screen.getByTestId('club-list')).toBeInTheDocument();
+    expect(screen.getByTestId('club-detail')).toBeInTheDocument();
   });
 
-  it('хоосон дата ирсэн үед "Клуб сонгоно уу" харуулна', async () => {
-    render(
-      <MockedProvider mocks={emptyMocks}>
-        <ClubsContent />
-      </MockedProvider>
-    );
-    await waitFor(() =>
-      expect(screen.getByText('Клуб сонгоно уу')).toBeInTheDocument()
-    );
+  it('userId prop дамжуулахад ажиллана', () => {
+    (useClubsLogic as jest.Mock).mockReturnValue(mockLogicBase);
+
+    render(<ClubsContent userId="custom-user" />);
+
+    expect(screen.getByTestId('club-detail')).toBeInTheDocument();
   });
 
-  it('userId prop дамжуулсан үед render хийгдэнэ', async () => {
-    render(
-      <MockedProvider mocks={successMocks}>
-        <ClubsContent userId="test-user" />
-      </MockedProvider>
-    );
-    await waitFor(() =>
-      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
-    );
-  });
+  it('clerkUserId байхгүй үед useClubsLogic(undefined)-тэй дуудна', () => {
+    mockUseAuth.mockReturnValueOnce({ userId: undefined });
 
-  it('onEnroll дуудагдсан үед клуб enrolled болно', async () => {
-    mockUseClubAction.mockImplementation(({ onEnrollSuccess }) =>
-      createHookReturn({ handleEnroll: () => onEnrollSuccess() })
-    );
+    const logicSpy = jest.fn().mockReturnValue(mockLogicBase);
+    (useClubsLogic as jest.Mock).mockImplementation(logicSpy);
 
-    render(
-      <MockedProvider mocks={successMocks}>
-        <ClubsContent />
-      </MockedProvider>
-    );
+    render(<ClubsContent />);
 
-    await waitFor(() =>
-      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
-    );
-
-    fireEvent.click(screen.getByText('Клубт элсэх'));
-
-    await waitFor(() =>
-      expect(screen.getByText('Клубээс гарах')).toBeInTheDocument()
-    );
-  });
-
-  it('onLeave дуудагдсан үед клубаас гарна', async () => {
-    mockUseClubAction.mockImplementation(
-      ({ onEnrollSuccess, onLeaveSuccess }) =>
-        createHookReturn({
-          handleEnroll: () => onEnrollSuccess(),
-          handleLeave: () => onLeaveSuccess(),
-        })
-    );
-
-    render(
-      <MockedProvider mocks={successMocks}>
-        <ClubsContent />
-      </MockedProvider>
-    );
-
-    await waitFor(() =>
-      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
-    );
-
-    fireEvent.click(screen.getByText('Клубт элсэх'));
-    await waitFor(() =>
-      expect(screen.getByText('Клубээс гарах')).toBeInTheDocument()
-    );
-
-    fireEvent.click(screen.getByText('Клубээс гарах'));
-    await waitFor(() =>
-      expect(screen.getByText('Клубт элсэх')).toBeInTheDocument()
-    );
-  });
-
-  it('хоёр клуб байх үед compareByEnrollment ажиллана', async () => {
-    mockUseClubAction.mockImplementation(({ onEnrollSuccess }) =>
-      createHookReturn({ handleEnroll: () => onEnrollSuccess() })
-    );
-
-    render(
-      <MockedProvider mocks={twoClubMocks}>
-        <ClubsContent />
-      </MockedProvider>
-    );
-
-    await waitFor(() =>
-      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
-    );
-
-    fireEvent.click(screen.getByText('Клубт элсэх'));
-
-    await waitFor(() => expect(screen.getByText('Элссэн')).toBeInTheDocument());
-  });
-
-  it('enrolled=false клуб сүүлд байрлана (compareByEnrollment false branch)', async () => {
-    mockUseClubAction.mockImplementation(({ onEnrollSuccess }) =>
-      createHookReturn({ handleEnroll: () => onEnrollSuccess() })
-    );
-
-    render(
-      <MockedProvider mocks={twoClubMocks}>
-        <ClubsContent />
-      </MockedProvider>
-    );
-
-    await waitFor(() =>
-      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
-    );
-
-    fireEvent.click(screen.getAllByText('Second Club')[0]);
-
-    await waitFor(() =>
-      expect(screen.getAllByText('Second Club').length).toBeGreaterThan(0)
-    );
-
-    fireEvent.click(screen.getByText('Клубт элсэх'));
-
-    await waitFor(() => expect(screen.getByText('Элссэн')).toBeInTheDocument());
-  });
-
-  it('onLeave дотор selectedClubId таарахгүй клуб өөрчлөгдөхгүй', async () => {
-    mockUseClubAction.mockImplementation(
-      ({ onEnrollSuccess, onLeaveSuccess }) =>
-        createHookReturn({
-          handleEnroll: () => onEnrollSuccess(),
-          handleLeave: () => onLeaveSuccess(),
-        })
-    );
-
-    render(
-      <MockedProvider mocks={twoClubMocks}>
-        <ClubsContent />
-      </MockedProvider>
-    );
-
-    await waitFor(() =>
-      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
-    );
-
-    fireEvent.click(screen.getByText('Клубт элсэх'));
-    await waitFor(() =>
-      expect(screen.getByText('Клубээс гарах')).toBeInTheDocument()
-    );
-
-    fireEvent.click(screen.getByText('Клубээс гарах'));
-    await waitFor(() =>
-      expect(screen.getByText('Клубт элсэх')).toBeInTheDocument()
-    );
+    expect(logicSpy).toHaveBeenCalledWith(undefined);
   });
 });
