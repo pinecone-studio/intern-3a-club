@@ -1,8 +1,6 @@
 'use client';
-/* eslint-disable max-lines, complexity */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useQuery } from '@apollo/client/react';
+import React from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { ClubDetail } from './ClubDetail';
 import { ClubList } from './ClubList';

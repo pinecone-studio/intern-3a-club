@@ -8,6 +8,8 @@ export interface ExtendedClub extends GetAllApprovedClub {
 }
 export interface GetAllApprovedClub {
   __typename: string;
+  startDate: string;
+  endDate: string;
   id: string;
   name: string;
   description: string;
@@ -21,7 +23,7 @@ export interface GetAllApprovedClub {
   maxMember: number;
   timetables: ApprovedClubTimetable[];
   members: ClubMember[];
-  createdAt: string
+  createdAt: string;
 }
 
 export interface ApprovedClubTimetable {

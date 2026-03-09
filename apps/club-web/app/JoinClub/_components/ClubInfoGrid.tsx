@@ -128,7 +128,6 @@ export const ClubInfoGrid = ({ club }: { club: ExtendedClub }) => {
   const members = getMemberNames(club);
   const frequency = getFrequency(club);
 
-
   return (
     <div>
       <div className="grid gap-3 sm:grid-cols-2">

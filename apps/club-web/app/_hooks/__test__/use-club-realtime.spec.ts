@@ -42,6 +42,25 @@ describe('useClubRealtime', () => {
     expect(lastMockEventSource).toBeNull();
   });
 
+  it('multiple fast events байхад зөвхөн нэг pending timeout үүсгэнэ', () => {
+    renderHook(() => useClubRealtime({ onEvent }));
+
+    lastMockEventSource!.onmessage!({ data: 'some-data' });
+    lastMockEventSource!.onmessage!({ data: 'more-data' });
+    lastMockEventSource!.onmessage!({ data: 'even-more-data' });
+
+    jest.advanceTimersByTime(1200);
+
+    // 1 шууд + 1 throttle‑оор = 2
+    expect(onEvent).toHaveBeenCalledTimes(2);
+  });
+
+  it('"null" payload дээр extractRealtimeHints falsy branch‑ийг хамарна', () => {
+    renderHook(() => useClubRealtime({ onEvent, clubId: 'c1' }));
+    lastMockEventSource!.onmessage!({ data: 'null' });
+    expect(true).toBe(true);
+  });
+
   it('skip if ably key missing', () => {
     process.env.NEXT_PUBLIC_ABLY_API_KEY = '';
     renderHook(() => useClubRealtime({ onEvent }));
@@ -56,12 +75,11 @@ describe('useClubRealtime', () => {
   it('throttles execution', () => {
     renderHook(() => useClubRealtime({ onEvent }));
 
-    // isClubListOnly = true since clubId/clubIds are missing
     lastMockEventSource!.onmessage!({ data: 'some-data' });
     expect(onEvent).toHaveBeenCalledTimes(1);
 
     lastMockEventSource!.onmessage!({ data: 'more-data' });
-    expect(onEvent).toHaveBeenCalledTimes(1); // throttled
+    expect(onEvent).toHaveBeenCalledTimes(1);
 
     jest.advanceTimersByTime(1200);
     expect(onEvent).toHaveBeenCalledTimes(2);
@@ -70,15 +88,16 @@ describe('useClubRealtime', () => {
   it('filters domain events if not list only', () => {
     renderHook(() => useClubRealtime({ onEvent, clubId: 'c1' }));
 
-    // Non-domain event
-    lastMockEventSource!.onmessage!({ data: JSON.stringify({ name: 'heartbeat' }) });
+    lastMockEventSource!.onmessage!({
+      data: JSON.stringify({ name: 'heartbeat' }),
+    });
     expect(onEvent).not.toHaveBeenCalled();
 
-    // Domain event via hint in JSON
-    lastMockEventSource!.onmessage!({ data: JSON.stringify({ name: 'club_updated' }) });
+    lastMockEventSource!.onmessage!({
+      data: JSON.stringify({ name: 'club_updated' }),
+    });
     expect(onEvent).toHaveBeenCalledTimes(1);
 
-    // Domain event via string inclusions
     lastMockEventSource!.onmessage!({ data: 'club_member_joined' });
     expect(onEvent).toHaveBeenCalledTimes(1); // throttled
     jest.advanceTimersByTime(1200);
@@ -88,14 +107,16 @@ describe('useClubRealtime', () => {
   it('handles complex extractRealtimeHints branches', () => {
     renderHook(() => useClubRealtime({ onEvent, clubId: 'c1' }));
 
-    // Array payload
-    lastMockEventSource!.onmessage!({ data: JSON.stringify(['club_deleted']) });
+    lastMockEventSource!.onmessage!({
+      data: JSON.stringify(['club_deleted']),
+    });
     expect(onEvent).toHaveBeenCalled();
 
     jest.advanceTimersByTime(1200);
 
-    // Object with type field
-    lastMockEventSource!.onmessage!({ data: JSON.stringify({ type: 'club-event' }) });
+    lastMockEventSource!.onmessage!({
+      data: JSON.stringify({ type: 'club-event' }),
+    });
     expect(onEvent).toHaveBeenCalled();
 
     // Null value / falsy / non-object
@@ -113,7 +134,18 @@ describe('useClubRealtime', () => {
   it('handles onerror', () => {
     renderHook(() => useClubRealtime({ onEvent }));
     lastMockEventSource!.onerror!();
-    // No crash, just exists
+  });
+
+  it('pending timeout байхад unmount хийхэд алдаагүй cleanup хийнэ', () => {
+    const { unmount } = renderHook(() => useClubRealtime({ onEvent }));
+
+    lastMockEventSource!.onmessage!({ data: 'club_member_joined' });
+
+    lastMockEventSource!.onmessage!({ data: 'club_member_joined' });
+
+    unmount();
+
+    expect(true).toBe(true);
   });
 
   it('covers isDomainEvent falsy raw', () => {

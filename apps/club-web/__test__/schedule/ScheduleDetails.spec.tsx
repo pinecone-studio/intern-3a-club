@@ -2,8 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import React from 'react';
 import { ExtendedClub } from '../../lib/type';
-import { ScheduleDetails } from '../../../club-web/app/JoinClub/_components';
-
+import { ScheduleDetails } from '../../app/JoinClub/_components/ScheduleDetails';
 const mockClub: ExtendedClub = {
   id: '1',
   name: 'Coding Club',

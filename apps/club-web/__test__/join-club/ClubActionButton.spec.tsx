@@ -2,54 +2,63 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ClubActionButtons } from '../../app/JoinClub/_components/ClubActionButton';
 
-const defaultProps = {
+const baseProps = {
   isEnrolled: false,
-  isLocked: false,
   isExpired: false,
-  status: 'Open',
+  isLocked: false,
+  status: 'ACTIVE',
   remainingTime: 0,
+  loading: false,
   onEnroll: jest.fn(),
   onLeave: jest.fn(),
-  loading: false,
 };
 
 describe('ClubActionButtons', () => {
-  beforeEach(() => jest.clearAllMocks());
-
-  it('isEnrolled=false үед товч харуулна', () => {
-    render(<ClubActionButtons {...defaultProps} />);
+  it('isEnrolled=false, isExpired=false үед JoinAction харуулна', () => {
+    render(<ClubActionButtons {...baseProps} />);
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
-  it('isEnrolled=true үед "Клубээс гарах" товч харуулна', () => {
-    render(<ClubActionButtons {...defaultProps} isEnrolled={true} />);
+  it('isExpired=true, isEnrolled=false үед ExpiredAction харуулна', () => {
+    render(<ClubActionButtons {...baseProps} isExpired={true} />);
+    expect(screen.getByText('Бүртгэл хаагдсан')).toBeInTheDocument();
+  });
+
+  it('isEnrolled=true үед LeaveAction харуулна', () => {
+    render(<ClubActionButtons {...baseProps} isEnrolled={true} />);
     expect(screen.getByText('Клубээс гарах')).toBeInTheDocument();
   });
 
-  it('loading=true үед "Уншиж байна..." харуулна', () => {
+  it('isEnrolled=true, isExpired=true үед LeaveAction disabled харуулна', () => {
     render(
-      <ClubActionButtons {...defaultProps} isEnrolled={true} loading={true} />
+      <ClubActionButtons {...baseProps} isEnrolled={true} isExpired={true} />
+    );
+    expect(
+      screen.getByText('Гарах боломжгүй (Клуб эхэлсэн)')
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button')).toBeDisabled();
+  });
+
+  it('isEnrolled=true, loading=true үед "Уншиж байна..." харуулна', () => {
+    render(
+      <ClubActionButtons {...baseProps} isEnrolled={true} loading={true} />
     );
     expect(screen.getByText('Уншиж байна...')).toBeInTheDocument();
   });
 
-  it('isLocked=true үед товч disabled байна', () => {
-    render(
-      <ClubActionButtons {...defaultProps} isLocked={true} remainingTime={10} />
-    );
+  it('isLocked=true үед JoinAction disabled байна', () => {
+    render(<ClubActionButtons {...baseProps} isLocked={true} />);
     expect(screen.getByRole('button')).toBeDisabled();
   });
 
-  it('isLocked=true үед bg-red-500/20 класс байна', () => {
-    render(
-      <ClubActionButtons {...defaultProps} isLocked={true} remainingTime={10} />
-    );
-    expect(screen.getByRole('button')).toHaveClass('bg-red-500/20');
+  it('status=Full үед JoinAction disabled байна', () => {
+    render(<ClubActionButtons {...baseProps} status="Full" />);
+    expect(screen.getByRole('button')).toBeDisabled();
   });
 
   it('onEnroll дуудагдана', () => {
     const onEnroll = jest.fn();
-    render(<ClubActionButtons {...defaultProps} onEnroll={onEnroll} />);
+    render(<ClubActionButtons {...baseProps} onEnroll={onEnroll} />);
     fireEvent.click(screen.getByRole('button'));
     expect(onEnroll).toHaveBeenCalled();
   });
@@ -57,13 +66,9 @@ describe('ClubActionButtons', () => {
   it('onLeave дуудагдана', () => {
     const onLeave = jest.fn();
     render(
-      <ClubActionButtons
-        {...defaultProps}
-        isEnrolled={true}
-        onLeave={onLeave}
-      />
+      <ClubActionButtons {...baseProps} isEnrolled={true} onLeave={onLeave} />
     );
-    fireEvent.click(screen.getByText('Клубээс гарах'));
+    fireEvent.click(screen.getByRole('button'));
     expect(onLeave).toHaveBeenCalled();
   });
 

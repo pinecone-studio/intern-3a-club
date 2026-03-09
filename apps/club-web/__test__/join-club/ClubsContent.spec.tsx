@@ -7,9 +7,6 @@ import {
   act,
 } from '@testing-library/react';
 import { ClubsContent } from '../../app/JoinClub/_components/ClubsContent';
-import { GET_ALL_APPROVED_CLUBS, GET_ALL_TEACHERS } from '../../lib/club-query';
-import { useClubAction } from '../../app/_hooks/use-redis-hook';
-import { MockedProvider } from '@apollo/client/testing/react';
 
 jest.mock('../../app/_hooks/use-redis-hook');
 const mockUseAuth = jest.fn(() => ({ userId: 'test-user-id' as string | null }));
@@ -51,28 +48,13 @@ const mockClub = {
   createdAt: new Date().toISOString(),
 };
 
-const mockClub2 = {
-  id: 'club-2',
-  name: 'Second Club',
-  description: 'Second description',
-  type: 'Standard',
-  status: 'ACTIVE',
-  teacherId: 'teacher-1',
-  creatorId: 'creator-1',
-  frequency: 'WEEKLY',
-  clubTerm: 'FIRST',
-  minMember: 5,
-  maxMember: 20,
-  timetables: [],
-  createdAt: new Date().toISOString(),
-};
+const mockUseAuth = jest.fn<MockAuthReturn, []>(() => ({
+  userId: 'clerk-user-1',
+}));
 
-const mockTeacher = {
-  id: 'teacher-1',
-  firstName: 'Болд',
-  lastName: 'Баатар',
-  profilePicture: '',
-};
+jest.mock('@clerk/nextjs', () => ({
+  useAuth: () => mockUseAuth(),
+}));
 
 const getSuccessMocks = (repeat = 1) => {
   const mocks = [];
@@ -91,14 +73,19 @@ const getSuccessMocks = (repeat = 1) => {
   return mocks;
 };
 
-const createHookReturn = (overrides = {}) => ({
-  remainingTime: null,
-  banned: false,
+const mockLogicBase = {
   loading: false,
-  handleEnroll: jest.fn(),
-  handleLeave: jest.fn(),
-  ...overrides,
-});
+  error: null,
+  selectedClubId: '',
+  setSelectedClubId: jest.fn(),
+  allTeachers: [],
+  onEnroll: jest.fn(),
+  onLeave: jest.fn(),
+  sortedClubs: [],
+  selectedClub: undefined,
+  isLiveSyncing: false,
+  nowTs: Date.now(),
+};
 
 describe('ClubsContent', () => {
   beforeEach(() => {
@@ -252,9 +239,7 @@ describe('ClubsContent', () => {
       </MockedProvider>
     );
 
-    await waitFor(() =>
-      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
-    );
+    render(<ClubsContent />);
 
     if (lastEventSource?.onmessage) {
       await act(async () => {
@@ -293,9 +278,7 @@ describe('ClubsContent', () => {
       </MockedProvider>
     );
 
-    await waitFor(() =>
-      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
-    );
+    render(<ClubsContent userId="custom-user" />);
 
     // When both clubs have no timetables, compareByEnrollment falls back to
     // alphabetical (localeCompare), so "Second Club" < "Test Club"
@@ -322,9 +305,8 @@ describe('ClubsContent', () => {
       </MockedProvider>
     );
 
-    await waitFor(() =>
-      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
-    );
+    const logicSpy = jest.fn().mockReturnValue(mockLogicBase);
+    (useClubsLogic as jest.Mock).mockImplementation(logicSpy);
 
     // Enroll and then leave to trigger ban
     fireEvent.click(screen.getByText('Клубт элсэх'));

@@ -1,6 +1,6 @@
 export const ClubListSkeleton = () => (
   <div className="w-full lg:w-[320px] flex flex-col">
-    <div className="mb-6"/>
+    <div className="mb-6" />
 
     <div className="flex flex-col gap-4">
       {[1, 2, 3, 4].map((i) => (
