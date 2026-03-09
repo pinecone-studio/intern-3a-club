@@ -129,4 +129,68 @@ describe('RequestHistory', () => {
       { timeout: 3000 }
     );
   });
+
+  it('covers statusText fallback (line 27)', async () => {
+    const mocks = [
+      {
+        request: { query: GET_ALL_CLUBS_BY_CREATOR_ID },
+        result: {
+          data: {
+            getAllClubsByCreatorId: [
+              { id: 'c3', name: 'No Status Club', status: undefined, __typename: 'Club' },
+            ],
+          },
+        },
+      },
+    ];
+    render(<MockedProvider mocks={mocks}><RequestHistory /></MockedProvider>);
+    expect(await screen.findByText('unknown')).toBeInTheDocument();
+  });
+
+  it('covers isLoaded false (line 67)', async () => {
+    useAuth.mockReturnValue({
+      isLoaded: false,
+      userId: 'user-1',
+      getToken: jest.fn(),
+    });
+    render(<MockedProvider mocks={[]}><RequestHistory /></MockedProvider>);
+    // Should return early and not show loading
+    expect(screen.queryByTestId('loading-skeleton')).not.toBeInTheDocument();
+  });
+
+  it('covers unmount during getToken (line 83)', async () => {
+    let resolveToken: (_value: string) => void;
+    const tokenPromise = new Promise<string>((resolve) => {
+      resolveToken = resolve;
+    });
+    useAuth.mockReturnValue({
+      isLoaded: true,
+      userId: 'u1',
+      getToken: jest.fn().mockReturnValue(tokenPromise),
+    });
+
+    const { unmount } = render(<MockedProvider mocks={[]}><RequestHistory /></MockedProvider>);
+    unmount();
+    act(() => {
+      resolveToken!('token');
+    });
+  });
+
+  it('covers unmount during getToken catch', async () => {
+    let rejectToken: (_error: Error) => void;
+    const tokenPromise = new Promise<string>((_, reject) => {
+      rejectToken = reject;
+    });
+    useAuth.mockReturnValue({
+      isLoaded: true,
+      userId: 'u1',
+      getToken: jest.fn().mockReturnValue(tokenPromise),
+    });
+
+    const { unmount } = render(<MockedProvider mocks={[]}><RequestHistory /></MockedProvider>);
+    unmount();
+    await act(async () => {
+      rejectToken!(new Error('fail'));
+    });
+  });
 });

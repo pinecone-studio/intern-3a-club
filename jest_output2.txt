@@ -1,0 +1,473 @@
+● Validation Warning:
+
+  Unknown option "coverageReporters" with value ["text", "html"] was found.
+  This is probably a typing mistake. Fixing it will remove this message.
+
+  Configuration Documentation:
+  https://jestjs.io/docs/configuration
+
+FAIL club-web apps/club-web/__test__/join-club/ClubsContent.spec.tsx
+  ClubsContent
+    √ loading үед "Уншиж байна..." харуулна (103 ms)
+    √ алдаа гарсан үед алдааны мессеж харуулна (56 ms)
+    √ дата амжилттай ирсэн үед клубын нэр харуулна (95 ms)
+    √ хоосон дата ирсэн үед "Клуб сонгоно уу" харуулна (21 ms)
+    √ userId prop дамжуулсан үед render хийгдэнэ (46 ms)
+    √ onEnroll дуудагдсан үед клуб enrolled болно (70 ms)
+    √ onLeave дуудагдсан үед клубаас гарна (98 ms)
+    √ realtime event triggers refetch and isLiveSyncing (62 ms)
+    × compareByEnrollment logic check with two clubs (270 ms)
+    × handles ban state updates (273 ms)
+
+  ● ClubsContent › compareByEnrollment logic check with two clubs
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Test Club"
+    Received: "Second Club"
+
+    [0m [90m 287 |[39m     [36mconst[39m headings [33m=[39m screen[33m.[39mgetAllByRole([32m'heading'[39m[33m,[39m { level[33m:[39m [35m3[39m })[33m;[39m
+     [90m 288 |[39m     [36mconst[39m clubNames [33m=[39m headings[33m.[39mmap(h [33m=>[39m h[33m.[39mtextContent)[33m.[39mfilter(t [33m=>[39m t [33m===[39m [32m'Test Club'[39m [33m||[39m t [33m===[39m [32m'Second Club'[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 289 |[39m     expect(clubNames[[35m0[39m])[33m.[39mtoBe([32m'Test Club'[39m)[33m;[39m
+     [90m     |[39m                          [31m[1m^[22m[39m
+     [90m 290 |[39m   })[33m;[39m
+     [90m 291 |[39m
+     [90m 292 |[39m   it([32m'handles ban state updates'[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.<anonymous> (__test__/join-club/ClubsContent.spec.tsx:289:26)
+
+  ● ClubsContent › handles ban state updates
+
+    Unable to find an element with the text: Клубээс гарах. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"max-w-[1400px] mx-auto min-h-screen p-4 lg:p-12"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-col lg:flex-row gap-3 items-start h-full"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"w-full lg:w-[350px] sticky shrink-0 order-2 lg:order-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"w-full lg:w-[320px] flex flex-col"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mb-6 px-1 flex justify-between items-center"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<h2[39m
+                      [33mclass[39m=[32m"text-white/90 font-semibold text-xl "[39m
+                    [36m>[39m
+                      [0mКлубууд[0m
+                    [36m</h2>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-xs text-white/50"[39m
+                    [36m>[39m
+                      [0mӨөрийн ур чадвараа дараагийн түвшинд гарга[0m
+                    [36m</p>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-center gap-2"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"h-2 w-2 rounded-full bg-white/40"[39m
+                    [36m/>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"text-[10px] uppercase tracking-wider text-white/50"[39m
+                    [36m>[39m
+                      [0mLive[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex-1"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex flex-col gap-4 pb-4 transition-opacity opacity-100"[39m
+                  [36m>[39m
+                    [36m<div>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"w-full p-4 rounded-xl cursor-pointer border transition-colors duration-150 bg-blue-600/20 border-blue-500"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"flex justify-between items-start mb-2 gap-2"[39m
+                        [36m>[39m
+                          [36m<h3[39m
+                            [33mclass[39m=[32m"text-xs font-semibold uppercase truncate text-white"[39m
+                          [36m>[39m
+                            [0mTest Club[0m
+                          [36m</h3>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"flex items-center gap-1.5"[39m
+                          [36m/>[39m
+                        [36m</div>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"flex flex-col gap-1"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"flex items-center gap-2 text-[10px] font-medium text-white/40"[39m
+                          [36m>[39m
+                            [36m<svg[39m
+                              [33maria-hidden[39m=[32m"true"[39m
+                              [33mclass[39m=[32m"lucide lucide-clock"[39m
+                              [33mfill[39m=[32m"none"[39m
+                              [33mheight[39m=[32m"12"[39m
+                              [33mstroke[39m=[32m"currentColor"[39m
+                              [33mstroke-linecap[39m=[32m"round"[39m
+                              [33mstroke-linejoin[39m=[32m"round"[39m
+                              [33mstroke-width[39m=[32m"2.5"[39m
+                              [33mviewBox[39m=[32m"0 0 24 24"[39m
+                              [33mwidth[39m=[32m"12"[39m
+                              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                            [36m>[39m
+                              [36m<path[39m
+                                [33md[39m=[32m"M12 6v6l4 2"[39m
+                              [36m/>[39m
+                              [36m<circle[39m
+                                [33mcx[39m=[32m"12"[39m
+                                [33mcy[39m=[32m"12"[39m
+                                [33mr[39m=[32m"10"[39m
+                              [36m/>[39m
+                            [36m</svg>[39m
+                            [36m<span>[39m
+                              [0m2026-03-16 хүртэл элсэх боломжтой[0m
+                            [36m</span>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"flex items-center gap-2 text-[10px] text-white/40 font-medium"[39m
+                          [36m>[39m
+                            [36m<svg[39m
+                              [33maria-hidden[39m=[32m"true"[39m
+                              [33mclass[39m=[32m"lucide lucide-map-pin"[39m
+                              [33mfill[39m=[32m"none"[39m
+                              [33mheight[39m=[32m"12"[39m
+                              [33mstroke[39m=[32m"currentColor"[39m
+                              [33mstroke-linecap[39m=[32m"round"[39m
+                              [33mstroke-linejoin[39m=[32m"round"[39m
+                              [33mstroke-width[39m=[32m"2.5"[39m
+                              [33mviewBox[39m=[32m"0 0 24 24"[39m
+                              [33mwidth[39m=[32m"12"[39m
+                              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                            [36m>[39m
+                              [36m<path[39m
+                                [33md[39m=[32m"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"[39m
+                              [36m/>[39m
+                              [36m<circle[39m
+                                [33mcx[39m=[32m"12"[39m
+                                [33mcy[39m=[32m"10"[39m
+                                [33mr[39m=[32m"3"[39m
+                              [36m/>[39m
+                            [36m</svg>[39m
+                            [36m<span[39m
+                              [33mclass[39m=[32m"truncate"[39m
+                            [36m>[39m
+                              [0mӨрөө тодорхойгүй[0m
+                            [36m</span>[39m
+                          [36m</div>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"w-full order-1 lg:order-2"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex-1 rounded-3xl p-6 lg:p-8 transition-colors bg-blue-600/20 border border-white/5"[39m
+              [36m>[39m
+                [36m<header[39m
+                  [33mclass[39m=[32m"mb-6 flex justify-between items-start"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"space-y-2"[39m
+                  [36m>[39m
+                    [36m<h1[39m
+                      [33mclass[39m=[32m"text-xl lg:text-xl font-bold pt-2 text-white uppercase"[39m
+                    [36m>[39m
+                      [0mTest Club[0m
+                    [36m</h1>[39m
+                  [36m</div>[39m
+                [36m</header>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-center gap-4 px-3 py-2 rounded-2xl bg-white/[0.02] border border-white/5 mb-6"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm "[39m
+                  [36m>[39m
+                    [0mБ[0m
+                  [36m</div>[39m
+                  [36m<div>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-[9px] font-medium text-white/40 "[39m
+                    [36m>[39m
+                      [0mХариуцсан багш[0m
+                    [36m</p>[39m
+                    [36m<h3[39m
+                      [33mclass[39m=[32m"text-xs font-medium text-white "[39m
+                    [36m>[39m
+                      [0mБолд Баатар[0m
+                    [36m</h3>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-white/50 text-xs mb-4 px-2 ml-3 border-l border-white/10 "[39m
+                [36m>[39m
+                  [0mTest description[0m
+                [36m</p>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"grid gap-3 sm:grid-cols-2"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"p-5 rounded-2xl bg-white/[0.02] border border-white/5"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex items-center gap-2 mb-4 text-white/20  text-[10px] font-semibold "[39m
+                      [36m>[39m
+                        [36m<svg[39m
+                          [33maria-hidden[39m=[32m"true"[39m
+                          [33mclass[39m=[32m"lucide lucide-calendar"[39m
+                          [33mfill[39m=[32m"none"[39m
+                          [33mheight[39m=[32m"10"[39m
+                          [33mstroke[39m=[32m"currentColor"[39m
+                          [33mstroke-linecap[39m=[32m"round"[39m
+                          [33mstroke-linejoin[39m=[32m"round"[39m
+                          [33mstroke-width[39m=[32m"2"[39m
+                          [33mviewBox[39m=[32m"0 0 24 24"[39m
+                          [33mwidth[39m=[32m"10"[39m
+                          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                        [36m>[39m
+                          [36m<path[39m
+                            [33md[39m=[32m"M8 2v4"[39m
+                          [36m/>[39m
+                          [36m<path[39m
+                            [33md[39m=[32m"M16 2v4"[39m
+                          [36m/>[39m
+                          [36m<rect[39m
+                            [33mheight[39m=[32m"18"[39m
+                            [33mrx[39m=[32m"2"[39m
+                            [33mwidth[39m=[32m"18"[39m
+                            [33mx[39m=[32m"3"[39m
+                            [33my[39m=[32m"4"[39m
+                          [36m/>[39m
+                          [36m<path[39m
+                            [33md[39m=[32m"M3 10h18"[39m
+                          [36m/>[39m
+                        [36m</svg>[39m
+                        [0m Хуваарь[0m
+                      [36m</div>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"space-y-3"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"flex items-center justify-between "[39m
+                        [36m>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"text-xs text-white/40"[39m
+                          [36m>[39m
+                            [0mДавтамж:[0m
+                          [36m</span>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"text-xs text-white/80 font-medium"[39m
+                          [36m>[39m
+                            [0mДолоо хоног бүр[0m
+                          [36m</span>[39m
+                        [36m</div>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"flex items-center justify-between "[39m
+                        [36m>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"text-xs text-white/40"[39m
+                          [36m>[39m
+                            [0mОрох өдрүүд:[0m
+                          [36m</span>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"text-xs text-white/80 font-medium"[39m
+                          [36m/>[39m
+                        [36m</div>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"flex justify-between items-center"[39m
+                        [36m>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"text-xs text-white/40"[39m
+                          [36m>[39m
+                            [0mЭхлэх огноо:[0m
+                          [36m</span>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"text-xs text-white/80 font-medium"[39m
+                          [36m/>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"rounded-2xl border border-white/5 bg-white/[0.02] p-5"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"mb-4 flex items-center justify-between"[39m
+                      [36m>[39m
+                        [36m<h4[39m
+                          [33mclass[39m=[32m"flex items-center gap-2 text-[10px] font-semibold text-white/20"[39m
+                        [36m>[39m
+                          [36m<svg[39m
+                            [33maria-hidden[39m=[32m"true"[39m
+                            [33mclass[39m=[32m"lucide lucide-users"[39m
+                            [33mfill[39m=[32m"none"[39m
+                            [33mheight[39m=[32m"10"[39m
+                            [33mstroke[39m=[32m"currentColor"[39m
+                            [33mstroke-linecap[39m=[32m"round"[39m
+                            [33mstroke-linejoin[39m=[32m"round"[39m
+                            [33mstroke-width[39m=[32m"2"[39m
+                            [33mviewBox[39m=[32m"0 0 24 24"[39m
+                            [33mwidth[39m=[32m"10"[39m
+                            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                          [36m>[39m
+                            [36m<path[39m
+                              [33md[39m=[32m"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"[39m
+                            [36m/>[39m
+                            [36m<path[39m
+                              [33md[39m=[32m"M16 3.128a4 4 0 0 1 0 7.744"[39m
+                            [36m/>[39m
+                            [36m<path[39m
+                              [33md[39m=[32m"M22 21v-2a4 4 0 0 0-3-3.87"[39m
+                            [36m/>[39m
+                            [36m<circle[39m
+                              [33mcx[39m=[32m"9"[39m
+                              [33mcy[39m=[32m"7"[39m
+                              [33mr[39m=[32m"4"[39m
+                            [36m/>[39m
+                          [36m</svg>[39m
+                          [0m Гишүүдийн тоо[0m
+                        [36m</h4>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"text-xs font-medium text-white/80"[39m
+                        [36m>[39m
+                          [0m0[0m
+                          [0m / [0m
+                          [0m20[0m
+                        [36m</span>[39m
+                      [36m</div>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"space-y-3"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"relative pt-2"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"h-1.5 w-full rounded-full bg-white/5 overflow-hidden"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mclass[39m=[32m"h-full rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-700"[39m
+                              [33mstyle[39m=[32m"width: 0%;"[39m
+                            [36m/>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"mt-3 flex justify-between text-right"[39m
+                          [36m>[39m
+                            [36m<p[39m
+                              [33mclass[39m=[32m"text-xs text-white/40"[39m
+                            [36m>[39m
+                              [0mДүүргэлт :[0m
+                            [36m</p>[39m
+                            [36m<p[39m
+                              [33mclass[39m=[32m"text-xs font-medium text-white/80"[39m
+                            [36m>[39m
+                              [0m0[0m
+                              [0m%[0m
+                            [36m</p>[39m
+                          [36m</div>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-center mt-4"[39m
+                  [36m>[39m
+                    [36m<div>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-xs text-white/40 shrink-0"[39m
+                      [36m>[39m
+                        [0mЭлссэн гишүүд :[0m
+                      [36m</p>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex flex-wrap items-center gap-2 pt-2 pl-1"[39m
+                      [36m>[39m
+                        [36m<p[39m
+                          [33mclass[39m=[32m"text-xs py-1 rounded-md bg-white/5 text-white/70 px-1 "[39m
+                        [36m>[39m
+                          [0mОдоогоор гишүүн алга[0m
+                        [36m</p>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-6 text-xs"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex gap-2 items-center text-white/50"[39m
+                  [36m>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"hover:cursor-pointer"[39m
+                    [36m>[39m
+                      [0mДэлгэрэнгүй хуваарь харах[0m
+                    [36m</p>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-down"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"14"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"14"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mt-4"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-8 pt-6 border-t border-white/5"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"flex items-center justify-center rounded-xl px-6 py-4 text-[13px] font-bold uppercase tracking-[0.15em] transition-all duration-300 active:scale-[0.98] disabled:opacity-50 bg-blue-600 hover:bg-blue-500 text-white border border-blue-400/30 shadow-[0_0_20px_rgba(59,130,246,0.15)] active:bg-blue-700 w-full py-3 font-semibold transition-all bg-blue-600"[39m
+                  [36m>[39m
+                    [0mКлубт элсэх[0m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+    [0m [90m 309 |[39m     [90m// Enroll and then leave to trigger ban[39m
+     [90m 310 |[39m     fireEvent[33m.[39mclick(screen[33m.[39mgetByText([32m'Клубт элсэх'[39m))[33m;[39m
+    [31m[1m>[22m[39m[90m 311 |[39m     [36mawait[39m waitFor(() [33m=>[39m screen[33m.[39mgetByText([32m'Клубээс гарах'[39m))[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 312 |[39m
+     [90m 313 |[39m     [36mawait[39m act([36masync[39m () [33m=>[39m {
+     [90m 314 |[39m       fireEvent[33m.[39mclick(screen[33m.[39mgetByText([32m'Клубээс гарах'[39m))[33m;[39m[0m
+
+      at waitForWrapper (../../node_modules/@testing-library/dom/dist/wait-for.js:163:27)
+      at Object.<anonymous> (__test__/join-club/ClubsContent.spec.tsx:311:18)
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 8 passed, 10 total
+Snapshots:   0 total
+Time:        6.102 s
+Ran all test suites matching /apps\\club-web\\__test__\\join-club\\ClubsContent.spec.tsx/i.

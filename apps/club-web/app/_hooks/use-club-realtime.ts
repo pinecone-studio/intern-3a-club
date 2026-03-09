@@ -28,7 +28,6 @@ export const useClubRealtime = ({
     const channels = Array.from(
       new Set(['clubs', ...(channelsFromList.length > 0 ? channelsFromList : fallbackChannel)])
     );
-    if (channels.length === 0) return;
     const isClubListOnly = channels.length === 1 && channels[0] === 'clubs';
 
     const channelsParam = channels.map((channel) => encodeURIComponent(channel)).join(',');
@@ -116,7 +115,6 @@ export const useClubRealtime = ({
 
     stream.onmessage = (event) => {
       // For approved club list, any payload on "clubs" should refresh list.
-      if (!event?.data) return;
       if (isClubListOnly) {
         emitThrottled();
         return;

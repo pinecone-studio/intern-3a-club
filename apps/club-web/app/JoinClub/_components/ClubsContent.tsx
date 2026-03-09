@@ -7,12 +7,14 @@ import { useAuth } from '@clerk/nextjs';
 import { ClubDetail } from './ClubDetail';
 import { ClubList } from './ClubList';
 import { ApprovedClubData, ExtendedClub, TeacherData } from '../../../lib/type';
-import { GET_ALL_APPROVED_CLUBS, GET_ALL_TEACHERS } from '../../../lib/club-query';
+import {
+  GET_ALL_APPROVED_CLUBS,
+  GET_ALL_TEACHERS,
+} from '../../../lib/club-query';
 import { useClubRealtime } from '../../_hooks/use-club-realtime';
 import {
   applyEnroll,
   applyLeave,
-  clearBan,
   compareByEnrollment,
   mapClub,
   resolveSelectedId,
@@ -56,7 +58,10 @@ const useClubsLogic = (clerkUserId?: string) => {
     }
   }, [clubData, clerkUserId]);
 
-  const allTeachers = useMemo(() => teacherData?.getAllTeachers || [], [teacherData]);
+  const allTeachers = useMemo(
+    () => teacherData?.getAllTeachers || [],
+    [teacherData]
+  );
 
   const onEnroll = useCallback(() => {
     setAllClubs((p) => applyEnroll(p, selectedClubId));
@@ -65,13 +70,15 @@ const useClubsLogic = (clerkUserId?: string) => {
   const onLeave = useCallback(() => {
     const banUntil = Date.now() + BAN_MS;
     setAllClubs((p) => applyLeave(p, selectedClubId, banUntil));
-    setTimeout(() => setAllClubs((p) => clearBan(p, selectedClubId)), BAN_MS);
   }, [selectedClubId]);
 
-  const sortedClubs = useMemo(() => [...allClubs].sort(compareByEnrollment), [allClubs]);
+  const sortedClubs = useMemo(
+    () => [...allClubs].sort(compareByEnrollment),
+    [allClubs]
+  );
   const hasActiveBan = useMemo(
-    () => allClubs.some((club) => Number(club.bannedUntil ?? 0) > nowTs),
-    [allClubs, nowTs]
+    () => allClubs.some((club) => Number(club.bannedUntil) > 0),
+    [allClubs]
   );
   const clubIds = useMemo(
     () => sortedClubs.map((club) => club.id).filter(Boolean),
@@ -105,7 +112,7 @@ const useClubsLogic = (clerkUserId?: string) => {
     if (!hasActiveBan) return;
     setAllClubs((prev) =>
       prev.map((club) => {
-        const banUntil = Number(club.bannedUntil ?? 0);
+        const banUntil = Number(club.bannedUntil);
         if (banUntil > 0 && banUntil <= nowTs) {
           return { ...club, bannedUntil: 0 };
         }
@@ -166,7 +173,10 @@ const ClubsLayout = ({ userId, logic }: ClubsLayoutProps) => (
   </div>
 );
 
-const pickUserId = (prop: string | undefined, clerk: string | null | undefined): string => {
+const pickUserId = (
+  prop: string | undefined,
+  clerk: string | null | undefined
+): string => {
   if (prop) return prop;
   return clerk || '';
 };
@@ -182,7 +192,10 @@ const useClubsContent = (userId?: string) => {
   return { logic, resolvedId };
 };
 
-const renderClubsView = (logic: LogicType, resolvedId: string): React.ReactElement => {
+const renderClubsView = (
+  logic: LogicType,
+  resolvedId: string
+): React.ReactElement => {
   if (logic.loading) return <LoadingState />;
   if (logic.error) return <ErrorState msg={logic.error.message} />;
   return <ClubsLayout userId={resolvedId} logic={logic} />;

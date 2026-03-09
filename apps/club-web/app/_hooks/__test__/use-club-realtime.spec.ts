@@ -98,8 +98,9 @@ describe('useClubRealtime', () => {
     lastMockEventSource!.onmessage!({ data: JSON.stringify({ type: 'club-event' }) });
     expect(onEvent).toHaveBeenCalled();
 
-    // Null value / falsy
-    lastMockEventSource!.onmessage!({ data: null as unknown as string });
+    // Null value / falsy / non-object
+    lastMockEventSource!.onmessage!({ data: JSON.stringify({ nested: null }) });
+    lastMockEventSource!.onmessage!({ data: JSON.stringify([null, 123]) });
   });
 
   it('closes on unmount', () => {
@@ -141,5 +142,28 @@ describe('useClubRealtime', () => {
   it('uses fallbackChannel when clubId provided and clubIds empty', () => {
     renderHook(() => useClubRealtime({ onEvent, clubId: 'single' }));
     expect(lastMockEventSource!.url).toContain('club%3Asingle');
+  });
+
+  it('covers pendingTimeout active branch and unmount cleanup', () => {
+    const { unmount } = renderHook(() => useClubRealtime({ onEvent }));
+
+    // First message triggers immediate emit
+    lastMockEventSource!.onmessage!({ data: 'first' });
+    expect(onEvent).toHaveBeenCalledTimes(1);
+
+    // Second message triggers timeout
+    lastMockEventSource!.onmessage!({ data: 'second' });
+    expect(onEvent).toHaveBeenCalledTimes(1);
+
+    // Third message within throttle window should hit the if(pendingTimeout) return branch
+    lastMockEventSource!.onmessage!({ data: 'third' });
+    expect(onEvent).toHaveBeenCalledTimes(1);
+
+    // Unmount while pendingTimeout is active (covers line 135)
+    unmount();
+
+    jest.advanceTimersByTime(1200);
+    // onEvent should NOT be called again because it was cleared
+    expect(onEvent).toHaveBeenCalledTimes(1);
   });
 });

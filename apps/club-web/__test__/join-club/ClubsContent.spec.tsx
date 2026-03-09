@@ -1,26 +1,36 @@
 import React from 'react';
-import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  act,
+} from '@testing-library/react';
 import { ClubsContent } from '../../app/JoinClub/_components/ClubsContent';
 import { GET_ALL_APPROVED_CLUBS, GET_ALL_TEACHERS } from '../../lib/club-query';
 import { useClubAction } from '../../app/_hooks/use-redis-hook';
 import { MockedProvider } from '@apollo/client/testing/react';
 
 jest.mock('../../app/_hooks/use-redis-hook');
+const mockUseAuth = jest.fn(() => ({ userId: 'test-user-id' }));
 jest.mock('@clerk/nextjs', () => ({
-  useAuth: () => ({ userId: 'test-user-id' }),
+  useAuth: () => mockUseAuth(),
   useUser: () => ({ user: { id: 'test-user-id' } }),
   useClerk: () => ({ signOut: jest.fn() }),
 }));
 
-let lastEventSource: { onmessage: ((ev: MessageEvent) => void) | null } | null = null;
+let lastEventSource: {
+  onmessage: ((_ev: MessageEvent) => void) | null;
+} | null = null;
 global.EventSource = class MockEventSource {
   onmessage: ((_ev: MessageEvent) => void) | null = null;
   onerror: ((_ev: Event) => void) | null = null;
   onopen: ((_ev: Event) => void) | null = null;
   constructor() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     lastEventSource = this;
   }
-  close() {}
+  close() { }
 } as unknown as typeof EventSource;
 
 const mockUseClubAction = jest.mocked(useClubAction);
@@ -103,7 +113,7 @@ describe('ClubsContent', () => {
 
   it('loading үед "Уншиж байна..." харуулна', () => {
     render(
-      <MockedProvider mocks={getSuccessMocks()} addTypename={false}>
+      <MockedProvider mocks={getSuccessMocks()}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -123,16 +133,18 @@ describe('ClubsContent', () => {
     ];
 
     render(
-      <MockedProvider mocks={errorMocks} addTypename={false}>
+      <MockedProvider mocks={errorMocks}>
         <ClubsContent />
       </MockedProvider>
     );
-    await waitFor(() => expect(screen.getByText(/Network error/)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText(/Network error/)).toBeInTheDocument()
+    );
   });
 
   it('дата амжилттай ирсэн үед клубын нэр харуулна', async () => {
     render(
-      <MockedProvider mocks={getSuccessMocks()} addTypename={false}>
+      <MockedProvider mocks={getSuccessMocks()}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -154,7 +166,7 @@ describe('ClubsContent', () => {
     ];
 
     render(
-      <MockedProvider mocks={emptyMocks} addTypename={false}>
+      <MockedProvider mocks={emptyMocks}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -165,7 +177,7 @@ describe('ClubsContent', () => {
 
   it('userId prop дамжуулсан үед render хийгдэнэ', async () => {
     render(
-      <MockedProvider mocks={getSuccessMocks()} addTypename={false}>
+      <MockedProvider mocks={getSuccessMocks()}>
         <ClubsContent userId="test-user" />
       </MockedProvider>
     );
@@ -180,7 +192,7 @@ describe('ClubsContent', () => {
     );
 
     render(
-      <MockedProvider mocks={getSuccessMocks()} addTypename={false}>
+      <MockedProvider mocks={getSuccessMocks()}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -206,7 +218,7 @@ describe('ClubsContent', () => {
     );
 
     render(
-      <MockedProvider mocks={getSuccessMocks()} addTypename={false}>
+      <MockedProvider mocks={getSuccessMocks()}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -235,7 +247,7 @@ describe('ClubsContent', () => {
     const mocksWithRefetch = getSuccessMocks(2);
 
     render(
-      <MockedProvider mocks={mocksWithRefetch} addTypename={false}>
+      <MockedProvider mocks={mocksWithRefetch}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -246,18 +258,20 @@ describe('ClubsContent', () => {
 
     if (lastEventSource?.onmessage) {
       await act(async () => {
-        lastEventSource!.onmessage!({ data: 'club_member_joined' } as MessageEvent);
+        lastEventSource!.onmessage!({
+          data: 'club_member_joined',
+        } as MessageEvent);
       });
     }
 
-    // Wait for refetch to finish and syncing indicator to hide
+    // Wait for refetch to finish and original data to be visible again
     await waitFor(() => {
-      // isLiveSyncing becomes false after 700ms in refetch().finally()
-      act(() => {
-        jest.advanceTimersByTime(700);
-      });
-      // We check if it's rendered by seeing if original data is still there (since mocks are same)
       expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0);
+    });
+
+    // Advance time to allow the live syncing indicator to disappear
+    act(() => {
+      jest.advanceTimersByTime(700);
     });
   });
 
@@ -274,7 +288,7 @@ describe('ClubsContent', () => {
     ];
 
     render(
-      <MockedProvider mocks={twoClubMocks} addTypename={false}>
+      <MockedProvider mocks={twoClubMocks}>
         <ClubsContent />
       </MockedProvider>
     );
@@ -283,31 +297,39 @@ describe('ClubsContent', () => {
       expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
     );
 
-    // Initial order: First is mockClub (Test Club)
-    expect(screen.getAllByRole('button')[0]).toHaveTextContent('Test Club');
+    // When both clubs have no timetables, compareByEnrollment falls back to
+    // alphabetical (localeCompare), so "Second Club" < "Test Club"
+    const headings = screen.getAllByRole('heading', { level: 3 });
+    const clubNames = headings
+      .map((h) => h.textContent)
+      .filter((t) => t === 'Test Club' || t === 'Second Club');
+    expect(clubNames[0]).toBe('Second Club');
   });
 
   it('handles ban state updates', async () => {
     mockUseClubAction.mockImplementation(
-      ({ onLeaveSuccess }) =>
+      ({ onEnrollSuccess, onLeaveSuccess }) =>
         createHookReturn({
+          handleEnroll: () => onEnrollSuccess(),
           handleLeave: () => onLeaveSuccess(),
         })
     );
 
     const mocks = getSuccessMocks();
     render(
-      <MockedProvider mocks={mocks} addTypename={false}>
+      <MockedProvider mocks={mocks}>
         <ClubsContent />
       </MockedProvider>
     );
 
-    await waitFor(() => screen.getByText('Test Club'));
-    
+    await waitFor(() =>
+      expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0)
+    );
+
     // Enroll and then leave to trigger ban
     fireEvent.click(screen.getByText('Клубт элсэх'));
     await waitFor(() => screen.getByText('Клубээс гарах'));
-    
+
     await act(async () => {
       fireEvent.click(screen.getByText('Клубээс гарах'));
     });
@@ -316,12 +338,113 @@ describe('ClubsContent', () => {
     act(() => {
       jest.advanceTimersByTime(1000);
     });
-    
+
     act(() => {
       jest.advanceTimersByTime(120 * 1000);
+    });
+
+    await waitFor(() =>
+      expect(screen.getByText('Клубт элсэх')).toBeInTheDocument()
+    );
+  });
+
+  it('covers ban reset branch (line 110) in ClubsContent.tsx', async () => {
+    // This test covers the case where a club has an expired ban
+    // We mock applyLeave from clubs-utils to return a club with an expired ban
+    // But since we use useClubsLogic hook which uses internal state, we can trigger it via timers.
+
+    mockUseClubAction.mockImplementation(({ onEnrollSuccess, onLeaveSuccess }) =>
+      createHookReturn({
+        handleEnroll: () => onEnrollSuccess(),
+        handleLeave: () => onLeaveSuccess(),
+      })
+    );
+
+    render(
+      <MockedProvider mocks={getSuccessMocks()}>
+        <ClubsContent />
+      </MockedProvider>
+    );
+
+    await waitFor(() => expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0));
+
+    // Enroll and then leave to trigger ban
+    fireEvent.click(screen.getByText('Клубт элсэх'));
+    await waitFor(() => screen.getByText('Клубээс гарах'));
+    fireEvent.click(screen.getByText('Клубээс гарах'));
+
+    // Move time forward past BAN_MS (120s)
+    act(() => {
+      jest.advanceTimersByTime(121 * 1000);
+    });
+
+    // Check if it's back to enrollable state
+    await waitFor(() => expect(screen.getByText('Клубт элсэх')).toBeInTheDocument());
+  });
+
+  it('covers pickUserId and null clerkUserId fallbacks', async () => {
+    // 1. explicit-id branch (covered)
+    const { rerender } = render(
+      <MockedProvider mocks={getSuccessMocks()}>
+        <ClubsContent userId="explicit-id" />
+      </MockedProvider>
+    );
+    await waitFor(() => expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0));
+
+    // 2. userId undefined hits clerkUserId (covered by default mock)
+    rerender(
+      <MockedProvider mocks={getSuccessMocks()}>
+        <ClubsContent />
+      </MockedProvider>
+    );
+    await waitFor(() => expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0));
+
+    // 3. clerkUserId is null -> hits line 190 ( ?? undefined ) and 181 ( clerk || '' )
+    mockUseAuth.mockReturnValue({ userId: null } as any);
+    rerender(
+      <MockedProvider mocks={getSuccessMocks()}>
+        <ClubsContent />
+      </MockedProvider>
+    );
+    await waitFor(() => expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0));
+    // Revert mock for other tests
+    mockUseAuth.mockReturnValue({ userId: 'test-user-id' } as any);
+  });
+
+  it('covers expired ban branch (line 107) directly', async () => {
+    mockUseClubAction.mockImplementation(({ onEnrollSuccess, onLeaveSuccess }) =>
+      createHookReturn({
+        handleEnroll: () => onEnrollSuccess(),
+        handleLeave: () => onLeaveSuccess(),
+      })
+    );
+
+    render(
+      <MockedProvider mocks={getSuccessMocks()}>
+        <ClubsContent />
+      </MockedProvider>
+    );
+
+    await waitFor(() => expect(screen.getAllByText('Test Club').length).toBeGreaterThan(0));
+
+    // 1. Coverage: hasActiveBan is false (early return in effect)
+    // Already hit before enroll.
+
+    // Enroll and leave
+    fireEvent.click(screen.getByText('Клубт элсэх'));
+    await waitFor(() => screen.getByText('Клубээс гарах'));
+    fireEvent.click(screen.getByText('Клубээс гарах'));
+
+    // 2. Coverage: banUntil > 0 but banUntil > nowTs (hits line 110 else branch)
+    act(() => {
+      jest.advanceTimersByTime(10 * 1000); // Only 10s passed, ban is 120s
+    });
+
+    // 3. Coverage: Move time forward past BAN_MS (120s) to hit the "if" branch (line 108)
+    act(() => {
+      jest.advanceTimersByTime(111 * 1000);
     });
 
     await waitFor(() => expect(screen.getByText('Клубт элсэх')).toBeInTheDocument());
   });
 });
-

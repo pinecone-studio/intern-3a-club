@@ -51,7 +51,7 @@ describe('create-club-helpers', () => {
   it('handleMutationResult handles error', () => {
     const res = { errors: [{ message: 'Bad graphql' }] };
     window.alert = jest.fn();
-    const result = handleMutationResult(res as any, () => {});
+    const result = handleMutationResult(res as any, () => { });
     expect(result.success).toBe(false);
     expect(window.alert).toHaveBeenCalledWith('Алдаа: Bad graphql');
   });
@@ -70,6 +70,15 @@ describe('create-club-helpers', () => {
     const result = handleMutationResult(res as any, onSuccess);
     expect(result.success).toBe(true);
     expect(onSuccess).toHaveBeenCalled();
+  });
+
+  it('handleMutationResult when no data and no errors — isSuccess is false', () => {
+    // Covers the branch where isSuccess = false and onSuccess is NOT called
+    const res = { data: null };
+    const onSuccess = jest.fn();
+    const result = handleMutationResult(res as any, onSuccess);
+    expect(result.success).toBe(false);
+    expect(onSuccess).not.toHaveBeenCalled();
   });
 });
 
@@ -164,7 +173,7 @@ describe('ClubForm Extra branch coverage', () => {
       // '@ts-expect-error'
       <ClubForm
         formData={{ name: 'A', goal: 'B' }}
-        handleFormChange={() => {}}
+        handleFormChange={() => { }}
         errors={{}}
         loading={false}
         handleSubmit={submit as any}
@@ -178,7 +187,7 @@ describe('ClubForm Extra branch coverage', () => {
     render(
       <ClubForm
         formData={{ name: 'A', goal: 'B' }}
-        handleFormChange={() => {}}
+        handleFormChange={() => { }}
         errors={{}}
         loading={true}
         handleSubmit={jest.fn() as any}

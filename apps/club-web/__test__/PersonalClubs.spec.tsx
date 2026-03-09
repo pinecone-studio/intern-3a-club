@@ -147,4 +147,177 @@ describe('MyClubsList', () => {
       expect(screen.queryByText('Ачаалж байна...')).not.toBeInTheDocument();
     });
   });
+
+  it('covers expansion toggle and fallbacks', async () => {
+    const mocks = [
+      {
+        request: { query: GET_MY_CLUBS_DETAIL_FOR_TEST },
+        result: {
+          data: {
+            getAllClubsByCreatorId: [
+              {
+                id: 'c2', name: 'Club 2', description: null, teacherId: 'unknown-t', type: null, status: 'approved',
+                preferredTeachers: null, minMember: null, maxMember: null, frequency: null, clubTerm: null,
+                timetables: [{ id: 'tt2', date: null, room: null, clubStartTime: null, duration: null, __typename: 'Timetable' }],
+                members: null,
+                __typename: 'Club',
+              }
+            ]
+          }
+        }
+      },
+      {
+        request: { query: GET_ALL_TEACHERS },
+        result: { data: { getAllTeachers: [] } }
+      }
+    ];
+
+    render(<MockedProvider mocks={mocks}><MyClubsList /></MockedProvider>);
+    const btn = await screen.findByRole('button', { name: /Club 2/i });
+
+    // Expand
+    fireEvent.click(btn);
+    expect(await screen.findByText('Тайлбар байхгүй')).toBeInTheDocument();
+    expect(screen.getByText('unknown-t')).toBeInTheDocument();
+    expect(screen.getByText('- • - • - • 0 min')).toBeInTheDocument();
+
+    // Collapse
+    fireEvent.click(btn);
+    await waitFor(() => {
+      expect(screen.queryByText('Тайлбар байхгүй')).not.toBeInTheDocument();
+    });
+  });
+
+  it('covers teacher name formatting combinations (line 137)', async () => {
+    const mocks = [
+      {
+        request: { query: GET_MY_CLUBS_DETAIL_FOR_TEST },
+        result: {
+          data: {
+            getAllClubsByCreatorId: [
+              { id: 'c3', name: 'C3', status: 'approved', teacherId: 't-only-first', __typename: 'Club' },
+              { id: 'c4', name: 'C4', status: 'approved', teacherId: 't-only-last', __typename: 'Club' },
+              { id: 'c5', name: 'C5', status: 'approved', teacherId: null, __typename: 'Club' },
+              { id: 'c6', name: 'C6', status: 'approved', teacherId: 't-none', __typename: 'Club' },
+            ]
+          }
+        }
+      },
+      {
+        request: { query: GET_ALL_TEACHERS },
+        result: {
+          data: {
+            getAllTeachers: [
+              { id: 't-only-first', firstName: 'OnlyFirst', lastName: null, __typename: 'Teacher' },
+              { id: 't-only-last', firstName: null, lastName: 'OnlyLast', __typename: 'Teacher' },
+              { id: 't-none', firstName: null, lastName: null, __typename: 'Teacher' },
+            ]
+          }
+        }
+      }
+    ];
+    render(<MockedProvider mocks={mocks}><MyClubsList /></MockedProvider>);
+
+    // t-only-first
+    const btn3 = await screen.findByRole('button', { name: /C3/i });
+    fireEvent.click(btn3);
+    expect(await screen.findByText('OnlyFirst')).toBeInTheDocument();
+
+    // t-only-last
+    const btn4 = await screen.findByRole('button', { name: /C4/i });
+    fireEvent.click(btn4);
+    expect(await screen.findByText('OnlyLast')).toBeInTheDocument();
+
+    // teacherId null -> shows '-'
+    const btn5 = await screen.findByRole('button', { name: /C5/i });
+    fireEvent.click(btn5);
+    expect(screen.getAllByText('-').length).toBeGreaterThan(0);
+
+    // t-none (both names null) -> shows ID 't-none' (covers line 138-139)
+    const btn6 = await screen.findByRole('button', { name: /C6/i });
+    fireEvent.click(btn6);
+    expect(await screen.findByText('t-none')).toBeInTheDocument();
+  });
+
+  it('covers club teacher and timetable fallbacks', async () => {
+    const mocks = [
+      {
+        request: { query: GET_MY_CLUBS_DETAIL_FOR_TEST },
+        result: {
+          data: {
+            getAllClubsByCreatorId: [
+              {
+                id: 'c3', name: 'Club 3', status: 'approved', teacherId: 'non-existent-teacher',
+                timetables: [], members: [], __typename: 'Club',
+              }
+            ]
+          }
+        }
+      },
+      {
+        request: { query: GET_ALL_TEACHERS },
+        result: { data: { getAllTeachers: [] } }
+      }
+    ];
+
+    render(<MockedProvider mocks={mocks}><MyClubsList /></MockedProvider>);
+    const btn = await screen.findByRole('button', { name: /Club 3/i });
+    fireEvent.click(btn);
+
+    // non-existent-teacher fallback (line 220)
+    expect(screen.getByText('non-existent-teacher')).toBeInTheDocument();
+    // empty timetables fallback (line 277)
+    expect(screen.getByText('Хуваарь алга')).toBeInTheDocument();
+  });
+
+  it('covers toTeacherArray with null (line 133)', async () => {
+    const mocks = [
+      {
+        request: { query: GET_MY_CLUBS_DETAIL_FOR_TEST },
+        result: { data: { getAllClubsByCreatorId: [] } }
+      },
+      {
+        request: { query: GET_ALL_TEACHERS },
+        result: { data: { getAllTeachers: null as any } }
+      }
+    ];
+    render(<MockedProvider mocks={mocks}><MyClubsList /></MockedProvider>);
+    await waitFor(() => expect(screen.queryByText('Ачаалж байна...')).not.toBeInTheDocument());
+  });
+
+  it('covers unmount during getToken (line 98)', async () => {
+    let resolveToken: (_value: string) => void;
+    const tokenPromise = new Promise<string>((resolve) => {
+      resolveToken = resolve;
+    });
+    useAuth.mockReturnValue({
+      isLoaded: true,
+      userId: 'u1',
+      getToken: jest.fn().mockReturnValue(tokenPromise),
+    });
+
+    const { unmount } = render(<MockedProvider mocks={[]}><MyClubsList /></MockedProvider>);
+    unmount();
+    act(() => {
+      resolveToken!('token');
+    });
+  });
+
+  it('covers unmount during getToken catch', async () => {
+    let rejectToken: (_error: Error) => void;
+    const tokenPromise = new Promise<string>((_, reject) => {
+      rejectToken = reject;
+    });
+    useAuth.mockReturnValue({
+      isLoaded: true,
+      userId: 'u1',
+      getToken: jest.fn().mockReturnValue(tokenPromise),
+    });
+
+    const { unmount } = render(<MockedProvider mocks={[]}><MyClubsList /></MockedProvider>);
+    unmount();
+    await act(async () => {
+      rejectToken!(new Error('fail'));
+    });
+  });
 });
