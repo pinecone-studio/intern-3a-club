@@ -1,6 +1,5 @@
 'use client';
 import { useQuery } from '@apollo/client/react';
-
 import { Data } from '../../lib/type';
 import { ClubsContent } from './_components/ClubsContent';
 import { GET_ALL_APPROVED_CLUBS } from '../../lib/club-query';
@@ -12,7 +11,7 @@ const JoinClubPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat py-6 px-12">
-        <div className='max-w-7xl mx-auto flex flex-col lg:flex-row gap-10'>
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
           <div className="mt-16">
             <ClubListSkeleton />
           </div>

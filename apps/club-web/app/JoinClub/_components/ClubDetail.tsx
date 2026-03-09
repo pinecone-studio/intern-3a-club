@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { ExtendedClub, GetAllTeacher } from '../../../lib/type';
 import { useClubAction } from '../../_hooks/use-redis-hook';
 import { ClubDetailView } from './ClubDetailView';
+import { getEnrollmentStatus } from './utils/clubs-utils';
 
 interface ClubDetailProps {
   selectedClub?: ExtendedClub;
@@ -13,49 +14,65 @@ interface ClubDetailProps {
   onLeaveSuccess: () => void;
 }
 
-const getTeacherInfo = (teachers: GetAllTeacher[] = [], id?: string) => {
-  const teacher = teachers.find((t) => t.id === id);
+interface TeacherInfo {
+  name: string;
+  initial: string;
+}
 
-  if (!teacher) {
-    return { name: 'Багш тодорхойгүй', initial: 'T' };
-  }
+const DEFAULT_TEACHER: TeacherInfo = { name: 'Багш тодорхойгүй', initial: 'T' };
 
-  const { firstName, lastName } = teacher;
-  return {
-    name: `${firstName} ${lastName}`,
-    initial: firstName.charAt(0).toUpperCase() || 'T',
-  };
-};
+function getInitial(firstName: string): string {
+  const initial = firstName.charAt(0).toUpperCase();
+  return initial || 'T';
+}
 
-const EmptyState = () => (
-  <div className="text-white/20 ">
-    Клуб сонгоно уу
-  </div>
-);
+const formatTeacherInfo = (teacher: GetAllTeacher): TeacherInfo => ({
+  name: `${teacher.firstName} ${teacher.lastName}`,
+  initial: getInitial(teacher.firstName),
+});
 
-// eslint-disable-next-line complexity
+function findTeacher(teachers: GetAllTeacher[], id?: string) {
+  return teachers.find((t) => t.id === id);
+}
+
+function getTeacherInfo(
+  teachers: GetAllTeacher[] = [],
+  id?: string
+): TeacherInfo {
+  const teacher = findTeacher(teachers, id);
+  if (!teacher) return DEFAULT_TEACHER;
+  return formatTeacherInfo(teacher);
+}
+
+const getClubId = (club?: ExtendedClub) => (club ? club.id : '');
+const getTeacherId = (club?: ExtendedClub) =>
+  club ? club.teacherId : undefined;
+const getCreatedAt = (club?: ExtendedClub) =>
+  club ? club.createdAt : undefined;
+const getStartDate = (club?: ExtendedClub) =>
+  club ? club.startDate : undefined;
+
+const EmptyState = () => <div className="text-white/20">Клуб сонгоно уу</div>;
+
 export const ClubDetail = (props: ClubDetailProps) => {
   const { selectedClub, userId, allTeachers, onEnrollSuccess, onLeaveSuccess } =
     props;
 
-  const clubId = selectedClub?.id ?? '';
-  const teacherId = selectedClub?.teacherId;
-
   const actions = useClubAction({
     userid: userId,
-    clubid: clubId,
+    clubid: getClubId(selectedClub),
     onEnrollSuccess,
     onLeaveSuccess,
   });
 
-  const teacherData = useMemo(
-    () => getTeacherInfo(allTeachers, teacherId),
-    [allTeachers, teacherId]
-  );
+  const teacherData = getTeacherInfo(allTeachers, getTeacherId(selectedClub));
+  const isExpired =
+    getEnrollmentStatus(
+      getCreatedAt(selectedClub),
+      getStartDate(selectedClub)
+    ) === 'expired';
 
-  if (!selectedClub) {
-    return <EmptyState />;
-  }
+  if (!selectedClub) return <EmptyState />;
 
   const { banned, loading, handleEnroll, handleLeave, remainingTime } = actions;
 
@@ -68,6 +85,7 @@ export const ClubDetail = (props: ClubDetailProps) => {
       loading={loading}
       handleEnroll={handleEnroll}
       handleLeave={handleLeave}
+      isExpired={isExpired}
     />
   );
 };

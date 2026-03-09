@@ -1,20 +1,18 @@
 'use client';
-/* eslint-disable complexity */
 import React from 'react';
 import { Clock, MapPin } from 'lucide-react';
 import { cn } from 'lib/utils';
 import { ExtendedClub, ApprovedClubTimetable } from '../../../lib/type';
-import { CgSandClock } from 'react-icons/cg';
-import { getEnrollmentDeadline, isEnrollmentOpen } from './clubs-utils';
+import { getEnrollmentStatus, EnrollmentStatus } from './utils/clubs-utils';
 import {
   getRoomText,
-  getTimeLeftText,
-  getContainerKey,
-  getTitleKey,
   getNextTimetable,
   getDeadlineClass,
   getDeadlineText,
-} from './club-card-utils';
+  getContainerClass,
+  getTitleClass,
+  ClubStatusFlags,
+} from './utils/club-card-utils';
 
 interface ClubCardProps {
   club: ExtendedClub;
@@ -26,24 +24,30 @@ interface ClubCardProps {
 interface ClubScheduleProps {
   timetable?: ApprovedClubTimetable;
   createdAt: string;
+  startDate: string;
+  status: EnrollmentStatus;
+  nowTs: number;
 }
 
-const EnrollmentBadge = ({ isEnrolled }: { isEnrolled: boolean }) => {
+interface EnrollmentBadgeProps {
+  isEnrolled: boolean;
+}
+
+interface BanCountdownProps {
+  bannedUntil: number;
+  nowTs: number;
+}
+
+const EnrollmentBadge = ({ isEnrolled }: EnrollmentBadgeProps) => {
   if (!isEnrolled) return null;
   return (
-    <span className="text-[9px] font-medium text-blue-400 border border-blue-400/30 px-1.5 py-0.5 rounded uppercase shrink-0">
+    <span className="text-[9px] font-medium text-[rgb(5,150,105)] border border-[rgb(5,150,105)]/50 bg-[rgb(5,150,105)]/10 px-1.5 py-0.5 rounded uppercase shrink-0">
       Элссэн
     </span>
   );
 };
 
-const BanCountdown = ({
-  bannedUntil,
-  nowTs,
-}: {
-  bannedUntil: number;
-  nowTs: number;
-}) => {
+const BanCountdown = ({ bannedUntil, nowTs }: BanCountdownProps) => {
   const remainMs = Math.max(0, bannedUntil - nowTs);
   const remainSec = Math.ceil(remainMs / 1000);
   if (remainSec <= 0) return null;
@@ -54,44 +58,50 @@ const BanCountdown = ({
   );
 };
 
-const CONTAINER_CLASSES = {
-  banned: 'bg-red-600/10 border-red-500/70',
-  expired: 'bg-white/5 border-white/5',
-  enrolled: 'bg-emerald-600/15 border-emerald-500/70',
-  selected: 'bg-blue-600/20 border-blue-500',
-  default: 'bg-blue-600/20 border-white/5',
-} as const;
-
-const TITLE_CLASSES = {
-  expired: 'text-white/30',
-  enrolled: 'text-emerald-200',
-  selected: 'text-white',
-  default: 'text-white/70',
-} as const;
-
-const ClubSchedule = ({ timetable, createdAt }: ClubScheduleProps) => {
-  const timeLeftText = getTimeLeftText(timetable);
-  const deadline = getEnrollmentDeadline(createdAt);
-  const expired = !isEnrollmentOpen(createdAt);
-
-  return (
-    <div className="flex flex-col gap-1">
-      <div className={getDeadlineClass(expired)}>
-        <Clock size={12} strokeWidth={2.5} />
-        <span>{getDeadlineText(expired, deadline)}</span>
-      </div>
-      <div className="flex items-center gap-2 text-[10px] text-white/40 font-medium">
-        <MapPin size={12} strokeWidth={2.5} />
-        <span className="truncate">{getRoomText(timetable)}</span>
-      </div>
-      {timeLeftText && (
-        <div className="flex items-center gap-x-2.5 text-[10px] text-white/40 font-medium">
-          <CgSandClock className="opacity-60" size={10} strokeWidth={2.5} />
-          <span>{timeLeftText}</span>
-        </div>
-      )}
+const ClubSchedule = ({
+  timetable,
+  createdAt,
+  startDate,
+  status,
+  nowTs,
+}: ClubScheduleProps) => (
+  <div className="flex flex-col gap-1">
+    <div className={cn(getDeadlineClass(status), 'items-start')}>
+      <Clock size={12} strokeWidth={2.5} className="mt-[2px] shrink-0" />
+      <span>{getDeadlineText(status, createdAt, startDate, nowTs)}</span>
     </div>
-  );
+    <div className="flex items-center gap-2 text-[10px] text-white/40 font-medium">
+      <MapPin size={12} strokeWidth={2.5} className="shrink-0" />
+      <span className="truncate">{getRoomText(timetable)}</span>
+    </div>
+  </div>
+);
+
+const getBanUntil = (club: ExtendedClub): number =>
+  Number(club.bannedUntil ?? 0);
+
+const getStatusFlags = (
+  status: EnrollmentStatus,
+  banUntil: number,
+  nowTs: number
+) => ({
+  isBannedAndOpen: banUntil > nowTs && status === 'open',
+  isExpired: status === 'expired',
+  isPending: status === 'pending',
+});
+
+const buildFlags = (
+  club: ExtendedClub,
+  isSelected: boolean,
+  nowTs: number
+): ClubStatusFlags => {
+  const status = getEnrollmentStatus(club.createdAt, club.startDate, nowTs);
+  const banUntil = getBanUntil(club);
+  return {
+    ...getStatusFlags(status, banUntil, nowTs),
+    isEnrolled: !!club.isEnrolled,
+    isSelected,
+  };
 };
 
 export const ClubCard = ({
@@ -100,35 +110,30 @@ export const ClubCard = ({
   onClick,
   nowTs = Date.now(),
 }: ClubCardProps) => {
-  const handleCardClick = () => onClick(club.id);
-  const banUntil = Number(club.bannedUntil ?? 0);
-  const isBanned = banUntil > nowTs;
-  const isEnrolled = !!club.isEnrolled;
-  const isExpired = !isEnrollmentOpen(club.createdAt);
+  const handleClick = () => onClick(club.id);
+  const status = getEnrollmentStatus(club.createdAt, club.startDate, nowTs);
+  const flags = buildFlags(club, isSelected, nowTs);
   const nextTimetable =
     getNextTimetable(club.timetables) ?? club.timetables?.[0];
 
-  const containerClass = cn(
-    'w-full p-4 rounded-xl cursor-pointer border transition-colors duration-150',
-    CONTAINER_CLASSES[
-      getContainerKey(isBanned, isExpired, isEnrolled, isSelected)
-    ]
-  );
-  const titleClass = cn(
-    'text-xs font-semibold uppercase truncate',
-    TITLE_CLASSES[getTitleKey(isExpired, isEnrolled, isSelected)]
-  );
-
   return (
-    <div onClick={handleCardClick} className={containerClass}>
+    <div onClick={handleClick} className={getContainerClass(flags)}>
       <div className="flex justify-between items-start mb-2 gap-2">
-        <h3 className={titleClass}>{club.name}</h3>
+        <h3 className={getTitleClass(flags)}>{club.name}</h3>
         <div className="flex items-center gap-1.5">
-          {isBanned ? <BanCountdown bannedUntil={banUntil} nowTs={nowTs} /> : null}
-          <EnrollmentBadge isEnrolled={isEnrolled} />
+          {flags.isBannedAndOpen && (
+            <BanCountdown bannedUntil={getBanUntil(club)} nowTs={nowTs} />
+          )}
+          <EnrollmentBadge isEnrolled={flags.isEnrolled} />
         </div>
       </div>
-      <ClubSchedule timetable={nextTimetable} createdAt={club.createdAt} />
+      <ClubSchedule
+        timetable={nextTimetable}
+        createdAt={club.createdAt}
+        startDate={club.startDate}
+        status={status}
+        nowTs={nowTs}
+      />
     </div>
   );
 };

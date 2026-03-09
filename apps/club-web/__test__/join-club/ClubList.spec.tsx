@@ -1,15 +1,15 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ClubList } from '../../app/JoinClub/_components/ClubList';
-import { ExtendedClub } from '../../lib/type'; 
+import { ExtendedClub } from '../../lib/type';
 import React from 'react';
 
-interface MockClubCardProps { 
+interface MockClubCardProps {
   club: ExtendedClub;
   isSelected: boolean;
   onClick: (_id: string) => void;
 }
 
-jest.mock('../../app/JoinClub/_components/ClubCard',() => ({
+jest.mock('../../app/JoinClub/_components/ClubCard', () => ({
   ClubCard: ({ club, isSelected, onClick }: MockClubCardProps) => (
     <div
       data-testid={`club-card-${club.id}`}
@@ -21,45 +21,39 @@ jest.mock('../../app/JoinClub/_components/ClubCard',() => ({
   ),
 }));
 
-const mockClubs: ExtendedClub[] = [
-  {
-    id: '1',
-    name: 'Robotics Club',
-    description: 'Build robots',
-    status: 'Open',
-    teacherId: 'T1',
-    creatorId: 'C1',
-    type: 'mentor',
+const mockTimetable = {
+  id: 'tt-1',
+  clubId: 'club-1',
+  date: 'Даваа, Лхагва',
+  room: '401-р өрөө',
+  clubStartTime: '18:00-20:00',
+  duration: 120,
+};
+
+const makeClub = (id: string, name: string): ExtendedClub =>
+  ({
+    id,
+    name,
+    description: 'desc',
+    type: 'Premium',
+    status: 'ACTIVE',
+    teacherId: 'teacher-1',
+    creatorId: 'creator-1',
+    frequency: 'WEEKLY',
+    clubTerm: 'FIRST',
     minMember: 5,
-    maxMember: 10,
-    frequency: 'Weekly',
-    clubTerm: 'Spring',
-    timetables: [],
-    __typename: 'Club',
+    maxMember: 20,
+    timetables: [mockTimetable],
     isEnrolled: false,
     bannedUntil: 0,
-    members: [],
-    createdAt: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: '2',
-    name: 'Art Club',
-    description: 'Painting',
-    status: 'Open',
-    teacherId: 'T2',
-    creatorId: 'C2',
-    type: 'mentor',
-    minMember: 2,
-    maxMember: 5,
-    frequency: 'Weekly',
-    clubTerm: 'Spring',
-    timetables: [],
-    __typename: 'Club',
-    isEnrolled: true,
-    bannedUntil: 0,
-    members: [],
-    createdAt: '2024-01-01T00:00:00Z'
-  },
+    createdAt: new Date().toISOString(),
+    startDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+    endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+  } as ExtendedClub);
+
+const mockClubs: ExtendedClub[] = [
+  makeClub('1', 'Robotics Club'),
+  makeClub('2', 'Art Club'),
 ];
 
 describe('ClubList Component', () => {
@@ -73,7 +67,6 @@ describe('ClubList Component', () => {
     render(
       <ClubList clubs={mockClubs} selectedClubId="1" onSelect={mockOnSelect} />
     );
-
     expect(screen.getByText('Robotics Club')).toBeInTheDocument();
     expect(screen.getByText('Art Club')).toBeInTheDocument();
   });
@@ -82,10 +75,8 @@ describe('ClubList Component', () => {
     render(
       <ClubList clubs={mockClubs} selectedClubId="1" onSelect={mockOnSelect} />
     );
-
     const artClubCard = screen.getByTestId('club-card-2');
     fireEvent.click(artClubCard);
-
     expect(mockOnSelect).toHaveBeenCalledWith('2');
   });
 
@@ -93,7 +84,6 @@ describe('ClubList Component', () => {
     render(
       <ClubList clubs={mockClubs} selectedClubId="1" onSelect={mockOnSelect} />
     );
-
     const selectedClub = screen.getByTestId('club-card-1');
     expect(selectedClub).toHaveStyle('border: 1px solid blue');
   });
