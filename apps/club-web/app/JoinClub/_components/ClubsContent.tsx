@@ -4,7 +4,19 @@ import React from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { ClubDetail } from './ClubDetail';
 import { ClubList } from './ClubList';
-import { useClubsLogic } from './utils/use-clubs-logic';
+import { ApprovedClubData, ExtendedClub, TeacherData } from '../../../lib/type';
+import {
+  GET_ALL_APPROVED_CLUBS,
+  GET_ALL_TEACHERS,
+} from '../../../lib/club-query';
+import { useClubRealtime } from '../../_hooks/use-club-realtime';
+import {
+  applyEnroll,
+  applyLeave,
+  compareByEnrollment,
+  mapClub,
+  resolveSelectedId,
+} from './clubs-utils';
 
 const LoadingState = () => (
   <div className="p-12 text-center text-white/50 animate-pulse uppercase text-[10px] font-bold tracking-widest">
@@ -17,6 +29,115 @@ const ErrorState = ({ msg }: { msg: string }) => (
     Алдаа: {msg}
   </div>
 );
+
+const BAN_MS = 120 * 1000;
+
+const useClubsLogic = (clerkUserId?: string) => {
+  const {
+    loading,
+    error,
+    data: clubData,
+    refetch: refetchClubs,
+  } = useQuery<ApprovedClubData>(GET_ALL_APPROVED_CLUBS);
+  const { data: teacherData } = useQuery<TeacherData>(GET_ALL_TEACHERS);
+
+  const [allClubs, setAllClubs] = useState<ExtendedClub[]>([]);
+  const [selectedClubId, setSelectedClubId] = useState('');
+  const [isLiveSyncing, setIsLiveSyncing] = useState(false);
+  const [nowTs, setNowTs] = useState(() => Date.now());
+
+  useEffect(() => {
+    const raw = clubData?.getAllApprovedClubs;
+    if (raw && raw.length > 0) {
+      setAllClubs(raw.map((c) => mapClub(c, clerkUserId)));
+    } else {
+      setAllClubs([]);
+      setSelectedClubId('');
+    }
+  }, [clubData, clerkUserId]);
+
+  const allTeachers = useMemo(
+    () => teacherData?.getAllTeachers || [],
+    [teacherData]
+  );
+
+  const onEnroll = useCallback(() => {
+    setAllClubs((p) => applyEnroll(p, selectedClubId));
+  }, [selectedClubId]);
+
+  const onLeave = useCallback(() => {
+    const banUntil = Date.now() + BAN_MS;
+    setAllClubs((p) => applyLeave(p, selectedClubId, banUntil));
+  }, [selectedClubId]);
+
+  const sortedClubs = useMemo(
+    () => [...allClubs].sort(compareByEnrollment),
+    [allClubs]
+  );
+  const hasActiveBan = useMemo(
+    () => allClubs.some((club) => Number(club.bannedUntil) > 0),
+    [allClubs]
+  );
+  const clubIds = useMemo(
+    () => sortedClubs.map((club) => club.id).filter(Boolean),
+    [sortedClubs]
+  );
+
+  const handleRealtimeEvent = useCallback(() => {
+    setIsLiveSyncing(true);
+    void refetchClubs().finally(() => {
+      window.setTimeout(() => setIsLiveSyncing(false), 700);
+    });
+  }, [refetchClubs]);
+
+  useClubRealtime({
+    clubIds,
+    onEvent: handleRealtimeEvent,
+  });
+
+  useEffect(() => {
+    if (sortedClubs.length === 0) return;
+    setSelectedClubId((prev) => resolveSelectedId(prev, sortedClubs));
+  }, [sortedClubs]);
+
+  useEffect(() => {
+    if (!hasActiveBan) return;
+    const timer = window.setInterval(() => setNowTs(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [hasActiveBan]);
+
+  useEffect(() => {
+    if (!hasActiveBan) return;
+    setAllClubs((prev) =>
+      prev.map((club) => {
+        const banUntil = Number(club.bannedUntil);
+        if (banUntil > 0 && banUntil <= nowTs) {
+          return { ...club, bannedUntil: 0 };
+        }
+        return club;
+      })
+    );
+  }, [hasActiveBan, nowTs]);
+
+  const selectedClub = useMemo(
+    () => sortedClubs.find((c) => c.id === selectedClubId),
+    [sortedClubs, selectedClubId]
+  );
+
+  return {
+    loading,
+    error,
+    selectedClubId,
+    setSelectedClubId,
+    allTeachers,
+    onEnroll,
+    onLeave,
+    sortedClubs,
+    selectedClub,
+    isLiveSyncing,
+    nowTs,
+  };
+};
 
 type LogicType = ReturnType<typeof useClubsLogic>;
 

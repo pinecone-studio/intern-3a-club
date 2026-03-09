@@ -50,14 +50,14 @@ type MyClub = {
   frequency?: string | null;
   clubTerm?: string | null;
   timetables?:
-    | {
-        id: string;
-        date?: string | null;
-        room?: string | null;
-        clubStartTime?: string | null;
-        duration?: number | null;
-      }[]
-    | null;
+  | {
+    id: string;
+    date?: string | null;
+    room?: string | null;
+    clubStartTime?: string | null;
+    duration?: number | null;
+  }[]
+  | null;
   members?: { id: string; studentId?: string | null }[] | null;
 };
 
@@ -106,10 +106,10 @@ export const MyClubsList = () => {
     fetchPolicy: 'cache-and-network',
     context: token
       ? {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        }
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
       : undefined,
   });
 
@@ -120,10 +120,10 @@ export const MyClubsList = () => {
       fetchPolicy: 'cache-and-network',
       context: token
         ? {
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-          }
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
         : undefined,
     }
   );
@@ -135,7 +135,7 @@ export const MyClubsList = () => {
     teachers.map((teacher) => [
       teacher.id,
       `${teacher.firstName ?? ''} ${teacher.lastName ?? ''}`.trim() ||
-        teacher.id,
+      teacher.id,
     ])
   );
   console.log(data, 'data');
@@ -200,9 +200,8 @@ export const MyClubsList = () => {
               <div className="text-white/50">
                 <ChevronDown
                   size={18}
-                  className={`transition-transform duration-200 ${
-                    expandedId === club.id ? 'rotate-180' : ''
-                  }`}
+                  className={`transition-transform duration-200 ${expandedId === club.id ? 'rotate-180' : ''
+                    }`}
                 />
               </div>
             </div>
@@ -235,7 +234,7 @@ export const MyClubsList = () => {
                   </p> */}
                   <p>
                     <span className="text-white/40">Status: </span>{' '}
-                    {club.status ?? 'unknown'}
+                    {club.status}
                   </p>
                   <p>
                     <span className="text-white/40">Frequency:</span>{' '}
