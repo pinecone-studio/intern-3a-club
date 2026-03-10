@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { useClubsLogic } from '../../app/JoinClub/_components/utils/use-clubs-logic';
+import { useClubRealtime } from '../../app/_hooks/use-club-realtime';
 
 jest.mock('@apollo/client/react', () => ({
   useQuery: jest.fn(),
@@ -228,23 +229,17 @@ describe('useClubsLogic', () => {
     const futureBanClub = {
       ...mockClub,
       id: 'club-banned',
-      bannedUntil: Date.now() + 60000, // идэвхтэй ban
+      bannedUntil: Date.now() + 60000,
     };
-
-    // bannedUntil undefined → nullish coalescing-ийн нөгөө branch ажиллана
     const neutralClub = {
       ...mockClub,
       id: 'club-neutral',
       bannedUntil: undefined as unknown as number,
     };
-
     setupQuery([futureBanClub, neutralClub as never]);
-
     const { result } = renderHook(() => useClubsLogic('user-1'));
     expect(result.current.sortedClubs).toHaveLength(2);
-
     act(() => {
-      // hasActiveBan=true үед clearExpiredBans бүх клуб дээр ажиллана
       jest.advanceTimersByTime(2000);
     });
   });
@@ -256,12 +251,12 @@ describe('useClubsLogic', () => {
 
   it('handleRealtimeEvent дуудагдахад isLiveSyncing өөрчлөгдөнө', async () => {
     let capturedOnEvent: () => void = () => {};
-    const { useClubRealtime } = require('../../app/_hooks/use-club-realtime');
-    useClubRealtime.mockImplementation(
-      ({ onEvent }: { onEvent: () => void }) => {
-        capturedOnEvent = onEvent;
-      }
-    );
+
+    jest
+      .mocked(useClubRealtime)
+      .mockImplementation(({ onEvent }: { onEvent?: () => void }) => {
+        if (onEvent) capturedOnEvent = onEvent;
+      });
 
     const mockRefetch = jest.fn().mockResolvedValue({});
     setupQuery([mockClub], [], mockRefetch);
@@ -271,7 +266,7 @@ describe('useClubsLogic', () => {
 
     await act(async () => {
       capturedOnEvent();
-      await Promise.resolve(); // wait for refetch().finally
+      await Promise.resolve();
     });
 
     expect(result.current.isLiveSyncing).toBe(true);
