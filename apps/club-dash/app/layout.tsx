@@ -1,5 +1,5 @@
 import './global.css';
-import { Providers } from '../libs/apollo/providers';
+import { Providers } from '../libs/apollo/Providers';
 import { ClerkProvider } from '@clerk/nextjs';
 
 export const runtime = 'edge';

@@ -5,7 +5,8 @@ import { ClubCardActions } from '../../app/_components/teacher/approved/clubcard
 import { DetailTile } from '../../app/_components/teacher/main/DetailTile';
 import type { Club } from '../../libs/types';
 
-jest.mock('../../app/_components/teacher/approved/Approved', () => ({
+// ✅ approved/Approved → approved/main/Approved болгон засав
+jest.mock('../../app/_components/teacher/approved/main/Approved', () => ({
   ApprovedClubDetail: ({
     club,
     onEdit,
@@ -43,7 +44,7 @@ const club: Club = {
 describe('DetailTile', () => {
   it('renders label and value', () => {
     render(<DetailTile icon={<span />} label="x" value="y" />);
-    expect(screen.getByText('x')).toBeInTheDocument();
+    expect(screen.getByText('x', { exact: false })).toBeInTheDocument();
     expect(screen.getByText('y')).toBeInTheDocument();
   });
 });

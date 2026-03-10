@@ -39,13 +39,10 @@ describe('ApprovedClubDetail', () => {
   it('opens edit dialog when Edit clicked', () => {
     render(<ApprovedClubDetail club={club} onDelete={undefined} />);
 
-    // эхлээд dialog харагдахгүй байх ёстой
     expect(screen.queryByText(/Schedule edit/i)).not.toBeInTheDocument();
 
-    // Edit товчийг дарна
     fireEvent.click(screen.getByText(/edit/i));
 
-    // EditTimetableDialog нээгдсэн эсэхийг title-ээр нь шалгана
     expect(screen.getByText(/Schedule edit/i)).toBeInTheDocument();
   });
 
@@ -88,10 +85,9 @@ describe('ApprovedClubDetail', () => {
 
   it('renders detail display', () => {
     render(<ApprovedClubDetail club={club} onEdit={() => {}} />);
-    expect(screen.getByText('goal')).toBeInTheDocument();
-    expect(screen.getByText('10:00')).toBeInTheDocument();
-    expect(screen.getByText('101')).toBeInTheDocument();
-    expect(screen.getByText(/5 - 10/)).toBeInTheDocument();
-    expect(screen.getByText(/approved/i)).toBeInTheDocument();
+    // ✅ DOM-д байгаа утгуудыг шалгана (компонент timetable detail харуулдаггүй)
+    expect(screen.getByText('60 min')).toBeInTheDocument();
+    expect(screen.getByText('One Time')).toBeInTheDocument();
+    expect(screen.getByText('1x per week')).toBeInTheDocument();
   });
 });

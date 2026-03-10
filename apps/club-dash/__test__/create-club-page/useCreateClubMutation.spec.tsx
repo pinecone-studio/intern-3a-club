@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { useMutation } from '@apollo/client/react';
+
 import {
   useCreateClubMutation,
   parseDuration,
@@ -21,11 +21,22 @@ import {
 } from '../../app/_hooks/use-create-club';
 import { CreateClubState, ScheduleChange } from '../../libs/types';
 import React from 'react';
+import { useApolloClient, useMutation } from '@apollo/client/react';
 
-jest.mock('@apollo/client/react', () => ({
-  ...jest.requireActual('@apollo/client/react'),
+// ✅ Apollo Client-ийг бүхэлд нь mock хийх
+jest.mock('@apollo/client', () => ({
+  ...jest.requireActual('@apollo/client'),
+  useApolloClient: jest.fn(() => ({})),
   useMutation: jest.fn(),
 }));
+
+jest.mock('@apollo/client/react', () => ({
+  useApolloClient: jest.fn(() => ({})),
+  useMutation: jest.fn(),
+}));
+
+// Promise бүгдийг flush хийх helper
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 let alertMock: jest.SpyInstance;
 let consoleErrorMock: jest.SpyInstance;
@@ -57,10 +68,14 @@ beforeEach(() => {
   alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
   consoleLogMock = jest.spyOn(console, 'log').mockImplementation(() => {});
+
   (useMutation as unknown as jest.Mock).mockReturnValue([
     mockMutate,
     { loading: false, data: null, error: null },
   ]);
+
+  // ✅ useApolloClient-ийг мөн адил тохируулна
+  (useApolloClient as jest.Mock).mockReturnValue({});
 });
 
 afterEach(() => {
@@ -378,7 +393,7 @@ describe('useCreateClubMutation', () => {
     const { result } = renderHook(() => useCreateClubMutation(validState));
     await act(async () => {
       result.current.handleSubmit(mockEvent);
-      await Promise.resolve();
+      await flushPromises();
     });
     expect(mockMutate).toHaveBeenCalled();
     expect(alertMock).toHaveBeenCalledWith('Амжилттай үүсгэлээ!');
@@ -389,6 +404,7 @@ describe('useCreateClubMutation', () => {
     const { result } = renderHook(() => useCreateClubMutation(invalidState));
     await act(async () => {
       result.current.handleSubmit(mockEvent);
+      await flushPromises();
     });
     expect(mockEvent.preventDefault).toHaveBeenCalled();
     expect(alertMock).toHaveBeenCalledWith('Огноо сонгоно уу');
@@ -405,6 +421,7 @@ describe('useCreateClubMutation', () => {
     );
     await act(async () => {
       result.current.handleSubmit(mockEvent);
+      await flushPromises();
     });
     expect(alertMock).toHaveBeenCalledWith('Огноо сонгоно уу');
     expect(mockMutate).not.toHaveBeenCalled();
@@ -415,7 +432,7 @@ describe('useCreateClubMutation', () => {
     const { result } = renderHook(() => useCreateClubMutation(validState));
     await act(async () => {
       result.current.handleSubmit(mockEvent);
-      await Promise.resolve();
+      await flushPromises();
     });
     expect(consoleErrorMock).toHaveBeenCalled();
     expect(alertMock).toHaveBeenCalledWith('Алдаа гарлаа');
@@ -431,16 +448,18 @@ describe('useCreateClubMutation', () => {
     );
     await act(async () => {
       result.current.handleSubmit(mockEvent);
-      await Promise.resolve();
+      await flushPromises();
     });
     expect(onSuccess).toHaveBeenCalled();
   });
 
   it('returns loading state from useMutation', () => {
+    // ✅ unknown-оор дамжуулж jest.Mock төрөл рүү хүчээр хөрвүүлнэ
     (useMutation as unknown as jest.Mock).mockReturnValue([
       mockMutate,
       { loading: true, data: null, error: null },
     ]);
+
     const { result } = renderHook(() => useCreateClubMutation(validState));
     expect(result.current.loading).toBe(true);
   });

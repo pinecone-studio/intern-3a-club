@@ -21,17 +21,28 @@ jest.mock(
 
     return {
       ...actual,
-      EditTimetableDialogContent: (
-        props: React.ComponentProps<
-          typeof actual.EditTimetableDialogContent
-        >
-      ) => {
-        lastOnSave = props.onSave;
-        React.useEffect(() => {
-          props.onSelectDate(undefined);
-        }, [props.onSelectDate]);
+      EditTimetableDialogContent: ({
+        onSelectDate,
+        onSave,
+        ...props
+      }: {
+        onSelectDate: (date: Date | undefined) => void;
+        onSave: () => void;
+        [key: string]: unknown;
+      }) => {
+        lastOnSave = onSave;
 
-        return React.createElement(actual.EditTimetableDialogContent, props);
+        // ✅ props-оос салгаж авснаар dependency-ийн анхааруулга арилна
+        React.useEffect(() => {
+          onSelectDate(undefined);
+        }, [onSelectDate]);
+
+        // ✅ require('react')-ийн оронд React.createElement-ийг шууд ашиглана
+        return React.createElement(actual.EditTimetableDialogContent, {
+          onSelectDate,
+          onSave,
+          ...props,
+        });
       },
     };
   }
@@ -49,8 +60,11 @@ jest.mock('@intern-3a-club/shadcn', () => {
 
   return {
     ...actual,
-    Dialog: (props: React.ComponentProps<typeof actual.Dialog>) =>
-      React.createElement(actual.Dialog, props),
+    Dialog: (props: {
+      open?: boolean;
+      onOpenChange?: (v: boolean) => void;
+      children?: unknown;
+    }) => React.createElement(actual.Dialog, props), // ✅ require-ийг устгав
   };
 });
 
@@ -69,8 +83,9 @@ const mockClassroom = [{ id: '1', classRoom: '101' }];
 const mockStartTime = [{ id: '1', startTime: '10:00' }];
 const mockDuration = [{ id: '1', duration: '1:00' }];
 
+// ✅ unknown ашиглан TypeScript-ийн casting алдааг засав
 const useMutationMock = jest.requireMock('@apollo/client/react')
-  .useMutation as jest.Mock;
+  .useMutation as unknown as jest.Mock;
 
 /* -------------------------------------------------------------------------- */
 
@@ -239,8 +254,6 @@ describe('EditTimetableDialog', () => {
     const shouldAbortSaveSpy = jest
       .spyOn(editTimetableUtils, 'shouldAbortSave')
       .mockImplementation((active, selectedDate, checkConflict) => {
-        // checkConflict дуудагдахад active/selectedDate аль аль нь байгаа тул
-        // EditTimetableDialog.tsx-ийн 99-р мөрөнд reach болно.
         checkConflict();
         return true;
       });

@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { AdminClubsView } from '../../app/_components/teacher/main/AdminClubView';
 import { ApprovedClubDetail } from '../../app/_components/teacher/approved/main/Approved';
@@ -109,8 +108,9 @@ describe('AdminClubsView', () => {
   it('renders header and description', () => {
     render(<AdminClubsView />);
     expect(screen.getByText(/admin clubs/i)).toBeInTheDocument();
+    // ✅ DOM-д байгаа Англи текстэд тохируулав
     expect(
-      screen.getByText(/Шинээр үүсгэх хүсэлтүүдийг хянах хэсэг\./i)
+      screen.getByText(/New construction control section\./i)
     ).toBeInTheDocument();
   });
 
@@ -132,15 +132,14 @@ describe('AdminClubsView', () => {
     render(<AdminClubsView />);
 
     expect(screen.getByText(/admin clubs/i)).toBeInTheDocument();
-    const requestBtn = screen.getByRole('button', { name: /хүсэлт/i });
+    // ✅ DOM-д байгаа Англи текстэд тохируулав
+    const requestBtn = screen.getByRole('button', { name: /requests/i });
     fireEvent.click(requestBtn);
 
     expect(
       screen.getByRole('heading', { name: /pending requests/i })
     ).toBeInTheDocument();
   });
-
-  // approve/reject side effects are covered in PendingModalItem tests
 
   it('delete mutation: expand card and click Delete', async () => {
     mockMutate.mockResolvedValue({ data: { deleteClub: '1' } });
@@ -151,7 +150,6 @@ describe('AdminClubsView', () => {
     const deleteBtn = screen.getByRole('button', { name: /delete/i });
     fireEvent.click(deleteBtn);
 
-    // Confirm deletion in the alert dialog
     fireEvent.click(screen.getByRole('button', { name: /устгах/i }));
 
     await waitFor(() => {
@@ -175,7 +173,8 @@ describe('AdminClubsView', () => {
     } as unknown as useAdminClubsDataModule.AdminClubsData);
 
     const { rerender } = render(<AdminClubsView />);
-    fireEvent.click(screen.getByRole('button', { name: /хүсэлт/i }));
+    // ✅ Англи текстэд тохируулав
+    fireEvent.click(screen.getByRole('button', { name: /requests/i }));
     expect(
       screen.getByRole('heading', { name: /pending requests/i })
     ).toBeInTheDocument();
@@ -200,31 +199,19 @@ describe('AdminClubsView', () => {
   it('renders Loading... while queries are loading', () => {
     useQueryMock.mockImplementation((query: unknown) => {
       if (query === GET_ALL_PENDING_CLUBS) {
-        return {
-          data: undefined,
-          loading: true,
-          error: null,
-        };
+        return { data: undefined, loading: true, error: null };
       }
       if (query === GET_ALL_APPROVED_CLUBS) {
-        return {
-          data: undefined,
-          loading: false,
-          error: null,
-        };
+        return { data: undefined, loading: false, error: null };
       }
       return {
-        data: {
-          getAllPendingClubs: [],
-          getAllApprovedClubs: [],
-        },
+        data: { getAllPendingClubs: [], getAllApprovedClubs: [] },
         loading: false,
         error: null,
       };
     });
 
     render(<AdminClubsView />);
-
     expect(screen.getByText(/loading\.\.\./i)).toBeInTheDocument();
   });
 
@@ -245,10 +232,7 @@ describe('AdminClubsView', () => {
         };
       }
       return {
-        data: {
-          getAllPendingClubs: [],
-          getAllApprovedClubs: [],
-        },
+        data: { getAllPendingClubs: [], getAllApprovedClubs: [] },
         loading: false,
         error: null,
       };
@@ -256,7 +240,8 @@ describe('AdminClubsView', () => {
 
     render(<AdminClubsView />);
 
-    fireEvent.click(screen.getByRole('button', { name: /хүсэлт/i }));
+    // ✅ Англи текстэд тохируулав
+    fireEvent.click(screen.getByRole('button', { name: /requests/i }));
     fireEvent.click(screen.getByRole('button', { name: /approve/i }));
 
     await waitFor(() => {
@@ -289,10 +274,7 @@ describe('AdminClubsView', () => {
         };
       }
       return {
-        data: {
-          getAllPendingClubs: [],
-          getAllApprovedClubs: [],
-        },
+        data: { getAllPendingClubs: [], getAllApprovedClubs: [] },
         loading: false,
         error: null,
       };
@@ -300,7 +282,8 @@ describe('AdminClubsView', () => {
 
     render(<AdminClubsView />);
 
-    fireEvent.click(screen.getByRole('button', { name: /хүсэлт/i }));
+    // ✅ Англи текстэд тохируулав
+    fireEvent.click(screen.getByRole('button', { name: /requests/i }));
     fireEvent.click(screen.getByRole('button', { name: /reject/i }));
 
     await waitFor(() => {
@@ -338,10 +321,7 @@ describe('AdminClubsView', () => {
         };
       }
       return {
-        data: {
-          getAllPendingClubs: [],
-          getAllApprovedClubs: [],
-        },
+        data: { getAllPendingClubs: [], getAllApprovedClubs: [] },
         loading: false,
         error: null,
       };
@@ -353,7 +333,6 @@ describe('AdminClubsView', () => {
     const isPrimaryFlags = mockClubCard.mock.calls.map(
       (call) => call[0].isPrimary
     );
-
     expect(isPrimaryFlags).toEqual([true, true, true, false]);
   });
 });

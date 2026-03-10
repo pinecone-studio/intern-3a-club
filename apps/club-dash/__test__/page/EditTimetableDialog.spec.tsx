@@ -1,24 +1,27 @@
-import React from 'react';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { EditTimetableDialog } from '../../app/_components/teacher/approved/EditTimetableDialog';
-import type { EditTimetableDialogContent } from '../../app/_components/teacher/approved/EditTimetableDialogContent';
+import { EditTimetableDialog } from '../../app/_components/teacher/approved/edit/EditTimetableDialog';
 import type { Timetable } from '../../libs/types';
-import * as editTimetableUtils from '../../app/_components/teacher/approved/edit-timetable-utils';
+import * as editTimetableUtils from '../../app/_components/teacher/approved/edit/edit-timetable-utils';
 
-type MockContentProps = React.ComponentProps<typeof EditTimetableDialogContent>;
+// ✅ MockContentProps-ийг require-аар авах учир type import устгасан
 
 let lastOnSave: (() => void) | null = null;
+
 jest.mock(
-  '../../app/_components/teacher/approved/EditTimetableDialogContent',
+  '../../app/_components/teacher/approved/edit/EditTimetableDialogContent',
   () => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires -- Jest mock factory cannot reference outer scope (e.g. React)
     const React = require('react');
     const Actual = jest.requireActual(
-      '../../app/_components/teacher/approved/EditTimetableDialogContent'
+      '../../app/_components/teacher/approved/edit/EditTimetableDialogContent'
     ).EditTimetableDialogContent;
     return {
-      EditTimetableDialogContent: (props: MockContentProps) => {
+      EditTimetableDialogContent: (props: {
+        onSelectDate: (_date: Date | undefined) => void;
+        onSave: () => void;
+        [key: string]: unknown;
+      }) => {
         const { onSelectDate, onSave } = props;
         lastOnSave = onSave;
         React.useEffect(() => {
@@ -36,6 +39,7 @@ jest.mock('@apollo/client/react', () => ({
   ...jest.requireActual('@apollo/client/react'),
   useMutation: jest.fn(() => [mockUpdate, { loading: false }]),
 }));
+
 let lastOnOpenChange: ((_open: boolean) => void) | null = null;
 
 jest.mock('@intern-3a-club/shadcn', () => {
@@ -45,13 +49,16 @@ jest.mock('@intern-3a-club/shadcn', () => {
 
   return {
     ...actual,
-    // Dialog-ийг бүрэн солиогүй, зөвхөн onOpenChange-ийг хадгалаад жинхэнэ Dialog-ийг дуудна
-    Dialog: (props: React.ComponentProps<typeof actual.Dialog>) => {
+    Dialog: (props: {
+      onOpenChange?: (_open: boolean) => void;
+      [key: string]: unknown;
+    }) => {
       lastOnOpenChange = props.onOpenChange ?? null;
       return React.createElement(actual.Dialog, props);
     },
   };
 });
+
 const baseTimetable: Timetable = {
   id: 't1',
   clubId: '1',
@@ -97,13 +104,8 @@ describe('EditTimetableDialog (clean)', () => {
       />
     );
 
-    // Dialog дээр binding хийсэн onOpenChange (handleDialogOpenChange)-ийг wrapper-аар дамжуулж авч байна
     expect(lastOnOpenChange).toBeDefined();
-
-    // isOpen === true branch-ийг шууд дуудах
     lastOnOpenChange?.(true);
-
-    // true үед if (!isOpen) нөхцөл биелэхгүй тул onClose дуудагдах ёсгүй
     expect(onClose).not.toHaveBeenCalled();
   });
 
@@ -120,12 +122,11 @@ describe('EditTimetableDialog (clean)', () => {
       />
     );
 
-    // calendar grid
     const grid = screen.getByRole('grid');
     const button = grid.querySelector('button');
 
     if (button) {
-      fireEvent.click(button); // selectedDate set болно
+      fireEvent.click(button);
     }
 
     expect(grid).toBeInTheDocument();
@@ -155,7 +156,6 @@ describe('EditTimetableDialog (clean)', () => {
     expect(grid).toBeInTheDocument();
   });
 
-  // 1️⃣ open=false branch
   it('returns null when dialog closed', () => {
     const { container } = render(
       <EditTimetableDialog
@@ -172,7 +172,6 @@ describe('EditTimetableDialog (clean)', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  // 2️⃣ onClose branch (handleDialogOpenChange when isOpen false)
   it('calls onClose when dialog closes', () => {
     const onClose = jest.fn();
 
@@ -213,7 +212,6 @@ describe('EditTimetableDialog (clean)', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  // executeUpdateAndClose guard: early return when active or selectedDate missing
   it('executes early return when active or selectedDate missing', () => {
     jest.spyOn(editTimetableUtils, 'shouldAbortSave').mockReturnValue(false);
     const onClose = jest.fn();
@@ -238,7 +236,6 @@ describe('EditTimetableDialog (clean)', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  // checkConflict guard: return null when active or selectedDate missing
   it('checkConflict returns early when active or selectedDate missing', () => {
     jest
       .spyOn(editTimetableUtils, 'shouldAbortSave')
@@ -265,7 +262,6 @@ describe('EditTimetableDialog (clean)', () => {
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
-  // 3️⃣ active=null guard
   it('does nothing when no active timetable', () => {
     render(
       <EditTimetableDialog
@@ -283,7 +279,6 @@ describe('EditTimetableDialog (clean)', () => {
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
-  // 4️⃣ conflict branch
   it('does not call update when conflict exists', () => {
     const conflict: Timetable = { ...baseTimetable, id: 't2' };
 
@@ -300,11 +295,9 @@ describe('EditTimetableDialog (clean)', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
-
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
-  // 6️⃣ modifier branch (active null)
   it('executes modifier branch when active null', () => {
     const filterSpy = jest.spyOn(Array.prototype, 'filter');
 
@@ -324,7 +317,6 @@ describe('EditTimetableDialog (clean)', () => {
     filterSpy.mockRestore();
   });
 
-  // 7️⃣ saving=true shows "Saving..." (EditTimetableDialogContent getSaveLabel branch)
   it('shows Saving... when loading', () => {
     useMutationMock.mockReturnValue([mockUpdate, { loading: true }]);
 
