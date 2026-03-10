@@ -1,9 +1,9 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
 import { ViewRender } from '../../app/_components/main/ViewRender';
-
 import Dashboard from '../../app/page';
-import { Providers } from '../../libs/apollo/providers';
+import { Providers } from '../../libs/apollo/Providers';
+import { MockedProvider } from '@apollo/client/testing/react';
 
 jest.mock('../../app/_components/teacher/main/AdminClubView', () => ({
   AdminClubsView: () => <div>Admin Clubs View</div>,
@@ -71,7 +71,6 @@ describe('Providers', () => {
         <div>child</div>
       </Providers>
     );
-
     expect(screen.getByText('child')).toBeInTheDocument();
   });
 });
@@ -103,25 +102,14 @@ describe('ViewRender branches', () => {
   });
 });
 
-// describe('Page', () => {
-//   it('navigates between views via sidebar', () => {
-//     render(<Page />);
-
-//     fireEvent.click(screen.getByText(/admin clubs/i));
-//     fireEvent.click(screen.getByText(/academic/i));
-//     fireEvent.click(screen.getByText(/courses/i));
-//     fireEvent.click(screen.getByText(/grades/i));
-//     fireEvent.click(screen.getByText(/career development/i));
-//     fireEvent.click(screen.getByText(/resources/i));
-//     fireEvent.click(screen.getByText(/challenge/i));
-//     fireEvent.click(screen.getByText(/active/i));
-//     fireEvent.click(screen.getAllByText(/home/i)[0]);
-//   });
-// });
-
 describe('Dashboard page', () => {
   it('navigates between views via sidebar', () => {
-    render(<Dashboard />);
+    // ✅ Dashboard усeMutation ашигладаг тул MockedProvider шаардлагатай
+    render(
+      <MockedProvider mocks={[]}>
+        <Dashboard />
+      </MockedProvider>
+    );
 
     fireEvent.click(screen.getByText(/admin clubs/i));
     fireEvent.click(screen.getByText(/academic/i));

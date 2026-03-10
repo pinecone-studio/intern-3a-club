@@ -103,7 +103,8 @@ describe('CreateClub Page', () => {
 
   it('renders and opens dialog', async () => {
     render(<CreateClub />);
-    fireEvent.click(screen.getByText(/Клуб нээх/i));
+    // ✅ DOM-д "Create Club" харагдаж байна — Монгол текст биш
+    fireEvent.click(screen.getByText(/Create Club/i));
 
     expect(
       await screen.findByRole('heading', { name: /Шинэ клуб нээх/i })
@@ -112,10 +113,18 @@ describe('CreateClub Page', () => {
 
   it('calls handleSubmit and onSuccess callback which closes dialog and resets fields', async () => {
     render(<CreateClub />);
-    fireEvent.click(screen.getByText(/Клуб нээх/i));
+    fireEvent.click(screen.getByText(/Create Club/i));
 
-    const submitBtn = screen.getByRole('button', { name: /Create Club/i });
-    fireEvent.submit(submitBtn);
+    // ✅ handleSubmit нь form-ийн onSubmit-д холбогдсон тул
+    // button дарахын оронд form-ийг шууд submit хийнэ
+    const form = document.querySelector('form');
+    if (form) {
+      fireEvent.submit(form);
+    } else {
+      // form байхгүй бол button-г click хийнэ
+      const allBtns = screen.getAllByRole('button', { name: /Create Club/i });
+      fireEvent.click(allBtns[allBtns.length - 1]);
+    }
 
     expect(mockSubmit).toHaveBeenCalled();
     expect(mockHandleEmptyFields).toHaveBeenCalled();
@@ -124,7 +133,7 @@ describe('CreateClub Page', () => {
   it('shows loading state on the submit button', async () => {
     mockLoading = true;
     render(<CreateClub />);
-    fireEvent.click(screen.getByText(/Клуб нээх/i));
+    fireEvent.click(screen.getByText(/Create Club/i));
 
     const loadingBtn = await screen.findByRole('button', {
       name: /Creating.../i,
@@ -135,7 +144,7 @@ describe('CreateClub Page', () => {
 
   it('calls handlers when inputs change', async () => {
     render(<CreateClub />);
-    fireEvent.click(screen.getByText(/Клуб нээх/i));
+    fireEvent.click(screen.getByText(/Create Club/i));
 
     fireEvent.change(screen.getByLabelText(/Клубын нэр/i), {
       target: { value: 'New Club' },

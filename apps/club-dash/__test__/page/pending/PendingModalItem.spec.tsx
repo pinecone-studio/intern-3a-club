@@ -3,6 +3,11 @@ import '@testing-library/jest-dom';
 import { PendingModalItem } from '../../../app/_components/teacher/pending/PendingModalItem';
 import type { Club } from '../../../libs/types';
 
+const mockTeachers = [
+  { id: 't1', firstName: 'Teacher', lastName: 'One', profilePicture: '' },
+  { id: 't2', firstName: 'Teacher', lastName: 'Two', profilePicture: '' },
+];
+
 const club: Club = {
   id: '1',
   name: 'Test Club',
@@ -30,6 +35,7 @@ describe('PendingModalItem', () => {
     render(
       <PendingModalItem
         club={club}
+        teachers={mockTeachers} // ✅ нэмсэн
         selectedTeacherId="t1"
         onTeacherChange={onTeacherChange}
         onReject={jest.fn()}
@@ -50,6 +56,7 @@ describe('PendingModalItem', () => {
     render(
       <PendingModalItem
         club={club}
+        teachers={mockTeachers} // ✅ нэмсэн
         selectedTeacherId="t1"
         onTeacherChange={jest.fn()}
         onReject={onReject}
@@ -57,7 +64,6 @@ describe('PendingModalItem', () => {
       />
     );
 
-    // Эхлээд Reject товч → дараа нь dialog дээрх баталгаажуулах товч
     fireEvent.click(screen.getByText(/reject/i));
     fireEvent.click(screen.getByText('Татгалзах'));
 
@@ -70,6 +76,7 @@ describe('PendingModalItem', () => {
     render(
       <PendingModalItem
         club={{ ...club, preferredTeachers: ['t1'] }}
+        teachers={mockTeachers} // ✅ нэмсэн
         selectedTeacherId="t1"
         onTeacherChange={jest.fn()}
         onReject={jest.fn()}
@@ -77,7 +84,6 @@ describe('PendingModalItem', () => {
       />
     );
 
-    // Approve товч → дараа нь dialog дээрх баталгаажуулах товч
     fireEvent.click(screen.getByText(/approve/i));
     fireEvent.click(screen.getByText('Батлах'));
 
@@ -93,6 +99,7 @@ describe('PendingModalItem', () => {
     render(
       <PendingModalItem
         club={club}
+        teachers={mockTeachers} // ✅ нэмсэн
         selectedTeacherId={undefined}
         onTeacherChange={jest.fn()}
         onReject={jest.fn()}

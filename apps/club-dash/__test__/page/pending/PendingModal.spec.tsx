@@ -1,8 +1,16 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { PendingModal } from '../../../app/_components/teacher/pending/PendingModal';
 import type { Club } from '../../../libs/types';
+
+// ✅ useGetTeachers hook-ийг mock хийснээр Apollo context шаардлагагүй болно
+jest.mock('../../../app/_hooks/use-get-teachers', () => ({
+  useGetTeachers: () => ({
+    loading: false,
+    error: undefined,
+    teachers: [{ id: 't1', name: 'Teacher One' }],
+  }),
+}));
 
 jest.mock('@intern-3a-club/shadcn', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires -- Jest mock factory cannot reference outer scope (e.g. React)
@@ -12,8 +20,6 @@ jest.mock('@intern-3a-club/shadcn', () => {
   return {
     ...actual,
     Dialog: (props: React.ComponentProps<typeof actual.Dialog>) => {
-      // Dialog-ийн onOpenChange-ээр дамжуулж setOpenModal(false) дуудагдаж байгаа эсэхийг шалгахын тулд
-      // props-ийг шууд дамжуулж, children-ийг render хийнэ.
       return React.createElement(actual.Dialog, props);
     },
   };
