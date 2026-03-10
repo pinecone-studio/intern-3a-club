@@ -74,12 +74,8 @@ describe('ClubActionButtons', () => {
 
   it('isExpired=true, isEnrolled=false үед "Элсэх хугацаа дууссан" харуулна', () => {
     render(
-      <ClubActionButtons
-        {...defaultProps}
-        isExpired={true}
-        isEnrolled={false}
-      />
+      <ClubActionButtons {...baseProps} isExpired={true} isEnrolled={false} />
     );
-    expect(screen.getByText('Элсэх хугацаа дууссан')).toBeInTheDocument();
+    expect(screen.getByText('Бүртгэл хаагдсан')).toBeInTheDocument();
   });
 });

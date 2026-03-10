@@ -6,7 +6,7 @@ jest.mock('../../app/JoinClub/_components/utils/clubs-utils', () => ({
 }));
 
 import { toStartTimestamp } from '../../app/JoinClub/_components/utils/clubs-utils';
-import { getTimeLeftText } from 'apps/club-web/app/JoinClub/_components/utils/club-card-time-utils';
+import { getTimeLeftText } from '../../app/JoinClub/_components/utils/club-card-time-utils';
 
 const mockTimetable = {
   date: '2026-03-20',
